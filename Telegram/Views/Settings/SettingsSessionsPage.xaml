@@ -101,8 +101,7 @@
                         <controls:SettingsButton Content="{CustomResource IfInactiveFor}">
                             <controls:SettingsButton.Badge>
                                 <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.SessionTtlOptions}"
-                                                           SelectedIndex="{x:Bind ViewModel.SessionTtl, Mode=TwoWay}"
-                                                           DisplayMemberPath="Text" />
+                                                           SelectedIndex="{x:Bind ViewModel.SessionTtl, Mode=TwoWay}" />
                             </controls:SettingsButton.Badge>
                         </controls:SettingsButton>
                     </controls:HeaderedControl>

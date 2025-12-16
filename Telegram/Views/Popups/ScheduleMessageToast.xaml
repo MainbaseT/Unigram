@@ -20,7 +20,6 @@
         <TextBlock Text="{CustomResource MessageScheduledRepeatOption}" />
         <ComboBox ItemsSource="{x:Bind RepeatOptions}"
                   SelectedIndex="{x:Bind Repeat, Mode=TwoWay}"
-                  DisplayMemberPath="Text"
                   HorizontalAlignment="Stretch"
                   Margin="0,8,0,0" />
 

@@ -47,8 +47,7 @@
                                              Glyph="&#xE916;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.AutolockTimeoutOptions}"
-                                                       SelectedIndex="{x:Bind ViewModel.AutolockTimeout, Mode=TwoWay}"
-                                                       DisplayMemberPath="Text" />
+                                                       SelectedIndex="{x:Bind ViewModel.AutolockTimeout, Mode=TwoWay}" />
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
                 </controls:HeaderedControl>

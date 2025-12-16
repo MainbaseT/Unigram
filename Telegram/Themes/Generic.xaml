@@ -642,17 +642,11 @@
                                       Canvas.ZIndex="1"
                                       Grid.Row="1">
                                     <muxc:BreadcrumbBar x:Name="DetailHeaderPresenter"
+                                                        ItemTemplate="{TemplateBinding BreadcrumbItemTemplate}"
                                                         Visibility="Collapsed"
                                                         Margin="28,20,-24,0"
                                                         VerticalAlignment="Top"
-                                                        TabIndex="1">
-                                        <muxc:BreadcrumbBar.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Title}"
-                                                           FontFamily="{ThemeResource EmojiThemeFontFamily}" />
-                                            </DataTemplate>
-                                        </muxc:BreadcrumbBar.ItemTemplate>
-                                    </muxc:BreadcrumbBar>
+                                                        TabIndex="1" />
 
                                     <local:BackButton x:Name="BackButton"
                                                       Margin="-20,18,0,0"
@@ -2829,7 +2823,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style x:Key="ExtendedTableListViewItemStyle"
            TargetType="ListViewItem">
         <Setter Property="FontFamily"

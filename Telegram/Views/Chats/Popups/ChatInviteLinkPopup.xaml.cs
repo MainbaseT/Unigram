@@ -21,7 +21,13 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Chats.Popups
 {
-    public partial record SelectionValue(int Value, string Text, bool IsCustom = false);
+    public partial record SelectionValue(int Value, string Text, bool IsCustom = false)
+    {
+        public override string ToString()
+        {
+            return Text;
+        }
+    }
 
     public sealed partial class ChatInviteLinkPopup : ContentPopup
     {

@@ -71,7 +71,6 @@
 
         <ComboBox ItemsSource="{x:Bind ViewModel.TtlOptions}"
                   SelectedIndex="{x:Bind ViewModel.Ttl, Mode=TwoWay}"
-                  DisplayMemberPath="Text"
                   Header="{CustomResource AutoDeleteMessages}"
                   HorizontalAlignment="Stretch" />
     </StackPanel>

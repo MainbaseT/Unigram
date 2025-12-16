@@ -123,8 +123,7 @@
                     <controls:SettingsButton Content="Verbosity Level">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.VerbosityOptions}"
-                                                       SelectedIndex="{x:Bind ViewModel.Verbosity, Mode=TwoWay}"
-                                                       DisplayMemberPath="Text" />
+                                                       SelectedIndex="{x:Bind ViewModel.Verbosity, Mode=TwoWay}" />
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
                     <controls:SettingsButton Content="tdlib_log.txt"
@@ -152,8 +151,7 @@
                             <controls:SettingsButton Content="{x:Bind Name}">
                                 <controls:SettingsButton.Badge>
                                     <controls:SettingsComboBox ItemsSource="{x:Bind VerbosityOptions}"
-                                                               SelectedIndex="{x:Bind Verbosity, Mode=TwoWay}"
-                                                               DisplayMemberPath="Text" />
+                                                               SelectedIndex="{x:Bind Verbosity, Mode=TwoWay}" />
                                 </controls:SettingsButton.Badge>
                             </controls:SettingsButton>
                         </DataTemplate>

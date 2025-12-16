@@ -99,7 +99,6 @@
                           ItemsSource="{x:Bind ViewModel.Duration}"
                           SelectedItem="{x:Bind ViewModel.SelectedDuration, Mode=TwoWay}"
                           SelectionChanged="Duration_SelectionChanged"
-                          DisplayMemberPath="Text"
                           HorizontalAlignment="Stretch" />
             </StackPanel>
         </ScrollViewer>

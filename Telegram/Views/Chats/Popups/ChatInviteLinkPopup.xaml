@@ -92,7 +92,6 @@
                     <TextBlock Text="{CustomResource LimitByPeriod}" />
                     <ComboBox x:Name="LimitByPeriod"
                               SelectionChanged="LimitByPeriod_SelectionChanged"
-                              DisplayMemberPath="Text"
                               HorizontalAlignment="Stretch"
                               Margin="0,8" />
 
@@ -108,7 +107,6 @@
                     <TextBlock Text="{CustomResource LimitNumberOfUses}" />
                     <ComboBox x:Name="LimitNumberOfUses"
                               SelectionChanged="LimitNumberOfUses_SelectionChanged"
-                              DisplayMemberPath="Text"
                               HorizontalAlignment="Stretch"
                               Margin="0,8" />
                     <TextBlock Text="{CustomResource UsesLimitHelp}"

@@ -10,6 +10,7 @@
                   xmlns:chats="using:Telegram.Controls.Chats"
                   xmlns:messages="using:Telegram.Controls.Messages"
                   xmlns:local="using:Telegram.Views"
+                  xmlns:viewModels="using:Telegram.ViewModels.Settings"
                   mc:Ignorable="d"
                   NavigationMode="Root">
 
@@ -121,8 +122,7 @@
                                              Glyph="&#xEA89;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.ScalingOptions}"
-                                                       SelectedIndex="{x:Bind ViewModel.Scaling, Mode=TwoWay}"
-                                                       DisplayMemberPath="Text" />
+                                                       SelectedIndex="{x:Bind ViewModel.Scaling, Mode=TwoWay}" />
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
                     <Grid Background="{ThemeResource SettingsItemBackground}"
@@ -203,9 +203,9 @@
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.FontFamilyOptions}"
                                                        SelectedIndex="{x:Bind ViewModel.FontFamily, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Text}"
-                                                   FontFamily="{Binding Value}" />
+                                    <DataTemplate x:DataType="viewModels:SettingsOptionItemString">
+                                        <TextBlock Text="{x:Bind Text}"
+                                                   FontFamily="{x:Bind Value}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </controls:SettingsComboBox>
@@ -271,16 +271,14 @@
                                              Glyph="&#xE919;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.SendByOptions}"
-                                                       SelectedIndex="{x:Bind ViewModel.SendBy, Mode=TwoWay}"
-                                                       DisplayMemberPath="Text" />
+                                                       SelectedIndex="{x:Bind ViewModel.SendBy, Mode=TwoWay}" />
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
                     <controls:SettingsButton Content="{CustomResource DistanceUnits}"
                                              Glyph="&#xE1C4;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.DistanceUnitOptions}"
-                                                       SelectedIndex="{x:Bind ViewModel.DistanceUnit, Mode=TwoWay}"
-                                                       DisplayMemberPath="Text" />
+                                                       SelectedIndex="{x:Bind ViewModel.DistanceUnit, Mode=TwoWay}" />
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
                 </controls:HeaderedControl>

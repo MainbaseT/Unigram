@@ -18,7 +18,6 @@ using Telegram.Td.Api;
 using Telegram.Views.Chats;
 using Telegram.Views.Profile;
 using Windows.UI.Xaml.Navigation;
-using WinRT;
 
 namespace Telegram.ViewModels.Profile
 {
@@ -86,7 +85,6 @@ namespace Telegram.ViewModels.Profile
         }
     }
 
-    [GeneratedBindableCustomProperty]
     public partial class ProfileTabItem : BindableBase
     {
         private readonly ICollectionWithTotalCount _items;
@@ -168,6 +166,11 @@ namespace Telegram.ViewModels.Profile
         }
 
         public bool CanSetAsMain => Type is ProfileTabPosts or ProfileTabGifts or ProfileTabMedia or ProfileTabFiles or ProfileTabLinks or ProfileTabMusic or ProfileTabGifs;
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 
     public abstract partial class ProfileTabsViewModel : MediaTabsViewModelBase, IHandle

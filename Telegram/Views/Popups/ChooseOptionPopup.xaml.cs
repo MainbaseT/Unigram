@@ -10,7 +10,6 @@ using System.Linq;
 using Telegram.Controls;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using WinRT;
 
 namespace Telegram.Views.Popups
 {
@@ -68,7 +67,6 @@ namespace Telegram.Views.Popups
         public string Footer { get; set; }
     }
 
-    [GeneratedBindableCustomProperty]
     public partial class SettingsOptionItem
     {
         public SettingsOptionItem(string text)
@@ -84,7 +82,6 @@ namespace Telegram.Views.Popups
         }
     }
 
-    [GeneratedBindableCustomProperty]
     public partial class SettingsOptionItem<T> : SettingsOptionItem
     {
         public SettingsOptionItem(T value, string text)

@@ -35,10 +35,10 @@ namespace Telegram.ViewModels.Settings
 
             var fonts = PlaceholderHelper.Foreground.GetSystemFontFamilies(new[] { LocaleService.Current.Id, NativeUtils.GetCurrentCulture() })
                 .OrderBy(x => x)
-                .Select(x => new SettingsOptionItem<string>(x, x));
+                .Select(x => new SettingsOptionItemString(x, x));
 
-            FontFamilyOptions = new List<SettingsOptionItem<string>>(fonts);
-            FontFamilyOptions.Insert(0, new SettingsOptionItem<string>(string.Empty, Strings.Default));
+            FontFamilyOptions = new List<SettingsOptionItemString>(fonts);
+            FontFamilyOptions.Insert(0, new SettingsOptionItemString(string.Empty, Strings.Default));
 
             ChatThemes = new ObservableCollection<ChatThemeViewModel>();
 
@@ -374,7 +374,7 @@ namespace Telegram.ViewModels.Settings
             }
         }
 
-        public List<SettingsOptionItem<string>> FontFamilyOptions { get; }
+        public List<SettingsOptionItemString> FontFamilyOptions { get; }
 
         public int SendBy
         {
@@ -472,6 +472,14 @@ namespace Telegram.ViewModels.Settings
         public void OpenStickers()
         {
             NavigationService.Navigate(typeof(SettingsStickersPage));
+        }
+    }
+
+    public class SettingsOptionItemString : SettingsOptionItem<string>
+    {
+        public SettingsOptionItemString(string value, string text)
+            : base(value, text)
+        {
         }
     }
 

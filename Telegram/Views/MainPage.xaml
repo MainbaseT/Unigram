@@ -10,6 +10,7 @@
                    xmlns:views="using:Telegram.Controls.Views"
                    xmlns:viewModels="using:Telegram.ViewModels"
                    xmlns:local="using:Telegram.Views"
+                   xmlns:navigation="using:Telegram.Navigation.Services"
                    mc:Ignorable="d"
                    Loaded="OnLoaded"
                    Unloaded="OnUnloaded">
@@ -389,6 +390,12 @@
                                                     x:Name="CallBanner" />
                 </Grid>
             </controls:MasterDetailView.Banner>
+            <controls:MasterDetailView.BreadcrumbItemTemplate>
+                <DataTemplate x:DataType="navigation:NavigationStackItem">
+                    <TextBlock Text="{x:Bind Title, Mode=OneWay}"
+                               FontFamily="{ThemeResource EmojiThemeFontFamily}" />
+                </DataTemplate>
+            </controls:MasterDetailView.BreadcrumbItemTemplate>
             <Grid x:Name="RootGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

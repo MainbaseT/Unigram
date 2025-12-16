@@ -117,6 +117,11 @@ namespace Telegram.ViewModels.Settings
 
             public AvailableGift Gift => _gift;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public abstract partial class SettingsProfileColorTabViewModelBase<T> : SettingsProfileColorTabViewModelBase, IIncrementalCollectionOwner

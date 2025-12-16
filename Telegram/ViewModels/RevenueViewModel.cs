@@ -17,11 +17,9 @@ using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
 using Telegram.Views.Chats;
 using Windows.UI.Xaml.Navigation;
-using WinRT;
 
 namespace Telegram.ViewModels
 {
-    [GeneratedBindableCustomProperty]
     public partial class RevenueTabItem : BindableBase
     {
         public RevenueTabItem(string text, Type type)
@@ -33,6 +31,11 @@ namespace Telegram.ViewModels
         public string Text { get; }
 
         public Type Type { get; }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 
     public partial class RevenueViewModel : MultiViewModelBase, IHandle

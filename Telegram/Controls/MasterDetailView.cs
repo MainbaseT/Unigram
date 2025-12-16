@@ -985,6 +985,19 @@ namespace Telegram.Controls
         }
 
         #endregion
+
+        #region BreadcrumbItemTemplate
+
+        public DataTemplate BreadcrumbItemTemplate
+        {
+            get { return (DataTemplate)GetValue(BreadcrumbItemTemplateProperty); }
+            set { SetValue(BreadcrumbItemTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty BreadcrumbItemTemplateProperty =
+            DependencyProperty.Register(nameof(BreadcrumbItemTemplate), typeof(DataTemplate), typeof(MasterDetailView), new PropertyMetadata(null));
+
+        #endregion
     }
 
     public enum MasterDetailState

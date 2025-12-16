@@ -98,8 +98,7 @@
                                              Glyph="&#xE8BD;">
                         <controls:SettingsButton.Badge>
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.AllHistoryAvailableOptions}"
-                                                       SelectedIndex="{x:Bind ViewModel.IsAllHistoryAvailable, Mode=TwoWay}"
-                                                       DisplayMemberPath="Text" />
+                                                       SelectedIndex="{x:Bind ViewModel.IsAllHistoryAvailable, Mode=TwoWay}" />
                         </controls:SettingsButton.Badge>
                     </controls:SettingsButton>
 

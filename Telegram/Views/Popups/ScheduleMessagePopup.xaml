@@ -27,7 +27,6 @@
             <ComboBox x:Name="RepeatSelector"
                       ItemsSource="{x:Bind RepeatOptions}"
                       SelectedIndex="{x:Bind Repeat, Mode=TwoWay}"
-                      DisplayMemberPath="Text"
                       HorizontalAlignment="Stretch" />
             <Button x:Name="RepeatButton"
                     Click="RepeatButton_Click"

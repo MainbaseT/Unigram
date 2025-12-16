@@ -64,8 +64,7 @@
                             <controls:SettingsButton Content="{CustomResource SuggestStickers}">
                                 <controls:SettingsButton.Badge>
                                     <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.SuggestStickersOptions}"
-                                                               SelectedIndex="{x:Bind ViewModel.SuggestStickers, Mode=TwoWay}"
-                                                               DisplayMemberPath="Text" />
+                                                               SelectedIndex="{x:Bind ViewModel.SuggestStickers, Mode=TwoWay}" />
                                 </controls:SettingsButton.Badge>
                             </controls:SettingsButton>
 
@@ -109,8 +108,7 @@
                                                      Glyph="{x:Bind ViewModel.EmojiStyleIcon}">
                                 <controls:SettingsButton.Badge>
                                     <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.EmojiStyleOptions}"
-                                                               SelectedIndex="{x:Bind ViewModel.EmojiStyle, Mode=TwoWay}"
-                                                               DisplayMemberPath="Text" />
+                                                               SelectedIndex="{x:Bind ViewModel.EmojiStyle, Mode=TwoWay}" />
                                 </controls:SettingsButton.Badge>
                             </controls:SettingsButton>
                             <CheckBox Content="{CustomResource SuggestAnimatedEmoji}"

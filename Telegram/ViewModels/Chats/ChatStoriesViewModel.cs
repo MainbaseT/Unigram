@@ -664,5 +664,10 @@ namespace Telegram.ViewModels.Chats
                 ClientService.Send(new ReorderStoryAlbumStories(_viewModel.Chat.Id, Id, Items.Select(x => x.Id).ToList()));
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
