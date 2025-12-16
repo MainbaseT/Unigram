@@ -466,7 +466,6 @@ namespace Telegram
                 CallsPopup => session.Resolve<CallsViewModel>(),
                 DownloadsPopup => session.Resolve<DownloadsViewModel>(),
                 SettingsUsernamePopup => session.Resolve<SettingsUsernameViewModel>(),
-                SettingsDataAutoPopup => session.Resolve<SettingsDataAutoViewModel>(),
                 ChooseChatsPopup => session.Resolve<ChooseChatsViewModel>(),
                 ChooseSoundPopup => session.Resolve<ChooseSoundViewModel>(),
                 ChatNotificationsPopup => session.Resolve<ChatNotificationsViewModel>(),

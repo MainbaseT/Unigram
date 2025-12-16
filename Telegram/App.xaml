@@ -18,12 +18,17 @@
 
                     <StaticResource x:Key="SettingsItemBorderBrush"
                                     ResourceKey="CardStrokeColorDefaultBrush" />
+                    <StaticResource x:Key="SettingsItemBorderBrushPointerOver"
+                                    ResourceKey="ControlElevationBorderBrush" />
+                    <StaticResource x:Key="SettingsItemBorderBrushPressed"
+                                    ResourceKey="ControlStrokeColorDefault" />
                     <StaticResource x:Key="SettingsItemBackground"
                                     ResourceKey="CardBackgroundFillColorDefaultBrush" />
                     <StaticResource x:Key="SettingsItemBackgroundPointerOver"
                                     ResourceKey="ControlFillColorSecondaryBrush" />
                     <StaticResource x:Key="SettingsItemBackgroundPressed"
                                     ResourceKey="ControlFillColorTertiaryBrush" />
+
                     <StaticResource x:Key="SettingsPageBackground"
                                     ResourceKey="SystemControlTransparentBrush" />
 
@@ -58,12 +63,17 @@
 
                     <StaticResource x:Key="SettingsItemBorderBrush"
                                     ResourceKey="CardStrokeColorDefaultBrush" />
+                    <StaticResource x:Key="SettingsItemBorderBrushPointerOver"
+                                    ResourceKey="ControlElevationBorderBrush" />
+                    <StaticResource x:Key="SettingsItemBorderBrushPressed"
+                                    ResourceKey="ControlStrokeColorDefault" />
                     <StaticResource x:Key="SettingsItemBackground"
                                     ResourceKey="CardBackgroundFillColorDefaultBrush" />
                     <StaticResource x:Key="SettingsItemBackgroundPointerOver"
                                     ResourceKey="ControlFillColorSecondaryBrush" />
                     <StaticResource x:Key="SettingsItemBackgroundPressed"
                                     ResourceKey="ControlFillColorTertiaryBrush" />
+                    
                     <StaticResource x:Key="SettingsPageBackground"
                                     ResourceKey="SystemControlTransparentBrush" />
 

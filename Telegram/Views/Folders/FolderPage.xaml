@@ -180,8 +180,7 @@
                             </ListView.Header>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <cells:ProfileCell Background="{ThemeResource SettingsItemBackground}"
-                                                       BorderBrush="{ThemeResource SettingsItemBorderBrush}" />
+                                    <cells:ProfileCell />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                             <ListView.Footer>
@@ -230,8 +229,7 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <cells:ProfileCell Background="{ThemeResource SettingsItemBackground}"
-                                               BorderBrush="{ThemeResource SettingsItemBorderBrush}" />
+                            <cells:ProfileCell />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     <ListView.Footer>
@@ -295,7 +293,7 @@
                                           BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                                         <Button Click="Purchase_Click"
                                                 IsEnabled="{x:Bind ViewModel.IsPremium, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
-                                                Style="{StaticResource EmptyButtonStyle}" />
+                                                Style="{StaticResource ListEmptyButtonStyle}" />
 
                                         <GridView x:Name="Tags"
                                                   IsHitTestVisible="{x:Bind ViewModel.IsPremium, Mode=OneWay}"

@@ -68,12 +68,9 @@ namespace Telegram.Views.Profile
             {
                 return;
             }
-            else if (args.ItemContainer.ContentTemplateRoot is Grid content && args.Item is SavedMessagesTopic savedMessagesTopic)
+            else if (args.ItemContainer.ContentTemplateRoot is ChatCell content && args.Item is SavedMessagesTopic savedMessagesTopic)
             {
-                if (content.Children[0] is ChatCell cell)
-                {
-                    cell.UpdateSavedMessagesTopic(ViewModel.ClientService, savedMessagesTopic);
-                }
+                content.UpdateSavedMessagesTopic(ViewModel.ClientService, savedMessagesTopic);
             }
         }
 

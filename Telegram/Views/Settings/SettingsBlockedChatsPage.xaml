@@ -40,8 +40,7 @@
             </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <cells:ProfileCell BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                       Background="{ThemeResource SettingsItemBackground}" />
+                    <cells:ProfileCell />
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>

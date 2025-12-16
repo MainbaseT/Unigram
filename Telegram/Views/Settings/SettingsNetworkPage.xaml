@@ -62,10 +62,14 @@
                 <controls:HeaderedControl ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="controls:StorageChartItem">
-                            <controls:SettingsExpander HorizontalContentAlignment="Stretch"
-                                                       BorderThickness="0">
+                            <controls:SettingsExpander Badge="{x:Bind TotalBytes, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
+                                                       HorizontalContentAlignment="Stretch"
+                                                       Background="Transparent"
+                                                       BorderThickness="0"
+                                                       Padding="0"
+                                                       CornerRadius="4">
                                 <controls:SettingsExpander.Header>
-                                    <Grid>
+                                    <Grid Margin="-12,0,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="56" />
                                             <ColumnDefinition />
@@ -74,7 +78,7 @@
                                         <Border HorizontalAlignment="Left"
                                                 VerticalAlignment="Center"
                                                 CornerRadius="4"
-                                                Margin="18,-2,0,0"
+                                                Margin="18,-2,0,-3"
                                                 Padding="2">
                                             <Border.Background>
                                                 <SolidColorBrush Color="{x:Bind Stroke}" />
@@ -90,25 +94,19 @@
                                                    Style="{StaticResource BodyTextBlockStyle}"
                                                    TextWrapping="NoWrap"
                                                    Grid.Column="1" />
-                                        <TextBlock Text="{x:Bind TotalBytes, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
-                                                   Style="{StaticResource InfoBodyTextBlockStyle}"
-                                                   Margin="0,0,-12,0"
-                                                   Grid.Column="2" />
                                     </Grid>
                                 </controls:SettingsExpander.Header>
                                 <StackPanel>
                                     <controls:SettingsButton Content="{CustomResource BytesReceived}"
                                                              Badge="{x:Bind ReceivedBytes, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
                                                              Glyph="&#xE118;"
-                                                             Background="Transparent"
-                                                             BorderThickness="0,0,0,1"
+                                                             BorderThickness="0,1,0,1"
                                                              CornerRadius="0" />
 
                                     <controls:SettingsButton Content="{CustomResource BytesSent}"
                                                              Badge="{x:Bind SentBytes, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
                                                              Glyph="&#xEA00;"
-                                                             Background="Transparent"
-                                                             CornerRadius="0" />
+                                                             CornerRadius="0,0,4,4" />
                                 </StackPanel>
                             </controls:SettingsExpander>
                         </DataTemplate>

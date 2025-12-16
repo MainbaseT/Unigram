@@ -33,9 +33,10 @@
                 <controls:HeaderedControl Header="{CustomResource BusinessIntroHeader}"
                                           Footer="{CustomResource BusinessIntroInfo}">
                     <Grid x:Name="Preview"
-                          CornerRadius="4,4,0,0">
+                          BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                          CornerRadius="4">
                         <chats:ChatBackgroundControl x:Name="BackgroundControl"
-                                                     CornerRadius="4,4,0,0" />
+                                                     CornerRadius="4" />
                         <StackPanel Padding="0,10">
                             <messages:MessageService HorizontalAlignment="Center"
                                                      VerticalAlignment="Center"

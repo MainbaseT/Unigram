@@ -53,8 +53,8 @@ namespace Telegram.Views.Profile
             {
                 if (!IsProfile)
                 {
-                    args.ItemContainer.Padding = new Thickness(4, 0, 4, 0);
-                    cell.Background = null;
+                    args.ItemContainer.BorderThickness = new Thickness(0);
+                    args.ItemContainer.Background = null;
                 }
 
                 cell.UpdateMessage(ViewModel.NavigationService, message);

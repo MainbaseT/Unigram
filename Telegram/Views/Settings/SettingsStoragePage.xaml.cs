@@ -121,12 +121,12 @@ namespace Telegram.Views.Settings
             {
                 if (args.Item is StorageStatisticsByChat statistics && statistics.ByFileType == null)
                 {
-                    content.Opacity = (10 - args.ItemIndex) / 10d;
+                    args.ItemContainer.Opacity = (10 - args.ItemIndex) / 10d;
                     content.ShowHideSkeleton(true);
                 }
                 else
                 {
-                    content.Opacity = 1;
+                    args.ItemContainer.Opacity = 1;
                     content.ShowHideSkeleton(false);
 
                     content.UpdateStatisticsByChat(ViewModel.ClientService, args, OnContainerContentChanging);

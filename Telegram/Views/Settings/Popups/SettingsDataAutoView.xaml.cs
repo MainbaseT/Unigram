@@ -6,22 +6,20 @@
 //
 
 using System;
-using Telegram.Controls;
 using Telegram.Converters;
 using Telegram.ViewModels.Settings;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Settings.Popups
 {
-    public sealed partial class SettingsDataAutoPopup : ContentPopup
+    public sealed partial class SettingsDataAutoView : UserControl
     {
         public SettingsDataAutoViewModel ViewModel => DataContext as SettingsDataAutoViewModel;
 
-        public SettingsDataAutoPopup()
+        public SettingsDataAutoView()
         {
             InitializeComponent();
-
-            PrimaryButtonText = Strings.Done;
-            SecondaryButtonText = Strings.Cancel;
         }
 
         #region Binding
@@ -103,6 +101,11 @@ namespace Telegram.Views.Settings.Popups
             }
 
             ViewModel.Limit = size;
+        }
+
+        private CornerRadius ConvertCornerRadius(bool limit)
+        {
+            return new CornerRadius(0, 0, limit ? 0 : 4, limit ? 0 : 4);
         }
 
         private string ConvertUpTo(long limit)

@@ -22,61 +22,67 @@
                       VerticalScrollMode="Auto">
             <controls:SettingsPanel SizeChanged="OnSizeChanged">
                 <controls:HeaderedControl>
-                    <Grid x:Name="Preview"
-                          CornerRadius="4,4,0,0">
-                        <chats:ChatBackgroundControl x:Name="BackgroundControl"
-                                                     CornerRadius="4,4,0,0" />
-                        <StackPanel Padding="0,10">
-                            <messages:MessageBubble x:Name="Message1"
-                                                    HorizontalAlignment="Left" />
-                            <messages:MessageBubble x:Name="Message2"
-                                                    HorizontalAlignment="Right">
-                                <FrameworkElement.Resources>
-                                    <common:ThemeOutgoing />
-                                </FrameworkElement.Resources>
-                            </messages:MessageBubble>
-                        </StackPanel>
-                    </Grid>
+                    <Grid Background="{ThemeResource SettingsItemBackground}"
+                          BorderBrush="{ThemeResource SettingsItemBorderBrush}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid x:Name="Preview"
+                              CornerRadius="4,4,0,0">
+                            <chats:ChatBackgroundControl x:Name="BackgroundControl"
+                                                         CornerRadius="4,4,0,0" />
+                            <StackPanel Padding="0,10">
+                                <messages:MessageBubble x:Name="Message1"
+                                                        HorizontalAlignment="Left" />
+                                <messages:MessageBubble x:Name="Message2"
+                                                        HorizontalAlignment="Right">
+                                    <FrameworkElement.Resources>
+                                        <common:ThemeOutgoing />
+                                    </FrameworkElement.Resources>
+                                </messages:MessageBubble>
+                            </StackPanel>
+                        </Grid>
 
-                    <GridView x:Name="List"
-                              Background="{ThemeResource SettingsItemBackground}"
-                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                              ItemsSource="{x:Bind ViewModel.ChatThemes}"
-                              SelectedItem="{x:Bind ViewModel.SelectedChatTheme, Mode=TwoWay}"
-                              SelectionMode="Single"
-                              SingleSelectionFollowsFocus="False"
-                              SelectionChanged="OnSelectionChanged"
-                              ChoosingItemContainer="OnChoosingItemContainer"
-                              ContainerContentChanging="OnContainerContentChanging"
-                              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                              ScrollViewer.HorizontalScrollMode="Auto"
-                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                              ScrollViewer.VerticalScrollMode="Disabled"
-                              Padding="12,16,0,12">
-                        <GridView.ItemTemplate>
-                            <DataTemplate>
-                                <cells:ChatThemeCell Width="87" />
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-                        <GridView.ItemContainerStyle>
-                            <Style TargetType="GridViewItem"
-                                   BasedOn="{StaticResource DefaultGridViewItemStyle}">
-                                <Setter Property="HorizontalContentAlignment"
-                                        Value="Stretch" />
-                            </Style>
-                        </GridView.ItemContainerStyle>
-                        <GridView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ItemsStackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </GridView.ItemsPanel>
-                        <GridView.ItemContainerTransitions>
-                            <TransitionCollection />
-                        </GridView.ItemContainerTransitions>
-                        <GridView.Footer>
-                            <Border Width="12" />
-                        </GridView.Footer>
-                    </GridView>
+                        <GridView x:Name="List"
+                                  ItemsSource="{x:Bind ViewModel.ChatThemes}"
+                                  SelectedItem="{x:Bind ViewModel.SelectedChatTheme, Mode=TwoWay}"
+                                  SelectionMode="Single"
+                                  SingleSelectionFollowsFocus="False"
+                                  SelectionChanged="OnSelectionChanged"
+                                  ChoosingItemContainer="OnChoosingItemContainer"
+                                  ContainerContentChanging="OnContainerContentChanging"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                  ScrollViewer.HorizontalScrollMode="Auto"
+                                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                  ScrollViewer.VerticalScrollMode="Disabled"
+                                  Padding="12,16,0,12"
+                                  Grid.Row="1">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <cells:ChatThemeCell Width="87" />
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                            <GridView.ItemContainerStyle>
+                                <Style TargetType="GridViewItem"
+                                       BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                                    <Setter Property="HorizontalContentAlignment"
+                                            Value="Stretch" />
+                                </Style>
+                            </GridView.ItemContainerStyle>
+                            <GridView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </GridView.ItemsPanel>
+                            <GridView.ItemContainerTransitions>
+                                <TransitionCollection />
+                            </GridView.ItemContainerTransitions>
+                            <GridView.Footer>
+                                <Border Width="12" />
+                            </GridView.Footer>
+                        </GridView>
+                    </Grid>
 
                     <controls:SettingsButton Content="{CustomResource ChatThemes}"
                                              Click="{x:Bind ViewModel.OpenThemes}"
@@ -123,8 +129,8 @@
                           BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="56" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="208" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="44" />
@@ -150,10 +156,8 @@
                                 Maximum="15"
                                 SmallChange="1"
                                 LargeChange="1"
-                                TickFrequency="1"
-                                TickPlacement="Outside"
                                 IsThumbToolTipEnabled="False"
-                                Margin="12,6,12,6"
+                                Margin="12,6,16,6"
                                 Grid.Column="2"
                                 Grid.ColumnSpan="3" />
                     </Grid>
@@ -161,8 +165,8 @@
                           BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="56" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="208" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="44" />
@@ -188,10 +192,8 @@
                                 Maximum="6"
                                 SmallChange="1"
                                 LargeChange="1"
-                                TickFrequency="1"
-                                TickPlacement="Outside"
                                 IsThumbToolTipEnabled="False"
-                                Margin="12,6,12,6"
+                                Margin="12,6,16,6"
                                 Grid.Column="2"
                                 Grid.ColumnSpan="3" />
                     </Grid>
@@ -234,16 +236,17 @@
                                  Content="{CustomResource DoubleClickReply}"
                                  Style="{StaticResource SettingsRadioButtonStyle}"
                                  GroupName="DoubleClick" />
-                    <Grid>
+                    <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <RadioButton IsChecked="{x:Bind ViewModel.DoubleClickToReact, Mode=TwoWay}"
                                      Content="{CustomResource DoubleClickReact}"
                                      Style="{StaticResource SettingsRadioButtonStyle}"
-                                     GroupName="DoubleClick" />
+                                     GroupName="DoubleClick"
+                                     CornerRadius="4" />
                         <messages:ReactionButton x:Name="Reaction"
                                                  Click="Reaction_Click"
                                                  HorizontalAlignment="Right"
                                                  VerticalAlignment="Center"
-                                                 Margin="0,0,12,0" />
+                                                 Margin="0,0,16,0" />
                     </Grid>
                 </controls:HeaderedControl>
 

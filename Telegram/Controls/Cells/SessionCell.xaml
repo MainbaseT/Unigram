@@ -7,9 +7,7 @@
       mc:Ignorable="d"
       d:DesignHeight="300"
       d:DesignWidth="400"
-      Padding="12,8,0,12"
-      Background="{ThemeResource SettingsItemBackground}"
-      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+      Padding="12,8,0,12">
 
     <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -49,7 +47,7 @@
                Grid.Row="1" />
     <TextBlock x:Name="Subtitle"
                TextTrimming="CharacterEllipsis"
-               Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
+               Style="{StaticResource InfoBodyTextBlockStyle}"
                Grid.Column="1"
                Grid.Row="2" />
 </Grid>

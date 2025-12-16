@@ -20,8 +20,7 @@
                                 VerticalAlignment="Top">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <cells:ProfileCell Background="{ThemeResource SettingsItemBackground}"
-                                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                    <cells:ProfileCell />
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Template>

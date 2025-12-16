@@ -38,8 +38,12 @@
                                                        Source="ms-appx:///Assets/Animations/YourStars.tgs"
                                                        LoopCount="1" />
 
-                            <controls:HeaderedControl Background="{ThemeResource SettingsItemBackground}">
-                                <StackPanel Padding="12,4,12,8">
+                            <controls:HeaderedControl>
+                                <StackPanel Background="{ThemeResource SettingsItemBackground}"
+                                            BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="12,4,12,8">
                                     <StackPanel Orientation="Horizontal"
                                                 HorizontalAlignment="Center">
                                         <controls:PremiumStarCount Width="34"
@@ -90,8 +94,7 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <revenue:StarSubscriptionCell Background="{ThemeResource SettingsItemBackground}"
-                                                          BorderBrush="{ThemeResource SettingsItemBorderBrush}" />
+                            <revenue:StarSubscriptionCell />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     <ListView.Template>
@@ -138,8 +141,7 @@
             </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <revenue:StarTransactionCell Background="{ThemeResource SettingsItemBackground}"
-                                                 BorderBrush="{ThemeResource SettingsItemBorderBrush}" />
+                    <revenue:StarTransactionCell />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </controls:TableListView>

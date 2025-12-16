@@ -6,6 +6,7 @@
                   xmlns:controls="using:Telegram.Controls"
                   xmlns:settings="using:Telegram.Services.Settings"
                   xmlns:local="using:Telegram.Views"
+                  xmlns:popups="using:Telegram.Views.Settings.Popups"
                   mc:Ignorable="d"
                   NavigationMode="Root">
 
@@ -34,23 +35,32 @@
                               Content="{CustomResource AutoDownloadMedia}"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
-                    <controls:SettingsButton Description="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.Photos, ViewModel.AutoDownload.Photos, 0), Mode=OneWay}"
-                                             Click="{x:Bind ViewModel.AutoDownloadPhotos}"
-                                             IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
-                                             Content="{CustomResource AutoDownloadPhotos}"
-                                             Glyph="&#xEB9F;" />
+                    <controls:SettingsExpander Description="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.Photos, ViewModel.AutoDownload.Photos, 0), Mode=OneWay}"
+                                               IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
+                                               Header="{CustomResource AutoDownloadPhotos}"
+                                               Glyph="&#xEB9F;"
+                                               Background="Transparent"
+                                               Padding="0">
+                        <popups:SettingsDataAutoView DataContext="{x:Bind ViewModel.AutoDownloadPhotos}" />
+                    </controls:SettingsExpander>
 
-                    <controls:SettingsButton Description="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.Videos, ViewModel.AutoDownload.Videos, ViewModel.AutoDownload.MaximumVideoSize), Mode=OneWay}"
-                                             Click="{x:Bind ViewModel.AutoDownloadVideos}"
-                                             IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
-                                             Content="{CustomResource AutoDownloadVideos}"
-                                             Glyph="&#xE714;" />
+                    <controls:SettingsExpander Description="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.Videos, ViewModel.AutoDownload.Videos, ViewModel.AutoDownload.MaximumVideoSize), Mode=OneWay}"
+                                               IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
+                                               Header="{CustomResource AutoDownloadVideos}"
+                                               Glyph="&#xE714;"
+                                               Background="Transparent"
+                                               Padding="0">
+                        <popups:SettingsDataAutoView DataContext="{x:Bind ViewModel.AutoDownloadVideos}" />
+                    </controls:SettingsExpander>
 
-                    <controls:SettingsButton Description="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.Documents, ViewModel.AutoDownload.Documents, ViewModel.AutoDownload.MaximumDocumentSize), Mode=OneWay}"
-                                             Click="{x:Bind ViewModel.AutoDownloadDocuments}"
-                                             IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
-                                             Content="{CustomResource AutoDownloadFiles}"
-                                             Glyph="&#xE7C3;" />
+                    <controls:SettingsExpander Description="{x:Bind ConvertAutoDownload(settings:AutoDownloadType.Documents, ViewModel.AutoDownload.Documents, ViewModel.AutoDownload.MaximumDocumentSize), Mode=OneWay}"
+                                               IsEnabled="{x:Bind ViewModel.AutoDownloadEnabled, Mode=OneWay}"
+                                               Header="{CustomResource AutoDownloadFiles}"
+                                               Glyph="&#xE7C3;"
+                                               Background="Transparent"
+                                               Padding="0">
+                        <popups:SettingsDataAutoView DataContext="{x:Bind ViewModel.AutoDownloadDocuments}" />
+                    </controls:SettingsExpander>
 
                     <controls:SettingsButton x:Name="ResetAutoDownload"
                                              x:Load="{x:Bind ConvertResetAutoDownload(ViewModel.AutoDownloadDefault), Mode=OneWay}"
@@ -68,19 +78,20 @@
                                  Content="{CustomResource TemporaryFolder}"
                                  Style="{StaticResource SettingsRadioButtonStyle}"
                                  GroupName="DownloadFolder" />
-                    <Grid Margin="0,0,0,0"
+                    <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                          Margin="0,0,0,0"
                           Canvas.ZIndex="-1">
                         <RadioButton IsChecked="{x:Bind ViewModel.IsDownloadFolderEnabled, Mode=TwoWay}"
                                      Content="{CustomResource DownloadFolder}"
                                      Tag="{x:Bind ViewModel.DownloadFolder, Mode=OneWay}"
                                      Style="{StaticResource SettingsSubRadioButtonStyle}"
                                      GroupName="DownloadFolder" />
-                        <controls:SettingsButton Click="{x:Bind ViewModel.ChooseDownloadFolder}"
-                                                 Content="{CustomResource Change}"
-                                                 Style="{StaticResource PillButtonStyle}"
-                                                 HorizontalAlignment="Right"
-                                                 VerticalAlignment="Center"
-                                                 Margin="0,0,12,0" />
+                        <Button Click="{x:Bind ViewModel.ChooseDownloadFolder}"
+                                Content="{CustomResource Change}"
+                                Style="{StaticResource AccentButtonStyle}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Margin="0,0,16,0" />
                     </Grid>
                 </controls:HeaderedControl>
 

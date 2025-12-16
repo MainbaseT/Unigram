@@ -51,6 +51,7 @@
                                            Style="{StaticResource SettingsCheckBoxStyle}" />
 
                     <Grid Background="{ThemeResource SettingsItemBackground}"
+                          BorderBrush="{ThemeResource SettingsItemBorderBrush}"
                           Visibility="{x:Bind ViewModel.IsLocationValid, Mode=OneWay}"
                           CornerRadius="0,0,4,4">
                         <Border Width="200"

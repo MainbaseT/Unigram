@@ -6,16 +6,16 @@
 //
 
 using System;
+using Telegram.Controls.Media;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
 
 namespace Telegram.Controls
 {
     public partial class SettingsExpander : ContentControl
     {
-        private ToggleButton ActionButton;
+        private SettingsButton ActionButton;
         private Border PopupHost;
         private ContentPresenter PopupRoot;
 
@@ -26,13 +26,16 @@ namespace Telegram.Controls
 
         protected override void OnApplyTemplate()
         {
-            ActionButton = GetTemplateChild(nameof(ActionButton)) as ToggleButton;
+            ActionButton = GetTemplateChild(nameof(ActionButton)) as SettingsButton;
             ActionButton.Click += OnClick;
-            ActionButton.IsChecked = IsExpanded;
+            ActionButton.ChevronGlyph = IsExpanded ? Icons.ChevronUp16 : Icons.ChevronDown16;
+            ActionButton.CornerRadius = new CornerRadius(CornerRadius.TopLeft, CornerRadius.TopRight, IsExpanded ? 0 : CornerRadius.BottomRight, IsExpanded ? 0 : CornerRadius.BottomLeft);
 
             PopupHost = GetTemplateChild(nameof(PopupHost)) as Border;
             PopupRoot = GetTemplateChild(nameof(PopupRoot)) as ContentPresenter;
             PopupRoot.SizeChanged += OnSizeChanged;
+            PopupHost.BorderThickness = new Thickness(BorderThickness.Left, 0, BorderThickness.Right, BorderThickness.Bottom);
+            PopupHost.CornerRadius = new CornerRadius(0, 0, CornerRadius.BottomRight, CornerRadius.BottomLeft);
 
             ElementCompositionPreview.SetIsTranslationEnabled(PopupRoot, true);
 
@@ -87,8 +90,11 @@ namespace Telegram.Controls
             var tracker = _tracker++;
 
             _expanded = newValue;
-            ActionButton.IsChecked = newValue;
+            ActionButton.ChevronGlyph = IsExpanded ? Icons.ChevronUp16 : Icons.ChevronDown16;
+            ActionButton.CornerRadius = new CornerRadius(CornerRadius.TopLeft, CornerRadius.TopRight, IsExpanded ? 0 : CornerRadius.BottomRight, IsExpanded ? 0 : CornerRadius.BottomLeft);
 
+            PopupHost.BorderThickness = new Thickness(BorderThickness.Left, 0, BorderThickness.Right, BorderThickness.Bottom);
+            PopupHost.CornerRadius = new CornerRadius(0, 0, CornerRadius.BottomRight, CornerRadius.BottomLeft);
             PopupHost.Height = newValue ? double.NaN : 0;
             PopupRoot.Margin = new Thickness(0, 0, 0, newValue ? 0 : -PopupRoot.ActualHeight);
             PopupRoot.Visibility = Visibility.Visible;
@@ -138,6 +144,108 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty HeaderProperty =
             DependencyProperty.Register("Header", typeof(object), typeof(SettingsExpander), new PropertyMetadata(null));
+
+        #endregion
+
+        #region Badge
+
+        public object Badge
+        {
+            get => GetValue(BadgeProperty);
+            set => SetValue(BadgeProperty, value);
+        }
+
+        public static readonly DependencyProperty BadgeProperty =
+            DependencyProperty.Register("Badge", typeof(object), typeof(SettingsExpander), new PropertyMetadata(null));
+
+        #endregion
+
+        #region BadgeTemplate
+
+        public DataTemplate BadgeTemplate
+        {
+            get => (DataTemplate)GetValue(BadgeTemplateProperty);
+            set => SetValue(BadgeTemplateProperty, value);
+        }
+
+        public static readonly DependencyProperty BadgeTemplateProperty =
+            DependencyProperty.Register("BadgeTemplate", typeof(DataTemplate), typeof(SettingsExpander), new PropertyMetadata(null));
+
+        #endregion
+
+        #region BadgeVisibility
+
+        public Visibility BadgeVisibility
+        {
+            get => (Visibility)GetValue(BadgeVisibilityProperty);
+            set => SetValue(BadgeVisibilityProperty, value);
+        }
+
+        public static readonly DependencyProperty BadgeVisibilityProperty =
+            DependencyProperty.Register("BadgeVisibility", typeof(Visibility), typeof(SettingsExpander), new PropertyMetadata(Visibility.Visible));
+
+        #endregion
+
+        #region BadgeLabel
+
+        public string BadgeLabel
+        {
+            get => (string)GetValue(BadgeLabelProperty);
+            set => SetValue(BadgeLabelProperty, value);
+        }
+
+        public static readonly DependencyProperty BadgeLabelProperty =
+            DependencyProperty.Register("BadgeLabel", typeof(string), typeof(SettingsExpander), new PropertyMetadata(null));
+
+        #endregion
+
+        #region Description
+
+        public object Description
+        {
+            get { return (object)GetValue(DescriptionProperty); }
+            set { SetValue(DescriptionProperty, value); }
+        }
+
+        public static readonly DependencyProperty DescriptionProperty =
+            DependencyProperty.Register("Description", typeof(object), typeof(SettingsExpander), new PropertyMetadata(null));
+
+        #endregion
+
+        #region Glyph
+        public string Glyph
+        {
+            get => (string)GetValue(GlyphProperty);
+            set => SetValue(GlyphProperty, value);
+        }
+
+        public static readonly DependencyProperty GlyphProperty =
+            DependencyProperty.Register("Glyph", typeof(string), typeof(SettingsExpander), new PropertyMetadata(null));
+        #endregion
+
+        #region IsGlyphVisible
+
+        public SettingsButtonGlyphVisibility IsGlyphVisible
+        {
+            get { return (SettingsButtonGlyphVisibility)GetValue(IsGlyphVisibleProperty); }
+            set { SetValue(IsGlyphVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsGlyphVisibleProperty =
+            DependencyProperty.Register("IsGlyphVisible", typeof(SettingsButtonGlyphVisibility), typeof(SettingsExpander), new PropertyMetadata(SettingsButtonGlyphVisibility.Auto));
+
+        #endregion
+
+        #region IsPremiumVisible
+
+        public bool IsPremiumVisible
+        {
+            get { return (bool)GetValue(IsPremiumVisibleProperty); }
+            set { SetValue(IsPremiumVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsPremiumVisibleProperty =
+            DependencyProperty.Register("IsPremiumVisible", typeof(bool), typeof(SettingsExpander), new PropertyMetadata(false));
 
         #endregion
     }

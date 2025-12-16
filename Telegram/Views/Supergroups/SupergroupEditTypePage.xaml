@@ -102,9 +102,7 @@
                     <cells:UsernameInfoCell Value="{x:Bind Value, Mode=OneWay}"
                                             DisplayValue="{x:Bind DisplayValue, Mode=OneWay}"
                                             IsActive="{x:Bind IsActive, Mode=OneWay}"
-                                            Padding="12,6"
-                                            Background="{ThemeResource SettingsItemBackground}"
-                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                            Padding="12,6" />
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>

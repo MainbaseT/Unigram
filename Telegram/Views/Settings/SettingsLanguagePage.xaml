@@ -28,7 +28,8 @@
                                                    IsChevronVisible="{x:Bind ViewModel.IsPremium, Mode=OneWay}"
                                                    IsChecked="{x:Bind ViewModel.TranslateChats, Mode=OneWay}"
                                                    Content="{CustomResource ShowTranslateChatButton}"
-                                                   Style="{StaticResource SettingsCheckBoxStyle}" />
+                                                   Style="{StaticResource SettingsCheckBoxStyle}"
+                                                   CornerRadius="4" />
                             <TextBlock x:Name="TranslateChatsLock"
                                        x:Load="{x:Bind ViewModel.IsPremium, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
                                        Text="&#xEA25;"
@@ -99,6 +100,16 @@
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListView.GroupStyle>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="controls:TableListViewItem">
+                    <Setter Property="Background"
+                            Value="Transparent" />
+                    <Setter Property="BorderBrush"
+                            Value="Transparent" />
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <RadioButton Style="{StaticResource SettingsRadioButtonStyle}"

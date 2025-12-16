@@ -30,6 +30,8 @@ namespace Telegram.Controls
 
         private void OnSelectionModeChanged(SelectorItem selector)
         {
+            return;
+
             if (selector.ContentTemplateRoot is Grid grid)
             {
                 if (SelectionMode == ListViewSelectionMode.Multiple)
@@ -60,6 +62,8 @@ namespace Telegram.Controls
 
         private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
+            return;
+
             if (args.InRecycleQueue)
             {
                 return;
@@ -108,6 +112,19 @@ namespace Telegram.Controls
         public TableListViewItem()
         {
             DefaultStyleKey = typeof(TableListViewItem);
+        }
+    }
+
+    public class TableListViewItemVisualStateManager : VisualStateManager
+    {
+        protected override bool GoToStateCore(Control control, FrameworkElement templateRoot, string stateName, VisualStateGroup group, VisualState state, bool useTransitions)
+        {
+            if (stateName == "MultiSelectDisabled" && group.CurrentState == null)
+            {
+                return false;
+            }
+
+            return base.GoToStateCore(control, templateRoot, stateName, group, state, useTransitions);
         }
     }
 }

@@ -28,8 +28,7 @@
                                 SelectionMode="None">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <cells:ChatInviteLinkCell Background="{ThemeResource SettingsItemBackground}"
-                                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                    <cells:ChatInviteLinkCell />
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Header>
@@ -115,8 +114,7 @@
                             </ListView.Header>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <cells:ChatInviteLinkCell Background="{ThemeResource SettingsItemBackground}"
-                                                              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                    <cells:ChatInviteLinkCell />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                             <ListView.Template>
@@ -147,8 +145,7 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <cells:ChatInviteLinkCell Background="{ThemeResource SettingsItemBackground}"
-                                                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                            <cells:ChatInviteLinkCell />
                         </DataTemplate>
                     </ListView.ItemTemplate>
                     <ListView.Template>

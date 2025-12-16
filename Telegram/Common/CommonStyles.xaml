@@ -2126,6 +2126,8 @@
                 Value="16" />
         <Setter Property="UseSystemFocusVisuals"
                 Value="False" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">
@@ -2363,6 +2365,8 @@
                 Value="16" />
         <Setter Property="UseSystemFocusVisuals"
                 Value="False" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">

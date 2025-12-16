@@ -19,7 +19,6 @@ using Telegram.Services.Settings;
 using Telegram.Td.Api;
 using Telegram.Views.Popups;
 using Telegram.Views.Settings;
-using Telegram.Views.Settings.Popups;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -34,6 +33,10 @@ namespace Telegram.ViewModels.Settings
             : base(clientService, settingsService, aggregator)
         {
             _storageService = storageService;
+
+            AutoDownloadPhotos = new SettingsDataAutoViewModel(clientService, settingsService, aggregator, AutoDownloadType.Photos);
+            AutoDownloadVideos = new SettingsDataAutoViewModel(clientService, settingsService, aggregator, AutoDownloadType.Videos);
+            AutoDownloadDocuments = new SettingsDataAutoViewModel(clientService, settingsService, aggregator, AutoDownloadType.Documents);
         }
 
         protected override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
@@ -171,27 +174,11 @@ namespace Telegram.ViewModels.Settings
             DownloadFolder = await _storageService.SetDownloadFolderAsync(null);
         }
 
-        public void AutoDownloadPhotos()
-        {
-            OpenAutoDownload(AutoDownloadType.Photos);
-        }
+        public SettingsDataAutoViewModel AutoDownloadPhotos { get; }
 
-        public void AutoDownloadVideos()
-        {
-            OpenAutoDownload(AutoDownloadType.Videos);
-        }
+        public SettingsDataAutoViewModel AutoDownloadVideos { get; }
 
-        public void AutoDownloadDocuments()
-        {
-            OpenAutoDownload(AutoDownloadType.Documents);
-        }
-
-        private async void OpenAutoDownload(AutoDownloadType type)
-        {
-            await ShowPopupAsync(new SettingsDataAutoPopup(), type);
-            RaisePropertyChanged(nameof(AutoDownload));
-            RaisePropertyChanged(nameof(AutoDownloadDefault));
-        }
+        public SettingsDataAutoViewModel AutoDownloadDocuments { get; }
 
         public async void ResetAutoDownload()
         {

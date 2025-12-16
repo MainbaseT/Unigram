@@ -44,7 +44,8 @@
                                  AcceptsReturn="True"
                                  Padding="12,11,6,12" />
                         <Grid x:Name="UserBotField"
-                              Background="{ThemeResource SettingsItemBackground}">
+                              Background="{ThemeResource SettingsItemBackground}"
+                              BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
@@ -148,17 +149,21 @@
                                               Footer="{CustomResource BusinessBotPermissionsInfo}">
                         <controls:SettingsExpander>
                             <controls:SettingsExpander.Header>
-                                <CheckBox IsThreeState="True"
-                                          IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}"
-                                          Style="{StaticResource SettingsCheckBoxStyle}"
-                                          Background="Transparent"
-                                          CornerRadius="0">
-                                    <TextBlock>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="44" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox IsThreeState="True"
+                                              IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}"
+                                              Margin="8,-11,0,-12">
+                                    </CheckBox>
+                                    <TextBlock Grid.Column="1">
                                         <Run Text="{CustomResource BusinessBotPermissionsMessagesSection}" />
                                         <Run Text="{x:Bind ViewModel.ManageMessagesCount, Mode=OneWay}"
                                              FontWeight="SemiBold" />
                                     </TextBlock>
-                                </CheckBox>
+                                </Grid>
                             </controls:SettingsExpander.Header>
                             <StackPanel>
                                 <CheckBox IsChecked="True"
@@ -200,16 +205,21 @@
 
                         <controls:SettingsExpander>
                             <controls:SettingsExpander.Header>
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanManageProfile, Mode=TwoWay}"
-                                          Style="{StaticResource SettingsCheckBoxStyle}"
-                                          Background="Transparent"
-                                          CornerRadius="0">
-                                    <TextBlock>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="44" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox IsThreeState="True"
+                                              IsChecked="{x:Bind ViewModel.CanManageProfile, Mode=TwoWay}"
+                                              Margin="8,-11,0,-12">
+                                    </CheckBox>
+                                    <TextBlock Grid.Column="1">
                                         <Run Text="{CustomResource BusinessBotPermissionsProfileSection}" />
                                         <Run Text="{x:Bind ViewModel.ManageProfileCount, Mode=OneWay}"
                                              FontWeight="SemiBold" />
                                     </TextBlock>
-                                </CheckBox>
+                                </Grid>
                             </controls:SettingsExpander.Header>
                             <StackPanel>
                                 <CheckBox IsChecked="{x:Bind ViewModel.CanEditName, Mode=TwoWay}"
@@ -244,16 +254,21 @@
 
                         <controls:SettingsExpander>
                             <controls:SettingsExpander.Header>
-                                <CheckBox IsChecked="{x:Bind ViewModel.CanManageGifts, Mode=TwoWay}"
-                                          Style="{StaticResource SettingsCheckBoxStyle}"
-                                          Background="Transparent"
-                                          CornerRadius="0">
-                                    <TextBlock>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="44" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox IsThreeState="True"
+                                              IsChecked="{x:Bind ViewModel.CanManageGifts, Mode=TwoWay}"
+                                              Margin="8,-11,0,-12">
+                                    </CheckBox>
+                                    <TextBlock Grid.Column="1">
                                         <Run Text="{CustomResource BusinessBotPermissionsGiftsSection}" />
                                         <Run Text="{x:Bind ViewModel.ManageGiftsCount, Mode=OneWay}"
                                              FontWeight="SemiBold" />
                                     </TextBlock>
-                                </CheckBox>
+                                </Grid>
                             </controls:SettingsExpander.Header>
                             <StackPanel>
                                 <CheckBox IsChecked="{x:Bind ViewModel.CanViewGiftsAndStars, Mode=TwoWay}"

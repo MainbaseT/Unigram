@@ -377,8 +377,11 @@ namespace Telegram.Controls.Media
         public const string Emoji = "\uE76E";
         public const string Emoji24 = "\uE9E3";
         public const string ChevronUp = "\uE0E4";
+        public const string ChevronUp16 = "\uEAF3";
         public const string ChevronDown = "\uE0E5";
+        public const string ChevronDown16 = "\uEA16";
         public const string ChevronRight = "\uE0E3";
+        public const string ChevronRight16 = "\uEAF4";
         public const string ShieldCheckmark = "\uEA1A";
         public const string ShieldStar = "\uE983";
         public const string Bug = "\uE825";

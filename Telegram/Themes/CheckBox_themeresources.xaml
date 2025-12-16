@@ -38,7 +38,7 @@
         <Setter Property="MinWidth"
                 Value="{StaticResource CheckBoxMinWidth}" />
         <Setter Property="MinHeight"
-                Value="{StaticResource CheckBoxHeight}" />
+                Value="48" />
         <Setter Property="UseSystemFocusVisuals"
                 Value="{StaticResource UseSystemFocusVisuals}" />
         <Setter Property="FocusVisualMargin"
@@ -53,7 +53,9 @@
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}"
                           CornerRadius="{TemplateBinding CornerRadius}">
-
+                        <Grid.BackgroundTransition>
+                            <BrushTransition Duration="0:0:0.083" />
+                        </Grid.BackgroundTransition>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CombinedStates">
                                 <VisualState x:Name="Normal" />
@@ -104,16 +106,16 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource CheckBoxForegroundUncheckedPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SettingsItemBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="BorderBrush">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource CheckBoxBorderBrushUncheckedPointerOver}" />
-                                        </ObjectAnimationUsingKeyFrames>-->
+                                                                    Value="{ThemeResource SettingsItemBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NormalRectangle"
                                                                        Storyboard.TargetProperty="Stroke">
                                             <DiscreteObjectKeyFrame KeyTime="0"
@@ -143,16 +145,16 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource CheckBoxForegroundUncheckedPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SettingsItemBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="BorderBrush">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource CheckBoxBorderBrushUncheckedPressed}" />
-                                        </ObjectAnimationUsingKeyFrames>-->
+                                                                    Value="{ThemeResource SettingsItemBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NormalRectangle"
                                                                        Storyboard.TargetProperty="Stroke">
                                             <DiscreteObjectKeyFrame KeyTime="0"
@@ -261,16 +263,16 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource CheckBoxForegroundCheckedPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SettingsItemBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="BorderBrush">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource CheckBoxBorderBrushCheckedPointerOver}" />
-                                        </ObjectAnimationUsingKeyFrames>-->
+                                                                    Value="{ThemeResource SettingsItemBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NormalRectangle"
                                                                        Storyboard.TargetProperty="Stroke">
                                             <DiscreteObjectKeyFrame KeyTime="0"
@@ -300,16 +302,16 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource CheckBoxForegroundCheckedPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SettingsItemBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="BorderBrush">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource CheckBoxBorderBrushCheckedPressed}" />
-                                        </ObjectAnimationUsingKeyFrames>-->
+                                                                    Value="{ThemeResource SettingsItemBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="NormalRectangle"
                                                                        Storyboard.TargetProperty="Stroke">
                                             <DiscreteObjectKeyFrame KeyTime="0"
@@ -569,7 +571,7 @@
                         <Grid x:Name="Chevron"
                               Grid.Column="0"
                               VerticalAlignment="Center"
-                              Margin="20,12,0,12"
+                              Margin="20,0,0,0"
                               Height="{StaticResource CheckBoxSize}"
                               Width="{StaticResource CheckBoxSize}">
                             <Rectangle x:Name="NormalRectangle"

@@ -20,10 +20,7 @@
                                 VerticalAlignment="Top">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Background="{ThemeResource SettingsItemBackground}"
-                          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-                        <cells:ChatCell />
-                    </Grid>
+                    <cells:ChatCell />
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Template>

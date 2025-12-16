@@ -65,9 +65,8 @@
                     <cells:ProxyCell DisplayName="{x:Bind DisplayName}"
                                      IsEnabled="{x:Bind IsEnabled, Mode=OneWay}"
                                      Status="{x:Bind Status, Mode=OneWay}"
-                                     Padding="12,6"
-                                     Background="{ThemeResource SettingsItemBackground}"
-                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                     Padding="12,11,12,12"
+                                     MinHeight="62"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>

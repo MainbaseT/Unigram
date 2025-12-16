@@ -46,7 +46,6 @@
                               MaxWidth="1000"
                               Margin="24,0">
                             <Border x:Name="CardBackground"
-                                    BackgroundSizing="OuterBorderEdge"
                                     Background="{ThemeResource SettingsItemBackground}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1"

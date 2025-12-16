@@ -80,6 +80,11 @@ namespace Telegram.Views.Settings
             var animated = content.Children[0] as AnimatedImage;
             animated.Source = DelayedFileSource.FromStickerSetInfo(ViewModel.ClientService, stickerSet);
 
+            var handle = content.Children[3];
+            handle.Visibility = stickerSet.Id != 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             args.Handled = true;
         }
 

@@ -33,6 +33,8 @@
                 Value="Auto" />
         <Setter Property="Height"
                 Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">
@@ -166,6 +168,8 @@
                 Value="Auto" />
         <Setter Property="Height"
                 Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">
@@ -299,6 +303,8 @@
                 Value="Auto" />
         <Setter Property="Height"
                 Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">
@@ -442,6 +448,8 @@
                 Value="Auto" />
         <Setter Property="Height"
                 Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">
@@ -573,6 +581,8 @@
                 Value="Auto" />
         <Setter Property="Height"
                 Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">
@@ -672,6 +682,8 @@
                 Value="Auto" />
         <Setter Property="Height"
                 Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="controls:SettingsButton">

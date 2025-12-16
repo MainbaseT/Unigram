@@ -1407,6 +1407,9 @@
     <Compile Include="Views\Settings\Passkey\SettingsPasskeysIntroPopup.xaml.cs">
       <DependentUpon>SettingsPasskeysIntroPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Settings\Popups\SettingsDataAutoView.xaml.cs">
+      <DependentUpon>SettingsDataAutoView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Settings\Privacy\SettingsPrivacyShowProfileAudioPage.xaml.cs">
       <DependentUpon>SettingsPrivacyShowProfileAudioPage.xaml</DependentUpon>
     </Compile>
@@ -1921,9 +1924,6 @@
     </Compile>
     <Compile Include="Views\Settings\Popups\SettingsArchivePopup.xaml.cs">
       <DependentUpon>SettingsArchivePopup.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Settings\Popups\SettingsDataAutoPopup.xaml.cs">
-      <DependentUpon>SettingsDataAutoPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\Popups\SettingsPasscodeConfirmPopup.xaml.cs">
       <DependentUpon>SettingsPasscodeConfirmPopup.xaml</DependentUpon>
@@ -3531,6 +3531,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Settings\Popups\SettingsDataAutoView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Settings\Privacy\SettingsPrivacyShowProfileAudioPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -4010,10 +4014,6 @@
     <Page Include="Views\Settings\Popups\SettingsArchivePopup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Settings\Popups\SettingsDataAutoPopup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Settings\Popups\SettingsPasscodeConfirmPopup.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -7,6 +7,7 @@
 
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
+using Telegram.Controls.Media;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
@@ -136,6 +137,19 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty BadgeLabelProperty =
             DependencyProperty.Register("BadgeLabel", typeof(string), typeof(SettingsButton), new PropertyMetadata(null, OnBadgeChanged));
+
+        #endregion
+
+        #region VerticalBadgeAlignment
+
+        public VerticalAlignment VerticalBadgeAlignment
+        {
+            get { return (VerticalAlignment)GetValue(VerticalBadgeAlignmentProperty); }
+            set { SetValue(VerticalBadgeAlignmentProperty, value); }
+        }
+
+        public static readonly DependencyProperty VerticalBadgeAlignmentProperty =
+            DependencyProperty.Register(nameof(VerticalBadgeAlignment), typeof(VerticalAlignment), typeof(SettingsButton), new PropertyMetadata(VerticalAlignment.Center));
 
         #endregion
 
@@ -290,7 +304,7 @@ namespace Telegram.Controls
         }
 
         public static readonly DependencyProperty ChevronGlyphProperty =
-            DependencyProperty.Register("ChevronGlyph", typeof(string), typeof(SettingsButton), new PropertyMetadata("\uE0E3"));
+            DependencyProperty.Register("ChevronGlyph", typeof(string), typeof(SettingsButton), new PropertyMetadata(Icons.ChevronRight16));
 
         #endregion
 

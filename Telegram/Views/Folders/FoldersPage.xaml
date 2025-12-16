@@ -39,8 +39,7 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Background="{ThemeResource SettingsItemBackground}"
-                                  BorderBrush="{ThemeResource SettingsItemBorderBrush}">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="56" />
                                     <ColumnDefinition />
@@ -109,8 +108,7 @@
             </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Background="{ThemeResource SettingsItemBackground}"
-                          BorderBrush="{ThemeResource SettingsItemBorderBrush}">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="56" />
                             <ColumnDefinition Width="Auto" />
@@ -161,13 +159,13 @@
                         <Ellipse Fill="Red"
                                  Width="12"
                                  Height="12"
-                                 Margin="0,0,8,0"
+                                 Margin="0,0,18,0"
                                  Grid.Column="4" />
 
                         <TextBlock Text="&#xE9F6;"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Center"
-                                   Margin="-6,0,6,0"
+                                   Margin="-4,0,16,0"
                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
                                    FontSize="16"
                                    Grid.Column="4" />
@@ -191,7 +189,8 @@
                                                    IsChevronVisible="{x:Bind ViewModel.IsPremium, Mode=OneWay}"
                                                    IsChecked="{x:Bind ViewModel.ShowTags, Mode=OneWay}"
                                                    Content="{CustomResource FolderShowTags}"
-                                                   Style="{StaticResource SettingsCheckBoxStyle}" />
+                                                   Style="{StaticResource SettingsCheckBoxStyle}"
+                                                   CornerRadius="4" />
                             <TextBlock x:Name="ShowTagsLock"
                                        x:Load="{x:Bind ViewModel.IsPremium, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
                                        Text="&#xEA25;"
@@ -205,7 +204,10 @@
 
                     <controls:HeaderedControl Header="{CustomResource TabsView}"
                                               Footer="{CustomResource TabsViewInfo}"
-                                              Background="{ThemeResource SettingsItemBackground}">
+                                              Background="{ThemeResource SettingsItemBackground}"
+                                              BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                                              BorderThickness="1"
+                                              CornerRadius="4">
                         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                       HorizontalScrollMode="Auto"
                                       VerticalScrollBarVisibility="Disabled"

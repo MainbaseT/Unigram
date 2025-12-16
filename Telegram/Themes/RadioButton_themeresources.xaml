@@ -29,6 +29,8 @@
                 Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize"
                 Value="{ThemeResource ControlContentThemeFontSize}" />
+        <Setter Property="MinHeight"
+                Value="48" />
         <Setter Property="MinWidth"
                 Value="120" />
         <Setter Property="UseSystemFocusVisuals"
@@ -46,7 +48,9 @@
                           BorderThickness="{TemplateBinding BorderThickness}"
                           CornerRadius="{TemplateBinding CornerRadius}"
                           Padding="20,6,12,6">
-
+                        <Grid.BackgroundTransition>
+                            <BrushTransition Duration="0:0:0.083" />
+                        </Grid.BackgroundTransition>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal">
@@ -95,16 +99,16 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource RadioButtonForegroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SettingsItemBackgroundPointerOver}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="BorderBrush">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource RadioButtonBorderBrushPointerOver}" />
-                                        </ObjectAnimationUsingKeyFrames>-->
+                                                                    Value="{ThemeResource SettingsItemBorderBrushPointerOver}" />
+                                        </ObjectAnimationUsingKeyFrames>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="OuterEllipse"
                                                                       Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame KeyTime="{StaticResource ControlFasterAnimationDuration}"
@@ -158,16 +162,16 @@
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource RadioButtonForegroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="Background">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                     Value="{ThemeResource SettingsItemBackgroundPressed}" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
-                                                                       Storyboard.TargetProperty="BorderBrush">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                                       Storyboard.TargetName="RootGrid">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                    Value="{ThemeResource RadioButtonBorderBrushPressed}" />
-                                        </ObjectAnimationUsingKeyFrames>-->
+                                                                    Value="{ThemeResource SettingsItemBorderBrushPressed}" />
+                                        </ObjectAnimationUsingKeyFrames>
                                         <ColorAnimationUsingKeyFrames  Storyboard.TargetName="OuterEllipse"
                                                                        Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)">
                                             <LinearColorKeyFrame  KeyTime="{StaticResource ControlFasterAnimationDuration}"
@@ -340,7 +344,7 @@
 
                         <Grid x:Name="Chevron"
                               VerticalAlignment="Center"
-                              Height="32">
+                              Height="20">
                             <Ellipse x:Name="OuterEllipse"
                                      Width="20"
                                      Height="20"
@@ -783,7 +787,7 @@
                                         FontSize="{ThemeResource ControlContentThemeFontSize}"
                                         FontFamily="{ThemeResource ContentControlThemeFontFamily}"
                                         Content="{TemplateBinding Tag}"
-                                        Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         Padding="16,-6,12,0"
                                         IsTabStop="False"
                                         Grid.Column="1"
@@ -792,7 +796,7 @@
                                 <DataTemplate>
                                     <TextBlock Text="{Binding}"
                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                               Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                 </DataTemplate>
                             </ContentControl.ContentTemplate>
                         </ContentControl>

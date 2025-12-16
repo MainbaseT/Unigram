@@ -40,9 +40,10 @@
 
                 <controls:HeaderedControl x:Name="EmojiStatusRoot"
                                           Footer="{CustomResource ChannelEmojiStatusInfo}">
-                    <Grid>
+                    <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <controls:SettingsButton x:Name="EmojiStatus"
-                                                 Click="EmojiStatus_Click">
+                                                 Click="EmojiStatus_Click"
+                                                 CornerRadius="4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -75,9 +76,10 @@
                 <controls:HeaderedControl x:Name="EmojiPackRoot"
                                           Visibility="Collapsed"
                                           Footer="{CustomResource GroupEmojiPackInfo}">
-                    <Grid>
+                    <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <controls:SettingsButton x:Name="EmojiPack"
-                                                 Click="EmojiPack_Click">
+                                                 Click="EmojiPack_Click"
+                                                 CornerRadius="4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -110,10 +112,11 @@
                 <controls:HeaderedControl x:Name="StickerPackRoot"
                                           Visibility="Collapsed"
                                           Footer="{CustomResource GroupStickersInfo}">
-                    <Grid>
+                    <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <controls:SettingsButton x:Name="StickerPack"
                                                  Content="{CustomResource GroupStickers}"
-                                                 Click="StickerPack_Click" />
+                                                 Click="StickerPack_Click"
+                                                 CornerRadius="4" />
                         <controls:AnimatedImage x:Name="StickerPackAnimated"
                                                 FrameSize="20,20"
                                                 DecodeFrameType="Logical"
@@ -136,9 +139,10 @@
                                           Footer="{CustomResource ChannelWallpaper2Info}">
                     <Grid x:Name="WallpaperPreview"
                           x:Load="False"
-                          CornerRadius="4,4,0,0">
+                          BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                          CornerRadius="4">
                         <chats:ChatBackgroundControl x:Name="BackgroundControl"
-                                                     CornerRadius="4,4,0,0" />
+                                                     CornerRadius="4" />
                         <StackPanel Padding="0,10">
                             <messages:MessageBubble x:Name="Message1"
                                                     HorizontalAlignment="Left" />

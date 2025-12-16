@@ -7,11 +7,10 @@
 
 using Telegram.ViewModels.Business;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls.Cells.Business
 {
-    public sealed partial class BusinessHoursCell : Grid
+    public sealed partial class BusinessHoursCell : SettingsButton
     {
         public BusinessHoursViewModel ViewModel => DataContext as BusinessHoursViewModel;
 
@@ -31,8 +30,8 @@ namespace Telegram.Controls.Cells.Business
         {
             _day = value;
 
-            Button.Content = value.Name;
-            Button.Description = value.Description;
+            Content = value.Name;
+            Description = value.Description;
 
             Switch.Toggled -= Switch_Toggled;
             Switch.IsOn = value.IsOpen;

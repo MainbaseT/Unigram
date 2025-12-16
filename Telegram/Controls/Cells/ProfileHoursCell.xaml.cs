@@ -27,6 +27,8 @@ namespace Telegram.Controls.Cells
         public ProfileHoursCell()
         {
             InitializeComponent();
+
+            Description = Strings.BusinessHoursProfile;
             ExpandedChanged += OnExpandedChanged;
         }
 
