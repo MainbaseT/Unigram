@@ -471,6 +471,7 @@ namespace Telegram.Common
 
                 case "L’instance de périphérique GPU a été suspendue. Utilisez GetDeviceRemovedReason pour déterminer l’action appropriée.":
                 case "La instancia de dispositivo de GPU se ha suspendido. Use GetDeviceRemovedReason para averiguar cuál es la acción adecuada.":
+                case "Die GPU-Geräteinstanz wurde angehalten. Verwenden Sie GetDeviceRemovedReason, um die erforderliche Aktion zu bestimmen.":
                 case "GPU aygıt örneği askıya alınmış. Uygun eylemi belirlemek için GetDeviceRemovedReason komutunu kullanın.":
                 case "Wystąpienie urządzenia GPU zostało zawieszone. Użyj obiektu GetDeviceRemovedReason, aby określić odpowiednią akcję.":
                 case "Экземпляр устройства GPU приостановлен. Для определения соответствующего действия используйте GetDeviceRemovedReason.":
@@ -494,6 +495,7 @@ namespace Telegram.Common
                 case "Параметр задан неверно.":
                 case "Parametri ei kelpaa":
                 case "De parameter is onjuist.":
+                case "Parametr jest niepoprawny.":
                 case "Felaktig parameter.":
                 case "매개 변수가 틀립니다.":
                 case "参数错误。":
