@@ -17,7 +17,7 @@ namespace Telegram.Collections
     /// Represents a sorted collection of discontiguous ItemIndexRanges
     /// 
     /// </summary>
-    class ItemIndexRangeList : IList<ItemIndexRange>
+    public partial class ItemIndexRangeList : IList<ItemIndexRange>
     {
         private List<ItemIndexRange> _ranges;
 

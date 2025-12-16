@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
-    public class ProfileRating : ControlEx
+    public partial class ProfileRating : ControlEx
     {
         public record Level(int Number, string InnerPath, string OuterPath);
 

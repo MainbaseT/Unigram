@@ -33,7 +33,7 @@ namespace Telegram.Collections
     /// <summary>
     /// A custom datasource over the file system that supports data virtualization
     /// </summary>
-    public class MediaDataSource : INotifyCollectionChanged, System.Collections.IList, IItemsRangeInfo, ISupportIncrementalLoading
+    public partial class MediaDataSource : INotifyCollectionChanged, System.Collections.IList, IItemsRangeInfo, ISupportIncrementalLoading
     {
         private readonly IClientService _clientService;
         private readonly long _chatId;

@@ -22,7 +22,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.ViewModels.Profile
 {
-    public class MediaSourceCollection : BindableBase, IDiffHandler<MessageWithOwner>
+    public partial class MediaSourceCollection : BindableBase, IDiffHandler<MessageWithOwner>
     {
         public MediaSourceCollection(Func<object, string, MediaCollection> factory, SearchMessagesFilter filter)
         {

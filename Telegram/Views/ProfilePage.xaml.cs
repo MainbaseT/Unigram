@@ -1368,7 +1368,7 @@ namespace Telegram.Views
         }
     }
 
-    public class ProfileSnapGrid : Grid, IScrollSnapPointsInfo
+    public partial class ProfileSnapGrid : Grid, IScrollSnapPointsInfo
     {
         public IReadOnlyList<float> GetIrregularSnapPoints(Orientation orientation, SnapPointsAlignment alignment)
         {

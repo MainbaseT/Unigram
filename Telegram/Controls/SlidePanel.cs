@@ -14,7 +14,7 @@ using Windows.UI.Xaml.Hosting;
 
 namespace Telegram.Controls
 {
-    public class SlidePanel : Panel
+    public partial class SlidePanel : Panel
     {
         public class SlideState
         {

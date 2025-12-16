@@ -16,7 +16,7 @@ namespace Telegram.Common
     /// A high-performance IBufferWriter implementation that uses ArrayPool for memory management.
     /// Thread-safe for single writer scenarios.
     /// </summary>
-    public sealed class ArrayPoolBufferWriter : IBufferWriter<byte>, IDisposable
+    public sealed partial class ArrayPoolBufferWriter : IBufferWriter<byte>, IDisposable
     {
         private const int DefaultInitialCapacity = 16 * 1024;
         private const int MaxArrayLength = 0x7FFFFFC7; // Array.MaxLength

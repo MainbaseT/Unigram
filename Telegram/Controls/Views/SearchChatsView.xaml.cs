@@ -769,7 +769,7 @@ namespace Telegram.Controls.Views
         #endregion
     }
 
-    public class SearchListViewItem : TextListViewItem
+    public partial class SearchListViewItem : TextListViewItem
     {
         public string TypeName { get; }
 

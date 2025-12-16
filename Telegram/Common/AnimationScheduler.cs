@@ -22,7 +22,7 @@ namespace Telegram.Common
         void RenderNextFrame();
     }
 
-    public class AnimationScheduler : IDisposable
+    public partial class AnimationScheduler : IDisposable
     {
         private class AnimationBatch
         {

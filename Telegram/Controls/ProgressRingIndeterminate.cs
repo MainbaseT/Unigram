@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
-    public class ProgressRingIndeterminate : ControlEx
+    public partial class ProgressRingIndeterminate : ControlEx
     {
         private CompositionPropertySet _themeProperties;
         private CompositionPropertySet _props;
@@ -185,7 +185,7 @@ namespace Telegram.Controls
 
         #region Visual
 
-        class AnimatedVisual : IAnimatedVisual
+        partial class AnimatedVisual : IAnimatedVisual
         {
             static long c_durationTicks = 20000000;
             private Compositor _c;

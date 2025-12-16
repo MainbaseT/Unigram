@@ -26,7 +26,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls
 {
-    public class ImageTextSelection : Control
+    public partial class ImageTextSelection : Control
     {
         private static readonly CoreCursor _defaultCursor = new(CoreCursorType.Arrow, 1);
         private static readonly CoreCursor _selectCursor = new(CoreCursorType.IBeam, 1);

@@ -229,7 +229,7 @@ namespace Telegram.Views.Premium.Popups
             }
         }
 
-        public class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, ISupportIncrementalLoading
+        public partial class ReceivedGiftsCollection : ObservableCollection<ReceivedGift>, ISupportIncrementalLoading
         {
             private readonly IClientService _clientService;
 

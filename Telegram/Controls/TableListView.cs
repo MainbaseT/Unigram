@@ -115,7 +115,7 @@ namespace Telegram.Controls
         }
     }
 
-    public class TableListViewItemVisualStateManager : VisualStateManager
+    public partial class TableListViewItemVisualStateManager : VisualStateManager
     {
         protected override bool GoToStateCore(Control control, FrameworkElement templateRoot, string stateName, VisualStateGroup group, VisualState state, bool useTransitions)
         {

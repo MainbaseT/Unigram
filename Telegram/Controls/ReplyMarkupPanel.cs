@@ -239,7 +239,7 @@ namespace Telegram.Controls
         }
     }
 
-    public class ReplyMarkupButton : GlyphButton
+    public partial class ReplyMarkupButton : GlyphButton
     {
         public ReplyMarkupButton(KeyboardButton button)
         {
@@ -268,7 +268,7 @@ namespace Telegram.Controls
         #endregion
     }
 
-    public class ReplyMarkupButtonAutomationPeer : ButtonAutomationPeer
+    public partial class ReplyMarkupButtonAutomationPeer : ButtonAutomationPeer
     {
         private readonly ReplyMarkupButton _owner;
 
@@ -284,7 +284,7 @@ namespace Telegram.Controls
         }
     }
 
-    public class ReplyMarkupInlineButton : GlyphButton
+    public partial class ReplyMarkupInlineButton : GlyphButton
     {
         public readonly ReplyMarkupInlinePanel _owner;
 
@@ -356,7 +356,7 @@ namespace Telegram.Controls
         #endregion
     }
 
-    public class ReplyMarkupInlineButtonAutomationPeer : ButtonAutomationPeer
+    public partial class ReplyMarkupInlineButtonAutomationPeer : ButtonAutomationPeer
     {
         private readonly ReplyMarkupInlineButton _owner;
 

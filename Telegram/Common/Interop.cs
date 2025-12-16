@@ -85,7 +85,7 @@ namespace Telegram.Common
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 #endif
     [Guid("45D64A29-A63E-4CB6-B498-5781D298CB4F")]
-    interface ICoreWindowInterop
+    public partial interface ICoreWindowInterop
     {
         IntPtr WindowHandle { get; }
         void MessageHandled(bool value);

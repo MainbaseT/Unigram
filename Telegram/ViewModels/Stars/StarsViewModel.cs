@@ -84,7 +84,7 @@ namespace Telegram.ViewModels.Stars
 
         public bool HasMoreItems { get; private set; } = true;
 
-        class SubscriptionCollection : ViewModelBase, IIncrementalCollectionOwner
+        partial class SubscriptionCollection : ViewModelBase, IIncrementalCollectionOwner
         {
             private string _nextOffset = string.Empty;
 

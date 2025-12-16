@@ -25,7 +25,7 @@ using Windows.UI.Xaml.Media;
 namespace Telegram.Controls.Stories
 {
     // TODO: Rewrite to use plain animations without rendering callback
-    public class StoryReactionStream : Canvas
+    public partial class StoryReactionStream : Canvas
     {
         private class ItemLayer
         {

@@ -37,7 +37,7 @@ namespace Telegram.Controls
         Auto
     }
 
-    public class ProfilePicture : ControlEx
+    public partial class ProfilePicture : ControlEx
     {
         private Border LayoutRoot;
         private LinearGradientBrush Gradient;

@@ -2122,7 +2122,7 @@ namespace Telegram.Controls
         }
     }
 
-    public class ProfileButtonsGrid : Grid
+    public partial class ProfileButtonsGrid : Grid
     {
         private int _columns;
 
