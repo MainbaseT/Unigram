@@ -92,6 +92,11 @@ namespace Telegram.Controls
                 _ => Strings.UnlockPremium
             };
 
+            ShowFeaturePromo(navigationService, text, feature);
+        }
+
+        public static void ShowFeaturePromo(INavigationService navigationService, string text, PremiumFeature feature)
+        {
             var label = new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap,
@@ -113,8 +118,25 @@ namespace Telegram.Controls
 
                     void handler(object sender, object e)
                     {
+                        var popups = VisualTreeHelper.GetOpenPopups(Window.Current);
+                        foreach (var popup in popups)
+                        {
+                            if (popup.Child is ContentDialog dialog)
+                            {
+                                dialog.Hide();
+                            }
+                        }
+
                         hyperlink.Click -= handler;
-                        navigationService.ShowPromo(feature);
+
+                        if (feature != null)
+                        {
+                            navigationService.ShowPromo(feature);
+                        }
+                        else
+                        {
+                            navigationService.ShowPromo();
+                        }
                     }
 
                     hyperlink.Click += handler;
