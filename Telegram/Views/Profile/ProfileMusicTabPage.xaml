@@ -14,6 +14,7 @@
     <Grid>
         <controls:TableListView x:Name="ScrollingHost"
                                 SelectionMode="None"
+                                ItemContainerStyle="{StaticResource ExtendedTableListViewItemStyle}"
                                 ChoosingItemContainer="OnChoosingItemContainer"
                                 ContainerContentChanging="OnContainerContentChanging">
             <common:SelectedItemsBinder.Attached>
