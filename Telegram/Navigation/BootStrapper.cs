@@ -83,7 +83,7 @@ namespace Telegram.Navigation
             SystemNavigationManager.GetForCurrentView().BackRequested += BackHandler;
 
             CustomXamlResourceLoader.Current = new XamlResourceLoader();
-            CreateWindowWrapper(args.Window);
+            //CreateWindowWrapper(args.Window);
             ViewService.OnWindowCreated();
 
             args.Window.Activated += OnActivated;

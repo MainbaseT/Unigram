@@ -110,7 +110,7 @@ namespace Telegram.Navigation
         {
             _window = window;
 
-            Current = this;
+            //Current = this;
             Dispatcher = new DispatcherContext(window.CoreWindow.DispatcherQueue);
             Id = ApplicationView.GetApplicationViewIdForWindow(window.CoreWindow);
             Bounds = window.Bounds;
@@ -253,7 +253,7 @@ namespace Telegram.Navigation
         private void OnShutdownCompleted(DispatcherQueue sender, object args)
         {
             sender.ShutdownCompleted -= OnShutdownCompleted;
-            Current = null;
+            _current = null;
 
             Theme.Current = null;
 
@@ -323,7 +323,7 @@ namespace Telegram.Navigation
 
         private void OnLoading(FrameworkElement sender, object args)
         {
-            _content.Loading -= OnLoading;
+            sender.Loading -= OnLoading;
 
             lock (_allLock)
             {
@@ -336,9 +336,9 @@ namespace Telegram.Navigation
         {
             if (sender is Control control)
             {
+                control.Loaded -= OnLoaded;
             }
 
-            _content.Loaded -= OnLoaded;
             ViewService.OnWindowLoaded();
         }
 
@@ -911,7 +911,23 @@ namespace Telegram.Navigation
         public static WindowContext Main;
 
         [ThreadStatic]
-        public static WindowContext Current;
+        private static WindowContext _current;
+
+        public static WindowContext Current
+        {
+            get
+            {
+                if (_current == null)
+                {
+                    if (Window.Current != null)
+                    {
+                        _current = new WindowContext(Window.Current);
+                    }
+                }
+
+                return _current;
+            }
+        }
 
         #endregion
     }
