@@ -21,15 +21,157 @@ using Telegram.Native;
 using Telegram.Native.Calls;
 using Telegram.Services;
 using Telegram.Services.Calls;
-using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Settings;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 
-namespace Telegram
+namespace Telegram.Td.Api
 {
+    public abstract partial class TextEntityType : Object, IEquatable<TextEntityType>
+    {
+        public virtual bool Equals(TextEntityType other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return GetType() == other.GetType();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as TextEntityType);
+        }
+
+        public override int GetHashCode()
+        {
+            return GetType().GetHashCode();
+        }
+
+        public static bool operator ==(TextEntityType left, TextEntityType right)
+        {
+            if (left is null) return right is null;
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TextEntityType left, TextEntityType right)
+        {
+            return !(left == right);
+        }
+    }
+
+    public partial class TextEntityTypeCustomEmoji : TextEntityType
+    {
+        public override bool Equals(TextEntityType? other)
+        {
+            if (!base.Equals(other)) return false;
+            return other is TextEntityTypeCustomEmoji emoji &&
+                   CustomEmojiId == emoji.CustomEmojiId;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), CustomEmojiId);
+        }
+    }
+
+    public partial class TextEntityTypeMediaTimestamp : TextEntityType
+    {
+        public override bool Equals(TextEntityType other)
+        {
+            if (!base.Equals(other)) return false;
+            return other is TextEntityTypeMediaTimestamp timestamp &&
+                   MediaTimestamp == timestamp.MediaTimestamp;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), MediaTimestamp);
+        }
+    }
+
+    public partial class TextEntityTypeMentionName : TextEntityType
+    {
+        public override bool Equals(TextEntityType other)
+        {
+            if (!base.Equals(other)) return false;
+            return other is TextEntityTypeMentionName mention &&
+                   UserId == mention.UserId;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), UserId);
+        }
+    }
+
+    public partial class TextEntityTypePreCode : TextEntityType
+    {
+        public override bool Equals(TextEntityType other)
+        {
+            if (!base.Equals(other)) return false;
+            return other is TextEntityTypePreCode preCode &&
+                   Language == preCode.Language;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), Language);
+        }
+    }
+
+    public partial class TextEntityTypeTextUrl : TextEntityType
+    {
+        public override bool Equals(TextEntityType other)
+        {
+            if (!base.Equals(other)) return false;
+            return other is TextEntityTypeTextUrl textUrl &&
+                   Url == textUrl.Url;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), Url);
+        }
+    }
+
+    public partial class TextEntity : Object, IEquatable<TextEntity>
+    {
+        public bool Equals(TextEntity other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Offset == other.Offset &&
+                   Length == other.Length &&
+                   Equals(Type, other.Type);
+        }
+
+        public override bool Equals(object obj) => Equals(obj as TextEntity);
+
+        public override int GetHashCode() => HashCode.Combine(Offset, Length, Type);
+    }
+
+    public partial class FormattedText : Object, IEquatable<FormattedText>
+    {
+        public bool Equals(FormattedText other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Text == other.Text && Entities.SequenceEqual(other.Entities);
+        }
+
+        public override bool Equals(object? obj) => Equals(obj as FormattedText);
+
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.Add(Text);
+            foreach (var entity in Entities)
+                hash.Add(entity);
+            return hash.ToHashCode();
+        }
+    }
+
     public static class TdExtensions
     {
         public static bool ShowCaptionAboveMedia(this MessageViewModel message)
@@ -453,6 +595,8 @@ namespace Telegram
 
         public static bool AreTheSame(this FormattedText x, FormattedText y)
         {
+            return x == y;
+
             if (x == null || y == null)
             {
                 return x == null && y == null;

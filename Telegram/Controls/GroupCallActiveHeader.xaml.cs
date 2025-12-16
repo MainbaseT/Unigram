@@ -12,6 +12,7 @@ using Telegram.Common;
 using Telegram.Composition;
 using Telegram.Native.Calls;
 using Telegram.Services.Calls;
+using Telegram.Td.Api;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
