@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,9 @@ namespace Telegram.Controls
         private Border BorderElement;
         private Border ContentElement;
         private Grid CommandSpace;
+        private Grid PrimaryRoot;
+        private Button PrimaryButton;
+        private Microsoft.UI.Xaml.Controls.ProgressRing PrimaryButtonPending;
 
         private Button DismissButton;
 
@@ -74,6 +78,10 @@ namespace Telegram.Controls
             Disconnected += OnUnloaded;
 
             CloseButtonClick += OnCloseButtonClick;
+
+            this.RegisterPropertyChangedCallback(PrimaryButtonTextProperty, OnButtonTextChanged, ref _primaryTextToken);
+            this.RegisterPropertyChangedCallback(SecondaryButtonTextProperty, OnButtonTextChanged, ref _secondaryTextToken);
+            this.RegisterPropertyChangedCallback(CloseButtonTextProperty, OnButtonTextChanged, ref _closeTextToken);
         }
 
         private void OnCloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -282,10 +290,15 @@ namespace Telegram.Controls
             VisualStateManager.GoToState(this, IsPrimaryButtonSplit ? "PrimaryAsSplitButton" : "NoSplitButton", false);
 
             // TODO: Name
-            var button = GetTemplateChild("PrimaryButton") as Button;
-            if (button != null && FocusPrimaryButton)
+            PrimaryRoot = GetTemplateChild(nameof(PrimaryRoot)) as Grid;
+            PrimaryButton = GetTemplateChild(nameof(PrimaryButton)) as Button;
+            PrimaryButtonPending = GetTemplateChild(nameof(PrimaryButtonPending)) as Microsoft.UI.Xaml.Controls.ProgressRing;
+
+            PrimaryRoot?.CreateInsetClip();
+
+            if (PrimaryButton != null && FocusPrimaryButton)
             {
-                button.Loaded += PrimaryButton_Loaded;
+                PrimaryButton.Loaded += PrimaryButton_Loaded;
             }
 
             // TODO: Name
@@ -329,6 +342,11 @@ namespace Telegram.Controls
 
         private void OnButtonTextChanged(DependencyObject sender, DependencyProperty dp)
         {
+            if (dp == PrimaryButtonTextProperty)
+            {
+                PrimaryButtonContent = PrimaryButtonText;
+            }
+
             CalculateButtonsVisualState();
         }
 
@@ -447,12 +465,15 @@ namespace Telegram.Controls
         private static void OnDismissButtonVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var sender = d as ContentPopup;
-            if (sender?.DismissButton != null)
+            if (sender?.DismissButton == null)
             {
-                sender.DismissButton.Visibility = (bool)e.NewValue
-                    ? Visibility.Visible
-                    : Visibility.Collapsed;
+                sender.DismissButton = sender.GetTemplateChild(nameof(sender.DismissButton)) as Button;
+                sender.DismissButton?.Click += sender.DismissButton_Click;
             }
+
+            sender.DismissButton?.Visibility = (bool)e.NewValue
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         #endregion
@@ -471,23 +492,81 @@ namespace Telegram.Controls
         private static void OnDismissButtonRequestedThemeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var sender = d as ContentPopup;
-            if (sender?.DismissButton != null)
+            if (sender?.DismissButton == null)
             {
-                if (sender.DismissButton == null)
-                {
-                    sender.DismissButton = sender.GetTemplateChild(nameof(sender.DismissButton)) as Button;
-
-                    if (sender.DismissButton != null)
-                    {
-                        sender.DismissButton.RequestedTheme = sender.DismissButtonRequestedTheme;
-                        sender.DismissButton.Click += sender.DismissButton_Click;
-                    }
-                }
-                else
-                {
-                    sender.DismissButton.RequestedTheme = (ElementTheme)e.NewValue;
-                }
+                sender.DismissButton = sender.GetTemplateChild(nameof(sender.DismissButton)) as Button;
+                sender.DismissButton?.Click += sender.DismissButton_Click;
             }
+
+            sender?.DismissButton?.RequestedTheme = (ElementTheme)e.NewValue;
+        }
+
+        #endregion
+
+        #region PrimaryButtonContent
+
+        public object PrimaryButtonContent
+        {
+            get { return (object)GetValue(PrimaryButtonContentProperty); }
+            set { SetValue(PrimaryButtonContentProperty, value); }
+        }
+
+        public static readonly DependencyProperty PrimaryButtonContentProperty =
+            DependencyProperty.Register(nameof(PrimaryButtonContent), typeof(object), typeof(ContentPopup), new PropertyMetadata(null));
+
+        #endregion
+
+        #region IsPrimaryButtonPending
+
+
+        public bool IsPrimaryButtonPending
+        {
+            get { return (bool)GetValue(IsPrimaryButtonPendingProperty); }
+            set { SetValue(IsPrimaryButtonPendingProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsPrimaryButtonPendingProperty =
+            DependencyProperty.Register(nameof(IsPrimaryButtonPending), typeof(bool), typeof(ContentPopup), new PropertyMetadata(false, OnIsPrimaryButtonPendingChanged));
+
+        private static void OnIsPrimaryButtonPendingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ContentPopup)d).OnIsPrimaryButtonPendingChanged((bool)e.NewValue);
+        }
+
+        private bool _primaryButtonPendingCollapsed = true;
+
+        private void OnIsPrimaryButtonPendingChanged(bool show)
+        {
+            var contentTemplateRoot = PrimaryButton?.ContentTemplateRoot;
+            if (contentTemplateRoot == null || PrimaryButtonPending == null)
+            {
+                return;
+            }
+
+            if (_primaryButtonPendingCollapsed != show)
+            {
+                return;
+            }
+
+            _primaryButtonPendingCollapsed = !show;
+            PrimaryButtonPending.Visibility = Visibility.Visible;
+
+            var visual1 = ElementComposition.GetElementVisual(contentTemplateRoot);
+            var visual2 = ElementComposition.GetElementVisual(PrimaryButtonPending);
+
+            ElementCompositionPreview.SetIsTranslationEnabled(contentTemplateRoot, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(PrimaryButtonPending, true);
+
+            var translate1 = visual1.Compositor.CreateScalarKeyFrameAnimation();
+            translate1.InsertKeyFrame(0, show ? 0 : 32);
+            translate1.InsertKeyFrame(1, show ? -32 : 0);
+
+            var translate2 = visual1.Compositor.CreateScalarKeyFrameAnimation();
+            translate2.InsertKeyFrame(0, show ? 32 : 0);
+            translate2.InsertKeyFrame(1, show ? 0 : -32);
+
+            visual1.StartAnimation("Translation.Y", translate1);
+            visual2.StartAnimation("Translation.Y", translate2);
         }
 
         #endregion
