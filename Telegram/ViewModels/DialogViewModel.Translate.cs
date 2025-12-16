@@ -243,14 +243,20 @@ namespace Telegram.ViewModels
 
         public void StopTranslate()
         {
-            var languageName = Services.TranslateService.LanguageName(DetectedLanguage);
+            var detected = DetectedLanguage;
+            if (string.IsNullOrEmpty(detected))
+            {
+                return;
+            }
+
+            var languageName = Services.TranslateService.LanguageName(detected);
             var toast = string.Format(Strings.AddedToDoNotTranslate, languageName);
 
             // TODO: add undo button
             ShowToast(toast, ToastPopupIcon.Translate);
 
             var languages = Settings.Translate.DoNot;
-            languages.Add(DetectedLanguage);
+            languages.Add(detected);
 
             Settings.Translate.DoNot = languages;
 
