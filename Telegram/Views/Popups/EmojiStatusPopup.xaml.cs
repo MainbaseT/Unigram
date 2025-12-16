@@ -13,7 +13,6 @@ using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Hosting;
 
 namespace Telegram.Views.Popups
 {

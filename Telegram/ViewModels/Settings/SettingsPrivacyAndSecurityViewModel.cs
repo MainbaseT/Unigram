@@ -506,12 +506,12 @@ namespace Telegram.ViewModels.Settings
             checkPayment.Checked += toggle;
             checkPayment.Unchecked += toggle;
 
-            stack.Margin = new Thickness(12, 16, 12, 0);
             stack.Children.Add(checkShipping);
             stack.Children.Add(checkPayment);
 
             dialog.Title = Strings.PrivacyPayments;
             dialog.Content = stack;
+            dialog.Padding = new Thickness(24, 24, 24, 18);
             dialog.PrimaryButtonText = Strings.ClearButton;
             dialog.SecondaryButtonText = Strings.Cancel;
 
