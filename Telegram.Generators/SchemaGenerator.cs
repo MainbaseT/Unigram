@@ -416,13 +416,13 @@ namespace Telegram.Generators
 
             if (type.IsProxy)
             {
-                builder.AppendLine("public abstract class " + className + " : " + baseName);
+                builder.AppendLine("public abstract partial class " + className + " : " + baseName);
                 builder.AppendLine("{");
                 builder.AppendLine("}");
             }
             else
             {
-                builder.AppendLine("public class " + className + " : " + baseName);
+                builder.AppendLine("public partial class " + className + " : " + baseName);
                 builder.AppendLine("{");
 
                 foreach (var prop in type.Properties)
