@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Telegram.Controls;
 using Telegram.Navigation;
@@ -119,17 +120,17 @@ namespace Telegram.Common
             }
         }
 
-        public static async Task<bool> IsPasskeySupported()
-        {
-            await ConnectAsync();
+        private static readonly Lazy<WebAuthNGetApiVersionNumber> _webAuthNGetApiVersionNumber = new(() => NativeMethodInvoker.GetNativeMethod<WebAuthNGetApiVersionNumber>("webauthn.dll", "WebAuthNGetApiVersionNumber"));
 
-            var response = await SendMessageAsync("IsPasskeySupported", timeout: 5000);
-            if (response?.Status == AppServiceResponseStatus.Success)
+        [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+        private delegate int WebAuthNGetApiVersionNumber();
+
+        public static bool IsPasskeySupported()
+        {
+            var method = _webAuthNGetApiVersionNumber.Value;
+            if (method != null)
             {
-                if (response.Message.TryGet("Result", out bool result))
-                {
-                    return result;
-                }
+                return method() != 0;
             }
 
             return false;

@@ -220,6 +220,7 @@
     <Compile Include="Common\MediaDeviceTracker.cs" />
     <Compile Include="Common\MediaDeviceList.cs" />
     <Compile Include="Common\MediaDevicePermissions.cs" />
+    <Compile Include="Common\NativeMethodChecker.cs" />
     <Compile Include="Common\SliderHelper.cs" />
     <Compile Include="Common\ThemeShadowEx.cs" />
     <Compile Include="Common\NormalizingStringBuilder.cs" />

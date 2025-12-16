@@ -368,8 +368,7 @@ namespace Telegram.ViewModels.Settings
             }
             else
             {
-                var supported = await BridgeApplicationContext.IsPasskeySupported();
-                if (!supported)
+                if (!BridgeApplicationContext.IsPasskeySupported())
                 {
                     ShowPopup(Strings.PasskeyNotSupportedText, Strings.AppName, Strings.OK);
                     return;
