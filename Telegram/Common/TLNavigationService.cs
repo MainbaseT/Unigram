@@ -254,9 +254,9 @@ namespace Telegram.Common
             feature = features.Features.FirstOrDefault(x => x.GetType() == feature.GetType());
 
             var popup = new FeaturesPopup(ClientService, option?.PaymentOption, features.Features, businessFeatures.Features, features.Limits, animations, stickers, feature);
-            await ShowPopupAsync(popup);
 
-            if (popup.ShouldPurchase)
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
             {
                 ShowPromo(source ?? premiumSource);
             }

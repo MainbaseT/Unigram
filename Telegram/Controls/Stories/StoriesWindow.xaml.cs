@@ -805,9 +805,9 @@ namespace Telegram.Controls.Stories
             if (shouldPurchase && ViewModel.IsPremiumAvailable && !ViewModel.IsPremium)
             {
                 var popup = new Telegram.Views.Premium.Popups.FeaturesPopup(ViewModel.ClientService, null, new[] { new PremiumFeatureUpgradedStories() }, null, null, null, null, new PremiumFeatureUpgradedStories());
-                await ViewModel.ShowPopupAsync(popup, requestedTheme: ElementTheme.Dark);
 
-                if (popup.ShouldPurchase)
+                var confirm = await ViewModel.ShowPopupAsync(popup, requestedTheme: ElementTheme.Dark);
+                if (confirm == ContentDialogResult.Primary)
                 {
                     await ViewModel.NavigationService.ShowPromoAsync(new PremiumSourceStoryFeature(feature), ElementTheme.Dark);
                     return false;
