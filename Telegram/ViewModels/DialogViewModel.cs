@@ -1959,6 +1959,11 @@ namespace Telegram.ViewModels
                     message.ReplyMarkup = message.SuggestedPostInfo.ToReplyMarkup(message.IsOutgoing);
                 }
 
+                if (IsTranslating)
+                {
+                    _translateService.Translate(message, Settings.Translate.To);
+                }
+
                 ProcessEmoji(message);
                 ProcessReplies(chat, message);
             }
