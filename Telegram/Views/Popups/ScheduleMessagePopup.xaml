@@ -23,10 +23,18 @@
                     Margin="0,8,0,12"
                     HorizontalAlignment="Stretch" />
         <TextBlock Text="{CustomResource MessageScheduledRepeatOption}" />
-        <ComboBox ItemsSource="{x:Bind RepeatOptions}"
-                  SelectedIndex="{x:Bind Repeat, Mode=TwoWay}"
-                  DisplayMemberPath="Text"
-                  HorizontalAlignment="Stretch"
-                  Margin="0,8,0,0" />
+        <Grid Margin="0,8,0,0">
+            <ComboBox x:Name="RepeatSelector"
+                      ItemsSource="{x:Bind RepeatOptions}"
+                      SelectedIndex="{x:Bind Repeat, Mode=TwoWay}"
+                      DisplayMemberPath="Text"
+                      HorizontalAlignment="Stretch" />
+            <Button x:Name="RepeatButton"
+                    Click="RepeatButton_Click"
+                    Style="{StaticResource ListEmptyButtonStyle}"
+                    VerticalAlignment="Bottom"
+                    Height="32"
+                    CornerRadius="4" />
+        </Grid>
     </StackPanel>
 </controls:ContentPopup>

@@ -125,7 +125,7 @@ namespace Telegram.ViewModels
             if (schedule == SchedulingState.Schedule || (Type == DialogType.ScheduledMessages && schedule == SchedulingState.Auto))
             {
                 var user = ClientService.GetUser(chat);
-                var popup = new ScheduleMessagePopup(user, ClientService.IsSavedMessages(chat));
+                var popup = new ScheduleMessagePopup(ClientService, NavigationService, user, ClientService.IsSavedMessages(chat));
 
                 var confirm = await ShowPopupAsync(popup);
 

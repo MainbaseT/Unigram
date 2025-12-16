@@ -11,25 +11,34 @@ using System.Linq;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Native;
+using Telegram.Navigation.Services;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Windows.System.UserProfile;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Popups
 {
     public sealed partial class ScheduleMessagePopup : ContentPopup
     {
-        private bool _reminder;
+        private readonly IClientService _clientService;
+        private readonly INavigationService _navigationService;
 
-        public ScheduleMessagePopup(User user, bool reminder)
-            : this(user, reminder, DateTime.Now.AddMinutes(10), 0)
+        private readonly bool _reminder;
+
+        public ScheduleMessagePopup(IClientService clientService, INavigationService navigationService, User user, bool reminder)
+            : this(clientService, navigationService, user, reminder, DateTime.Now.AddMinutes(10), 0)
         {
 
         }
 
-        public ScheduleMessagePopup(User user, bool reminder, DateTime date, int repeat)
+        public ScheduleMessagePopup(IClientService clientService, INavigationService navigationService, User user, bool reminder, DateTime date, int repeat)
         {
             InitializeComponent();
+
+            _clientService = clientService;
+            _navigationService = navigationService;
 
             _reminder = reminder;
 
@@ -59,6 +68,10 @@ namespace Telegram.Views.Popups
             }
 
             _repeat = period ?? _repeatIndexer[2];
+            RepeatSelector.IsEnabled = _clientService.IsPremium;
+            RepeatButton.Visibility = _clientService.IsPremium
+                ? Visibility.Collapsed
+                : Visibility.Visible;
 
             Title = reminder ? Strings.SetReminder : Strings.ScheduleMessage;
             PrimaryButtonText = Strings.OK;
@@ -179,5 +192,10 @@ namespace Telegram.Views.Popups
             new SettingsOptionItem<int>(182 * 86400, Strings.MessageScheduledRepeatOption6Monthly),
             new SettingsOptionItem<int>(365 * 86400, Strings.MessageScheduledRepeatOptionYearly),
         };
+
+        private void RepeatButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToastPopup.ShowFeaturePromo(_navigationService, Strings.MessageScheduledRepeatPremium, null);
+        }
     }
 }
