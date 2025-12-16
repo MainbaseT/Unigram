@@ -140,6 +140,11 @@ namespace Telegram.Controls
 
         private async void OnTextChanged(string text, string placeholder)
         {
+            if (Presenter == null || Placeholder == null)
+            {
+                return;
+            }
+
             var visual1 = ElementComposition.GetElementVisual(Presenter);
             var visual2 = ElementComposition.GetElementVisual(Placeholder);
 
