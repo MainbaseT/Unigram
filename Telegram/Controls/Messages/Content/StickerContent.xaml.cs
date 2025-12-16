@@ -262,9 +262,9 @@ namespace Telegram.Controls.Messages.Content
                 {
                     PlayInteraction(_message, interaction);
                 }
-                else if (response is Error)
+                else if (response is Error && this.IsConnected())
                 {
-                    _message.Delegate.OpenSticker(sticker);
+                    _message.Delegate?.OpenSticker(sticker);
                 }
             }
             else if (_message.Content is MessageText)
