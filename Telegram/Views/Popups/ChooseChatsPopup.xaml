@@ -242,7 +242,7 @@
         </Grid>
 
         <Grid x:Name="CommentPanel"
-              Background="{ThemeResource TextControlBackground}"
+              Background="{ThemeResource ContentDialogBackground}"
               Visibility="Collapsed"
               Margin="-24,0"
               Grid.Row="3">

@@ -364,7 +364,7 @@ namespace Telegram.ViewModels.Settings
                 {
                     PhotoSource = new ProfilePictureSourceText(Icons.Premium16, true, Color.FromArgb(0xFF, 0x97, 0x6F, 0xFF), Color.FromArgb(0xFF, 0xE4, 0x6A, 0xCE), ProfilePictureShape.Superellipse),
                     Title = Strings.PrivacyPremium,
-                    SelectionStroke = BootStrapper.Current.Resources["ContentDialogBackground"] as SolidColorBrush,
+                    SelectionStroke = BootStrapper.Current.Resources["ContentDialogTopOverlaySolid"] as SolidColorBrush,
                     Stroke = BootStrapper.Current.Resources["ChatLastMessageStateBrush"] as SolidColorBrush,
                     Padding = new Thickness(12, 6, 12, 6),
                     CornerRadius = new CornerRadius(4)
@@ -399,7 +399,7 @@ namespace Telegram.ViewModels.Settings
                 {
                     PhotoSource = ProfilePictureSourceText.GetGlyph(Icons.BotFilled, shape: ProfilePictureShape.Superellipse),
                     Title = Strings.PrivacyMiniapps,
-                    SelectionStroke = BootStrapper.Current.Resources["ContentDialogBackground"] as SolidColorBrush,
+                    SelectionStroke = BootStrapper.Current.Resources["ContentDialogTopOverlaySolid"] as SolidColorBrush,
                     Stroke = BootStrapper.Current.Resources["ChatLastMessageStateBrush"] as SolidColorBrush,
                     Padding = new Thickness(12, 6, 12, 6),
                     CornerRadius = new CornerRadius(4)
@@ -515,7 +515,7 @@ namespace Telegram.ViewModels.Settings
                 {
                     PhotoSource = ProfilePictureSourceText.GetGlyph(Icons.BotFilled, shape: ProfilePictureShape.Superellipse),
                     Title = Strings.PrivacyMiniapps,
-                    SelectionStroke = BootStrapper.Current.Resources["ContentDialogBackground"] as SolidColorBrush,
+                    SelectionStroke = BootStrapper.Current.Resources["ContentDialogTopOverlaySolid"] as SolidColorBrush,
                     Stroke = BootStrapper.Current.Resources["ChatLastMessageStateBrush"] as SolidColorBrush,
                     Padding = new Thickness(12, 6, 12, 6),
                     CornerRadius = new CornerRadius(4)
