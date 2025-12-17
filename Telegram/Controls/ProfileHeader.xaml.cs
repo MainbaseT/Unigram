@@ -9,6 +9,7 @@ using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -2117,6 +2118,28 @@ namespace Telegram.Controls
                 {
                     LifetimeService.Current.Playback.Play(XamlRoot, new AudioWithOwner(ViewModel.ClientService, user.Id, userFull.FirstProfileAudio));
                     ViewModel.ShowPopup(new PlaybackPopup(ViewModel.ClientService, ViewModel.NavigationService));
+                }
+            }
+        }
+
+        private void Location_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ClientService.TryGetUserFull(ViewModel.Chat, out UserFullInfo fullInfo))
+            {
+                var location = fullInfo.BusinessInfo?.Location?.Location;
+                if (location != null)
+                {
+                    try
+                    {
+                        var options = new Windows.System.LauncherOptions();
+                        options.FallbackUri = new Uri(string.Format(CultureInfo.InvariantCulture, "https://www.google.com/maps/search/?api=1&query={0},{1}", location.Latitude, location.Longitude));
+
+                        _ = Windows.System.Launcher.LaunchUriAsync(new Uri(string.Format(CultureInfo.InvariantCulture, "bingmaps:?collection=point.{0}_{1}", location.Latitude, location.Longitude)), options);
+                    }
+                    catch
+                    {
+                        // All the remote procedure calls must be wrapped in a try-catch block
+                    }
                 }
             }
         }

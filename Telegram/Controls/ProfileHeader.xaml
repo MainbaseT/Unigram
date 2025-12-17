@@ -500,6 +500,7 @@
                 </controls:SettingsButton>
 
                 <controls:SettingsButton x:Name="Location"
+                                         Click="Location_Click"
                                          Visibility="Collapsed"
                                          Description="{CustomResource AttachLocation}"
                                          Glyph="&#xE1C4;">
