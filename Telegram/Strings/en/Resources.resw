@@ -391,6 +391,9 @@
   <data name="AccountFrozenTitle" xml:space="preserve">
     <value>Your Account is Frozen</value>
   </data>
+  <data name="AccountSettings" xml:space="preserve">
+    <value>Account</value>
+  </data>
   <data name="AccountSwitch" xml:space="preserve">
     <value>Switch</value>
   </data>
@@ -8612,6 +8615,9 @@ Secret chats and pending messages will be lost.</value>
   <data name="LoginPasswordTextShort" xml:space="preserve">
     <value>Two-Step Verification enabled. Your account is protected with an additional password.</value>
   </data>
+  <data name="LoginWithPasskey" xml:space="preserve">
+    <value>Log in by passkey</value>
+  </data>
   <data name="LoginWithQrCode" xml:space="preserve">
     <value>Quick log in using QR code</value>
   </data>
@@ -12748,8 +12754,14 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="SoundOff" xml:space="preserve">
     <value>Disable sound</value>
   </data>
+  <data name="SoundOffHint" xml:space="preserve">
+    <value>You will receive silent notifications.</value>
+  </data>
   <data name="SoundOn" xml:space="preserve">
     <value>Enable sound</value>
+  </data>
+  <data name="SoundOnHint" xml:space="preserve">
+    <value>You will receive notifications with sound.</value>
   </data>
   <data name="Speaking" xml:space="preserve">
     <value>speaking</value>

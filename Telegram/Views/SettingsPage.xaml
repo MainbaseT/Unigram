@@ -160,7 +160,7 @@
                         </Style>
                     </controls:TopNavView.ItemContainerStyle>
                     <controls:SettingsButton x:Name="Profile"
-                                             Content="{CustomResource EditProfile}"
+                                             Content="{CustomResource AccountSettings}"
                                              Style="{StaticResource IconBadgeButtonStyle}"
                                              Click="Profile_Click">
                         <controls:SettingsButton.IconSource>

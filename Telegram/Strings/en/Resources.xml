@@ -13109,5 +13109,10 @@
     <string name="InviteRestrictedUsers2_other">**{0} users** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
 
     <string name="UseSystemAccentColor">Use System Accent Color</string>
+    <string name="AccountSettings">Account</string>
+
+    <string name="LoginWithPasskey">Log in by passkey</string>
+    <string name="SoundOnHint">You will receive notifications with sound.</string>
+    <string name="SoundOffHint">You will receive silent notifications.</string>
 
 </resources>

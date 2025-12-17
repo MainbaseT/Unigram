@@ -23,7 +23,7 @@ namespace Telegram.Views.Settings
         public SettingsProfilePage()
         {
             InitializeComponent();
-            Title = Strings.EditInformation;
+            Title = Strings.AccountSettings;
         }
 
         private async void LogOut_Click(object sender, RoutedEventArgs e)
