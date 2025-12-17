@@ -2464,7 +2464,7 @@ namespace Telegram.Views
             if ((user != null && user.Type is not UserTypeDeleted && user.Id != ViewModel.ClientService.Options.MyId) || basicGroup != null || (supergroup != null && !supergroup.IsChannel))
             {
                 var muted = ViewModel.ClientService.Notifications.IsMuted(chat);
-                var silent = chat.DefaultDisableNotification;
+                var silent = ViewModel.ClientService.Notifications.IsSilent(chat);
 
                 var mute = new MenuFlyoutSubItem();
                 mute.Text = Strings.Mute;
@@ -2472,7 +2472,7 @@ namespace Telegram.Views
 
                 if (muted is false)
                 {
-                    mute.CreateFlyoutItem(true, () => { },
+                    mute.CreateFlyoutItem(ViewModel.SetSound, !silent,
                         silent ? Strings.SoundOn : Strings.SoundOff,
                         silent ? Icons.MusicNote2 : Icons.MusicNoteOff2);
                 }

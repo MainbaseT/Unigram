@@ -51,6 +51,8 @@ namespace Telegram.Controls
         Premium,
         SavedMessages,
         SoundDownload,
+        SoundOff,
+        SoundOn,
         SpeedLimit,
         StarsSent,
         StarsTopup,

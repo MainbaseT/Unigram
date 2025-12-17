@@ -4312,6 +4312,17 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void SetSound(bool silent)
+        {
+            var chat = _chat;
+            if (chat == null)
+            {
+                return;
+            }
+
+            _notificationsService.SetSound(chat, silent, XamlRoot);
+        }
+
         #endregion
 
         #region Report Chat

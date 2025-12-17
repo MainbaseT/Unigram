@@ -274,6 +274,17 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void SetChatSound(Tuple<Chat, bool> value)
+        {
+            var chat = value.Item1;
+            if (chat == null)
+            {
+                return;
+            }
+
+            _notificationsService.SetSound(chat, value.Item2, XamlRoot);
+        }
+
         #endregion
 
 

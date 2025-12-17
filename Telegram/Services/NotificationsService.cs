@@ -39,6 +39,8 @@ namespace Telegram.Services
         void SetMuteFor(Chat chat, int muteFor, XamlRoot xamlRoot);
         void SetMuteFor(ForumTopic topic, int muteFor, XamlRoot xamlRoot);
 
+        void SetSound(Chat chat, bool silent, XamlRoot xamlRoot);
+
         #endregion
     }
 
@@ -870,6 +872,35 @@ namespace Telegram.Services
             }
 
             return string.Empty;
+        }
+
+        public void SetSound(Chat chat, bool silent, XamlRoot xamlRoot)
+        {
+            if (_settings.Notifications.TryGetScope(chat, out ScopeNotificationSettings scope))
+            {
+                var settings = chat.NotificationSettings.Clone();
+                var value = silent ? 0L : -1;
+
+                var useDefault = !silent;
+                if (useDefault)
+                {
+                    value = scope.SoundId;
+                }
+
+                settings.UseDefaultSound = useDefault;
+                settings.SoundId = value;
+
+                _clientService.Send(new SetChatNotificationSettings(chat.Id, settings));
+
+                if (silent)
+                {
+                    ToastPopup.Show(xamlRoot, Strings.SoundOffHint, ToastPopupIcon.SoundOff);
+                }
+                else
+                {
+                    ToastPopup.Show(xamlRoot, Strings.SoundOnHint, ToastPopupIcon.SoundOn);
+                }
+            }
         }
 
         public void SetMuteFor(Chat chat, int value, XamlRoot xamlRoot)

@@ -1844,13 +1844,13 @@ namespace Telegram.Controls
             }
             else
             {
-                var silent = chat.DefaultDisableNotification;
+                var silent = ViewModel.ClientService.Notifications.IsSilent(chat);
 
                 var flyout = new MenuFlyout();
 
                 if (muted is false)
                 {
-                    flyout.CreateFlyoutItem(true, () => { },
+                    flyout.CreateFlyoutItem(ViewModel.SetSound, !silent,
                         silent ? Strings.SoundOn : Strings.SoundOff,
                         silent ? Icons.MusicNote2 : Icons.MusicNoteOff2);
                 }

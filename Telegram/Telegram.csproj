@@ -2462,6 +2462,8 @@
     <Content Include="Assets\Toasts\Unpin.tgs" />
     <Content Include="Assets\Toasts\VideoConversion.tgs" />
     <Content Include="Assets\Toasts\Gift.tgs" />
+    <Content Include="Assets\Toasts\SoundOff.tgs" />
+    <Content Include="Assets\Toasts\SoundOn.tgs" />
     <None Include="Telegram_StoreKey.pfx" />
     <None Include="Telegram_TemporaryKey.pfx" />
   </ItemGroup>

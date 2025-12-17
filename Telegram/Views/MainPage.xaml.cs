@@ -3246,7 +3246,7 @@ namespace Telegram.Views
 
             if (DialogNotify_Loaded(chat))
             {
-                var silent = chat.DefaultDisableNotification;
+                var silent = ViewModel.ClientService.Notifications.IsSilent(chat);
 
                 var mute = new MenuFlyoutSubItem();
                 mute.Text = Strings.Mute;
@@ -3254,7 +3254,7 @@ namespace Telegram.Views
 
                 if (muted is false)
                 {
-                    mute.CreateFlyoutItem(true, () => { },
+                    mute.CreateFlyoutItem(ViewModel.Chats.SetChatSound, Tuple.Create<Chat, bool>(chat, !silent),
                         silent ? Strings.SoundOn : Strings.SoundOff,
                         silent ? Icons.MusicNote2 : Icons.MusicNoteOff2);
                 }
