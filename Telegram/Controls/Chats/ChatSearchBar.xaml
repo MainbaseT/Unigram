@@ -43,6 +43,8 @@
                     Value="{ThemeResource TextControlThemeMinWidth}" />
             <Setter Property="Padding"
                     Value="0,3,6,6" />
+            <Setter Property="CornerRadius"
+                    Value="{ThemeResource ControlCornerRadius}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -204,7 +206,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{ThemeResource ControlCornerRadius}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
                                     Control.IsTemplateFocusTarget="True"
                                     MinWidth="{TemplateBinding MinWidth}"
                                     MinHeight="{TemplateBinding MinHeight}" />
@@ -426,12 +428,17 @@
                                ItemTemplateSelector="{StaticResource AutocompleteTemplate}"
                                ItemContainerStyle="{StaticResource DefaultListViewItemStyle}"
                                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"
+                               BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                               BorderThickness="1,0,1,1"
+                               CornerRadius="0,0,8,8"
                                AllowFocusOnInteraction="False"
                                IsItemClickEnabled="True"
+                               SizeChanged="Autocomplete_SizeChanged"
                                ItemClick="Autocomplete_ItemClick"
                                ContainerContentChanging="OnContainerContentChanging"
                                VerticalAlignment="Top"
                                MaxHeight="320"
+                               Margin="72,-9,48,0"
                                Grid.Row="3">
             <ListView.ItemContainerTransitions>
                 <TransitionCollection />

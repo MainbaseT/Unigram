@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using static Telegram.Controls.Chats.ChatTextBox;
 
 namespace Telegram.Controls.Chats
@@ -31,6 +32,12 @@ namespace Telegram.Controls.Chats
         public ChatSearchBar()
         {
             InitializeComponent();
+
+            if (ApiInfo.CanCreateThemeShadow)
+            {
+                ListAutocomplete.Shadow = new ThemeShadow();
+                ListAutocomplete.Translation = new Vector3(0, 0, 32);
+            }
 
             _debouncer = new EventDebouncer<TextChangedEventArgs>(Constants.TypingTimeout, handler => Field.TextChanged += new TextChangedEventHandler(handler));
             _debouncer.Invoked += (s, args) =>
@@ -433,6 +440,12 @@ namespace Telegram.Controls.Chats
             _viewHeader = header;
             _viewClipperOuter = clipperOuter;
             _viewDate = date;
+        }
+
+        private void Autocomplete_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var visible = e.NewSize.Width > 0 && e.NewSize.Height > 0;
+            Field.CornerRadius = new CornerRadius(4, 4, visible ? 0 : 4, visible ? 0 : 4);
         }
     }
 }
