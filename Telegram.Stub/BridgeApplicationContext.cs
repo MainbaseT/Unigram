@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System.Buffers.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.Foundation.Collections;
@@ -337,7 +338,7 @@ namespace Telegram.Stub
                         response.Add("ClientData", login.ClientDataJson);
                         response.Add("AuthenticatorData", login.AuthenticatorData);
                         response.Add("Signature", login.Signature);
-                        response.Add("UserHandle", Base64Url.EncodeToString(login.UserHandle));
+                        response.Add("UserHandle", Encoding.UTF8.GetString(login.UserHandle));
                     }
                     else if (result is Exception exception)
                     {

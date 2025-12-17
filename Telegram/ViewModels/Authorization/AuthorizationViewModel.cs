@@ -153,6 +153,10 @@ namespace Telegram.ViewModels.Authorization
                     BeginOnUIThread(() => ContinueOnThisLanguageText = null);
                 }
             }
+            else if (update.Name == OptionsService.R.CanUseLoginPasskey)
+            {
+                BeginOnUIThread(() => RaisePropertyChanged(nameof(CanUseLoginPasskey)));
+            }
         }
 
         private void GotUserCountry(string code)
@@ -318,6 +322,17 @@ namespace Telegram.ViewModels.Authorization
             ShowPopupAsync(new SettingsProxyPopup());
         }
 
+        public async void LoginWithPasskey()
+        {
+            var response = await BridgeApplicationContext.CheckAuthenticationPasskeyAsync(ClientService);
+            if (response is Error { Code: not -2147023673 } error)
+            {
+                await ShowPopupAsync(error.Message, Strings.AppName, Strings.OK);
+            }
+        }
+
+        public bool CanUseLoginPasskey => ClientService.Options.CanUseLoginPasskey;
+
         #region Strings
 
         public Resources S { get; } = new();
@@ -333,6 +348,7 @@ namespace Telegram.ViewModels.Authorization
             public string LoginWithQrCodeStep2 => Strings.LoginWithQrCodeStep2;
             public string LoginWithQrCodeStep3 => Strings.LoginWithQrCodeStep3;
             public string LoginWithQrCodeSkip => Strings.LoginWithQrCodeSkip;
+            public string LoginWithPasskey => Strings.LoginWithPasskey;
             public string ProxySettings => Strings.ProxySettings;
 
             private readonly string[] _keys = new[]
@@ -346,6 +362,7 @@ namespace Telegram.ViewModels.Authorization
                 nameof(Strings.LoginWithQrCodeStep2),
                 nameof(Strings.LoginWithQrCodeStep3),
                 nameof(Strings.LoginWithQrCodeSkip),
+                nameof(Strings.LoginWithPasskey),
                 nameof(Strings.ProxySettings)
             };
 

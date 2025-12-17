@@ -6,6 +6,7 @@
 //
 
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
@@ -24,9 +25,17 @@ namespace Telegram.ViewModels.Settings
             : base(clientService, settingsService, aggregator)
         {
             Items = new IncrementalCollection<Passkey>(this);
+            Items.CollectionChanged += OnCollectionChanged;
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(CanAdd));
         }
 
         public ObservableCollection<Passkey> Items { get; private set; }
+
+        public bool CanAdd => Items.Count < ClientService.Options.LoginPasskeyCountMax;
 
         public async void Info()
         {
@@ -56,7 +65,7 @@ namespace Telegram.ViewModels.Settings
 
         private async void CreateImpl()
         {
-            var response = await BridgeApplicationContext.AddPasskeyAsync(ClientService);
+            var response = await BridgeApplicationContext.AddLoginPasskeyAsync(ClientService);
             if (response is Passkey passkey)
             {
                 Items.Insert(0, passkey);
@@ -74,7 +83,7 @@ namespace Telegram.ViewModels.Settings
             if (confirm == ContentDialogResult.Primary)
             {
                 Items.Remove(passkey);
-                ClientService.Send(new RemoveAddedPasskey(passkey.Id));
+                ClientService.Send(new RemoveLoginPasskey(passkey.Id));
             }
         }
 
@@ -82,7 +91,7 @@ namespace Telegram.ViewModels.Settings
         {
             var totalCount = 0u;
 
-            var response = await ClientService.SendAsync(new GetAddedPasskeys());
+            var response = await ClientService.SendAsync(new GetLoginPasskeys());
             if (response is Passkeys passkeys)
             {
                 foreach (var passkey in passkeys.PasskeysValue)

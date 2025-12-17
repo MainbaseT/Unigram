@@ -131,7 +131,7 @@ namespace Telegram.ViewModels.Settings
                 }
             });
 
-            ClientService.Send(new GetAddedPasskeys(), result =>
+            ClientService.Send(new GetLoginPasskeys(), result =>
             {
                 if (result is Passkeys passkeys)
                 {
@@ -377,7 +377,7 @@ namespace Telegram.ViewModels.Settings
                 var confirm = await ShowPopupAsync(new SettingsPasskeysIntroPopup());
                 if (confirm == ContentDialogResult.Primary)
                 {
-                    var response = await BridgeApplicationContext.AddPasskeyAsync(ClientService);
+                    var response = await BridgeApplicationContext.AddLoginPasskeyAsync(ClientService);
                     if (response is Passkey passkey)
                     {
                         HasPasskeys = true;

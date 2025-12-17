@@ -83,6 +83,7 @@
                                               Padding="0">
                         <controls:SettingsButton Content="{CustomResource PasskeyAdd}"
                                                  Click="{x:Bind ViewModel.Create}"
+                                                 Visibility="{x:Bind ViewModel.CanAdd, Mode=OneWay}"
                                                  Glyph="&#xEAF5;" />
                     </controls:HeaderedControl>
                 </controls:SettingsPanel>

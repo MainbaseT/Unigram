@@ -6,6 +6,7 @@
 //
 using System.Buffers.Text;
 using System.Runtime.InteropServices;
+using System.Text;
 using Windows.Data.Json;
 
 namespace Telegram.Stub
@@ -18,7 +19,7 @@ namespace Telegram.Stub
 
         public record CredentialParameter(string Type, int Algorithm);
 
-        public record RegisterData(RelyingParty RelyingParty, User User, byte[] Challenge, IList<CredentialParameter> PubKeyCredParams, int Timeout = 60000);
+        public record RegisterData(RelyingParty RelyingParty, User User, string Challenge, IList<CredentialParameter> PubKeyCredParams, int Timeout = 60000);
 
         public class RegisterResult
         {
@@ -29,7 +30,7 @@ namespace Telegram.Stub
 
         public record Credential(byte[] Id, string Type);
 
-        public record LoginData(byte[] Challenge, string RelyingPartyId, IList<Credential> AllowCredentials, string UserVerification, int Timeout = 60000);
+        public record LoginData(string Challenge, string RelyingPartyId, IList<Credential> AllowCredentials, string UserVerification, int Timeout = 60000);
 
         public class LoginResult
         {
@@ -37,7 +38,7 @@ namespace Telegram.Stub
             public required byte[] CredentialId { get; set; }
             public required byte[] AuthenticatorData { get; set; }
             public required byte[] Signature { get; set; }
-            public required byte[]? UserHandle { get; set; }
+            public required byte[] UserHandle { get; set; }
         }
 
         public static RegisterData? DeserializeRegisterData(string jsonData)
@@ -96,7 +97,7 @@ namespace Telegram.Stub
                 }
             }
 
-            return new RegisterData(rpData, userData, Base64Url.DecodeFromChars(challenge), parameters, publicKey.GetNamedInt32("timeout", 60000));
+            return new RegisterData(rpData, userData, challenge, parameters, publicKey.GetNamedInt32("timeout", 60000));
         }
 
         public static LoginData? DeserializeLoginData(string jsonData)
@@ -130,27 +131,27 @@ namespace Telegram.Stub
                 }
             }
 
-            return new LoginData(Base64Url.DecodeFromChars(challenge), rpId, allowCredentials, userVerification, publicKey.GetNamedInt32("timeout", 60000));
+            return new LoginData(challenge, rpId, allowCredentials, userVerification, publicKey.GetNamedInt32("timeout", 60000));
         }
 
-        private static string SerializeClientData(byte[] challenge, string type)
+        private static string SerializeClientData(string challenge, string type)
         {
             var obj = new JsonObject
             {
-                ["type"] = JsonValue.CreateStringValue(type),
-                ["challenge"] = JsonValue.CreateStringValue(Base64Url.EncodeToString(challenge)),
+                ["challenge"] = JsonValue.CreateStringValue(challenge),
+                ["crossOrigin"] = JsonValue.CreateBooleanValue(false),
                 ["origin"] = JsonValue.CreateStringValue("https://telegram.org"),
-                ["crossOrigin"] = JsonValue.CreateBooleanValue(false)
+                ["type"] = JsonValue.CreateStringValue(type),
             };
             return obj.Stringify();
         }
 
-        private static string SerializeClientDataCreate(byte[] challenge)
+        private static string SerializeClientDataCreate(string challenge)
         {
             return SerializeClientData(challenge, "webauthn.create");
         }
 
-        private static string SerializeClientDataGet(byte[] challenge)
+        private static string SerializeClientDataGet(string challenge)
         {
             return SerializeClientData(challenge, "webauthn.get");
         }
@@ -417,8 +418,8 @@ namespace Telegram.Stub
             credParamsList.pCredentialParameters = pCredentialParameters;
 
             var clientDataJson = SerializeClientDataCreate(data.Challenge);
-
-            GCHandle clientDataHandle = GCHandle.Alloc(clientDataJson, GCHandleType.Pinned);
+            var clientDataJsonUtf8 = Encoding.UTF8.GetBytes(clientDataJson);
+            GCHandle clientDataHandle = GCHandle.Alloc(clientDataJsonUtf8, GCHandleType.Pinned);
             IntPtr pbClientDataJSON = clientDataHandle.AddrOfPinnedObject();
 
             var clientData = new WEBAUTHN_CLIENT_DATA
@@ -581,7 +582,8 @@ namespace Telegram.Stub
             }
 
             var clientDataJson = SerializeClientDataGet(data.Challenge);
-            GCHandle clientDataHandle = GCHandle.Alloc(clientDataJson, GCHandleType.Pinned);
+            var clientDataJsonUtf8 = Encoding.UTF8.GetBytes(clientDataJson);
+            GCHandle clientDataHandle = GCHandle.Alloc(clientDataJsonUtf8, GCHandleType.Pinned);
             IntPtr pbClientDataJSON = clientDataHandle.AddrOfPinnedObject();
 
             var clientData = new WEBAUTHN_CLIENT_DATA
@@ -629,13 +631,15 @@ namespace Telegram.Stub
                     _ => WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED
                 },
                 //pCancellationId = &cancellationId,
-                CredentialList = new WEBAUTHN_CREDENTIALS()
             };
 
             if (data.AllowCredentials.Count > 0)
             {
-                options.CredentialList.cCredentials = (uint)data.AllowCredentials.Count;
-                options.CredentialList.pCredentials = pCredentials;
+                options.CredentialList = new WEBAUTHN_CREDENTIALS
+                {
+                    cCredentials = (uint)data.AllowCredentials.Count,
+                    pCredentials = pCredentials
+                };
             }
 
             SetForegroundWindow(hWnd);
@@ -661,17 +665,13 @@ namespace Telegram.Stub
                     CredentialId = new byte[assertion.Credential.cbId],
                     AuthenticatorData = new byte[assertion.cbAuthenticatorData],
                     Signature = new byte[assertion.cbSignature],
-                    UserHandle = assertion.cbUserId > 0 ? new byte[assertion.cbUserId] : null
+                    UserHandle = new byte[assertion.cbUserId]
                 };
 
                 Marshal.Copy(assertion.Credential.pbId, result.CredentialId, 0, (int)assertion.Credential.cbId);
                 Marshal.Copy(assertion.pbAuthenticatorData, result.AuthenticatorData, 0, (int)assertion.cbAuthenticatorData);
                 Marshal.Copy(assertion.pbSignature, result.Signature, 0, (int)assertion.cbSignature);
-
-                if (result.UserHandle != null)
-                {
-                    Marshal.Copy(assertion.pbUserId, result.UserHandle, 0, (int)assertion.cbUserId);
-                }
+                Marshal.Copy(assertion.pbUserId, result.UserHandle, 0, (int)assertion.cbUserId);
 
                 WebAuthNFreeAssertion(ppAssertion);
 

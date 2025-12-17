@@ -136,7 +136,7 @@ namespace Telegram.Common
             return false;
         }
 
-        public static async Task<Object> AddPasskeyAsync(IClientService clientService)
+        public static async Task<Object> AddLoginPasskeyAsync(IClientService clientService)
         {
             await ConnectAsync();
 
@@ -161,7 +161,48 @@ namespace Telegram.Common
                         && payload.Message.TryGet("ClientData", out string clientData)
                         && payload.Message.TryGet("AttestationObject", out byte[] attestationObject))
                     {
-                        return await clientService.SendAsync(new AddPasskey(clientData, attestationObject));
+                        return await clientService.SendAsync(new AddLoginPasskey(clientData, attestationObject));
+                    }
+                    else
+                    {
+                        payload.Message.TryGet("Message", out string text);
+                        return new Error(result, text ?? string.Empty);
+                    }
+                }
+            }
+
+            return new Error(400, "Unknown error");
+        }
+
+        public static async Task<Object> CheckAuthenticationPasskeyAsync(IClientService clientService)
+        {
+            await ConnectAsync();
+
+            var response = await clientService.SendAsync(new GetAuthenticationPasskeyParameters());
+            if (response is not Text parameters)
+            {
+                return response;
+            }
+
+            var message = new ValueSet
+            {
+                { "GetAssertion", parameters.TextValue },
+                { "WindowId", WindowContext.Current.Handle }
+            };
+
+            var payload = await SendMessageAsync(message, timeout: 0);
+            if (payload?.Status == AppServiceResponseStatus.Success)
+            {
+                if (payload.Message.TryGet("Result", out int result))
+                {
+                    if (result >= 0
+                        && payload.Message.TryGet("CredentialId", out string credentialId)
+                        && payload.Message.TryGet("ClientData", out string clientData)
+                        && payload.Message.TryGet("AuthenticatorData", out byte[] authenticatorData)
+                        && payload.Message.TryGet("Signature", out byte[] signature)
+                        && payload.Message.TryGet("UserHandle", out string userHandle))
+                    {
+                        return await clientService.SendAsync(new CheckAuthenticationPasskey(credentialId, clientData, authenticatorData, signature, userHandle));
                     }
                     else
                     {
