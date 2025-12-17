@@ -1245,7 +1245,7 @@ namespace Telegram.ViewModels
 
                 if (NavigationService.Window.ActivationMode != CoreWindowActivationMode.Deactivated && (listeners || !muted))
                 {
-                    _notificationsService.PlaySound(sent);
+                    _notificationsService.PlaySound(sent || !listeners);
                 }
             }
         }
