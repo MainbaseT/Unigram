@@ -417,6 +417,7 @@
                                      Glyph="&#xEA13;"
                                      Width="40"
                                      Height="40"
+                                     MinHeight="40"
                                      Padding="8"
                                      Grid.Column="1"
                                      AutomationProperties.Name="{CustomResource Speed}"
