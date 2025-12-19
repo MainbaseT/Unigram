@@ -70,12 +70,7 @@ namespace Telegram
         {
             TypeCrosserGenerator.Generate();
 
-            if (SettingsService.Current.Diagnostics.LastUpdateVersion < Constants.BuildNumber)
-            {
-                SettingsService.Current.Diagnostics.LastUpdateVersion = Constants.BuildNumber;
-                SettingsService.Current.Diagnostics.UpdateCount++;
-            }
-
+            SettingsService.Current.Initialize();
             WatchDog.Initialize();
             LifetimeService.Initialize();
 

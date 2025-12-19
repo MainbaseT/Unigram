@@ -113,6 +113,8 @@ namespace Telegram.Services
         long GetChatPinnedMessage(long chatId);
 
         void Clear();
+
+        void Initialize();
     }
 
     public enum DistanceUnits
@@ -473,7 +475,7 @@ namespace Telegram.Services
         private static bool? _useLeftTabsForChats;
         public bool UseLeftTabsForChats
         {
-            get => _useLeftTabsForChats ??= GetValueOrDefault(_local, "IsLeftTabsEnabled", false);
+            get => _useLeftTabsForChats ??= GetValueOrDefault(_local, "IsLeftTabsEnabled", true);
             set => AddOrUpdateValue(ref _useLeftTabsForChats, _local, "IsLeftTabsEnabled", value);
         }
 
@@ -760,6 +762,26 @@ namespace Telegram.Services
             _local?.Values.Remove($"User{UserId}");
 
             UseTestDC = useTestDC;
+        }
+
+        public void Initialize()
+        {
+            if (Diagnostics.LastUpdateVersion < Constants.BuildNumber)
+            {
+                var updateCount = Diagnostics.UpdateCount;
+
+                Diagnostics.LastUpdateVersion = Constants.BuildNumber;
+                Diagnostics.UpdateCount++;
+
+                if (updateCount > 0)
+                {
+                    if (!_local.Values.ContainsKey("IsLeftTabsEnabled"))
+                    {
+                        _local.Values["IsLeftTabsEnabled"] = false;
+                        _useLeftTabsForChats = false;
+                    }
+                }
+            }
         }
     }
 
