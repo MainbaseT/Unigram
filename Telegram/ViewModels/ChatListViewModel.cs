@@ -807,16 +807,22 @@ namespace Telegram.ViewModels
                     var next = NextIndexOf(chat, order);
                     if (next >= 0)
                     {
+                        var oldIndex = -1;
+
                         if (_chats.Contains(chat.Id))
                         {
-                            Remove(chat);
+                            oldIndex = IndexOf(chat);
+                            RemoveAt(oldIndex);
                         }
                         else
                         {
                             _chats.Add(chat.Id);
                         }
 
-                        Insert(Math.Min(Count, next), chat);
+                        var newIndex = Math.Min(Count, next);
+                        Insert(newIndex, chat);
+
+                        RaiseMoved(oldIndex, newIndex);
 
                         if (next == Count - 1)
                         {
@@ -842,8 +848,11 @@ namespace Telegram.ViewModels
                 }
                 else if (_chats.Contains(chat.Id))
                 {
+                    var oldIndex = IndexOf(chat);
+                    RaiseMoved(oldIndex, -1);
+
                     _chats.Remove(chat.Id);
-                    Remove(chat);
+                    RemoveAt(oldIndex);
 
                     if (_viewModel.SelectedItems.Contains(chat))
                     {
@@ -858,6 +867,18 @@ namespace Telegram.ViewModels
                     //    await LoadMoreItemsAsync(0);
                     //}
                 }
+            }
+
+            private ChatListMovedEventArgs _moved;
+            public event EventHandler<ChatListMovedEventArgs> Moved;
+
+            private void RaiseMoved(int oldIndex, int newIndex)
+            {
+                _moved ??= new();
+                _moved.OldIndex = oldIndex;
+                _moved.NewIndex = newIndex;
+
+                Moved?.Invoke(this, _moved);
             }
 
             private int NextIndexOf(Chat chat, long order)
@@ -928,6 +949,13 @@ namespace Telegram.ViewModels
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsEmpty)));
             }
         }
+    }
+
+    public class ChatListMovedEventArgs
+    {
+        public int OldIndex { get; set; }
+
+        public int NewIndex { get; set; }
     }
 
     public enum SearchResultType
