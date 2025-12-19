@@ -3067,6 +3067,7 @@ namespace Telegram.Services
             }
 
             EventAggregator.Current.Publish(file, token);
+            TrackDownloadedFile(file);
         }
 
         public void OnResult(Object update)
