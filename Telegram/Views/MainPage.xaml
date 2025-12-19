@@ -493,12 +493,6 @@
                                                     x:Name="CallBanner" />
                 </Grid>
             </controls:MasterDetailView.Banner>
-            <controls:MasterDetailView.BreadcrumbItemTemplate>
-                <DataTemplate x:DataType="navigation:NavigationStackItem">
-                    <TextBlock Text="{x:Bind Title, Mode=OneWay}"
-                               FontFamily="{ThemeResource EmojiThemeFontFamily}" />
-                </DataTemplate>
-            </controls:MasterDetailView.BreadcrumbItemTemplate>
             <Grid x:Name="RootGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

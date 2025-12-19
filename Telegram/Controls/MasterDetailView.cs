@@ -5,12 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
-using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls.Chats;
 using Telegram.Navigation;
@@ -40,7 +37,7 @@ namespace Telegram.Controls
         private Grid DetailHeaderPresenter2;
         private Grid DetailRoot;
         private Grid DetailPresenter;
-        private BreadcrumbBar DetailHeaderPresenter;
+        private TextBlock DetailHeaderPresenter;
         private BackButton BackButton;
         private Border DetailHeaderBackground;
         private ChatBackgroundControl BackgroundPart;
@@ -52,9 +49,6 @@ namespace Telegram.Controls
         public ViewModelBase ViewModel { get; private set; }
         public NavigationService NavigationService { get; private set; }
         public Frame ParentFrame { get; private set; }
-
-        private readonly MvxObservableCollection<NavigationStackItem> _backStack = new();
-        private readonly NavigationStackItem _currentPage = new(null, null, null, HostedNavigationMode.Child);
 
         private long _titleToken;
 
@@ -111,12 +105,6 @@ namespace Telegram.Controls
             if (AdaptivePanel != null)
             {
                 AdaptivePanel.ViewStateChanged -= OnViewStateChanged;
-            }
-
-            if (DetailHeaderPresenter != null)
-            {
-                DetailHeaderPresenter.ItemsSource = null;
-                DetailHeaderPresenter.ItemClicked -= DetailHeaderPresenter_ItemClicked;
             }
 
             if (DetailFrame?.Content is HostedPage hosted)
@@ -328,7 +316,7 @@ namespace Telegram.Controls
             DetailHeaderPresenter2 = GetTemplateChild(nameof(DetailHeaderPresenter2)) as Grid;
             DetailRoot = GetTemplateChild(nameof(DetailRoot)) as Grid;
             DetailPresenter = GetTemplateChild(nameof(DetailPresenter)) as Grid;
-            DetailHeaderPresenter = GetTemplateChild(nameof(DetailHeaderPresenter)) as BreadcrumbBar;
+            DetailHeaderPresenter = GetTemplateChild(nameof(DetailHeaderPresenter)) as TextBlock;
             BackButton = GetTemplateChild(nameof(BackButton)) as BackButton;
             DetailHeaderBackground = GetTemplateChild(nameof(DetailHeaderBackground)) as Border;
             DetailAction = GetTemplateChild(nameof(DetailAction)) as ContentControl;
@@ -340,9 +328,6 @@ namespace Telegram.Controls
             AdaptivePanel = GetTemplateChild(nameof(AdaptivePanel)) as MasterDetailPanel;
             AdaptivePanel.ViewStateChanged += OnViewStateChanged;
             AdaptivePanel.HasMaster = HasMaster;
-
-            DetailHeaderPresenter.ItemsSource = _backStack;
-            DetailHeaderPresenter.ItemClicked += DetailHeaderPresenter_ItemClicked;
 
             BannerPresenter.Visibility = _bannerCollapsed
                 ? Visibility.Collapsed
@@ -509,20 +494,6 @@ namespace Telegram.Controls
             visual.Clip = visual.Compositor.CreateGeometricClip(geometry);
         }
 
-        private void DetailHeaderPresenter_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
-        {
-            var index = args.Index + 1;
-            var count = _backStack.Count - 1;
-
-            while (count - index > 0)
-            {
-                NavigationService.RemoveFromBackStack(DetailFrame.BackStackDepth - 1);
-                count--;
-            }
-
-            NavigationService.GoBack();
-        }
-
         private void OnNavigating(object sender, NavigatingEventArgs e)
         {
             if (e.Content is HostedPage hosted)
@@ -560,12 +531,11 @@ namespace Telegram.Controls
 
                     if (string.IsNullOrEmpty(hosted.Title))
                     {
-                        _backStack.Clear();
+                        DetailHeaderPresenter.Text = string.Empty;
                     }
                     else
                     {
-                        _currentPage.Title = hosted.Title;
-                        _backStack.ReplaceWith(BuildBackStack(hosted.NavigationMode == HostedNavigationMode.Root || (hosted.NavigationMode == HostedNavigationMode.RootWhenParameterless && e.Parameter == null)));
+                        DetailHeaderPresenter.Text = hosted.Title;
                     }
 
                     if (e.NavigationMode == NavigationMode.Back)
@@ -586,7 +556,7 @@ namespace Telegram.Controls
                 }
                 else
                 {
-                    _backStack.Clear();
+                    DetailHeaderPresenter.Text = string.Empty;
                     ShowHideDetailHeader(false, false);
                 }
             }
@@ -595,7 +565,7 @@ namespace Telegram.Controls
                 DetailHeader = null;
                 DetailFooter = null;
 
-                _backStack.Clear();
+                DetailHeaderPresenter.Text = string.Empty;
                 ShowHideDetailHeader(false, false);
             }
 
@@ -758,71 +728,26 @@ namespace Telegram.Controls
 
         private void OnTitleChanged(DependencyObject sender, DependencyProperty dp)
         {
-            if (sender is HostedPage hosted)
+            if (sender is HostedPage hosted && !string.IsNullOrEmpty(hosted.Title))
             {
-                if (string.IsNullOrEmpty(hosted.Title))
-                {
-                    _backStack.Clear();
-                }
-                else if (_backStack.Count > 0)
-                {
-                    _currentPage.Title = hosted.Title;
-                }
-                else
-                {
-                    _currentPage.Title = hosted.Title;
-                    _backStack.ReplaceWith(BuildBackStack(hosted.NavigationMode == HostedNavigationMode.Root || (hosted.NavigationMode == HostedNavigationMode.RootWhenParameterless && NavigationService.CurrentPageParam == null)));
-                }
+                DetailHeaderPresenter.Text = hosted.Title;
+            }
+            else
+            {
+                DetailHeaderPresenter.Text = string.Empty;
             }
         }
 
         private void OnBackStackChanged(object sender, EventArgs e)
         {
-            if (DetailFrame.Content is HostedPage hosted)
+            if (DetailFrame.Content is HostedPage hosted && hosted.ShowHeader && !string.IsNullOrEmpty(hosted.Title))
             {
-                if (hosted.ShowHeader)
-                {
-                    if (string.IsNullOrEmpty(hosted.Title))
-                    {
-                        _backStack.Clear();
-                    }
-                    else
-                    {
-                        _backStack.ReplaceWith(BuildBackStack(hosted.NavigationMode == HostedNavigationMode.Root || (hosted.NavigationMode == HostedNavigationMode.RootWhenParameterless && NavigationService.CurrentPageParam == null)));
-                    }
-                }
-                else
-                {
-                    _backStack.Clear();
-                }
+                DetailHeaderPresenter.Text = hosted.Title;
             }
-            else if (_backStack.Count > 0)
+            else
             {
-                _backStack.Clear();
+                DetailHeaderPresenter.Text = string.Empty;
             }
-        }
-
-        private IEnumerable<NavigationStackItem> BuildBackStack(bool root)
-        {
-            if (root)
-            {
-                yield return _currentPage;
-                yield break;
-            }
-
-            var index = NavigationService.BackStack.FindLastIndex(x => x.Mode != HostedNavigationMode.Child);
-            var k = Math.Max(index, 0);
-
-            for (int i = k; i < NavigationService.BackStack.Count; i++)
-            {
-                var item = NavigationService.BackStack[i];
-                if (item.Title != null)
-                {
-                    yield return item;
-                }
-            }
-
-            yield return _currentPage;
         }
 
         private void OnViewStateChanged(object sender, EventArgs e)
@@ -983,19 +908,6 @@ namespace Telegram.Controls
         {
             ((MasterDetailView)d).MasterVisibilityChanged?.Invoke(d, EventArgs.Empty);
         }
-
-        #endregion
-
-        #region BreadcrumbItemTemplate
-
-        public DataTemplate BreadcrumbItemTemplate
-        {
-            get { return (DataTemplate)GetValue(BreadcrumbItemTemplateProperty); }
-            set { SetValue(BreadcrumbItemTemplateProperty, value); }
-        }
-
-        public static readonly DependencyProperty BreadcrumbItemTemplateProperty =
-            DependencyProperty.Register(nameof(BreadcrumbItemTemplate), typeof(DataTemplate), typeof(MasterDetailView), new PropertyMetadata(null));
 
         #endregion
     }
