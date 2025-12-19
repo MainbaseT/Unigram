@@ -6907,6 +6907,11 @@ namespace Telegram.Views
         {
             ButtonStickers.Collapse();
             RemoveMessageEffect();
+
+            if (TextField.IsEmpty)
+            {
+                Messages.ScrollToBottom();
+            }
         }
 
         private void ButtonMore_Click(object sender, RoutedEventArgs e)
