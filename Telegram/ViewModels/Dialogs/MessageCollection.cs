@@ -17,17 +17,45 @@ namespace Telegram.ViewModels
         private readonly DialogViewModel _viewModel;
         private readonly Dictionary<long, MessageViewModel> _messages = new();
 
-        private long _first = long.MaxValue;
-        private long _last = long.MinValue;
-
         private bool _suppressOperations = false;
         private bool _suppressPrev = false;
         private bool _suppressNext = false;
 
         public ICollection<long> Ids => _messages.Keys;
 
-        public long FirstId => _first;
-        public long LastId => _last;
+        public long FirstId
+        {
+            get
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    var item = this[i];
+                    if (item.Id != 0)
+                    {
+                        return item.Id;
+                    }
+                }
+
+                return long.MaxValue;
+            }
+        }
+
+        public long LastId
+        {
+            get
+            {
+                for (int i = Count - 1; i >= 0; i--)
+                {
+                    var item = this[i];
+                    if (item.Id != 0)
+                    {
+                        return item.Id;
+                    }
+                }
+
+                return long.MinValue;
+            }
+        }
 
         public Action<IEnumerable<MessageViewModel>> AttachChanged;
 
@@ -99,13 +127,15 @@ namespace Telegram.ViewModels
         {
             empty = true;
 
+            var lastId = LastId;
+
             for (int i = 0; i < source.Count; i++)
             {
                 var message = source[i];
 
                 if (filter && message.Id != 0)
                 {
-                    if (message.Id < _last || _messages.ContainsKey(message.Id))
+                    if (message.Id < lastId || _messages.ContainsKey(message.Id))
                     {
                         continue;
                     }
@@ -116,11 +146,6 @@ namespace Telegram.ViewModels
 
                 Add(message);
                 empty = false;
-
-                if (message.Id != 0 && message.Id > _last)
-                {
-                    _last = message.Id;
-                }
             }
 
             _suppressOperations = false;
@@ -131,13 +156,15 @@ namespace Telegram.ViewModels
         {
             empty = true;
 
+            var firstId = FirstId;
+
             for (int i = source.Count - 1; i >= 0; i--)
             {
                 var message = source[i];
 
                 if (filter && message.Id != 0)
                 {
-                    if (message.Id > _first || _messages.ContainsKey(message.Id))
+                    if (message.Id > firstId || _messages.ContainsKey(message.Id))
                     {
                         continue;
                     }
@@ -148,11 +175,6 @@ namespace Telegram.ViewModels
 
                 Insert(0, message);
                 empty = false;
-
-                if (message.Id != 0 && message.Id < _first)
-                {
-                    _first = message.Id;
-                }
             }
 
             _suppressOperations = false;
@@ -163,9 +185,6 @@ namespace Telegram.ViewModels
         {
             _messages.Clear();
             _suppressOperations = true;
-
-            _first = long.MaxValue;
-            _last = long.MinValue;
 
             ReplaceWith(source);
 
@@ -184,8 +203,6 @@ namespace Telegram.ViewModels
 
             if (item.Id != 0)
             {
-                _first = Math.Min(item.Id, _first);
-                _last = Math.Max(item.Id, _last);
                 _messages[item.Id] = item;
             }
 

@@ -906,6 +906,23 @@ namespace Telegram.ViewModels
                         SetScrollMode(ItemsUpdatingScrollMode.KeepItemsInView, true);
                         Items.RawAddRange(replied, true, out bool empty);
                     }
+
+                    if (Items.Count > 200)
+                    {
+                        if (direction == PanelScrollingDirection.Backward)
+                        {
+                            IsNewestSliceLoaded = false;
+                        }
+                        else
+                        {
+                            IsOldestSliceLoaded = false;
+                        }
+
+                        while (Items.Count > 200)
+                        {
+                            Items.RemoveAt(direction == PanelScrollingDirection.Backward ? Items.Count - 1 : 0);
+                        }
+                    }
                 }
                 else if (direction != PanelScrollingDirection.Backward)
                 {

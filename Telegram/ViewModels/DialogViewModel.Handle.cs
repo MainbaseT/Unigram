@@ -1483,13 +1483,8 @@ namespace Telegram.ViewModels
                     ComposerHeader = null;
                 }
 
-                goto LoadMessage;
+                _ = LoadMessageSliceAsync(null, message.Id, VerticalAlignment.Top);
             }
-
-            return;
-
-        LoadMessage:
-            _ = LoadMessageSliceAsync(null, message.Id, VerticalAlignment.Top);
         }
 
         public void InsertMessageInOrder(MessageViewModel message, long oldMessageId = 0, bool force = false)
