@@ -1742,29 +1742,53 @@ namespace Telegram.Common
             return childContainer.Ancestors<T>().FirstOrDefault(predicate);
         }
 
-        public static async Task UpdateLayoutAsync(this FrameworkElement element, bool update = false)
+        public static Task UpdateLayoutAsync(this FrameworkElement element)
         {
             var tcs = new TaskCompletionSource<bool>();
             void layoutUpdated(object s1, object e1)
             {
+                element.LayoutUpdated -= layoutUpdated;
                 tcs.TrySetResult(true);
             }
 
-            try
+            element.LayoutUpdated += layoutUpdated;
+            return tcs.Task;
+        }
+
+        public static Task UpdateLayoutAsync(this FrameworkElement element, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
             {
-                element.LayoutUpdated += layoutUpdated;
-
-                if (update)
-                {
-                    element.UpdateLayout();
-                }
-
-                await tcs.Task;
+                return Task.CompletedTask;
             }
-            finally
+
+            var tcs = new TaskCompletionSource<bool>();
+            void layoutUpdated(object s1, object e1)
             {
                 element.LayoutUpdated -= layoutUpdated;
+                tcs.TrySetResult(true);
             }
+
+            token.Register(() =>
+            {
+                element.LayoutUpdated -= layoutUpdated;
+                tcs.TrySetCanceled();
+            });
+
+            element.LayoutUpdated += layoutUpdated;
+            return tcs.Task;
+        }
+
+        public static Task DispatchAsync(this FrameworkElement element)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            _ = element.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                tcs.TrySetResult(true);
+            });
+
+            return tcs.Task;
         }
     }
 
