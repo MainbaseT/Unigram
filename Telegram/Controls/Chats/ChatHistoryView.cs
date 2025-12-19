@@ -6,6 +6,7 @@
 //
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Collections;
 using Telegram.Common;
@@ -46,8 +47,6 @@ namespace Telegram.Controls.Chats
                 return true;
             }
         }
-
-        private bool _loadingSlice;
 
         private readonly DispatcherTimer _scrollTracker = new();
 
@@ -292,75 +291,32 @@ namespace Telegram.Controls.Chats
                 : PanelScrollingDirection.None);
         }
 
-        public async void ViewChanging(PanelScrollingDirection direction = PanelScrollingDirection.None)
+        public void ViewChanging(PanelScrollingDirection direction = PanelScrollingDirection.None)
         {
             ScrollingDirection = direction;
 
-            if (ScrollingHost == null || ItemsPanelRoot is not ItemsStackPanel panel || ViewModel == null || IsDisconnected || _loadingSlice)
+            if (ScrollingHost == null || ItemsPanelRoot is not ItemsStackPanel panel || ViewModel == null || IsDisconnected)
             {
                 return;
             }
 
-            _loadingSlice = true;
-
             var lastSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsNewestSliceLoaded != true : ViewModel.IsOldestSliceLoaded != true;
             var firstSlice = ViewModel.IsSavedMessagesTab ? ViewModel.IsOldestSliceLoaded != true : ViewModel.IsNewestSliceLoaded != true;
 
-            if (direction == PanelScrollingDirection.Backward
-                && panel.FirstCacheIndex == 0
-                && lastSlice)
+            if (direction != PanelScrollingDirection.Backward && panel.LastCacheIndex == ViewModel.Items.Count - 1)
             {
-                Logger.Debug($"Going {direction}, loading history in the past");
-                await LoadNextSliceAsync();
+                LoadPreviousSlice(direction, firstSlice);
             }
-            else if (direction == PanelScrollingDirection.Forward
-                && panel.LastCacheIndex == ViewModel.Items.Count - 1)
-            {
-                await LoadPreviousSliceAsync(direction, firstSlice);
-            }
-            else if (direction == PanelScrollingDirection.None)
-            {
-                if (lastSlice && panel.FirstVisibleIndex == 0)
-                {
-                    Logger.Debug($"Going {direction}, loading history in the past");
-                    await LoadNextSliceAsync();
-                }
-
-                if (panel.LastCacheIndex == ViewModel.Items.Count - 1)
-                {
-                    await LoadPreviousSliceAsync(direction, firstSlice);
-                }
-            }
-
-            _loadingSlice = false;
         }
 
-        private Task LoadNextSliceAsync()
-        {
-            if (ViewModel.IsSavedMessagesTab)
-            {
-                return ViewModel.LoadPreviousSliceAsync();
-            }
-
-            return ViewModel.LoadNextSliceAsync();
-        }
-
-        private Task LoadPreviousSliceAsync(PanelScrollingDirection direction, bool firstSlice)
+        private void LoadPreviousSlice(PanelScrollingDirection direction, bool firstSlice)
         {
             if (firstSlice)
             {
-                Logger.Debug($"Going {direction}, loading history in the future");
-
-                if (ViewModel.IsSavedMessagesTab)
-                {
-                    return ViewModel.LoadNextSliceAsync();
-                }
-
-                return ViewModel.LoadPreviousSliceAsync();
+                return;
             }
 
             SetScrollingMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
-            return Task.CompletedTask;
         }
 
         private ItemsUpdatingScrollMode _currentMode;
@@ -873,5 +829,362 @@ namespace Telegram.Controls.Chats
         }
 
         #endregion
+    }
+
+    public class BidirectionalIncrementalLoader
+    {
+        private readonly ChatHistoryView _listView;
+        private ScrollViewer _scrollViewer;
+        private ItemsStackPanel _itemsPanel;
+
+        private int _activeLoadOperations;
+        private CancellationTokenSource _cts;
+
+        private bool _isMonitoring;
+        private bool _isInitialized;
+
+        private readonly double _baseTopTriggerThreshold;
+        private readonly double _baseBottomTriggerThreshold;
+        private readonly double _minThresholdMultiplier;
+        private readonly double _maxThresholdMultiplier;
+        private readonly TimeSpan _checkInterval;
+        private DateTime _lastCheckTime = DateTime.MinValue;
+
+        private int _consecutiveSizeChangedChecks;
+        private const int MaxConsecutiveSizeChangedChecks = 20;
+        private double _lastPanelHeight;
+
+        private DialogViewModel _viewModel;
+
+        public BidirectionalIncrementalLoader(
+            ChatHistoryView listView,
+            double baseTopTriggerThreshold = 800.0,
+            double baseBottomTriggerThreshold = 800.0,
+            double minThresholdMultiplier = 0.5,
+            double maxThresholdMultiplier = 2.0,
+            TimeSpan? checkInterval = null)
+        {
+            _listView = listView ?? throw new ArgumentNullException(nameof(listView));
+
+            _baseTopTriggerThreshold = baseTopTriggerThreshold;
+            _baseBottomTriggerThreshold = baseBottomTriggerThreshold;
+            _minThresholdMultiplier = minThresholdMultiplier;
+            _maxThresholdMultiplier = maxThresholdMultiplier;
+            _checkInterval = checkInterval ?? TimeSpan.FromMilliseconds(150);
+
+            _listView.Loaded += OnListViewLoaded;
+            _listView.Unloaded += OnListViewUnloaded;
+        }
+
+        public void Initialize(DialogViewModel viewModel)
+        {
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+
+            if (_viewModel != null)
+            {
+                _viewModel.MessagesLoaded -= OnMessagesLoaded;
+            }
+
+            _isInitialized = false;
+            _activeLoadOperations = 0;
+            _consecutiveSizeChangedChecks = 0;
+
+            _viewModel = viewModel;
+            _viewModel.MessagesLoaded += OnMessagesLoaded;
+        }
+
+        private void OnMessagesLoaded(object sender, MessagesLoadedEventArgs e)
+        {
+            if (e.Direction == PanelScrollingDirection.None)
+            {
+                _isInitialized = true;
+
+                if (_isMonitoring && _scrollViewer != null)
+                {
+                    CheckNonScrollableState();
+                }
+            }
+            else if (e.Direction == PanelScrollingDirection.Backward)
+            {
+                //_listView.SetScrollingMode(ItemsUpdatingScrollMode.KeepItemsInView, force: false);
+            }
+            else if (e.Direction == PanelScrollingDirection.Forward)
+            {
+                //_listView.SetScrollingMode(ItemsUpdatingScrollMode.KeepLastItemInView, force: false);
+            }
+        }
+
+        private void OnListViewLoaded(object sender, RoutedEventArgs e)
+        {
+            _scrollViewer = _listView.ScrollingHost;
+            if (_scrollViewer == null)
+            {
+                return;
+            }
+
+            _itemsPanel = _listView.ItemsPanelRoot as ItemsStackPanel;
+            if (_itemsPanel == null)
+            {
+                return;
+            }
+
+            StartMonitoring();
+        }
+
+        private void OnListViewUnloaded(object sender, RoutedEventArgs e)
+        {
+            StopMonitoring();
+        }
+
+        private void StartMonitoring()
+        {
+            if (_isMonitoring) return;
+
+            _isMonitoring = true;
+            _scrollViewer.ViewChanged += OnViewChanged;
+            _itemsPanel.SizeChanged += OnItemsPanelSizeChanged;
+            _lastPanelHeight = _itemsPanel.ActualHeight;
+
+            if (_isInitialized)
+            {
+                CheckNonScrollableState();
+            }
+        }
+
+        private void StopMonitoring()
+        {
+            if (!_isMonitoring) return;
+
+            _isMonitoring = false;
+            _scrollViewer.ViewChanged -= OnViewChanged;
+            _itemsPanel.SizeChanged -= OnItemsPanelSizeChanged;
+            _consecutiveSizeChangedChecks = 0;
+        }
+
+        private void OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            if (!_isInitialized || _viewModel == null)
+                return;
+
+            _consecutiveSizeChangedChecks = 0;
+
+            if (!e.IsIntermediate)
+            {
+                _lastCheckTime = DateTime.MinValue;
+                CheckAndLoad();
+            }
+            else
+            {
+                var now = DateTime.UtcNow;
+                if (now - _lastCheckTime >= _checkInterval)
+                {
+                    _lastCheckTime = now;
+                    CheckAndLoad();
+                }
+            }
+        }
+
+        private void OnItemsPanelSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!_isInitialized || _viewModel == null)
+                return;
+
+            if (Math.Abs(e.NewSize.Height - _lastPanelHeight) < 0.1)
+                return;
+
+            _lastPanelHeight = e.NewSize.Height;
+            CheckNonScrollableState();
+        }
+
+        private void CheckNonScrollableState()
+        {
+            if (_activeLoadOperations > 0 || _viewModel == null)
+            {
+                _consecutiveSizeChangedChecks = 0;
+                return;
+            }
+
+            if (!_viewModel.HasMoreItemsAtTop && !_viewModel.HasMoreItemsAtBottom)
+            {
+                _consecutiveSizeChangedChecks = 0;
+                return;
+            }
+
+            bool isScrollable = _scrollViewer.ScrollableHeight > 0;
+            if (!isScrollable)
+            {
+                _consecutiveSizeChangedChecks++;
+
+                if (_consecutiveSizeChangedChecks > MaxConsecutiveSizeChangedChecks)
+                {
+                    _consecutiveSizeChangedChecks = 0;
+                    return;
+                }
+
+                if (_viewModel.HasMoreItemsAtTop)
+                {
+                    LoadItems(PanelScrollingDirection.Backward);
+                }
+                else if (_viewModel.HasMoreItemsAtBottom)
+                {
+                    LoadItems(PanelScrollingDirection.Forward);
+                }
+            }
+            else
+            {
+                _consecutiveSizeChangedChecks = 0;
+                CheckAndLoad();
+            }
+        }
+
+        private void CheckAndLoad()
+        {
+            if (!_isInitialized || _scrollViewer == null || _itemsPanel == null || _viewModel == null)
+                return;
+
+            var verticalOffset = _scrollViewer.VerticalOffset;
+            var viewportHeight = _scrollViewer.ViewportHeight;
+            var scrollableHeight = _scrollViewer.ScrollableHeight;
+
+            if (scrollableHeight == 0)
+                return;
+
+            var (topThreshold, bottomThreshold) = CalculateDynamicThresholds(
+                verticalOffset,
+                viewportHeight,
+                scrollableHeight
+            );
+
+            if (_viewModel.HasMoreItemsAtTop && verticalOffset < topThreshold)
+            {
+                LoadItems(PanelScrollingDirection.Backward);
+            }
+
+            var distanceFromBottom = scrollableHeight - verticalOffset;
+            if (_viewModel.HasMoreItemsAtBottom && distanceFromBottom < bottomThreshold)
+            {
+                LoadItems(PanelScrollingDirection.Forward);
+            }
+        }
+
+        private (double topThreshold, double bottomThreshold) CalculateDynamicThresholds(
+            double verticalOffset,
+            double viewportHeight,
+            double scrollableHeight)
+        {
+            double relativePosition = scrollableHeight > 0
+                ? verticalOffset / scrollableHeight
+                : 0.5;
+
+            double totalContentHeight = scrollableHeight + viewportHeight;
+
+            double contentRatio = totalContentHeight / viewportHeight;
+            double sizeMultiplier = Math.Clamp(
+                contentRatio / 5.0,
+                _minThresholdMultiplier,
+                _maxThresholdMultiplier
+            );
+
+            double topPositionMultiplier = 1.0 + (1.0 - relativePosition) * 0.5;
+            double bottomPositionMultiplier = 1.0 + relativePosition * 0.5;
+
+            double topThreshold = Math.Min(
+                _baseTopTriggerThreshold * sizeMultiplier * topPositionMultiplier,
+                viewportHeight * 2.0
+            );
+
+            double bottomThreshold = Math.Min(
+                _baseBottomTriggerThreshold * sizeMultiplier * bottomPositionMultiplier,
+                viewportHeight * 2.0
+            );
+
+            return (topThreshold, bottomThreshold);
+        }
+
+        private void LoadItems(PanelScrollingDirection direction)
+        {
+            if (_viewModel == null)
+                return;
+
+            Interlocked.Increment(ref _activeLoadOperations);
+
+            //if (direction == PanelScrollingDirection.Backward)
+            //{
+            //    _listView.SetScrollingMode(ItemsUpdatingScrollMode.KeepItemsInView, force: true);
+            //}
+            //else if (direction == PanelScrollingDirection.Forward)
+            //{
+            //    _listView.SetScrollingMode(ItemsUpdatingScrollMode.KeepLastItemInView, force: true);
+            //}
+
+            _ = LoadItemsInternalAsync(direction);
+        }
+
+        private async Task LoadItemsInternalAsync(PanelScrollingDirection direction)
+        {
+            var ct = _cts.Token;
+
+            try
+            {
+                if (ct.IsCancellationRequested || _viewModel == null)
+                    return;
+
+                await _viewModel.LoadNextSliceAsync(direction);
+                await _scrollViewer.UpdateLayoutAsync(ct);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected during cancellation or view model swap
+            }
+            catch (Exception)
+            {
+                // View model should handle its own errors
+                // We just track the operation completion
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _activeLoadOperations);
+
+                if (!ct.IsCancellationRequested && _viewModel != null)
+                {
+                    CheckContinueLoading(direction);
+                }
+            }
+        }
+
+        private void CheckContinueLoading(PanelScrollingDirection direction)
+        {
+            var verticalOffset = _scrollViewer.VerticalOffset;
+            var viewportHeight = _scrollViewer.ViewportHeight;
+            var scrollableHeight = _scrollViewer.ScrollableHeight;
+
+            if (scrollableHeight == 0)
+            {
+                return;
+            }
+
+            var (topThreshold, bottomThreshold) = CalculateDynamicThresholds(
+                verticalOffset,
+                viewportHeight,
+                scrollableHeight
+            );
+
+            if (direction == PanelScrollingDirection.Backward)
+            {
+                if (_viewModel.HasMoreItemsAtTop && verticalOffset < topThreshold)
+                {
+                    LoadItems(PanelScrollingDirection.Backward);
+                }
+            }
+            else if (direction == PanelScrollingDirection.Forward)
+            {
+                var distanceFromBottom = scrollableHeight - verticalOffset;
+                if (_viewModel.HasMoreItemsAtBottom && distanceFromBottom < bottomThreshold)
+                {
+                    LoadItems(PanelScrollingDirection.Forward);
+                }
+            }
+        }
     }
 }

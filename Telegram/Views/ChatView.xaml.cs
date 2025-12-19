@@ -151,6 +151,8 @@ namespace Telegram.Views
 
             _focusState = new DebouncedProperty<FocusState>(100, FocusText, CanFocusText);
 
+            _loader = new BidirectionalIncrementalLoader(Messages);
+
             Messages.Delegate = this;
             Messages.ItemsSource = _messages;
             Messages.RegisterPropertyChangedCallback(ListViewBase.SelectionModeProperty, List_SelectionModeChanged);
@@ -416,7 +418,6 @@ namespace Telegram.Views
                 ViewModel.Dispose();
 
                 ViewModel.Initialized -= OnInitialized;
-                ViewModel.MessagesLoaded -= OnMessagesLoaded;
                 ViewModel.PropertyChanged -= OnPropertyChanged;
                 ViewModel.Items.AttachChanged = null;
                 ViewModel.Items.CollectionChanged -= OnCollectionChanged;
@@ -450,6 +451,7 @@ namespace Telegram.Views
             }
         }
 
+        private readonly BidirectionalIncrementalLoader _loader;
         private readonly SynchronizedList<MessageViewModel> _messages = new();
         private readonly IndexShiftTracker _messagesShift = new();
 
@@ -466,7 +468,9 @@ namespace Telegram.Views
             {
                 _headerUnreadNotReady = viewModel.HasUnreadMessages;
 
+                _loader.Initialize(viewModel);
                 _messages.UpdateSource(viewModel.Items, viewModel.IsSavedMessagesTab);
+
                 viewModel.Initialized -= OnInitialized;
 
                 if (!viewModel.HasProtectedContent)
@@ -478,14 +482,6 @@ namespace Telegram.Views
             _updateThemeTask?.TrySetResult(true);
 
             Bindings.Update();
-        }
-
-        private void OnMessagesLoaded(object sender, EventArgs e)
-        {
-            if (Messages.ScrollingHost?.ScrollableHeight < Messages.ScrollingHost?.ViewportHeight)
-            {
-                Messages.ViewChanging();
-            }
         }
 
         public void DisableScreenCapture()
@@ -522,7 +518,6 @@ namespace Telegram.Views
 
             _updateThemeTask = new TaskCompletionSource<bool>();
             ViewModel.Initialized += OnInitialized;
-            ViewModel.MessagesLoaded += OnMessagesLoaded;
             ViewModel.TextField = TextField;
             ViewModel.HistoryField = Messages;
             ViewModel.Sticker_Click = Stickers_ItemClick;

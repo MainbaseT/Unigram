@@ -41,6 +41,16 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels
 {
+    public class MessagesLoadedEventArgs : EventArgs
+    {
+        public PanelScrollingDirection Direction { get; init; }
+
+        public MessagesLoadedEventArgs(PanelScrollingDirection direction)
+        {
+            Direction = direction;
+        }
+    }
+
     public partial class ChatMessageTopic : IEquatable<ChatMessageTopic>
     {
         public ChatMessageTopic(long chatId, MessageTopic messageTopic)
@@ -716,12 +726,16 @@ namespace Telegram.ViewModels
             set => Set(ref _greetingSticker, value);
         }
 
+        public bool HasMoreItemsAtTop => IsSavedMessagesTab ? IsNewestSliceLoaded != true : IsOldestSliceLoaded != true;
+
         private bool? _isNewestSliceLoaded;
         public bool? IsNewestSliceLoaded
         {
             get => _isNewestSliceLoaded;
             set => Set(ref _isNewestSliceLoaded, value);
         }
+
+        public bool HasMoreItemsAtBottom => IsSavedMessagesTab ? IsOldestSliceLoaded != true : IsNewestSliceLoaded != true;
 
         private bool? _isOldestSliceLoaded;
         public bool? IsOldestSliceLoaded
@@ -760,22 +774,17 @@ namespace Telegram.ViewModels
 
         public Stack<long> RepliesStack => _repliesStack;
 
-        // Scrolling to top
-        public virtual Task LoadNextSliceAsync()
-        {
-            return LoadNextSliceAsync(PanelScrollingDirection.Backward);
-        }
-
-        // Scrolling to bottom
-        public Task LoadPreviousSliceAsync()
-        {
-            return LoadNextSliceAsync(PanelScrollingDirection.Forward);
-        }
-
-        private async Task LoadNextSliceAsync(PanelScrollingDirection direction)
+        public async Task LoadNextSliceAsync(PanelScrollingDirection direction)
         {
             // Backward => Going to top, to the past
             // Forward => Going to bottom, to the present
+
+            if (IsSavedMessagesTab)
+            {
+                direction = direction == PanelScrollingDirection.Forward
+                    ? PanelScrollingDirection.Backward
+                    : PanelScrollingDirection.Forward;
+            }
 
             if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned)
             {
@@ -942,7 +951,7 @@ namespace Telegram.ViewModels
 
             _loadingSlice = false;
             IsLoading = false;
-            MessagesLoaded?.Invoke(this, EventArgs.Empty);
+            MessagesLoaded?.Invoke(this, new MessagesLoadedEventArgs(direction));
 
             PinnedMessages.LoadSlice(fromMessageId, direction);
         }
@@ -1187,7 +1196,7 @@ namespace Telegram.ViewModels
         // This is to notify the view to update bindings
         public event EventHandler Initialized;
 
-        public event EventHandler MessagesLoaded;
+        public event EventHandler<MessagesLoadedEventArgs> MessagesLoaded;
 
         protected void NotifyInitialized()
         {
@@ -1282,7 +1291,18 @@ namespace Telegram.ViewModels
 
             System.Diagnostics.Debug.WriteLine("DialogViewModel: LoadMessageSliceAsync");
 
-            var response = await Task.Run(() => LoadMessageSliceImpl(chat, fromMessageId, fromDateOffset, alignment, direction, pixel));
+            var func = Task.Run(() => LoadMessageSliceImpl(chat, fromMessageId, fromDateOffset, alignment, direction, pixel));
+
+            if (alignment != VerticalAlignment.Center)
+            {
+                var wait = await Task.WhenAny(func, Task.Delay(200));
+                if (wait != func)
+                {
+                    NotifyInitialized();
+                }
+            }
+
+            var response = await func;
             if (response is LoadSliceResult slice)
             {
                 _groupedMessages.Clear();
@@ -1375,7 +1395,7 @@ namespace Telegram.ViewModels
 
             _loadingSlice = false;
             IsLoading = false;
-            MessagesLoaded?.Invoke(this, EventArgs.Empty);
+            MessagesLoaded?.Invoke(this, new MessagesLoadedEventArgs(PanelScrollingDirection.None));
 
             PinnedMessages.LoadSlice(fromMessageId);
 
@@ -1507,17 +1527,6 @@ namespace Telegram.ViewModels
                 }
 
                 func = GetChatHistoryAsync(chat.Id, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit, alignment == VerticalAlignment.Top);
-            }
-
-            if (alignment != VerticalAlignment.Center)
-            {
-                var wait = await Task.WhenAny(func, Task.Delay(200));
-                if (wait != func)
-                {
-                    Dispatcher.Dispatch(NotifyInitialized);
-                    //Items.Clear();
-                    //NotifyMessageSliceLoaded();
-                }
             }
 
             var response = await func;
