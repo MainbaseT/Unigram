@@ -77,5 +77,6 @@ namespace Telegram.Native
         static String GetLogMessage(Int64 format, Int64 args);
 
         static void Crash();
+        static Boolean Collect;
     }
 } // namespace Telegram.Native

@@ -18,6 +18,7 @@ typedef void (*td_log_message_callback_ptr)(int verbosity_level, const char* mes
 
 using PFN_td_set_log_message_callback = WINUSERAPI void(WINAPI*)(int max_verbosity_level, td_log_message_callback_ptr callback);
 using PFN_RhGetCurrentObjSize = WINUSERAPI INT64(WINAPI*)();
+using PFN_RhCollect = WINUSERAPI void(WINAPI*)(int generation, int mode);
 
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::UI::Text;
@@ -75,9 +76,20 @@ namespace winrt::Telegram::Native::implementation
 
         static void Crash();
 
+        static bool Collect()
+        {
+            return s_collect.load();
+        }
+
+        static void Collect(bool value)
+        {
+            s_collect = value;
+        }
+
         static FatalErrorCallback Callback;
 
         static PFN_RhGetCurrentObjSize s_RhGetCurrentObjSize;
+        static PFN_RhCollect s_RhCollect;
 
     private:
         static winrt::Telegram::Native::FatalError GetStowedException2(STOWED_EXCEPTION_INFORMATION_V2* stowed);
@@ -88,9 +100,19 @@ namespace winrt::Telegram::Native::implementation
         static ULONGLONG FileTimeToSeconds(FILETIME& ft);
         static bool IsFileReadableInternal(hstring path, int64_t* fileSize, int64_t* fileTime);
 
+        static std::atomic<bool> s_collect;
+
         static INT64 RhGetCurrentObjSize()
         {
             return 0x7FFFFFFFFFFFFFFF;
+        }
+
+        static void RhCollect(int generation, int mode)
+        {
+            if (s_collect.load())
+            {
+                s_RhCollect(generation, mode);
+            }
         }
     };
 } // namespace winrt::Telegram::Native::implementation

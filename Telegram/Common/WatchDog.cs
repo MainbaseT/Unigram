@@ -366,7 +366,7 @@ namespace Telegram
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private class MEMORYSTATUSEX
+        private struct MEMORYSTATUSEX
         {
             public uint dwLength;
             public uint dwMemoryLoad;
@@ -378,9 +378,12 @@ namespace Telegram
             public ulong ullAvailVirtual;
             public ulong ullAvailExtendedVirtual;
 
-            public MEMORYSTATUSEX()
+            public static MEMORYSTATUSEX Create()
             {
-                dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>();
+                return new MEMORYSTATUSEX
+                {
+                    dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>()
+                };
             }
         }
 
@@ -404,7 +407,7 @@ namespace Telegram
 
         public static unsafe void MemoryStatus()
         {
-            var status = new MEMORYSTATUSEX();
+            var status = MEMORYSTATUSEX.Create();
 #if NET9_0_OR_GREATER
             GlobalMemoryStatusEx(&status);
 #else
@@ -428,7 +431,7 @@ namespace Telegram
 
             var count = SettingsService.Current.Diagnostics.UpdateCount;
 
-            var status = new MEMORYSTATUSEX();
+            var status = MEMORYSTATUSEX.Create();
 #if NET9_0_OR_GREATER
             GlobalMemoryStatusEx(&status);
 #else
