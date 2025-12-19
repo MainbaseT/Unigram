@@ -774,7 +774,7 @@ namespace Telegram.ViewModels
 
         public Stack<long> RepliesStack => _repliesStack;
 
-        public async Task LoadNextSliceAsync(PanelScrollingDirection direction)
+        public virtual async Task LoadNextSliceAsync(PanelScrollingDirection direction)
         {
             // Backward => Going to top, to the past
             // Forward => Going to bottom, to the present

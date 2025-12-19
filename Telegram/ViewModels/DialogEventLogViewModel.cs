@@ -163,7 +163,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public override async Task LoadNextSliceAsync()
+        public override async Task LoadNextSliceAsync(PanelScrollingDirection direction)
         {
             var chat = _chat;
             if (chat == null)
@@ -171,7 +171,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            if (_loadingSlice || Items.Count < 1 || IsOldestSliceLoaded == true)
+            if (_loadingSlice || Items.Count < 1 || IsOldestSliceLoaded == true || direction != PanelScrollingDirection.Backward)
             {
                 return;
             }
