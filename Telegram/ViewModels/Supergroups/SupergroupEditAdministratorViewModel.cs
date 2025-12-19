@@ -190,7 +190,7 @@ namespace Telegram.ViewModels.Supergroups
                     _canPostStories &&
                     _canEditStories &&
                     _canDeleteStories &&
-                    (supergroup.IsChannel || _canRestrictMembers) &&
+                    _canRestrictMembers &&
                     (supergroup.IsChannel || _canManageVideoChats) &&
                     (!_isForum || _canManageTopics);
             }
@@ -566,7 +566,7 @@ namespace Telegram.ViewModels.Supergroups
                         CanEditStories = _canEditStories,
                         CanDeleteStories = _canDeleteStories,
                         CanPromoteMembers = _canPromoteMembers,
-                        CanRestrictMembers = !channel && _canRestrictMembers,
+                        CanRestrictMembers = _canRestrictMembers,
                         CanManageVideoChats = !channel && _canManageVideoChats,
                         CanManageTopics = _isForum && _canManageTopics,
                     },

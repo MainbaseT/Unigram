@@ -132,7 +132,6 @@ namespace Telegram.Views.Supergroups.Popups
 
                 ChangeInfo.Content = group.IsChannel ? Strings.EditAdminChangeChannelInfo : Strings.EditAdminChangeGroupInfo;
                 ManageDirectMessages.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
-                BanUsers.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 PinMessages.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 IsAnonymous.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 ManageTopics.Visibility = ViewModel.IsForum ? Visibility.Visible : Visibility.Collapsed;
