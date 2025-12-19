@@ -11,6 +11,7 @@
                    xmlns:viewModels="using:Telegram.ViewModels"
                    xmlns:local="using:Telegram.Views"
                    xmlns:navigation="using:Telegram.Navigation.Services"
+                   xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
                    mc:Ignorable="d"
                    Loaded="OnLoaded"
                    Unloaded="OnUnloaded">
@@ -60,9 +61,9 @@
                              Click="Status_Click"
                              Style="{StaticResource EmptyHyperlinkButtonStyle}"
                              IsTabStop="False"
-                             Margin="-10,0,4,0"
-                             Width="40"
-                             Height="40"
+                             Margin="4"
+                             Width="32"
+                             Height="32"
                              Grid.Column="1">
                 <Grid Background="Transparent">
                     <Border x:Name="LogoBasic"
@@ -261,119 +262,221 @@
             </controls:ChatFoldersNavView>
         </Grid>
 
-        <controls:MenuButton x:Name="Photo"
-                             Click="Photo_Click"
-                             GettingFocus="ChatsList_GettingFocus"
-                             Type="Back"
-                             TabIndex="0"
-                             HorizontalAlignment="Left"
-                             VerticalAlignment="Center"
-                             Width="48"
-                             Height="40"
-                             AutomationProperties.LandmarkType="Navigation"
-                             AutomationProperties.Name="{CustomResource AccDescrOpenMenu}"
-                             ToolTipService.ToolTip="{CustomResource AccDescrOpenMenu}"
-                             Canvas.ZIndex="2"
-                             Grid.ColumnSpan="2"
-                             Grid.Row="0">
-            <controls:MenuButton.Style>
-                <Style TargetType="controls:MenuButton">
+        <controls:NavigationButton x:Name="Photo"
+                                   Click="Photo_Click"
+                                   GettingFocus="ChatsList_GettingFocus"
+                                   TabIndex="0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Width="48"
+                                   Height="40"
+                                   AutomationProperties.LandmarkType="Navigation"
+                                   AutomationProperties.Name="{CustomResource AccDescrOpenMenu}"
+                                   ToolTipService.ToolTip="{CustomResource AccDescrOpenMenu}"
+                                   Canvas.ZIndex="2"
+                                   Grid.ColumnSpan="2"
+                                   Grid.Row="0">
+            <controls:NavigationButton.Style>
+                <Style TargetType="controls:NavigationButton">
                     <Setter Property="Background"
                             Value="Transparent" />
                     <Setter Property="Foreground"
-                            Value="{ThemeResource TextFillColorPrimaryBrush}" />
-                    <Setter Property="BorderBrush"
-                            Value="{ThemeResource TextFillColorPrimaryBrush}" />
-                    <Setter Property="BorderThickness"
-                            Value="0" />
-                    <Setter Property="Padding"
-                            Value="0" />
-                    <Setter Property="HorizontalAlignment"
-                            Value="Left" />
+                            Value="{ThemeResource NavigationViewItemForeground}" />
+                    <Setter Property="FontFamily"
+                            Value="{ThemeResource SymbolThemeFontFamily}" />
+                    <Setter Property="FontSize"
+                            Value="16" />
+                    <Setter Property="Height"
+                            Value="{ThemeResource NavigationBackButtonHeight}" />
+                    <Setter Property="Width"
+                            Value="{ThemeResource NavigationBackButtonWidth}" />
                     <Setter Property="HorizontalContentAlignment"
                             Value="Center" />
-                    <Setter Property="VerticalAlignment"
-                            Value="Top" />
                     <Setter Property="VerticalContentAlignment"
                             Value="Center" />
-                    <Setter Property="FontFamily"
-                            Value="{StaticResource SymbolThemeFontFamily}" />
-                    <Setter Property="Height"
-                            Value="48" />
-                    <Setter Property="Width"
-                            Value="40" />
-                    <Setter Property="FontWeight"
-                            Value="Normal" />
-                    <Setter Property="FontSize"
-                            Value="20" />
                     <Setter Property="UseSystemFocusVisuals"
-                            Value="True" />
-                    <Setter Property="FocusVisualMargin"
-                            Value="-3" />
+                            Value="{StaticResource UseSystemFocusVisuals}" />
+                    <Setter Property="Content"
+                            Value="&#xE72B;" />
                     <Setter Property="CornerRadius"
-                            Value="{StaticResource GlyphButtonCornerRadius}" />
+                            Value="{ThemeResource ControlCornerRadius}" />
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="controls:MenuButton">
+                            <ControlTemplate TargetType="controls:NavigationButton">
                                 <Grid x:Name="RootGrid"
                                       Background="{TemplateBinding Background}"
                                       CornerRadius="{TemplateBinding CornerRadius}"
                                       Margin="{StaticResource GlyphButtonPadding}">
+
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState x:Name="Normal" />
+
                                             <VisualState x:Name="PointerOver">
+
                                                 <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
-                                                                                   Storyboard.TargetName="RootGrid">
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                                   Storyboard.TargetProperty="Background">
                                                         <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                Value="{ThemeResource SystemControlBackgroundListLowBrush}" />
+                                                                                Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPointerOver}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PaneContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPointerOver}" />
                                                     </ObjectAnimationUsingKeyFrames>
                                                 </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="BackContent.(local:AnimatedIcon.State)"
+                                                            Value="PointerOver" />
+                                                    <Setter Target="PaneContent.(local:AnimatedIcon.State)"
+                                                            Value="PointerOver" />
+                                                </VisualState.Setters>
                                             </VisualState>
+
                                             <VisualState x:Name="Pressed">
+
                                                 <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
-                                                                                   Storyboard.TargetName="RootGrid">
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                                   Storyboard.TargetProperty="Background">
                                                         <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                Value="{ThemeResource SystemControlBackgroundListMediumBrush}" />
+                                                                                Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPressed}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PaneContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPressed}" />
                                                     </ObjectAnimationUsingKeyFrames>
                                                 </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="BackContent.(local:AnimatedIcon.State)"
+                                                            Value="Pressed" />
+                                                    <Setter Target="PaneContent.(local:AnimatedIcon.State)"
+                                                            Value="Pressed" />
+                                                </VisualState.Setters>
                                             </VisualState>
-                                            <VisualState x:Name="Disabled" />
                                             <VisualState x:Name="Checked" />
                                             <VisualState x:Name="CheckedPointerOver">
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
-                                                                                   Storyboard.TargetName="RootGrid">
-                                                        <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                Value="{ThemeResource SystemControlBackgroundListLowBrush}" />
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="CheckedPressed">
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
-                                                                                   Storyboard.TargetName="RootGrid">
-                                                        <DiscreteObjectKeyFrame KeyTime="0"
-                                                                                Value="{ThemeResource SystemControlBackgroundListMediumBrush}" />
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="CheckedDisabled" />
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
 
-                                    <Border x:Name="LayoutRoot"
-                                            Width="16"
-                                            Height="16" />
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                                   Storyboard.TargetProperty="Background">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewItemBackgroundPointerOver}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPointerOver}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PaneContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPointerOver}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="BackContent.(local:AnimatedIcon.State)"
+                                                            Value="PointerOver" />
+                                                    <Setter Target="PaneContent.(local:AnimatedIcon.State)"
+                                                            Value="PointerOver" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+
+                                            <VisualState x:Name="CheckedPressed">
+
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid"
+                                                                                   Storyboard.TargetProperty="Background">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewItemBackgroundPressed}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPressed}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PaneContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundPressed}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="BackContent.(local:AnimatedIcon.State)"
+                                                            Value="Pressed" />
+                                                    <Setter Target="PaneContent.(local:AnimatedIcon.State)"
+                                                            Value="Pressed" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+
+                                            <VisualState x:Name="Disabled">
+                                                <Storyboard>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BackContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundDisabled}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PaneContent"
+                                                                                   Storyboard.TargetProperty="Foreground">
+                                                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                                                Value="{ThemeResource NavigationViewButtonForegroundDisabled}" />
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+
+                                    </VisualStateManager.VisualStateGroups>
+                                    <muxc:AnimatedIcon x:Name="BackContent"
+                                                       Height="16"
+                                                       Width="16"
+                                                       muxc:AnimatedIcon.State="Normal"
+                                                       MirroredWhenRightToLeft="True"
+                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                       AutomationProperties.AccessibilityView="Raw"
+                                                       Visibility="Collapsed">
+                                        <animatedvisuals:AnimatedBackVisualSource />
+                                        <muxc:AnimatedIcon.FallbackIconSource>
+                                            <muxc:FontIconSource FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
+                                                                 FontFamily="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontFamily}"
+                                                                 Glyph="&#xE72B;"
+                                                                 MirroredWhenRightToLeft="True" />
+                                        </muxc:AnimatedIcon.FallbackIconSource>
+                                    </muxc:AnimatedIcon>
+                                    <muxc:AnimatedIcon x:Name="PaneContent"
+                                                       Height="16"
+                                                       Width="16"
+                                                       muxc:AnimatedIcon.State="Normal"
+                                                       MirroredWhenRightToLeft="True"
+                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                       AutomationProperties.AccessibilityView="Raw">
+                                        <animatedvisuals:AnimatedGlobalNavigationButtonVisualSource />
+                                        <muxc:AnimatedIcon.FallbackIconSource>
+                                            <muxc:FontIconSource FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize}"
+                                                                 FontFamily="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontFamily}"
+                                                                 Glyph="&#xE700;"
+                                                                 MirroredWhenRightToLeft="True" />
+                                        </muxc:AnimatedIcon.FallbackIconSource>
+                                    </muxc:AnimatedIcon>
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
                 </Style>
-            </controls:MenuButton.Style>
-        </controls:MenuButton>
+            </controls:NavigationButton.Style>
+        </controls:NavigationButton>
 
         <controls:MasterDetailView x:Name="MasterDetail"
                                    ViewStateChanged="OnStateChanged"

@@ -224,10 +224,6 @@ namespace Telegram.Views
                 ? FlowDirection.RightToLeft
                 : FlowDirection.LeftToRight;
 
-            TitleBarLogo.Margin = metrics.LeftInset > 0
-                ? new Thickness(4, 0, -10, 0)
-                : new Thickness(-10, 0, 4, 0);
-
             Photo.HorizontalAlignment = metrics.LeftInset > 0
                 ? HorizontalAlignment.Right
                 : HorizontalAlignment.Left;

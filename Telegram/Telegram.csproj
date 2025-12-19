@@ -381,6 +381,7 @@
     <Compile Include="Controls\Messages\Content\SponsoredContent.xaml.cs">
       <DependentUpon>SponsoredContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NavigationButton.cs" />
     <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
     <Compile Include="Controls\SlidePanel.cs" />

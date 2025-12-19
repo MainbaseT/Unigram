@@ -97,7 +97,7 @@ namespace Telegram.Controls.Cells
             var included = index >= f && index <= l;
             var clamp = Math.Clamp(index, f, l);
 
-            var prevX = 72 * index + 10f - (12 * clamp) /* + 14 */;
+            var prevX = 72 * index + 6f - (12 * clamp) /* + 14 */;
             var nextX = 0;
 
             var diffX = prevX - nextX;
