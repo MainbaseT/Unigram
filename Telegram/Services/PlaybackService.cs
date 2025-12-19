@@ -620,6 +620,11 @@ namespace Telegram.Services
             if (index >= 0 && index <= items.Count - 1)
             {
                 SetSource(player, items[index]);
+
+                if (index == 0 || index == items.Count - 1)
+                {
+                    // TODO: Load more items
+                }
             }
         }
 

@@ -6772,18 +6772,6 @@ public static class ParticlesAnimation_stub
 }
 public static class PlaceholderImageHelper_stub
 {
-    public static System.Numerics.Vector2 ContentEnd_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width)
-    {
-        try
-        {
-            return sender.ContentEnd(text, entities, fontSize, width);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static void Dispose_stub(this Telegram.Native.PlaceholderImageHelper sender)
     {
         try
@@ -6856,18 +6844,6 @@ public static class PlaceholderImageHelper_stub
             throw new RuntimeException(ex);
         }
     }
-    public static Windows.UI.Composition.CompositionPath GetOutline_stub(this Telegram.Native.PlaceholderImageHelper sender, System.Collections.Generic.IList<Telegram.Td.Api.ClosedVectorPath> contours)
-    {
-        try
-        {
-            return sender.GetOutline(contours);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static Windows.UI.Composition.CompositionPath GetReplyMarkupClip_stub(this Telegram.Native.PlaceholderImageHelper sender, System.Collections.Generic.IList<System.Collections.Generic.IList<Windows.Foundation.Rect>> buttons, float bottomRightRadius, float bottomLeftRadius)
     {
         try
@@ -6921,42 +6897,6 @@ public static class PlaceholderImageHelper_stub
         try
         {
             return Telegram.Native.PlaceholderImageHelper.IsWebP(fileName, out pixelWidth, out pixelHeight);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static Windows.Foundation.Rect LayoutMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, int offset, int length, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl)
-    {
-        try
-        {
-            return sender.LayoutMetrics(text, offset, length, entities, fontSize, width, rtl);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static System.Collections.Generic.IList<Windows.Foundation.Rect> LineMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl)
-    {
-        try
-        {
-            return sender.LineMetrics(text, entities, fontSize, width, rtl);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static System.Collections.Generic.IList<Windows.Foundation.Rect> RangeMetrics_stub(this Telegram.Native.PlaceholderImageHelper sender, string text, int offset, int length, System.Collections.Generic.IList<Telegram.Td.Api.TextEntity> entities, double fontSize, double width, bool rtl, bool wrap)
-    {
-        try
-        {
-            return sender.RangeMetrics(text, offset, length, entities, fontSize, width, rtl, wrap);
         }
         catch (Exception ex)
         {
@@ -8265,57 +8205,6 @@ public static class DispatcherQueue_stub
         try
         {
             return sender.TryEnqueue(priority, callback);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-}
-public static class Client_stub
-{
-    public static Telegram.Td.Client Create_stub(Telegram.Td.ClientResultHandler updateHandler)
-    {
-        try
-        {
-            return Telegram.Td.Client.Create(updateHandler);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static Telegram.Td.Api.BaseObject Execute_stub(Telegram.Td.Api.Function function)
-    {
-        try
-        {
-            return Telegram.Td.Client.Execute(function);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void Send_stub(this Telegram.Td.Client sender, Telegram.Td.Api.Function function, Telegram.Td.ClientResultHandler handler)
-    {
-        try
-        {
-            sender.Send(function, handler);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void SetLogMessageCallback_stub(int max_verbosity_level, Telegram.Td.LogMessageCallback callback)
-    {
-        try
-        {
-            Telegram.Td.Client.SetLogMessageCallback(max_verbosity_level, callback);
         }
         catch (Exception ex)
         {

@@ -526,11 +526,6 @@ namespace Telegram.Services
                         _settingsService,
                         _storageService ??= new Telegram.Services.StorageService(_clientService),
                         _eventAggregator);
-                case "Telegram.ViewModels.Settings.SettingsDataAutoViewModel":
-                    return (T)(object)new Telegram.ViewModels.Settings.SettingsDataAutoViewModel(
-                        _clientService,
-                        _settingsService,
-                        _eventAggregator);
                 case "Telegram.ViewModels.Settings.SettingsProxyViewModel":
                     return (T)(object)new Telegram.ViewModels.Settings.SettingsProxyViewModel(
                         _clientService,

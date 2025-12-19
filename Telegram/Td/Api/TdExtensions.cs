@@ -25,6 +25,7 @@ using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Settings;
 using Windows.UI;
+using Windows.UI.Composition;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Td.Api
@@ -4325,6 +4326,64 @@ namespace Telegram.Td.Api
             var brush = new LinearGradientBrush();
             brush.GradientStops.Add(new GradientStop { Color = topColor, Offset = 0 });
             brush.GradientStops.Add(new GradientStop { Color = bottomColor, Offset = 1 });
+            brush.StartPoint = topPoint;
+            brush.EndPoint = bottomPoint;
+
+            return brush;
+        }
+
+
+        public static CompositionLinearGradientBrush GetGradient(Compositor compositor, int topColor, int bottomColor, int angle)
+        {
+            return GetGradient(compositor, topColor.ToColor(), bottomColor.ToColor(), angle);
+        }
+
+        public static CompositionLinearGradientBrush GetGradient(Compositor compositor, Color topColor, Color bottomColor, int angle)
+        {
+            Vector2 topPoint;
+            Vector2 bottomPoint;
+
+            switch (angle)
+            {
+                case 0:
+                case 360:
+                    topPoint = new Vector2(0.5f, 0);
+                    bottomPoint = new Vector2(0.5f, 1);
+                    break;
+                case 45:
+                default:
+                    topPoint = new Vector2(1, 0);
+                    bottomPoint = new Vector2(0, 1);
+                    break;
+                case 90:
+                    topPoint = new Vector2(1, 0.5f);
+                    bottomPoint = new Vector2(0, 0.5f);
+                    break;
+                case 135:
+                    topPoint = new Vector2(1, 1);
+                    bottomPoint = new Vector2(0, 0);
+                    break;
+                case 180:
+                    topPoint = new Vector2(0.5f, 1);
+                    bottomPoint = new Vector2(0.5f, 0);
+                    break;
+                case 225:
+                    topPoint = new Vector2(0, 1);
+                    bottomPoint = new Vector2(1, 0);
+                    break;
+                case 270:
+                    topPoint = new Vector2(0, 0.5f);
+                    bottomPoint = new Vector2(1, 0.5f);
+                    break;
+                case 315:
+                    topPoint = new Vector2(0, 0);
+                    bottomPoint = new Vector2(1, 1);
+                    break;
+            }
+
+            var brush = compositor.CreateLinearGradientBrush();
+            brush.ColorStops.Add(compositor.CreateColorGradientStop(0, topColor));
+            brush.ColorStops.Add(compositor.CreateColorGradientStop(1, bottomColor));
             brush.StartPoint = topPoint;
             brush.EndPoint = bottomPoint;
 

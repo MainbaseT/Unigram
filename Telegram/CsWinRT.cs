@@ -53,8 +53,7 @@ using WinRT;
 [assembly: GeneratedWinRTExposedExternalType(typeof(System.Collections.Generic.List<Telegram.Td.Api.NameColor>))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(System.Collections.Generic.List<Telegram.Td.Api.ProfileColor>))]
 [assembly: GeneratedWinRTExposedExternalType(typeof(Telegram.Collections.MvxObservableCollection<Telegram.Td.Api.PremiumFeature>))]
-#endif
-
+#else
 namespace WinRT
 {
     // This attribute is just a dummy for making it easier to port the code to .NET 9 and Native AOT.
@@ -63,3 +62,4 @@ namespace WinRT
 
     }
 }
+#endif
