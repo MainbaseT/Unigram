@@ -66,7 +66,8 @@
                     <controls:SettingsButton Content="{CustomResource NotificationsDeleteAllException}"
                                              Foreground="{ThemeResource DangerButtonBackground}"
                                              Glyph="&#xEA09;"
-                                             Click="{x:Bind ViewModel.RemoveAll}" />
+                                             Click="{x:Bind ViewModel.RemoveAll}"
+                                             Visibility="{x:Bind ViewModel.Items.Count, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </controls:HeaderedControl>
             </ListView.Footer>
         </controls:TableListView>
