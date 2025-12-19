@@ -75,7 +75,7 @@ namespace Telegram.Controls
         private async void OnCollectionChanged(object sender, ChatListMovedEventArgs args)
         {
             var panel = ItemsPanelRoot as ItemsStackPanel;
-            if (panel == null || !PowerSavingPolicy.AreSmoothTransitionsEnabled)
+            if (panel == null || !PowerSavingPolicy.AreSmoothTransitionsEnabled || !IsChangeVisible(args.OldIndex, args.NewIndex, panel))
             {
                 return;
             }
@@ -133,7 +133,6 @@ namespace Telegram.Controls
                 var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
                 animation.InsertKeyFrame(0, targetContainer.ActualSize.Y);
                 animation.InsertKeyFrame(1, 0);
-                animation.Duration = TimeSpan.FromSeconds(10);
 
                 visual.Clip ??= visual.Compositor.CreateInsetClip();
                 visual.Clip.StartAnimation("BottomInset", animation);
@@ -154,13 +153,28 @@ namespace Telegram.Controls
                     var animation = visual.Compositor.CreateScalarKeyFrameAnimation();
                     animation.InsertKeyFrame(0, offset * direction);
                     animation.InsertKeyFrame(1, 0);
-                    animation.Duration = TimeSpan.FromSeconds(10);
 
                     visual.StartAnimation("Translation.Y", animation);
                 }
             }
 
             batch.End();
+
+            static bool IsChangeVisible(int oldIndex, int newIndex, ItemsStackPanel panel)
+            {
+                if (oldIndex == -1)
+                {
+                    return newIndex >= panel.FirstVisibleIndex && newIndex <= panel.LastVisibleIndex;
+                }
+                else if (newIndex == -1)
+                {
+                    return oldIndex >= panel.FirstVisibleIndex && oldIndex <= panel.LastVisibleIndex;
+                }
+                else
+                {
+                    return (oldIndex >= panel.FirstVisibleIndex) || (newIndex >= panel.FirstVisibleIndex && newIndex <= panel.LastVisibleIndex);
+                }
+            }
         }
 
         protected override void OnApplyTemplate()
