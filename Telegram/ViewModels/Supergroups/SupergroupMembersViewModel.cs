@@ -34,7 +34,7 @@ namespace Telegram.ViewModels.Supergroups
                 var item = Members.Source.FirstOrDefault(x => x.MemberId.AreTheSame(update.NewChatMember.MemberId));
                 if (item != null)
                 {
-                    if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                    if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator or ChatMemberStatusRestricted)
                     {
                         item.Status = update.NewChatMember.Status;
                     }
@@ -43,7 +43,7 @@ namespace Telegram.ViewModels.Supergroups
                         Members.Source.Remove(item);
                     }
                 }
-                else if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                else if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator or ChatMemberStatusRestricted)
                 {
                     Members.Source.Insert(0, update.NewChatMember);
                 }
