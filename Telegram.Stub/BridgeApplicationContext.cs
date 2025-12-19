@@ -338,7 +338,7 @@ namespace Telegram.Stub
                         response.Add("ClientData", login.ClientDataJson);
                         response.Add("AuthenticatorData", login.AuthenticatorData);
                         response.Add("Signature", login.Signature);
-                        response.Add("UserHandle", Encoding.UTF8.GetString(login.UserHandle));
+                        response.Add("UserHandle", login.UserHandle);
                     }
                     else if (result is Exception exception)
                     {

@@ -200,7 +200,7 @@ namespace Telegram.Common
                         && payload.Message.TryGet("ClientData", out string clientData)
                         && payload.Message.TryGet("AuthenticatorData", out byte[] authenticatorData)
                         && payload.Message.TryGet("Signature", out byte[] signature)
-                        && payload.Message.TryGet("UserHandle", out string userHandle))
+                        && payload.Message.TryGet("UserHandle", out byte[] userHandle))
                     {
                         return await clientService.SendAsync(new CheckAuthenticationPasskey(credentialId, clientData, authenticatorData, signature, userHandle));
                     }
