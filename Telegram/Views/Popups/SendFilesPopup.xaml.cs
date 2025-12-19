@@ -1284,11 +1284,8 @@ namespace Telegram.Views.Popups
 
                 if (IsMediaSelected && Items.All(x => x is StoragePhoto or StorageVideo))
                 {
-                    if (Items.Any(x => x is StoragePhoto && (x.Width > 1280 || x.Height > 1280)))
-                    {
-                        flyout.CreateFlyoutSeparator();
-                        flyout.CreateFlyoutItem(ToggleSendHighQuality, Strings.SendInHighQuality, SendHighQuality ? Icons.Checkmark : null);
-                    }
+                    flyout.CreateFlyoutSeparator();
+                    flyout.CreateFlyoutItem(ToggleSendHighQuality, Strings.SendInHighQuality, SendHighQuality ? Icons.Checkmark : null);
 
                     flyout.CreateFlyoutSeparator();
 
