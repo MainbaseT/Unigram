@@ -2,11 +2,22 @@
 
 #include "MessageBubbleNineGrid.g.h"
 
-#include "PlaceholderImageHelper.h"
-
 #include <winrt/Windows.UI.Composition.h>
 #include <winrt/Windows.UI.Xaml.h>
 #include <windows.ui.xaml.media.dxinterop.h>
+
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.UI.h>
+#include <winrt/Windows.UI.Composition.h>
+#include <winrt/Windows.UI.Xaml.h>
+#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/Windows.Graphics.h>
+#include <winrt/Windows.Graphics.DirectX.h>
+#include <winrt/Windows.Graphics.DirectX.Direct3D11.h>
+#include <winrt/Windows.Graphics.Effects.h>
+#include <winrt/Windows.Graphics.Imaging.h>
+#include <windows.graphics.interop.h>
+#include <windows.graphics.effects.interop.h>
 
 using namespace winrt::Windows::UI::Composition;
 using namespace winrt::Windows::UI::Xaml;
@@ -24,7 +35,7 @@ namespace winrt::Telegram::Native::implementation
     // TODO: this type is not currently exposed through IDL as we just return CompositionEffectBrush
     struct MessageBubbleNineGrid : MessageBubbleNineGridT<MessageBubbleNineGrid>
     {
-        MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, XamlRoot xamlRoot, CompositionDrawingSurface surface, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
+        MessageBubbleNineGrid(CompositionGraphicsDevice device, winrt::com_ptr<ID2D1Factory1> d2dFactory, Compositor compositor, XamlRoot xamlRoot, CompositionDrawingSurface surface, CompositionEffectBrush effect, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius);
 
         ~MessageBubbleNineGrid();
 

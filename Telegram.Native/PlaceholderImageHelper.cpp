@@ -4,8 +4,6 @@
 #include "PlaceholderImageHelper.g.cpp"
 #endif
 
-#include "MessageBubbleNineGrid.h";
-
 #include "SVG/nanosvg.h"
 #include "StringUtils.h"
 #include "Helpers\COMHelper.h"
@@ -408,7 +406,7 @@ namespace winrt::Telegram::Native::implementation
         return native->EndDraw();
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, double rasterizationScale)
+    winrt::Windows::Foundation::IAsyncOperation<ChatBackgroundPattern> PlaceholderImageHelper::DrawSvgAsync(Compositor compositor, hstring path, float intensity, bool negative, double rasterizationScale)
     {
         winrt::apartment_context ui_thread;
         co_await winrt::resume_background();
@@ -416,7 +414,7 @@ namespace winrt::Telegram::Native::implementation
         ChatBackgroundPattern pattern{ nullptr };
         try
         {
-            pattern = DrawSvg(compositor, path, rasterizationScale);
+            pattern = DrawSvg(compositor, path, intensity, negative, rasterizationScale);
         }
         catch (...)
         {
@@ -522,7 +520,7 @@ namespace winrt::Telegram::Native::implementation
         return decompressed;
     }
 
-    ChatBackgroundPattern PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, double rasterizationScale)
+    ChatBackgroundPattern PlaceholderImageHelper::DrawSvg(Compositor compositor, hstring path, float intensity, bool negative, double rasterizationScale)
     {
         std::lock_guard const guard(m_criticalSection);
         HRESULT result;
@@ -577,10 +575,21 @@ namespace winrt::Telegram::Native::implementation
         // And we handle device loss right before this method is invoked.
         CleanupIfFailed(result, surfaceInterop->BeginDraw(nullptr, __uuidof(ID2D1DeviceContext), d2dContext.put_void(), &offset));
 
-        d2dContext->Clear(D2D1::ColorF(0, 0, 0, 0));
-        d2dContext->SetTransform(D2D1::Matrix3x2F::Scale(1 * dpi, 1 * dpi));
+        if (negative)
+        {
+            d2dContext->Clear(D2D1::ColorF(0, 0, 0, 1));
+            d2dContext->SetPrimitiveBlend(D2D1_PRIMITIVE_BLEND_COPY);
 
-        CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 1), blackBrush.put()));
+            CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0, 1 - intensity), blackBrush.put()));
+        }
+        else
+        {
+            d2dContext->Clear(D2D1::ColorF(0, 0, 0, 0));
+
+            CleanupIfFailed(result, d2dContext->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0, intensity), blackBrush.put()));
+        }
+
+        d2dContext->SetTransform(D2D1::Matrix3x2F::Scale(1 * dpi, 1 * dpi));
 
         for (auto shape = image->shapes; shape != NULL; shape = shape->next)
         {
@@ -1574,7 +1583,7 @@ namespace winrt::Telegram::Native::implementation
 
             hstring name;
             result = TryGetLocalizedNameUsingLocaleList(localeNames, familyNames, &name);
-            
+
             if (FAILED(result))
             {
                 result = TryGetLocalizedName(L"en-us", familyNames, &name);
@@ -1592,6 +1601,18 @@ namespace winrt::Telegram::Native::implementation
         }
 
         return families;
+    }
+
+    winrt::Telegram::Native::FreeformGradientSurface PlaceholderImageHelper::CreateFreeformGradient(IVector<Color> colors)
+    {
+        auto surface = CreateDrawingSurface({ 50, 50 });
+        if (surface)
+        {
+            auto gradient = winrt::make_self<FreeformGradientSurface>(m_compositionDevice, m_d2dFactory, m_compositor, surface, colors);
+            return gradient.as<winrt::Telegram::Native::FreeformGradientSurface>();
+        }
+
+        return nullptr;
     }
 
     CompositionEffectBrush PlaceholderImageHelper::GetTail(int topLeftRadius, int topRightRadius, int bottomRightRadius, int bottomLeftRadius)
@@ -1615,11 +1636,12 @@ namespace winrt::Telegram::Native::implementation
                 {
                     double rasterizationScale = xamlRoot.RasterizationScale();
                     SizeInt32 imageSize(std::ceil(MessageBubbleNineGrid::s_width * rasterizationScale), std::ceil(MessageBubbleNineGrid::s_height * rasterizationScale));
-                    
+
                     auto surface = CreateDrawingSurface(imageSize);
                     if (surface)
                     {
-                        auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(get_strong(), xamlRoot, surface, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
+                        auto effect = m_alphaMaskFactory.CreateBrush();
+                        auto nineGrid = winrt::make_self<MessageBubbleNineGrid>(m_compositionDevice, m_d2dFactory, m_compositor, xamlRoot, surface, effect, topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius);
                         m_nineGridCache[key] = nineGrid;
                         return nineGrid->Effect();
                     }

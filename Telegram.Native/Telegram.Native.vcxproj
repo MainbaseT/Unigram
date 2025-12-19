@@ -351,6 +351,10 @@
       <DependentUpon>Controls\FormattedTextBlockBase.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="FreeformGradientSurface.h">
+      <DependentUpon>FreeformGradientSurface.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="Helpers\BlurHelper.h" />
     <ClInclude Include="Helpers\COMHelper.h" />
     <ClInclude Include="Helpers\DebugHelper.h" />
@@ -1025,6 +1029,10 @@
       <DependentUpon>Controls\FormattedTextBlockBase.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="FreeformGradientSurface.cpp">
+      <DependentUpon>FreeformGradientSurface.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="Highlight\SyntaxToken.cpp" />
     <ClCompile Include="Highlight\TextToken.cpp" />
     <ClCompile Include="InternalsRT\CoreWindowHelpers.cpp" />
@@ -1179,6 +1187,9 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Controls\FormattedTextBlockBase.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="FreeformGradientSurface.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Highlight\SyntaxToken.idl" />

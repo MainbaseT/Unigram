@@ -2057,13 +2057,6 @@
                           Background="{TemplateBinding Background}"
                           BorderThickness="{TemplateBinding BorderThickness}"
                           CornerRadius="{TemplateBinding CornerRadius}">
-                        <Border x:Name="Canvas"
-                                Background="{TemplateBinding Foreground}"
-                                CornerRadius="{TemplateBinding CornerRadius}">
-                        </Border>
-                        <Border x:Name="Negative"
-                                Background="{TemplateBinding NegativeBrush}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
                         <local:AnimatedImage x:Name="Symbol"
                                              HorizontalAlignment="Left"
                                              VerticalAlignment="Top"

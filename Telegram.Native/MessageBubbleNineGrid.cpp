@@ -13,10 +13,10 @@ using namespace winrt::Windows::Graphics::DirectX;
 
 namespace winrt::Telegram::Native::implementation
 {
-    MessageBubbleNineGrid::MessageBubbleNineGrid(winrt::com_ptr<PlaceholderImageHelper> context, XamlRoot xamlRoot, CompositionDrawingSurface surface, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
-        : m_compositionDevice(context->m_compositionDevice)
-        , m_d2dFactory(context->m_d2dFactory)
-        , m_compositor(context->m_compositor)
+    MessageBubbleNineGrid::MessageBubbleNineGrid(CompositionGraphicsDevice device, winrt::com_ptr<ID2D1Factory1> d2dFactory, Compositor compositor, XamlRoot xamlRoot, CompositionDrawingSurface surface, CompositionEffectBrush effect, float topLeftRadius, float topRightRadius, float bottomRightRadius, float bottomLeftRadius)
+        : m_compositionDevice(device)
+        , m_d2dFactory(d2dFactory)
+        , m_compositor(compositor)
         , m_xamlRoot(xamlRoot)
         , m_surface(surface.as<abi::ICompositionDrawingSurfaceInterop>())
         , m_topLeftRadius(topLeftRadius)
@@ -25,7 +25,7 @@ namespace winrt::Telegram::Native::implementation
         , m_bottomLeftRadius(bottomLeftRadius)
         , m_rasterizationScale(xamlRoot.RasterizationScale())
         , m_brush(m_compositor.CreateNineGridBrush())
-        , m_effect(context->m_alphaMaskFactory.CreateBrush())
+        , m_effect(effect)
     {
         auto surfaceBrush = m_compositor.CreateSurfaceBrush();
         surfaceBrush.Surface(surface);

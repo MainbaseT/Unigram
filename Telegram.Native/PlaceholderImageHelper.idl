@@ -1,6 +1,7 @@
 import "SurfaceImage.idl";
 import "TextFormat.idl";
 import "ChatBackgroundPattern.idl";
+import "FreeformGradientSurface.idl";
 import "NativeUtils.idl";
 
 namespace Telegram.Native
@@ -36,6 +37,8 @@ namespace Telegram.Native
 
         Windows.Foundation.Collections.IVector<String> GetSystemFontFamilies(Windows.Foundation.Collections.IVector<String> localeNames);
 
+        FreeformGradientSurface CreateFreeformGradient(Windows.Foundation.Collections.IVector<Windows.UI.Color> colors);
+
         Windows.UI.Composition.CompositionEffectBrush GetTail(Single topLeftRadius, Single topRightRadius, Single bottomRightRadius, Single bottomLeftRadius);
         //Windows.UI.Composition.CompositionPath GetOutline(Windows.Foundation.Collections.IVector<Telegram.Td.Api.ClosedVectorPath> contours);
         Windows.UI.Composition.CompositionPath GetEllipticalClip(Single width, Single height, Single radius, Single x, Single y);
@@ -44,8 +47,8 @@ namespace Telegram.Native
 
         void Encode(Windows.Storage.Streams.IBuffer source, Windows.Storage.Streams.IRandomAccessStream destination, Int32 width, Int32 height, Int32 rotation);
 
-        Windows.Foundation.IAsyncOperation<ChatBackgroundPattern> DrawSvgAsync(Windows.UI.Composition.Compositor compositor, String path, Double dpi);
-        ChatBackgroundPattern DrawSvg(Windows.UI.Composition.Compositor compositor, String path, Double dpi);
+        Windows.Foundation.IAsyncOperation<ChatBackgroundPattern> DrawSvgAsync(Windows.UI.Composition.Compositor compositor, String path, Single intensity, Boolean negative, Double dpi);
+        ChatBackgroundPattern DrawSvg(Windows.UI.Composition.Compositor compositor, String path, Single intensity, Boolean negative, Double dpi);
 
         [default_overload]
         Windows.Graphics.Imaging.SoftwareBitmap DrawBlurred(String fileName, Single blurAmount);
