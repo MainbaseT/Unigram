@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.UI;
@@ -25,13 +27,19 @@ namespace Telegram.Common
             if (string.IsNullOrWhiteSpace(data))
                 return null;
 
-            var segments = ParseSegments(data);
-            if (segments?.Count > 0)
-            {
-                using var builder = new CanvasPathBuilder(null);
-                RenderPath(segments, builder);
-                return new CompositionPath(CanvasGeometry.CreatePath(builder));
-            }
+
+
+            //var segments = ParseSegments(data);
+            //if (segments?.Count > 0)
+            //{
+            //    using var builder = new CanvasPathBuilder(null);
+            //    RenderPath(segments, builder);
+            //    return new CompositionPath(CanvasGeometry.CreatePath(builder));
+            //}
+
+            using var builder = new CanvasPathBuilder(null);
+            ParseAndRender(data, builder);
+            return new CompositionPath(CanvasGeometry.CreatePath(builder));
 
             return null;
         }
@@ -41,13 +49,17 @@ namespace Telegram.Common
             if (string.IsNullOrWhiteSpace(data))
                 return null;
 
-            var segments = ParseSegments(data);
-            if (segments?.Count > 0)
-            {
-                using var builder = new CanvasPathBuilder(resourceCreator);
-                RenderPath(segments, builder);
-                return CanvasGeometry.CreatePath(builder);
-            }
+            //var segments = ParseSegments(data);
+            //if (segments?.Count > 0)
+            //{
+            //    using var builder = new CanvasPathBuilder(resourceCreator);
+            //    RenderPath(segments, builder);
+            //    return CanvasGeometry.CreatePath(builder);
+            //}
+
+            using var builder = new CanvasPathBuilder(resourceCreator);
+            ParseAndRender(data, builder);
+            return CanvasGeometry.CreatePath(builder);
 
             return null;
         }
@@ -164,19 +176,34 @@ namespace Telegram.Common
             return animation;
         }
 
-        private static List<PathSegment> ParseSegments(string data)
+
+        private const int MaxSegmentsStackAlloc = 256;
+        private const int MaxDataStackAlloc = 1024;
+
+        public static void ParseAndRender(string data, CanvasPathBuilder builder)
         {
-            var reader = new PathDataReader(data);
-            return reader.Read();
+            ParseAndRender(data.AsSpan(), builder);
         }
 
-        private static void RenderPath(IList<PathSegment> segments, CanvasPathBuilder builder)
+        public static void ParseAndRender(ReadOnlySpan<char> path, CanvasPathBuilder builder)
         {
-            var pathRenderer = new PathRenderer(builder);
-            pathRenderer.Render(segments);
+            Span<PathSegment> segmentBuffer = stackalloc PathSegment[MaxSegmentsStackAlloc];
+            Span<float> dataBuffer = stackalloc float[MaxDataStackAlloc];
+
+            var reader = new PathDataReader(path, segmentBuffer, dataBuffer);
+            var renderer = new PathRenderer(builder, dataBuffer);
+
+            while (reader.TryReadSegment(out var segments, out var data))
+            {
+                for (int i = 0; i < segments.Length; i++)
+                {
+                    renderer.RenderSegment(segments[i].Type, segments[i].GetData(data));
+                }
+            }
         }
 
-        public readonly struct PathSegment : IEquatable<PathSegment>
+        [StructLayout(LayoutKind.Sequential)]
+        public readonly struct PathSegment
         {
             public enum SegmentType : byte
             {
@@ -186,15 +213,18 @@ namespace Telegram.Common
             }
 
             public readonly SegmentType Type;
-            public readonly float[] Data;
+            public readonly int DataOffset;
+            public readonly int DataLength;
 
-            public PathSegment(SegmentType type, float[] data = null)
+            public PathSegment(SegmentType type, int dataOffset, int dataLength)
             {
                 Type = type;
-                Data = data ?? Array.Empty<float>();
+                DataOffset = dataOffset;
+                DataLength = dataLength;
             }
 
-            public bool IsAbsolute => Type switch
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public bool IsAbsolute() => Type switch
             {
                 SegmentType.M or SegmentType.L or SegmentType.H or SegmentType.V or
                 SegmentType.C or SegmentType.S or SegmentType.Q or SegmentType.T or
@@ -202,49 +232,33 @@ namespace Telegram.Common
                 _ => false
             };
 
-            public bool Equals(PathSegment other) => Type == other.Type && Data.AsSpan().SequenceEqual(other.Data);
-            public override bool Equals(object obj) => obj is PathSegment other && Equals(other);
-
-            public override int GetHashCode()
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public ReadOnlySpan<float> GetData(ReadOnlySpan<float> dataBuffer)
             {
-                var hash = new HashCode();
-                hash.Add(Type);
-                hash.Add(Data.Length);
-
-                foreach (var value in Data)
-                {
-                    hash.Add(value);
-                }
-
-                return hash.ToHashCode();
+                return dataBuffer.Slice(DataOffset, DataLength);
             }
         }
 
-        private sealed class PathRenderer
+        private ref struct PathRenderer
         {
             private readonly CanvasPathBuilder _builder;
+            private readonly Span<float> _dataBuffer;
             private Vector2? _currentPoint;
             private Vector2? _cubicPoint;
             private Vector2? _initialPoint;
 
-            public PathRenderer(CanvasPathBuilder builder)
+            public PathRenderer(CanvasPathBuilder builder, Span<float> dataBuffer)
             {
                 _builder = builder;
+                _dataBuffer = dataBuffer;
+                _currentPoint = null;
+                _cubicPoint = null;
+                _initialPoint = null;
             }
 
-            public void Render(IList<PathSegment> segments)
+            public void RenderSegment(PathSegment.SegmentType type, ReadOnlySpan<float> data)
             {
-                foreach (var segment in segments)
-                {
-                    RenderSegment(segment);
-                }
-            }
-
-            private void RenderSegment(PathSegment segment)
-            {
-                var data = segment.Data.AsSpan();
-
-                switch (segment.Type)
+                switch (type)
                 {
                     case PathSegment.SegmentType.M:
                         MoveTo(data[0], data[1]);
@@ -338,6 +352,7 @@ namespace Telegram.Common
 
             #region Movement Commands
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void MoveTo(float x, float y)
             {
                 var point = new Vector2(x, y);
@@ -345,6 +360,7 @@ namespace Telegram.Common
                 SetInitialPoint(point);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void MoveToRelative(float x, float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -359,6 +375,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void LineTo(float x, float y)
             {
                 var point = new Vector2(x, y);
@@ -366,6 +383,7 @@ namespace Telegram.Common
                 SetCurrentPoint(point);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void LineToRelative(float x, float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -378,6 +396,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void HorizontalLineTo(float x)
             {
                 if (_currentPoint is Vector2 current)
@@ -386,6 +405,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void HorizontalLineToRelative(float x)
             {
                 if (_currentPoint is Vector2 current)
@@ -394,6 +414,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void VerticalLineTo(float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -402,6 +423,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void VerticalLineToRelative(float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -414,6 +436,7 @@ namespace Telegram.Common
 
             #region Curve Commands
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void CubicBezierTo(float x1, float y1, float x2, float y2, float x, float y)
             {
                 var endPoint = new Vector2(x, y);
@@ -423,6 +446,7 @@ namespace Telegram.Common
                 SetCubicPoint(endPoint, controlPoint2);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void CubicBezierToRelative(float x1, float y1, float x2, float y2, float x, float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -435,6 +459,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SmoothCubicBezierTo(float x2, float y2, float x, float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -450,6 +475,7 @@ namespace Telegram.Common
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SmoothCubicBezierToRelative(float x2, float y2, float x, float y)
             {
                 if (_currentPoint is Vector2 current)
@@ -467,23 +493,27 @@ namespace Telegram.Common
 
             #endregion
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ClosePath()
             {
                 _builder.EndFigure(CanvasFigureLoop.Closed);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SetCubicPoint(Vector2 point, Vector2 cubic)
             {
                 _currentPoint = point;
                 _cubicPoint = cubic;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SetInitialPoint(Vector2 point)
             {
                 SetCurrentPoint(point);
                 _initialPoint = point;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SetCurrentPoint(Vector2 point)
             {
                 _currentPoint = point;
@@ -491,112 +521,89 @@ namespace Telegram.Common
             }
         }
 
-        private sealed class PathDataReader
+        private ref struct PathDataReader
         {
-            private static readonly HashSet<char> _whitespace = new() { '\n', '\r', '\t', ' ', ',' };
-            private static readonly Dictionary<char, PathSegment.SegmentType> _segmentTypeMap = new()
-            {
-                ['M'] = PathSegment.SegmentType.M,
-                ['m'] = PathSegment.SegmentType.m,
-                ['L'] = PathSegment.SegmentType.L,
-                ['l'] = PathSegment.SegmentType.l,
-                ['C'] = PathSegment.SegmentType.C,
-                ['c'] = PathSegment.SegmentType.c,
-                ['Q'] = PathSegment.SegmentType.Q,
-                ['q'] = PathSegment.SegmentType.q,
-                ['A'] = PathSegment.SegmentType.A,
-                ['a'] = PathSegment.SegmentType.a,
-                ['z'] = PathSegment.SegmentType.z,
-                ['Z'] = PathSegment.SegmentType.z,
-                ['H'] = PathSegment.SegmentType.H,
-                ['h'] = PathSegment.SegmentType.h,
-                ['V'] = PathSegment.SegmentType.V,
-                ['v'] = PathSegment.SegmentType.v,
-                ['S'] = PathSegment.SegmentType.S,
-                ['s'] = PathSegment.SegmentType.s,
-                ['T'] = PathSegment.SegmentType.T,
-                ['t'] = PathSegment.SegmentType.t
-            };
-
-            private static readonly Dictionary<PathSegment.SegmentType, int> _argumentCounts = new()
-            {
-                [PathSegment.SegmentType.H] = 1,
-                [PathSegment.SegmentType.h] = 1,
-                [PathSegment.SegmentType.V] = 1,
-                [PathSegment.SegmentType.v] = 1,
-                [PathSegment.SegmentType.M] = 2,
-                [PathSegment.SegmentType.m] = 2,
-                [PathSegment.SegmentType.L] = 2,
-                [PathSegment.SegmentType.l] = 2,
-                [PathSegment.SegmentType.T] = 2,
-                [PathSegment.SegmentType.t] = 2,
-                [PathSegment.SegmentType.S] = 4,
-                [PathSegment.SegmentType.s] = 4,
-                [PathSegment.SegmentType.Q] = 4,
-                [PathSegment.SegmentType.q] = 4,
-                [PathSegment.SegmentType.C] = 6,
-                [PathSegment.SegmentType.c] = 6,
-                [PathSegment.SegmentType.A] = 7,
-                [PathSegment.SegmentType.a] = 7
-            };
-
-            private readonly string _input;
+            private readonly ReadOnlySpan<char> _input;
+            private readonly Span<PathSegment> _segmentBuffer;
+            private readonly Span<float> _dataBuffer;
+            private int _segmentCount;
+            private int _dataOffset;
             private int _position;
 
-            public PathDataReader(string input)
+            public PathDataReader(ReadOnlySpan<char> input, Span<PathSegment> segmentBuffer, Span<float> dataBuffer)
             {
-                _input = input ?? throw new ArgumentNullException(nameof(input));
+                _input = input;
+                _segmentBuffer = segmentBuffer;
+                _dataBuffer = dataBuffer;
+                _position = 0;
             }
 
-            public List<PathSegment> Read()
+            public bool TryReadSegment(out ReadOnlySpan<PathSegment> segments, out ReadOnlySpan<float> data)
             {
-                var segments = new List<PathSegment>();
-
-                while (_position < _input.Length)
+                if (TryReadSegmentGroup(_segmentBuffer[_segmentCount..], _dataBuffer[_dataOffset..], out int segmentsRead, out int dataRead))
                 {
-                    var segmentGroup = ReadSegmentGroup();
-                    if (segmentGroup != null)
+                    segments = _segmentBuffer.Slice(_segmentCount, segmentsRead);
+                    data = _dataBuffer.Slice(_dataOffset, dataRead);
+
+                    _segmentCount += segmentsRead;
+                    _dataOffset += dataRead;
+
+                    if (_segmentCount > MaxSegmentsStackAlloc - 32 || _dataOffset > MaxDataStackAlloc - 128)
                     {
-                        segments.AddRange(segmentGroup);
+                        _segmentCount = 0;
+                        _dataOffset = 0;
                     }
-                    else
-                    {
-                        break;
-                    }
+
+                    return true;
                 }
 
-                return segments;
+                segments = ReadOnlySpan<PathSegment>.Empty;
+                data = ReadOnlySpan<float>.Empty;
+                return false;
             }
 
-            private List<PathSegment> ReadSegmentGroup()
+            public bool TryReadSegmentGroup(Span<PathSegment> segmentBuffer, Span<float> dataBuffer,
+                out int segmentsWritten, out int dataWritten)
             {
-                var segmentType = ReadSegmentType();
-                if (!segmentType.HasValue)
-                    return null;
+                segmentsWritten = 0;
+                dataWritten = 0;
 
-                var type = segmentType.Value;
-                var argCount = _argumentCounts.GetValueOrDefault(type, 0);
+                if (!TryReadSegmentType(out var type))
+                    return false;
+
+                int argCount = GetArgumentCount(type);
 
                 if (argCount == 0)
                 {
-                    return new List<PathSegment> { new(type) };
+                    segmentBuffer[0] = new PathSegment(type, 0, 0);
+                    segmentsWritten = 1;
+                    return true;
                 }
 
-                var data = type is PathSegment.SegmentType.A or PathSegment.SegmentType.a
-                    ? ReadArcData()
-                    : ReadNumericData();
+                int dataStart = 0;
+                int floatCount = type is PathSegment.SegmentType.A or PathSegment.SegmentType.a
+                    ? ReadArcData(dataBuffer)
+                    : ReadNumericData(dataBuffer);
 
-                return CreateSegments(type, data, argCount);
+                if (floatCount == 0)
+                    return false;
+
+                segmentsWritten = CreateSegments(type, dataBuffer.Slice(0, floatCount),
+                    segmentBuffer, argCount);
+                dataWritten = floatCount;
+
+                return segmentsWritten > 0;
             }
 
-            private List<PathSegment> CreateSegments(PathSegment.SegmentType type, List<float> data, int argCount)
+            private int CreateSegments(PathSegment.SegmentType type, ReadOnlySpan<float> data,
+                Span<PathSegment> output, int argCount)
             {
-                var result = new List<PathSegment>();
-                var isFirstSegment = true;
+                int segmentCount = 0;
+                bool isFirstSegment = true;
 
-                for (int i = 0; i < data.Count; i += argCount)
+                for (int i = 0; i < data.Length; i += argCount)
                 {
-                    if (i + argCount > data.Count)
+                    if (i + argCount > data.Length)
                         break;
 
                     var currentType = type;
@@ -610,26 +617,24 @@ namespace Telegram.Common
                         };
                     }
 
-                    var segmentData = new float[argCount];
-                    Array.Copy(data.ToArray(), i, segmentData, 0, argCount);
-                    result.Add(new PathSegment(currentType, segmentData));
+                    output[segmentCount] = new PathSegment(currentType, i, argCount);
+                    segmentCount++;
                     isFirstSegment = false;
                 }
 
-                return result;
+                return segmentCount;
             }
 
-            private List<float> ReadNumericData()
+            private int ReadNumericData(Span<float> output)
             {
-                var data = new List<float>();
+                int count = 0;
 
-                while (true)
+                while (count < output.Length)
                 {
                     SkipWhitespace();
-                    var value = ReadNumber();
-                    if (value.HasValue)
+                    if (TryReadNumber(out float value))
                     {
-                        data.Add(value.Value);
+                        output[count++] = value;
                     }
                     else
                     {
@@ -637,26 +642,26 @@ namespace Telegram.Common
                     }
                 }
 
-                return data;
+                return count;
             }
 
-            private List<float> ReadArcData()
+            private int ReadArcData(Span<float> output)
             {
-                var data = new List<float>();
-                var argIndex = 0;
+                int count = 0;
                 const int arcArgCount = 7;
 
-                while (true)
+                while (count < output.Length)
                 {
                     SkipWhitespace();
-                    var argPosition = argIndex % arcArgCount;
+                    int argPosition = count % arcArgCount;
 
-                    float? value = argPosition is 3 or 4 ? ReadFlag() : ReadNumber();
+                    bool success = argPosition is 3 or 4
+                        ? TryReadFlag(out output[count])
+                        : TryReadNumber(out output[count]);
 
-                    if (value.HasValue)
+                    if (success)
                     {
-                        data.Add(value.Value);
-                        argIndex++;
+                        count++;
                     }
                     else
                     {
@@ -664,34 +669,95 @@ namespace Telegram.Common
                     }
                 }
 
-                return data;
+                return count;
             }
 
-            private PathSegment.SegmentType? ReadSegmentType()
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool TryReadSegmentType(out PathSegment.SegmentType type)
             {
                 SkipWhitespace();
 
-                if (_position < _input.Length && _segmentTypeMap.TryGetValue(_input[_position], out var type))
+                if (_position < _input.Length)
                 {
-                    _position++;
-                    return type;
+                    char ch = _input[_position];
+                    if (TryGetSegmentType(ch, out type))
+                    {
+                        _position++;
+                        return true;
+                    }
                 }
 
-                return null;
+                type = default;
+                return false;
             }
 
-            private float? ReadNumber()
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static bool TryGetSegmentType(char ch, out PathSegment.SegmentType type)
+            {
+                type = ch switch
+                {
+                    'M' => PathSegment.SegmentType.M,
+                    'm' => PathSegment.SegmentType.m,
+                    'L' => PathSegment.SegmentType.L,
+                    'l' => PathSegment.SegmentType.l,
+                    'C' => PathSegment.SegmentType.C,
+                    'c' => PathSegment.SegmentType.c,
+                    'Q' => PathSegment.SegmentType.Q,
+                    'q' => PathSegment.SegmentType.q,
+                    'A' => PathSegment.SegmentType.A,
+                    'a' => PathSegment.SegmentType.a,
+                    'z' or 'Z' => PathSegment.SegmentType.z,
+                    'H' => PathSegment.SegmentType.H,
+                    'h' => PathSegment.SegmentType.h,
+                    'V' => PathSegment.SegmentType.V,
+                    'v' => PathSegment.SegmentType.v,
+                    'S' => PathSegment.SegmentType.S,
+                    's' => PathSegment.SegmentType.s,
+                    'T' => PathSegment.SegmentType.T,
+                    't' => PathSegment.SegmentType.t,
+                    'E' => PathSegment.SegmentType.E,
+                    'e' => PathSegment.SegmentType.e,
+                    _ => default
+                };
+
+                return ch is 'M' or 'm' or 'L' or 'l' or 'C' or 'c' or 'Q' or 'q' or
+                       'A' or 'a' or 'z' or 'Z' or 'H' or 'h' or 'V' or 'v' or
+                       'S' or 's' or 'T' or 't' or 'E' or 'e';
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static int GetArgumentCount(PathSegment.SegmentType type) => type switch
+            {
+                PathSegment.SegmentType.H or PathSegment.SegmentType.h or
+                PathSegment.SegmentType.V or PathSegment.SegmentType.v => 1,
+                PathSegment.SegmentType.M or PathSegment.SegmentType.m or
+                PathSegment.SegmentType.L or PathSegment.SegmentType.l or
+                PathSegment.SegmentType.T or PathSegment.SegmentType.t => 2,
+                PathSegment.SegmentType.S or PathSegment.SegmentType.s or
+                PathSegment.SegmentType.Q or PathSegment.SegmentType.q => 4,
+                PathSegment.SegmentType.C or PathSegment.SegmentType.c => 6,
+                PathSegment.SegmentType.A or PathSegment.SegmentType.a => 7,
+                _ => 0
+            };
+
+            private bool TryReadNumber(out float value)
             {
                 if (_position >= _input.Length)
-                    return null;
+                {
+                    value = 0;
+                    return false;
+                }
 
-                var start = _position;
-                var ch = _input[_position];
+                int start = _position;
+                char ch = _input[_position];
 
                 if (!(char.IsDigit(ch) || ch == '.' || ch == '-'))
-                    return null;
+                {
+                    value = 0;
+                    return false;
+                }
 
-                var hasDot = ch == '.';
+                bool hasDot = ch == '.';
                 _position++;
 
                 while (_position < _input.Length)
@@ -717,32 +783,54 @@ namespace Telegram.Common
                     }
                 }
 
-                var numberStr = _input[start.._position];
-                return float.TryParse(numberStr, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result)
-                    ? result : null;
+                ReadOnlySpan<char> numberSpan = _input.Slice(start, _position - start);
+
+#if NET6_0_OR_GREATER
+            return float.TryParse(numberSpan, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+#else
+                // Fallback for older frameworks
+                return float.TryParse(numberSpan.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+#endif
             }
 
-            private float? ReadFlag()
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool TryReadFlag(out float value)
             {
                 if (_position < _input.Length)
                 {
-                    var ch = _input[_position];
+                    char ch = _input[_position];
                     _position++;
-                    return ch switch
+
+                    if (ch == '0')
                     {
-                        '0' => 0f,
-                        '1' => 1f,
-                        _ => null
-                    };
+                        value = 0f;
+                        return true;
+                    }
+                    if (ch == '1')
+                    {
+                        value = 1f;
+                        return true;
+                    }
                 }
-                return null;
+
+                value = 0;
+                return false;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SkipWhitespace()
             {
-                while (_position < _input.Length && _whitespace.Contains(_input[_position]))
+                while (_position < _input.Length)
                 {
-                    _position++;
+                    char ch = _input[_position];
+                    if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == ',')
+                    {
+                        _position++;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
