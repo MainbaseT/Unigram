@@ -3537,17 +3537,17 @@ namespace Telegram.Views
             var offset0 = compositor.CreateScalarKeyFrameAnimation();
             offset0.InsertKeyFrame(0, show ? width : 0);
             offset0.InsertKeyFrame(1, show ? 0 : width);
-            //offset0.Duration = Constants.FastAnimation;
+            offset0.Duration = Constants.FastAnimation;
 
             var offset1 = compositor.CreateScalarKeyFrameAnimation();
             offset1.InsertKeyFrame(0, show ? inset : -width + inset);
             offset1.InsertKeyFrame(1, show ? -width + inset : inset);
-            //offset0.Duration = Constants.FastAnimation;
+            offset1.Duration = Constants.FastAnimation;
 
             var clip0 = compositor.CreateScalarKeyFrameAnimation();
             clip0.InsertKeyFrame(0, show ? 0 : width);
             clip0.InsertKeyFrame(1, show ? width : 0);
-            //clip0.Duration = Constants.FastAnimation;
+            clip0.Duration = Constants.FastAnimation;
 
             panel.StartAnimation("Translation.X", offset0);
             redirect.StartAnimation("Offset.X", offset1);
@@ -3558,14 +3558,17 @@ namespace Telegram.Views
             var offset2 = compositor.CreateScalarKeyFrameAnimation();
             offset2.InsertKeyFrame(0, show ? margin : 0);
             offset2.InsertKeyFrame(1, show ? 0 : margin);
+            offset2.Duration = Constants.FastAnimation;
 
             var clip1 = compositor.CreateScalarKeyFrameAnimation();
             clip1.InsertKeyFrame(0, show ? 0 : 40);
             clip1.InsertKeyFrame(1, show ? 40 : 0);
+            clip1.Duration = Constants.FastAnimation;
 
             var opacity = compositor.CreateScalarKeyFrameAnimation();
             opacity.InsertKeyFrame(0, show ? 1 : 0);
             opacity.InsertKeyFrame(1, show ? 0 : 1);
+            opacity.Duration = Constants.FastAnimation;
 
             dialogs.StartAnimation("Translation.Y", offset2);
             header.StartAnimation("Opacity", opacity);
