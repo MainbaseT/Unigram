@@ -61,13 +61,12 @@ You can choose to install both `x64` and `arm64` or just opt for the architectur
 
 ### TDLib
 In order to communicate with Telegram servers, Unigram uses TDLib.
-Here is complete instruction for TDLib binaries building, taken from the official [documentation](https://tdlib.github.io/td/build.html?language=C%23):
+Here is complete instruction for TDLib binaries building:
 
 - Download and install Microsoft Visual Studio. Enable C++ and Windows 10 SDK support while installing.
 - Download and install CMake; choose "Add CMake to the system PATH" option while installing.
 - Download and install Git.
 - Download and unpack PHP. Add the path to php.exe to the PATH environment variable.
-- Download and install 7-Zip archiver. Add the path to 7z.exe to the PATH environment variable.
 - Close and re-open PowerShell if the PATH environment variable was changed.
 - Run these commands in PowerShell to build TDLib and to install it to td/tdlib:
 
