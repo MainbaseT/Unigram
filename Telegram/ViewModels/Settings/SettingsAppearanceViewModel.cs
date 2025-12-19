@@ -35,10 +35,10 @@ namespace Telegram.ViewModels.Settings
 
             var fonts = PlaceholderHelper.Foreground.GetSystemFontFamilies(new[] { LocaleService.Current.Id, NativeUtils.GetCurrentCulture() })
                 .OrderBy(x => x)
-                .Select(x => new SettingsOptionItemString(x, x));
+                .Select(x => new SettingsOptionFontFamily(x, x, x));
 
-            FontFamilyOptions = new List<SettingsOptionItemString>(fonts);
-            FontFamilyOptions.Insert(0, new SettingsOptionItemString(string.Empty, Strings.Default));
+            FontFamilyOptions = new List<SettingsOptionFontFamily>(fonts);
+            FontFamilyOptions.Insert(0, new SettingsOptionFontFamily(string.Empty, Strings.Default, Windows.UI.Xaml.Media.FontFamily.XamlAutoFontFamily.Source));
 
             ChatThemes = new ObservableCollection<ChatThemeViewModel>();
 
@@ -366,15 +366,14 @@ namespace Telegram.ViewModels.Settings
                 if (value >= 0 && value < FontFamilyOptions.Count && SettingsService.Current.Appearance.FontFamily != FontFamilyOptions[value].Value)
                 {
                     SettingsService.Current.Appearance.FontFamily = FontFamilyOptions[value].Value;
-                    Theme.Current.UpdateEmojiSet();
-                    SettingsService.Current.Appearance.UpdateNightMode(true);
+                    SettingsService.Current.Appearance.UpdateNightMode(true, updateEmojiSet: true);
 
                     RaisePropertyChanged();
                 }
             }
         }
 
-        public List<SettingsOptionItemString> FontFamilyOptions { get; }
+        public List<SettingsOptionFontFamily> FontFamilyOptions { get; }
 
         public int SendBy
         {
@@ -475,12 +474,15 @@ namespace Telegram.ViewModels.Settings
         }
     }
 
-    public class SettingsOptionItemString : SettingsOptionItem<string>
+    public class SettingsOptionFontFamily : SettingsOptionItem<string>
     {
-        public SettingsOptionItemString(string value, string text)
+        public SettingsOptionFontFamily(string value, string text, string fontFamily)
             : base(value, text)
         {
+            FontFamily = fontFamily;
         }
+
+        public string FontFamily { get; init; }
     }
 
     public partial class ChatThemeViewModel

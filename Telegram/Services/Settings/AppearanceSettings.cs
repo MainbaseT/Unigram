@@ -177,7 +177,7 @@ namespace Telegram.Services.Settings
             UpdateNightMode(false);
         }
 
-        public async void UpdateNightMode(bool? force = false, bool updateBackground = true)
+        public async void UpdateNightMode(bool? force = false, bool updateBackground = true, bool updateEmojiSet = false)
         {
             // Same theme:
             // - false: update dictionaries
@@ -201,6 +201,11 @@ namespace Telegram.Services.Settings
             {
                 if (force is not null)
                 {
+                    if (updateBackground)
+                    {
+                        Theme.Current.UpdateEmojiSet();
+                    }
+
                     Theme.Current.Update(theme);
                 }
 

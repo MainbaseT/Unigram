@@ -203,9 +203,9 @@
                             <controls:SettingsComboBox ItemsSource="{x:Bind ViewModel.FontFamilyOptions}"
                                                        SelectedIndex="{x:Bind ViewModel.FontFamily, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
-                                    <DataTemplate x:DataType="viewModels:SettingsOptionItemString">
+                                    <DataTemplate x:DataType="viewModels:SettingsOptionFontFamily">
                                         <TextBlock Text="{x:Bind Text}"
-                                                   FontFamily="{x:Bind Value}" />
+                                                   FontFamily="{x:Bind FontFamily}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </controls:SettingsComboBox>
