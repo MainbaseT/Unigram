@@ -155,7 +155,13 @@ namespace Telegram.Controls
             // but if it is 0 it means that the control is not loaded, and the event shouldn't be handled
             if (CanGoBack && ActualWidth > 0 /*&& type == BackStackType.Navigation*/)
             {
-                DetailFrame.GoBack();
+                NavigationTransitionInfo transitionInfoOverride = null;
+                if (CurrentState == MasterDetailState.Minimal && DetailFrame.BackStackDepth == 1)
+                {
+                    transitionInfoOverride = new SuppressNavigationTransitionInfo();
+                }
+
+                DetailFrame.GoBack(transitionInfoOverride);
                 args.Handled = true;
             }
             else if (ParentFrame.Content is INavigablePage masterPage /*&& type == BackStackType.Hamburger*/)
