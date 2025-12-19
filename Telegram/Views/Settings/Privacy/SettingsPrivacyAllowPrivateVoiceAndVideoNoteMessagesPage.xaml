@@ -49,7 +49,7 @@
                                    Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
                                    FontSize="20"
-                                   Padding="20,12,0,0"
+                                   Padding="20,14,0,0"
                                    IsHitTestVisible="False" />
                     </Grid>
 
@@ -67,7 +67,7 @@
                                    Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
                                    FontSize="20"
-                                   Padding="20,12,0,0"
+                                   Padding="20,14,0,0"
                                    IsHitTestVisible="False" />
                     </Grid>
                 </controls:HeaderedControl>
