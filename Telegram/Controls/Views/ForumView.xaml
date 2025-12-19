@@ -386,19 +386,23 @@
                   Padding="0,0,12,0"
                   Canvas.ZIndex="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="36" />
                 </Grid.ColumnDefinitions>
-                <controls:ActiveStoriesSegments x:Name="Segments"
-                                                Click="Segments_Click"
-                                                Width="36"
-                                                Height="36"
-                                                HorizontalAlignment="Center"
-                                                AutomationProperties.Name="{CustomResource AccDescrProfilePicture}"
-                                                Grid.Column="1">
-                    <controls:ProfilePicture x:Name="Photo"
-                                             Size="36" />
-                </controls:ActiveStoriesSegments>
+                <controls:BackButton x:Name="BackButton"
+                                     Click="BackButton_Click"
+                                     IsClickHandled="True"
+                                     RenderTransformOrigin="0.5,0.5"
+                                     Width="48"
+                                     Height="48"
+                                     Margin="4,0,-8,0"
+                                     CornerRadius="20"
+                                     Glyph="&#xe93e;">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="0.8"
+                                        ScaleY="0.8" />
+                    </Button.RenderTransform>
+                </controls:BackButton>
             </Grid>
 
             <local:ChatHeaderButton x:Name="Profile"
@@ -410,7 +414,7 @@
                                     VerticalContentAlignment="Stretch"
                                     BorderThickness="0"
                                     CornerRadius="{ThemeResource NavigationViewContentGridCornerRadius}"
-                                    Padding="60,0,0,0">
+                                    Padding="52,0,0,0">
                 <Grid Background="Transparent"
                       VerticalAlignment="Center"
                       Margin="0,-2,0,2">

@@ -149,7 +149,6 @@ namespace Telegram.Controls.Views
         public void UpdateChat(Chat chat)
         {
             UpdateChatTitle(chat);
-            UpdateChatPhoto(chat);
             UpdateChatEmojiStatus(chat);
 
             if (ViewModel.ClientService.TryGetSupergroupFull(chat, out SupergroupFullInfo fullInfo))
@@ -170,25 +169,12 @@ namespace Telegram.Controls.Views
             }
         }
 
-        public void UpdateChatPhoto(Chat chat)
-        {
-            if (chat != null)
-            {
-                Photo.Source = ProfilePictureSource.Chat(ViewModel.ClientService, chat);
-            }
-        }
-
         public void UpdateChatEmojiStatus(Chat chat)
         {
             if (chat != null)
             {
                 Identity.SetStatus(ViewModel.ClientService, chat, BotVerified);
             }
-        }
-
-        private void Segments_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void Profile_Click(object sender, RoutedEventArgs e)
@@ -198,7 +184,7 @@ namespace Telegram.Controls.Views
 
         private void Options_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Profile.Padding = new Thickness(60, 0, e.NewSize.Width, 0);
+            Profile.Padding = new Thickness(52, 0, e.NewSize.Width, 0);
         }
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
@@ -656,6 +642,12 @@ namespace Telegram.Controls.Views
         private void OnItemClick(object sender, ItemClickEventArgs e)
         {
             ItemClick?.Invoke(this, new ForumViewItemClickEventArgs(e.ClickedItem, true));
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mainPage = this.GetParent<MainPage>();
+            mainPage?.HideTopicList();
         }
     }
 }

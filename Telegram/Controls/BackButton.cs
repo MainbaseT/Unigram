@@ -19,8 +19,15 @@ namespace Telegram.Controls
             Click += OnClick;
         }
 
+        public bool IsClickHandled { get; set; }
+
         private void OnClick(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            if (IsClickHandled)
+            {
+                return;
+            }
+
             var master = this.GetParent<MasterDetailView>();
             if (master != null)
             {

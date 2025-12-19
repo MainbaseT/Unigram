@@ -350,12 +350,6 @@ namespace Telegram.Views
         public void Handle(UpdateChatPhoto update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatPhoto(chat));
-
-            // TODO: threading is not great here
-            if (update.ChatId == _viewModel.Topics.Chat?.Id)
-            {
-                this.BeginOnUIThread(() => TopicListPresenter?.UpdateChatPhoto(_viewModel.Topics.Chat));
-            }
         }
 
         public void Handle(UpdateChatEmojiStatus update)
@@ -1734,7 +1728,6 @@ namespace Telegram.Views
         {
             var visible = ViewModel.Chats.Items.ChatList is ChatListArchive
                 || !_searchCollapsed
-                || !_topicListCollapsed
                 || _prevIndex != INDEX_CHATS;
 
             if (MasterDetail.CurrentState == MasterDetailState.Minimal)
@@ -3013,10 +3006,6 @@ namespace Telegram.Views
             {
                 Search_LostFocus(null, null);
             }
-            else if (!_topicListCollapsed)
-            {
-                HideTopicList();
-            }
             else if (_prevIndex != INDEX_CHATS)
             {
                 SetPivotSelectedIndex(INDEX_CHATS);
@@ -3437,7 +3426,7 @@ namespace Telegram.Views
             }
         }
 
-        private void HideTopicList(bool fromSelection = false)
+        public void HideTopicList(bool fromSelection = false)
         {
             var chatId = ViewModel.Topics.Chat?.Id;
 
@@ -3592,8 +3581,6 @@ namespace Telegram.Views
             }
 
             batch.End();
-
-            UpdatePaneToggleButtonVisibility();
         }
 
         private void ChatList_SizeChanged(object sender, SizeChangedEventArgs e)
