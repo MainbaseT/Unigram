@@ -35,7 +35,7 @@ namespace winrt::Telegram::Native::implementation
 
     std::atomic<bool> NativeUtils::s_collect = false;
 
-    void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
+    void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback, bool disableGcCollect)
     {
         // TODO: td_set_log_message_callback
         //Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
@@ -55,15 +55,23 @@ namespace winrt::Telegram::Native::implementation
         if (mrt100)
         {
             s_RhGetCurrentObjSize = reinterpret_cast<PFN_RhGetCurrentObjSize>(GetProcAddress(mrt100, "RhGetCurrentObjSize"));
-            //s_RhCollect = reinterpret_cast<PFN_RhCollect>(GetProcAddress(mrt100, "RhCollect"));
 
-            if (s_RhGetCurrentObjSize /*&& s_RhCollect*/)
+            if (disableGcCollect)
+            {
+                s_RhCollect = reinterpret_cast<PFN_RhCollect>(GetProcAddress(mrt100, "RhCollect"));
+            }
+
+            if (s_RhGetCurrentObjSize)
             {
                 DetourTransactionBegin();
                 DetourUpdateThread(GetCurrentThread());
 
                 DetourAttach(reinterpret_cast<PVOID*>(&s_RhGetCurrentObjSize), NativeUtils::RhGetCurrentObjSize);
-                //DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
+
+                if (s_RhCollect)
+                {
+                    DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
+                }
 
                 DetourTransactionCommit();
             }

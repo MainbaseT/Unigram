@@ -67,7 +67,7 @@ namespace winrt::Telegram::Native::implementation
         static void OverrideScaleForCurrentView(int32_t value);
         static int32_t GetScaleForCurrentView();
 
-        static void SetFatalErrorCallback(FatalErrorCallback action);
+        static void SetFatalErrorCallback(FatalErrorCallback action, bool disableGcCollect);
         static void LogMessageCallback(int verbosity_level, const char* message);
         static winrt::Telegram::Native::FatalError GetStowedException();
         static winrt::Telegram::Native::FatalError GetBackTrace(hstring type, hstring message);

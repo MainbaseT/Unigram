@@ -54,6 +54,10 @@
                               Content="Force WebView2"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.DisableXamlGcCollect, Mode=TwoWay}"
+                              Content="Disable XAML GC Collect"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
+
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.DisablePackageManager, Mode=TwoWay}"
                               Content="Disable Package Manager"
                               Style="{StaticResource SettingsCheckBoxStyle}" />

@@ -142,6 +142,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _disablePackageManager, "DisablePackageManager", value);
         }
 
+        private bool? _disableXamlGcCollect;
+        public bool DisableXamlGcCollect
+        {
+            get => _disableXamlGcCollect ??= GetValueOrDefault("DisableXamlGcCollect", ApiInfo.IsPackagedRelease);
+            set => AddOrUpdateValue(ref _disableXamlGcCollect, "DisableXamlGcCollect", value);
+        }
+
         private bool? _forumTabsDebug;
         public bool ForumTabsDebug
         {
