@@ -6227,7 +6227,7 @@ namespace Telegram.Views
 
             if (radius > 0)
             {
-                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth = MessagesStickyPhoto.MaxWidth =
+                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1000 : double.PositiveInfinity;
                 Footer.Margin = Separator.Margin = new Thickness(12, 0, 12, 8);
                 InlinePanel.Margin = new Thickness(12, 0, 12, -radius);
@@ -6236,13 +6236,16 @@ namespace Telegram.Views
             }
             else
             {
-                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth = MessagesStickyPhoto.MaxWidth =
+                Footer.MaxWidth = InlinePanel.MaxWidth = Separator.MaxWidth = ReplyMarkupPanel.MaxWidth =
                     SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
                 Footer.Margin = Separator.Margin = new Thickness();
                 InlinePanel.Margin = new Thickness();
                 InlineShadow.Margin = new Thickness();
                 ReplyMarkupPanel.Margin = new Thickness();
             }
+
+            MessagesStickyPhoto.MaxWidth =
+                SettingsService.Current.IsAdaptiveWideEnabled ? 1024 : double.PositiveInfinity;
 
             var stickyPhoto = ElementComposition.GetElementVisual(MessagesStickyPhoto);
             if (stickyPhoto.Clip is InsetClip stickyPhotoClip)
