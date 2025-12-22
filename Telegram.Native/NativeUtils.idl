@@ -3,6 +3,7 @@ import "FatalError.idl";
 namespace Telegram.Native
 {
     delegate void FatalErrorCallback(FatalError error);
+    delegate void CollectCallback(Int32 generation, Int32 mode);
 
     enum TextDirectionality
     {
@@ -70,7 +71,9 @@ namespace Telegram.Native
         static void OverrideScaleForCurrentView(Int32 value);
         static Int32 GetScaleForCurrentView();
 
-        static void SetFatalErrorCallback(FatalErrorCallback action, Boolean disableGcCollect);
+        static void SetFatalErrorCallback(FatalErrorCallback action);
+        static void SetCollectCallback(CollectCallback action, Boolean disableGcCollect);
+
         static FatalError GetStowedException();
         static FatalError GetBackTrace(String type, String message);
 

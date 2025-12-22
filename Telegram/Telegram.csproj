@@ -226,6 +226,7 @@
     <Compile Include="Common\NormalizingStringBuilder.cs" />
     <Compile Include="Common\VideoPreloader.cs" />
     <Compile Include="Common\WebAppStorage.cs" />
+    <Compile Include="Common\InactivityGarbageCollectionMonitor.cs" />
     <Compile Include="Composition\CompositionPropertySetColorSource.cs" />
     <Compile Include="Composition\CompositionVisualColorSource.cs" />
     <Compile Include="Composition\WeakInteractionTrackerOwner.cs" />

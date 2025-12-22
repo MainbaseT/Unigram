@@ -110,7 +110,7 @@ namespace Telegram
 
         public static void Initialize()
         {
-            NativeUtils.SetFatalErrorCallback(FatalErrorCallback, SettingsService.Current.Diagnostics.DisableXamlGcCollect);
+            NativeUtils.SetFatalErrorCallback(FatalErrorCallback);
             CoreApplication.UnhandledErrorDetected += OnUnhandledExceptionDetected;
 
             BootStrapper.Current.UnhandledException += OnUnhandledException;

@@ -21,7 +21,6 @@ using Telegram.Controls.Gallery;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Controls.Views;
-using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -140,7 +139,7 @@ namespace Telegram.Views
                 }
             }
 
-            return occurred;
+            return occurred + ":" + InactivityGarbageCollectionMonitor.Debug;
         }
 
         private void MemoryUsageTimer_Tick(object sender, object e)
@@ -1194,17 +1193,18 @@ namespace Telegram.Views
                         MasterDetail.NavigationService.ClearCache(true);
                     }
 
-                    GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-                    GCSettings.LatencyMode = GCSettings.LatencyMode == GCLatencyMode.Interactive
-                        ? GCLatencyMode.SustainedLowLatency
-                        : GCLatencyMode.Interactive;
+                    //GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                    //GCSettings.LatencyMode = GCSettings.LatencyMode == GCLatencyMode.Interactive
+                    //    ? GCLatencyMode.SustainedLowLatency
+                    //    : GCLatencyMode.Interactive;
 
-                    NativeUtils.Collect = true;
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    NativeUtils.Collect = false;
+                    //NativeUtils.Collect = true;
+                    //GC.Collect();
+                    //GC.WaitForPendingFinalizers();
+                    //GC.Collect();
+                    //NativeUtils.Collect = false;
 
+                    WindowContext.DisconnectUnusedReferenceSources();
                     return;
                 }
 

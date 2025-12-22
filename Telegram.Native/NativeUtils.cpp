@@ -33,9 +33,10 @@ namespace winrt::Telegram::Native::implementation
     PFN_RhGetCurrentObjSize NativeUtils::s_RhGetCurrentObjSize;
     PFN_RhCollect NativeUtils::s_RhCollect;
 
+    CollectCallback NativeUtils::s_collectCallback;
     std::atomic<bool> NativeUtils::s_collect = false;
 
-    void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback, bool disableGcCollect)
+    void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {
         // TODO: td_set_log_message_callback
         //Client::SetLogMessageCallback(0, &NativeUtils::LogMessageCallback);
@@ -50,6 +51,11 @@ namespace winrt::Telegram::Native::implementation
                 td_set_log_message_callback(0, &NativeUtils::LogMessageCallback);
             }
         }
+    }
+
+    void NativeUtils::SetCollectCallback(CollectCallback callback, bool disableGcCollect)
+    {
+        s_collectCallback = callback;
 
         auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
         if (mrt100)
@@ -69,6 +75,42 @@ namespace winrt::Telegram::Native::implementation
                 DetourAttach(reinterpret_cast<PVOID*>(&s_RhGetCurrentObjSize), NativeUtils::RhGetCurrentObjSize);
 
                 if (s_RhCollect)
+                {
+                    DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
+                }
+
+                DetourTransactionCommit();
+            }
+        }
+    }
+
+    void NativeUtils::Collect(bool value)
+    {
+        if (value == s_collect.load())
+        {
+            return;
+        }
+
+        s_collect = value;
+
+        auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
+        if (mrt100)
+        {
+            if (s_RhCollect == nullptr && value)
+            {
+                s_RhCollect = reinterpret_cast<PFN_RhCollect>(GetProcAddress(mrt100, "RhCollect"));
+            }
+
+            if (s_RhCollect)
+            {
+                DetourTransactionBegin();
+                DetourUpdateThread(GetCurrentThread());
+
+                if (value)
+                {
+                    DetourDetach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
+                }
+                else
                 {
                     DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
                 }

@@ -26,6 +26,26 @@ using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Media;
 using namespace winrt::Windows::UI::Xaml::Core::Direct;
 
+template<typename Func>
+inline void post_to_threadpool(Func&& func)
+{
+    auto* heapFunc = new std::decay_t<Func>(std::forward<Func>(func));
+
+    PTP_WORK work = CreateThreadpoolWork(
+        [](PTP_CALLBACK_INSTANCE, PVOID context, PTP_WORK) {
+            std::unique_ptr<std::decay_t<Func>> funcPtr(
+                static_cast<std::decay_t<Func>*>(context)
+            );
+            (*funcPtr)();
+        },
+        heapFunc,
+        nullptr
+    );
+
+    SubmitThreadpoolWork(work);
+    CloseThreadpoolWork(work);
+}
+
 namespace winrt::Telegram::Native::implementation
 {
     struct NativeUtils : NativeUtilsT<NativeUtils>
@@ -67,7 +87,8 @@ namespace winrt::Telegram::Native::implementation
         static void OverrideScaleForCurrentView(int32_t value);
         static int32_t GetScaleForCurrentView();
 
-        static void SetFatalErrorCallback(FatalErrorCallback action, bool disableGcCollect);
+        static void SetFatalErrorCallback(FatalErrorCallback action);
+        static void SetCollectCallback(CollectCallback action, bool disableGcCollect);
         static void LogMessageCallback(int verbosity_level, const char* message);
         static winrt::Telegram::Native::FatalError GetStowedException();
         static winrt::Telegram::Native::FatalError GetBackTrace(hstring type, hstring message);
@@ -81,12 +102,10 @@ namespace winrt::Telegram::Native::implementation
             return s_collect.load();
         }
 
-        static void Collect(bool value)
-        {
-            s_collect = value;
-        }
+        static void Collect(bool value);
 
         static FatalErrorCallback Callback;
+        static CollectCallback s_collectCallback;
 
         static PFN_RhGetCurrentObjSize s_RhGetCurrentObjSize;
         static PFN_RhCollect s_RhCollect;
@@ -112,6 +131,10 @@ namespace winrt::Telegram::Native::implementation
             if (s_collect.load())
             {
                 s_RhCollect(generation, mode);
+            }
+            else
+            {
+                post_to_threadpool([&]() { s_collectCallback(generation, mode); });
             }
         }
     };
