@@ -462,16 +462,43 @@ namespace System.Text.Encodings.Web
 {
     public sealed class Arm64SafeEncoder : JavaScriptEncoder
     {
-        public override int MaxOutputCharactersPerInputCharacter => 12;
+        public new static readonly Arm64SafeEncoder Default = new Arm64SafeEncoder();
+
+        public override int MaxOutputCharactersPerInputCharacter => 6;
 
         public override unsafe int FindFirstCharacterToEncode(char* text, int textLength)
         {
+            if (text == null || textLength == 0)
+            {
+                return -1;
+            }
+
+            for (int i = 0; i < textLength; i++)
+            {
+                if (WillEncode(text[i]))
+                {
+                    return i;
+                }
+            }
+
             return -1;
         }
 
         public override unsafe bool TryEncodeUnicodeScalar(int unicodeScalar, char* buffer, int bufferLength, out int numberOfCharactersWritten)
         {
-            if (unicodeScalar <= 0xFFFF)
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            if (unicodeScalar < 0 || unicodeScalar > 0x10FFFF ||
+                (unicodeScalar >= 0xD800 && unicodeScalar <= 0xDFFF))
+            {
+                numberOfCharactersWritten = 0;
+                return false;
+            }
+
+            if (!WillEncode(unicodeScalar))
             {
                 if (bufferLength < 1)
                 {
@@ -481,24 +508,187 @@ namespace System.Text.Encodings.Web
 
                 buffer[0] = (char)unicodeScalar;
                 numberOfCharactersWritten = 1;
+                return true;
             }
-            else
+
+            switch (unicodeScalar)
             {
-                if (bufferLength < 2)
+                case '\b':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = 'b';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '\t':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = 't';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '\n':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = 'n';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '\f':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = 'f';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '\r':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = 'r';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '\\':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = '\\';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '"':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = '"';
+                    numberOfCharactersWritten = 2;
+                    return true;
+
+                case '\'':
+                    if (bufferLength < 2)
+                    {
+                        numberOfCharactersWritten = 0;
+                        return false;
+                    }
+                    buffer[0] = '\\';
+                    buffer[1] = '\'';
+                    numberOfCharactersWritten = 2;
+                    return true;
+            }
+
+            if (unicodeScalar <= 0xFFFF)
+            {
+                if (bufferLength < 6)
                 {
                     numberOfCharactersWritten = 0;
                     return false;
                 }
 
-                unicodeScalar -= 0x10000;
-                buffer[0] = (char)((unicodeScalar >> 10) + 0xD800);
-                buffer[1] = (char)((unicodeScalar & 0x3FF) + 0xDC00);
-                numberOfCharactersWritten = 2;
+                buffer[0] = '\\';
+                buffer[1] = 'u';
+                WriteHexDigit((unicodeScalar >> 12) & 0xF, buffer + 2);
+                WriteHexDigit((unicodeScalar >> 8) & 0xF, buffer + 3);
+                WriteHexDigit((unicodeScalar >> 4) & 0xF, buffer + 4);
+                WriteHexDigit(unicodeScalar & 0xF, buffer + 5);
+                numberOfCharactersWritten = 6;
+                return true;
             }
 
+            if (bufferLength < 12)
+            {
+                numberOfCharactersWritten = 0;
+                return false;
+            }
+
+            unicodeScalar -= 0x10000;
+            int highSurrogate = 0xD800 + ((unicodeScalar >> 10) & 0x3FF);
+            int lowSurrogate = 0xDC00 + (unicodeScalar & 0x3FF);
+
+            buffer[0] = '\\';
+            buffer[1] = 'u';
+            WriteHexDigit((highSurrogate >> 12) & 0xF, buffer + 2);
+            WriteHexDigit((highSurrogate >> 8) & 0xF, buffer + 3);
+            WriteHexDigit((highSurrogate >> 4) & 0xF, buffer + 4);
+            WriteHexDigit(highSurrogate & 0xF, buffer + 5);
+
+            buffer[6] = '\\';
+            buffer[7] = 'u';
+            WriteHexDigit((lowSurrogate >> 12) & 0xF, buffer + 8);
+            WriteHexDigit((lowSurrogate >> 8) & 0xF, buffer + 9);
+            WriteHexDigit((lowSurrogate >> 4) & 0xF, buffer + 10);
+            WriteHexDigit(lowSurrogate & 0xF, buffer + 11);
+
+            numberOfCharactersWritten = 12;
             return true;
         }
 
-        public override bool WillEncode(int unicodeScalar) => false;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override bool WillEncode(int unicodeScalar)
+        {
+            if (unicodeScalar < 0 || unicodeScalar > 0x10FFFF ||
+                (unicodeScalar >= 0xD800 && unicodeScalar <= 0xDFFF))
+            {
+                return true;
+            }
+
+            if (unicodeScalar < 0x20 || unicodeScalar == 0x7F)
+            {
+                return true;
+            }
+
+            if (unicodeScalar == '\\' || unicodeScalar == '"' || unicodeScalar == '\'')
+            {
+                return true;
+            }
+
+            if (unicodeScalar == '<' || unicodeScalar == '>' || unicodeScalar == '&')
+            {
+                return true;
+            }
+
+            if (unicodeScalar == 0x2028 || unicodeScalar == 0x2029)
+            {
+                return true;
+            }
+
+            if (unicodeScalar >= 0x80)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void WriteHexDigit(int value, char* output)
+        {
+            *output = (char)(value < 10 ? '0' + value : 'a' + (value - 10));
+        }
     }
 }
