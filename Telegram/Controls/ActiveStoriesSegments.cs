@@ -40,7 +40,7 @@ namespace Telegram.Controls
         private static readonly Color _storyCloseFriendTopColor = Color.FromArgb(0xFF, 0x78, 0xd5, 0x38);
         private static readonly Color _storyCloseFriendBottomColor = Color.FromArgb(0xFF, 0x2a, 0xb5, 0x6d);
 
-        private static readonly Color _storyDefaultColor = Color.FromArgb(0xFF, 0xD8, 0xD8, 0xE1);
+        private static readonly Color _storyDefaultColor = Color.FromArgb(77, 128, 128, 128);
 
         private static readonly Color _storyLiveColor = Color.FromArgb(0xFF, 0xFF, 0x2C, 0x55);
 
