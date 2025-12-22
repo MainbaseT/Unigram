@@ -575,6 +575,45 @@ namespace Telegram.ViewModels.Supergroups
                 };
             }
 
+            if (status is ChatMemberStatusAdministrator administrator)
+            {
+                bool hasNoRights;
+                if (channel)
+                {
+                    hasNoRights = !administrator.Rights.CanChangeInfo
+                        && !administrator.Rights.CanDeleteMessages
+                        && !administrator.Rights.CanEditMessages
+                        && !administrator.Rights.CanInviteUsers
+                        && !administrator.Rights.CanManageDirectMessages
+                        && !administrator.Rights.CanPostMessages
+                        && !administrator.Rights.CanPostStories
+                        && !administrator.Rights.CanEditStories
+                        && !administrator.Rights.CanDeleteStories
+                        && !administrator.Rights.CanPromoteMembers
+                        && !administrator.Rights.CanRestrictMembers;
+                }
+                else
+                {
+                    hasNoRights = !administrator.Rights.IsAnonymous
+                        && !administrator.Rights.CanChangeInfo
+                        && !administrator.Rights.CanDeleteMessages
+                        && !administrator.Rights.CanInviteUsers
+                        && !administrator.Rights.CanPinMessages
+                        && !administrator.Rights.CanPostStories
+                        && !administrator.Rights.CanEditStories
+                        && !administrator.Rights.CanDeleteStories
+                        && !administrator.Rights.CanPromoteMembers
+                        && !administrator.Rights.CanRestrictMembers
+                        && !administrator.Rights.CanManageVideoChats
+                        && (_isForum && !administrator.Rights.CanManageTopics);
+                }
+
+                if (hasNoRights)
+                {
+                    status = new ChatMemberStatusMember(0);
+                }
+            }
+
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, status));
             if (response is Ok)
             {
