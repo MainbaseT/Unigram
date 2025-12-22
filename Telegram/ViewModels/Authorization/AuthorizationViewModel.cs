@@ -325,7 +325,7 @@ namespace Telegram.ViewModels.Authorization
         public async void LoginWithPasskey()
         {
             var response = await BridgeApplicationContext.CheckAuthenticationPasskeyAsync(ClientService);
-            if (response is Error { Code: not -2147023673 } error)
+            if (response is Error { Code: not -2147023673 and not -2146893770 } error)
             {
                 await ShowPopupAsync(error.Message, Strings.AppName, Strings.OK);
             }

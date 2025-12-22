@@ -384,7 +384,7 @@ namespace Telegram.ViewModels.Settings
                         NavigationService.Navigate(typeof(SettingsPasskeysPage));
                         ShowToast(string.Format("**{0}**\n{1}", Strings.PasskeyAddedTitle, string.Format(Strings.PasskeyAddedText, passkey.Name)));
                     }
-                    else if (response is Error { Code: not -2147023673 } error)
+                    else if (response is Error { Code: not -2147023673 and not -2146893770 } error)
                     {
                         ShowToast(error);
                     }
