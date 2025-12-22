@@ -2411,8 +2411,8 @@ namespace Telegram.Views
         private ChatFolderViewModel ConvertFolder(ChatFolderViewModel folder, bool updateBackStack = true)
         {
             ShowHideArchive(folder?.ChatList is ChatListMain or null && ViewModel.Chats.Items.ChatList is not ChatListArchive, false);
-            ShowHideLeftTabs(ViewModel.Chats.Settings.UseLeftTabsForChats && ViewModel.Folders.Count > 0);
-            ShowHideTopTabs(!ViewModel.Chats.Settings.UseLeftTabsForChats && ViewModel.Folders.Count > 0 && folder.ChatList is not ChatListArchive);
+            ShowHideLeftTabs(SettingsService.Current.UseLeftTabsForChats && ViewModel.Folders.Count > 0);
+            ShowHideTopTabs(!SettingsService.Current.UseLeftTabsForChats && ViewModel.Folders.Count > 0 && folder.ChatList is not ChatListArchive);
 
             UpdatePaneToggleButtonVisibility();
 
