@@ -206,14 +206,7 @@ namespace Telegram.Controls.Media
                     Source = new CompositionEffectSourceParameter("Backdrop"),
                 };
 
-                var compositeEffect = new CompositeEffect();
-                compositeEffect.Sources.Add(new ColorSourceEffect
-                {
-                    Color = Colors.Black
-                });
-                compositeEffect.Sources.Add(alphaMaskEffect);
-
-                _negativeFactory = BootStrapper.Current.Compositor.CreateEffectFactory(compositeEffect, ["Intensity.Opacity"]);
+                _negativeFactory = BootStrapper.Current.Compositor.CreateEffectFactory(alphaMaskEffect, ["Intensity.Opacity"]);
             }
 
             return _negativeFactory.CreateBrush();
@@ -252,11 +245,6 @@ namespace Telegram.Controls.Media
 
         private CompositionBrush CreateBackdropBrush()
         {
-            if (Pattern == null && IsNegative)
-            {
-                return BootStrapper.Current.Compositor.CreateColorBrush(Colors.Black);
-            }
-
             if (Fill is BackgroundFillFreeformGradient freeform)
             {
                 if (_freeform != null)

@@ -17,6 +17,7 @@ using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
+using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
@@ -144,7 +145,7 @@ namespace Telegram.Controls.Chats
 
                 //if (clear)
                 {
-                    Background = null; // typePattern.ToBrush(0);
+                    Background = _negative ? new SolidColorBrush(Colors.Black) : null; // typePattern.ToBrush(0);
                 }
 
                 UpdateBlurred(false);
@@ -250,7 +251,7 @@ namespace Telegram.Controls.Chats
                 ElementCompositionPreview.SetElementChildVisual(this, null);
             }
 
-            if (_wallpaperPath != file.Local.Path)
+            if (_wallpaperPath != file.Local.Path || Background == null)
             {
                 _wallpaperPath = file.Local.Path;
 
