@@ -225,6 +225,14 @@ namespace Telegram.Common
 
         private static readonly char[] _lineBreakChars = new[] { '\n', '\r', '\v' };
 
+        private static bool ContainsLineBreaks(string text, int offset, int length)
+        {
+            var starts = offset == 0 || _lineBreakChars.Contains(text[offset - 1]);
+            var ends = offset + length == text.Length || _lineBreakChars.Contains(text[offset + length]);
+
+            return (starts && ends) || text.IndexOfAny(_lineBreakChars) >= 0;
+        }
+
         public static IList<TextEntity> GetEntities(string text, IList<TextStyleRun> runs)
         {
             if (runs == null)
@@ -250,57 +258,43 @@ namespace Telegram.Common
 
                 if (run.HasFlag(TextStyle.Monospace))
                 {
-                    static bool Contains(string text, int offset, int length)
-                    {
-                        var starts = offset == 0 || _lineBreakChars.Contains(text[offset - 1]);
-                        var ends = offset + length == text.Length || _lineBreakChars.Contains(text[offset + length]);
+                    CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeCode());
 
-                        return starts && ends;
-                    }
-
-                    if (Contains(text, run.Offset, run.Length))
-                    {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypePre());
-                    }
-                    else
-                    {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeCode());
-                    }
                     if (run.HasFlag(TextStyle.Quote))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeBlockQuote());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeBlockQuote());
                     }
                 }
                 else
                 {
                     if (run.HasFlag(TextStyle.Bold))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeBold());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeBold());
                     }
                     if (run.HasFlag(TextStyle.Italic))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeItalic());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeItalic());
                     }
                     if (run.HasFlag(TextStyle.Strikethrough))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeStrikethrough());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeStrikethrough());
                     }
                     if (run.HasFlag(TextStyle.Underline))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeUnderline());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeUnderline());
                     }
                     if (run.HasFlag(TextStyle.Spoiler))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeSpoiler());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeSpoiler());
                     }
                     if (run.HasFlag(TextStyle.Quote))
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, new TextEntityTypeBlockQuote());
+                        CreateOrMerge(text, run.Offset, run.Length, results, new TextEntityTypeBlockQuote());
                     }
 
                     if (run.Type != null)
                     {
-                        CreateOrMerge(run.Offset, run.Length, results, run.Type);
+                        CreateOrMerge(text, run.Offset, run.Length, results, run.Type);
                     }
                 }
             }
@@ -313,20 +307,25 @@ namespace Telegram.Common
             entities.Add(new TextEntity(offset, length, type));
         }
 
-        private static void CreateOrMerge(int offset, int length, IList<TextEntity> entities, TextEntityType type)
+        private static void CreateOrMerge(string text, int offset, int length, IList<TextEntity> entities, TextEntityType type)
         {
             var last = entities.LastOrDefault(x => x.Length + x.Offset == offset && AreTheSame(x.Type, type));
             if (last != null)
             {
-                if (type is TextEntityTypePre)
+                if (type is TextEntityTypeCode && ContainsLineBreaks(text, last.Offset, last.Length + length))
                 {
-                    last.Type = type;
+                    last.Type = new TextEntityTypePre();
                 }
 
                 last.Length += length;
             }
             else
             {
+                if (type is TextEntityTypeCode && ContainsLineBreaks(text, offset, length))
+                {
+                    type = new TextEntityTypePre();
+                }
+
                 entities.Add(new TextEntity(offset, length, type));
             }
         }
