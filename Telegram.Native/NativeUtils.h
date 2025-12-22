@@ -128,7 +128,7 @@ namespace winrt::Telegram::Native::implementation
 
         static void RhCollect(int generation, int mode)
         {
-            if (s_collect.load())
+            if ((generation == 2 && mode == 6) || s_collect.load())
             {
                 s_RhCollect(generation, mode);
             }
