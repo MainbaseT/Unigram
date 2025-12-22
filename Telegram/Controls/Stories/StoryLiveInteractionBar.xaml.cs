@@ -70,6 +70,12 @@ namespace Telegram.Controls.Stories
             _activeStories = activeStories;
             _viewModel = story;
             _groupCall = story.GroupCall;
+
+            if (_groupCall == null)
+            {
+                return;
+            }
+
             _groupCall.TotalStarCountChanged += OnTotalStarCountChanged;
             _groupCall.PropertyChanged += OnPropertyChanged;
 
