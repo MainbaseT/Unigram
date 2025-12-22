@@ -28,27 +28,27 @@ namespace Telegram.Td
 
     public class Client
     {
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void TdLogMessageCallback(int verbosity_level, IntPtr message);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void td_set_log_message_callback(int max_verbosity_level, TdLogMessageCallback callback);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int td_create_client_id();
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe void td_send(int client_id, long request_id, byte* request);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe byte* td_execute(byte* request);
 
         [SuppressUnmanagedCodeSecurity]
-        [DllImport("tdjson.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern unsafe byte* td_receive(double timeout, out int client_id, out long request_id);
 
         private static long _currentRequestId = 0;
@@ -86,7 +86,7 @@ namespace Telegram.Td
                 _writer.Rent();
             }
 
-            var request = ClientJson.ToJson(_writer, function, requestId);
+            var request = ClientJson.ToJson(_writer, function);
             fixed (byte* bytes = request)
             {
                 td_send(_clientId, requestId, bytes);
@@ -112,7 +112,7 @@ namespace Telegram.Td
                 _writer.Rent();
             }
 
-            var request = ClientJson.ToJson(_writer, function, 0);
+            var request = ClientJson.ToJson(_writer, function);
             fixed (byte* source = request)
             {
                 var ptr = td_execute(source);

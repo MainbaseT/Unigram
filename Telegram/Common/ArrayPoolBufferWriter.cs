@@ -457,3 +457,48 @@ namespace Telegram.Common
         }
     }
 }
+
+namespace System.Text.Encodings.Web
+{
+    public sealed class Arm64SafeEncoder : JavaScriptEncoder
+    {
+        public override int MaxOutputCharactersPerInputCharacter => 12;
+
+        public override unsafe int FindFirstCharacterToEncode(char* text, int textLength)
+        {
+            return -1;
+        }
+
+        public override unsafe bool TryEncodeUnicodeScalar(int unicodeScalar, char* buffer, int bufferLength, out int numberOfCharactersWritten)
+        {
+            if (unicodeScalar <= 0xFFFF)
+            {
+                if (bufferLength < 1)
+                {
+                    numberOfCharactersWritten = 0;
+                    return false;
+                }
+
+                buffer[0] = (char)unicodeScalar;
+                numberOfCharactersWritten = 1;
+            }
+            else
+            {
+                if (bufferLength < 2)
+                {
+                    numberOfCharactersWritten = 0;
+                    return false;
+                }
+
+                unicodeScalar -= 0x10000;
+                buffer[0] = (char)((unicodeScalar >> 10) + 0xD800);
+                buffer[1] = (char)((unicodeScalar & 0x3FF) + 0xDC00);
+                numberOfCharactersWritten = 2;
+            }
+
+            return true;
+        }
+
+        public override bool WillEncode(int unicodeScalar) => false;
+    }
+}

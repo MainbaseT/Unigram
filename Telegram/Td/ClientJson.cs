@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Telegram.Common;
 
@@ -45,6 +46,11 @@ namespace Telegram.Td.Api
     {
         private static readonly JsonWriterOptions _options = new()
         {
+#if ARM64
+            Encoder = new Arm64SafeEncoder(),
+#else
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+#endif
             SkipValidation = true
         };
 
@@ -72,7 +78,7 @@ namespace Telegram.Td.Api
             }
         }
 
-        public static ReadOnlySpan<byte> ToJson(ArrayPoolBufferWriter buffer, Function obj, long requestId)
+        public static ReadOnlySpan<byte> ToJson(ArrayPoolBufferWriter buffer, Function obj)
         {
             if (_writer == null)
             {
@@ -89,11 +95,6 @@ namespace Telegram.Td.Api
             _writer.WriteEndObject();
             _writer.Flush();
             _writer.Reset(_buffer);
-
-            if (requestId != 0)
-            {
-                return buffer.NullTerminated(requestId);
-            }
 
             return buffer.NullTerminated();
         }
