@@ -1356,7 +1356,7 @@ namespace Telegram.Views
                 var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
                 var edge = (index == panel.LastVisibleIndex && direction == 1) || (index == panel.FirstVisibleIndex && direction == -1);
 
-                if (edge && !Messages.VisualContains(selector))
+                if (edge && !Messages.ScrollingHost.ViewportContains(selector))
                 {
                     direction *= -1;
                 }

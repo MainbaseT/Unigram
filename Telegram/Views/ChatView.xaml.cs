@@ -683,7 +683,7 @@ namespace Telegram.Views
 
                     var height = first && !last ? selector.ActualSize.Y - 6 : selector.ActualSize.Y;
 
-                    _messagesShift.RegisterRemove(index, args.OldStartingIndex, height, edge && !Messages.VisualContains(selector));
+                    _messagesShift.RegisterRemove(index, args.OldStartingIndex, height, edge && !Messages.ScrollingHost.ViewportContains(selector));
                 }
                 else
                 {
