@@ -13,10 +13,12 @@ using Telegram.Native;
 using Telegram.Services;
 using Windows.Foundation;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Common
 {
-    public sealed class InactivityGarbageCollectionMonitor
+    public static class InactivityGarbageCollectionMonitor
     {
         private sealed class WindowState
         {
@@ -36,29 +38,27 @@ namespace Telegram.Common
             }
         }
 
-        private readonly object _syncLock = new object();
-        private readonly Dictionary<CoreWindow, WindowState> _windowStates = new Dictionary<CoreWindow, WindowState>();
-        private readonly Timer _checkTimer;
+        private static readonly object _syncLock = new object();
+        private static readonly Dictionary<CoreWindow, WindowState> _windowStates = new Dictionary<CoreWindow, WindowState>();
+        private static readonly Timer _checkTimer;
 
-        private long _lastActivityTicks;
-        private long _lastRecordedActivityTicks;
-        private volatile bool _xamlCollectionRequested;
-        private volatile bool _isDisposed;
-        private long _lastCollectionTicks;
+        private static long _lastActivityTicks;
+        private static long _lastRecordedActivityTicks;
+        private static volatile bool _directManipulationStarted;
+        private static volatile bool _xamlCollectionRequested;
+        private static long _lastCollectionTicks;
 
         private static volatile int _requested;
         private static volatile int _count;
-        public static string Debug => $"{_count}/{_requested}";
+        public static string Debug => $" {_count}/{_requested}{(_xamlCollectionRequested ? "*" : "")}";
 
-        public TimeSpan InactivityTimeout { get; set; } = TimeSpan.FromSeconds(1);
-        public TimeSpan DebounceDelay { get; set; } = TimeSpan.FromMilliseconds(500);
-        public TimeSpan CheckInterval { get; }
-        public TimeSpan ActivityThrottle { get; set; } = TimeSpan.FromMilliseconds(100);
+        public static TimeSpan InactivityTimeout { get; set; } = TimeSpan.FromSeconds(2);
+        public static TimeSpan DebounceDelay { get; set; } = TimeSpan.FromMilliseconds(500);
+        public static TimeSpan CheckInterval { get; } = TimeSpan.FromMilliseconds(250);
+        public static TimeSpan ActivityThrottle { get; set; } = TimeSpan.FromMilliseconds(100);
 
-        public InactivityGarbageCollectionMonitor(TimeSpan? checkInterval = null)
+        static InactivityGarbageCollectionMonitor()
         {
-            CheckInterval = checkInterval ?? TimeSpan.FromMilliseconds(250);
-
             long now = (long)Logger.TickCount;
             _lastActivityTicks = now;
             _lastRecordedActivityTicks = now;
@@ -73,11 +73,8 @@ namespace Telegram.Common
             NativeUtils.SetCollectCallback(RhCollect, SettingsService.Current.Diagnostics.DisableXamlGcCollect);
         }
 
-        public void StartMonitoring(CoreWindow window)
+        public static void StartMonitoring(CoreWindow window)
         {
-            if (_isDisposed)
-                return;
-
             WindowState state;
             bool isNewWindow;
 
@@ -117,7 +114,7 @@ namespace Telegram.Common
             }
         }
 
-        public void StopMonitoring(CoreWindow window)
+        public static void StopMonitoring(CoreWindow window)
         {
             if (window == null)
                 throw new ArgumentNullException(nameof(window));
@@ -163,24 +160,31 @@ namespace Telegram.Common
             state.ClosedHandler = null;
         }
 
-        private void RhCollect(int generation, int mode)
+        private static void RhCollect(int generation, int mode)
         {
             Logger.Info(string.Format("generation: {0}, mode: {1}", generation, mode));
-            
+
             _requested++;
             DisconnectUnusedReferenceSources();
         }
 
-        public void DisconnectUnusedReferenceSources()
+        public static void DisconnectUnusedReferenceSources()
         {
-            if (_isDisposed)
-                return;
-
             _xamlCollectionRequested = true;
         }
 
+        public static void DirectManipulationStarted()
+        {
+            _directManipulationStarted = true;
+        }
+
+        public static void DirectManipulationCompleted()
+        {
+            _directManipulationStarted = false;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RecordActivityImmediate()
+        private static void RecordActivityImmediate()
         {
             long now = (long)Logger.TickCount;
             Interlocked.Exchange(ref _lastActivityTicks, now);
@@ -188,7 +192,7 @@ namespace Telegram.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RecordActivityThrottled()
+        private static void RecordActivityThrottled()
         {
             long now = (long)Logger.TickCount;
 
@@ -202,20 +206,14 @@ namespace Telegram.Common
             }
         }
 
-        private void OnTimerCallback(object state)
+        private static void OnTimerCallback(object state)
         {
-            if (_isDisposed)
-                return;
-
             TryTriggerCollection();
         }
 
-        private void TryTriggerCollection()
+        private static void TryTriggerCollection()
         {
-            if (_isDisposed)
-                return;
-
-            if (!_xamlCollectionRequested)
+            if (_directManipulationStarted || !_xamlCollectionRequested)
                 return;
 
             long currentTicks = (long)Logger.TickCount;
@@ -242,6 +240,61 @@ namespace Telegram.Common
                 NativeUtils.Collect = true;
                 GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: false, compacting: true);
                 NativeUtils.Collect = false;
+            }
+        }
+    }
+
+    public static class XamlReferenceTracker
+    {
+        public static bool GetIsAttached(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsAttachedProperty);
+        }
+
+        public static void SetIsAttached(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsAttachedProperty, value);
+        }
+
+        public static readonly DependencyProperty IsAttachedProperty =
+            DependencyProperty.RegisterAttached("IsAttached", typeof(bool), typeof(XamlReferenceTracker), new PropertyMetadata(false, OnIsAttachedChanged));
+
+        private static void OnIsAttachedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not ScrollViewer sender || e.NewValue is not bool attached)
+            {
+                return;
+            }
+
+            if (attached)
+            {
+                sender.DirectManipulationStarted += OnDirectManipulationStarted;
+                sender.DirectManipulationCompleted += OnDirectManipulationCompleted;
+            }
+            else
+            {
+                sender.DirectManipulationStarted -= OnDirectManipulationStarted;
+                sender.DirectManipulationCompleted -= OnDirectManipulationCompleted;
+            }
+        }
+
+        private static void OnDirectManipulationStarted(object sender, object e)
+        {
+            InactivityGarbageCollectionMonitor.DirectManipulationStarted();
+
+            if (sender is ScrollViewer scrollViewer)
+            {
+                scrollViewer.Unloaded += OnDirectManipulationCompleted;
+            }
+        }
+
+        private static void OnDirectManipulationCompleted(object sender, object e)
+        {
+            InactivityGarbageCollectionMonitor.DirectManipulationCompleted();
+
+            if (sender is ScrollViewer scrollViewer)
+            {
+                scrollViewer.Unloaded -= OnDirectManipulationCompleted;
             }
         }
     }

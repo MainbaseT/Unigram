@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Runtime;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Composition;
@@ -127,7 +126,8 @@ namespace Telegram.Views
 
         private string PollGC()
         {
-            var occurred = GCSettings.LatencyMode == GCLatencyMode.SustainedLowLatency ? " S" : " I";
+            var occurred = InactivityGarbageCollectionMonitor.Debug;
+            var first = true;
 
             for (int i = 0; i <= 2; i++)
             {
@@ -135,11 +135,19 @@ namespace Telegram.Views
                 if (count != _lastCollectionCount[i])
                 {
                     _lastCollectionCount[i] = count;
+
+                    if (first)
+                        occurred += " (";
+
+                    first = false;
                     occurred += i.ToString();
                 }
             }
 
-            return occurred + ":" + InactivityGarbageCollectionMonitor.Debug;
+            if (!first)
+                occurred += ")";
+
+            return occurred;
         }
 
         private void MemoryUsageTimer_Tick(object sender, object e)
@@ -1204,7 +1212,7 @@ namespace Telegram.Views
                     //GC.Collect();
                     //NativeUtils.Collect = false;
 
-                    WindowContext.DisconnectUnusedReferenceSources();
+                    InactivityGarbageCollectionMonitor.DisconnectUnusedReferenceSources();
                     return;
                 }
 
