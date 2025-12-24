@@ -14,6 +14,8 @@ using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Td.Api;
 
+#nullable enable
+
 namespace Telegram.Td
 {
     public delegate void LogMessageCallback(int verbosityLevel, string message);
@@ -33,7 +35,7 @@ namespace Telegram.Td
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void td_set_log_message_callback(int max_verbosity_level, TdLogMessageCallback callback);
+        public static extern void td_set_log_message_callback(int max_verbosity_level, TdLogMessageCallback? callback);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport("tdjson.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -69,7 +71,7 @@ namespace Telegram.Td
             Send(new GetOption("version"));
         }
 
-        public unsafe void Send(Function function, Action<Object> handler = null)
+        public unsafe void Send(Function function, Action<Object>? handler = null)
         {
             var requestId = Interlocked.Increment(ref _currentRequestId);
             if (handler != null)
@@ -126,7 +128,7 @@ namespace Telegram.Td
                 int length = (int)(end - ptr);
                 if (length == 0)
                 {
-                    return null;
+                    return new Error(400, "Can't deserialize");
                 }
 
                 _writer.Resize(length);
@@ -140,7 +142,7 @@ namespace Telegram.Td
 
                 try
                 {
-                    return ClientJson.FromJson(span, null);
+                    return ClientJson.FromJson(span);
                 }
                 finally
                 {
@@ -182,7 +184,7 @@ namespace Telegram.Td
         }
 
         [ThreadStatic]
-        private static ArrayPoolBufferWriter _writer;
+        private static ArrayPoolBufferWriter? _writer;
         private static byte[] _buffer = new byte[1 << 18];
 
         public static unsafe Object Receive(double timeout, out int clientId, out long requestId)
@@ -193,7 +195,7 @@ namespace Telegram.Td
             var ptr = td_receive(timeout, out clientId, out requestId);
             if (ptr == null)
             {
-                return null;
+                return new Error(400, "Can't deserialize");
             }
 
             byte* end = ptr;
@@ -205,7 +207,7 @@ namespace Telegram.Td
             int length = (int)(end - ptr);
             if (length == 0)
             {
-                return null;
+                return new Error(400, "Can't deserialize");
             }
 
             if (_buffer.Length < length)
@@ -225,7 +227,7 @@ namespace Telegram.Td
         }
 
         private static readonly object _logMutex = new();
-        private static LogMessageCallback _logMessageCallback;
+        private static LogMessageCallback? _logMessageCallback;
 
         public static void SetLogMessageCallback(int max_verbosity_level, LogMessageCallback callback)
         {

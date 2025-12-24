@@ -99,7 +99,7 @@ namespace Telegram.Td.Api
             return buffer.NullTerminated();
         }
 
-        public static Object? FromJson(ReadOnlySpan<byte> jsonData, ClientResultHandler handler)
+        public static Object FromJson(ReadOnlySpan<byte> jsonData, ClientResultHandler? handler = null)
         {
             var reader = new Utf8JsonReader(jsonData);
             reader.Read();
@@ -108,22 +108,17 @@ namespace Telegram.Td.Api
             {
                 reader.Read();
 
-                while (reader.TokenType == JsonTokenType.PropertyName)
+                if (reader.TokenType == JsonTokenType.PropertyName && reader.ValueTextEquals("@type"u8))
                 {
-                    if (reader.ValueTextEquals("@type"u8))
-                    {
-                        reader.Read();
-                        var hash = ComputeCrc32(reader.ValueSpan);
-
-                        reader.Read();
-                        return DoFromJson(ref reader, handler, hash);
-                    }
+                    reader.Read();
+                    var hash = ComputeCrc32(reader.ValueSpan);
 
                     reader.Read();
+                    return DoFromJson(ref reader, handler, hash);
                 }
             }
 
-            return null;
+            return new Error(400, "Can't deserialize");
         }
 
         private delegate T? FromHandler<T>(ref Utf8JsonReader r, ClientResultHandler handler, uint h);
