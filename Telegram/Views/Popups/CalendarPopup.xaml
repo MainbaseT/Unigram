@@ -57,7 +57,7 @@
             </Setter>
         </windows11:Style>
 
-        <windows10:Style x:Key="DefaultCalendarViewDayItemStyle2"
+        <windows10:Style x:Key="DefaultCalendarViewDayItemStyle"
                          TargetType="CalendarViewDayItem">
             <Setter Property="MinWidth"
                     Value="40" />
