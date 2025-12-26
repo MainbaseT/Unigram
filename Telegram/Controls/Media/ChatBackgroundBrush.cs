@@ -245,6 +245,14 @@ namespace Telegram.Controls.Media
 
         private CompositionBrush CreateBackdropBrush()
         {
+            if (IsNegative && Pattern == null)
+            {
+                _freeform?.Stop();
+                _freeform = null;
+
+                return BootStrapper.Current.Compositor.CreateColorBrush(Colors.Black);
+            }
+
             if (Fill is BackgroundFillFreeformGradient freeform)
             {
                 if (_freeform != null)
