@@ -99,19 +99,19 @@ namespace Telegram.Views.Stars.Popups
         public ResoldGiftFilterManager(IClientService clientService, ResoldGiftsPopup popup, Microsoft.UI.Xaml.Controls.DropDownButton sender, IList<UpgradedGiftModelCount> models)
             : this(clientService, popup, sender, models.Select(x => new ResoldGiftFilter(x)))
         {
-            _attributeType = new UpgradedGiftAttributeIdModel(0);
+            _attributeType = new UpgradedGiftAttributeIdModel(-1);
         }
 
         public ResoldGiftFilterManager(IClientService clientService, ResoldGiftsPopup popup, Microsoft.UI.Xaml.Controls.DropDownButton sender, IList<UpgradedGiftBackdropCount> backdrops)
             : this(clientService, popup, sender, backdrops.Select(x => new ResoldGiftFilter(x)))
         {
-            _attributeType = new UpgradedGiftAttributeIdBackdrop(0);
+            _attributeType = new UpgradedGiftAttributeIdBackdrop(-1);
         }
 
         public ResoldGiftFilterManager(IClientService clientService, ResoldGiftsPopup popup, Microsoft.UI.Xaml.Controls.DropDownButton sender, IList<UpgradedGiftSymbolCount> symbols)
             : this(clientService, popup, sender, symbols.Select(x => new ResoldGiftFilter(x)))
         {
-            _attributeType = new UpgradedGiftAttributeIdSymbol(0);
+            _attributeType = new UpgradedGiftAttributeIdSymbol(-1);
         }
 
         public ResoldGiftFilterManager(IClientService clientService, ResoldGiftsPopup popup, Microsoft.UI.Xaml.Controls.DropDownButton sender, IEnumerable<ResoldGiftFilter> items)
@@ -166,11 +166,14 @@ namespace Telegram.Views.Stars.Popups
 
         public IEnumerable<UpgradedGiftAttributeId> GetAttributes()
         {
-            foreach (var id in _selected)
+            if (_selected.Count < _items.Count)
             {
-                if (_map.TryGetValue(id, out var item))
+                foreach (var id in _selected)
                 {
-                    yield return item.Attribute;
+                    if (_map.TryGetValue(id, out var item))
+                    {
+                        yield return item.Attribute;
+                    }
                 }
             }
         }
@@ -183,7 +186,7 @@ namespace Telegram.Views.Stars.Popups
 
             if (_selected.Count < _items.Count)
             {
-                next.Add(0);
+                next.Add(-1);
             }
 
             foreach (var item in _items)
@@ -203,7 +206,7 @@ namespace Telegram.Views.Stars.Popups
             {
                 if (step.Status == DiffStatus.Add)
                 {
-                    if (step.Items[0].NewValue == 0)
+                    if (step.Items[0].NewValue == -1)
                     {
                         var toggle = new ToggleMenuFlyoutItem();
                         toggle.Text = Strings.SelectAll;
@@ -399,6 +402,11 @@ namespace Telegram.Views.Stars.Popups
 
                 _nextOffset = gifts.NextOffset;
                 _hasMoreItems = gifts.NextOffset.Length > 0;
+            }
+            else
+            {
+                _nextOffset = string.Empty;
+                _hasMoreItems = false;
             }
 
             return new LoadMoreItemsResult
