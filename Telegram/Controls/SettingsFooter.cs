@@ -74,9 +74,15 @@ namespace Telegram.Controls
         public event EventHandler<TextUrlClickEventArgs> Click;
 
         // Used by TextBlockHelper
-        public void OnClick(string url)
+        public bool OnClick(string url)
         {
-            Click?.Invoke(this, new TextUrlClickEventArgs(url));
+            if (Click != null)
+            {
+                Click.Invoke(this, new TextUrlClickEventArgs(url));
+                return true;
+            }
+
+            return false;
         }
 
         protected override AutomationPeer OnCreateAutomationPeer()
