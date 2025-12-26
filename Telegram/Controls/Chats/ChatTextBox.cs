@@ -167,6 +167,17 @@ namespace Telegram.Controls.Chats
                     // All the remote procedure calls must be wrapped in a try-catch block
                 }
             }
+            else if (e.Key is VirtualKey.Escape)
+            {
+                if (_emojiFlyout != null)
+                {
+                    _emojiQuery = null;
+                    _emojiFlyout?.Hide();
+                    _emojiToken?.Cancel();
+
+                    e.Handled = true;
+                }
+            }
             else if (e.Key is VirtualKey.Up or VirtualKey.Down or VirtualKey.Left or VirtualKey.Right or VirtualKey.Tab or VirtualKey.Enter)
             {
                 IAutocompleteCollection autocomplete;
