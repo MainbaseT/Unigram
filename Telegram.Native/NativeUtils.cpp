@@ -635,7 +635,7 @@ namespace winrt::Telegram::Native::implementation
         return uli.QuadPart / 10000;
     }
 
-    int32_t NativeUtils::GetLastInputTime()
+    uint32_t NativeUtils::GetLastInputTime()
     {
         typedef BOOL(WINAPI* pGetLastInputInfo)(_Out_ PLASTINPUTINFO);
 

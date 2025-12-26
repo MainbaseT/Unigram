@@ -16,7 +16,7 @@ namespace Telegram.Common
         private static Timer _timer;
         private static int _timeout = 60 * 1000;
 
-        private static int _lastTime = int.MinValue;
+        private static uint _lastTime = uint.MinValue;
 
         public static void Initialize(int timeout)
         {

@@ -58,7 +58,7 @@ namespace winrt::Telegram::Native::implementation
         static void CleanDirectory(hstring path, int days);
         static void Delete(hstring path);
 
-        static int32_t GetLastInputTime();
+        static uint32_t GetLastInputTime();
 
         static IXamlDirectObject AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, FlowDirection direction, TextStyle style, FontFamily fontFamily, double fontSize, bool transparent);
         static IXamlDirectObject AddRunToCollection(XamlDirect direct, IXamlDirectObject inlines, hstring text, int32_t offset, int32_t length, FlowDirection direction, TextStyle style, FontFamily fontFamily, double fontSize, bool transparent);

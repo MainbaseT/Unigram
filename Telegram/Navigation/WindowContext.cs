@@ -86,18 +86,6 @@ namespace Telegram.Navigation
 
     public partial class WindowContext
     {
-        private static readonly InactivityGarbageCollectionMonitor s_gcMonitor =
-            new InactivityGarbageCollectionMonitor
-            {
-                InactivityTimeout = TimeSpan.FromSeconds(2),
-                DebounceDelay = TimeSpan.FromMilliseconds(500)
-            };
-
-        public static void DisconnectUnusedReferenceSources()
-        {
-            s_gcMonitor.DisconnectUnusedReferenceSources();
-        }
-
         private readonly Window _window;
 
         private bool _consolidated;
@@ -124,7 +112,7 @@ namespace Telegram.Navigation
 
             if (SettingsService.Current.Diagnostics.DisableXamlGcCollect)
             {
-                s_gcMonitor.StartMonitoring(window.CoreWindow);
+                InactivityGarbageCollectionMonitor.StartMonitoring(window.CoreWindow);
             }
 
             //Current = this;
