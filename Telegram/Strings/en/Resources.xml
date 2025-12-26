@@ -13115,4 +13115,19 @@
     <string name="SoundOnHint">You will receive notifications with sound.</string>
     <string name="SoundOffHint">You will receive silent notifications.</string>
 
+    <string name="CocoonFeature1Text">No third party can access any data, such as translations, inside **@cocoon**</string>
+    <string name="CocoonFeature1TextLink">https://t.me/cocoon</string>
+    <string name="CocoonFeature1Title">Private</string>
+    <string name="CocoonFeature2Text">Cocoon has allowed Telegram to reduce translation cost by 6x.</string>
+    <string name="CocoonFeature2Title">Efficient</string>
+    <string name="CocoonFeature3Text">Any developer can use Cocoon for AI features. Learn more at **cocoon.org**</string>
+    <string name="CocoonFeature3TextLink">https://cocoon.org/</string>
+    <string name="CocoonFeature3Title">For Everyone</string>
+    <string name="CocoonFooter">Want to integrate Cocoon into your projects?\nReach out at **t.me/cocoon?direct**</string>
+    <string name="CocoonFooterLink">https://t.me/cocoon?direct</string>
+    <string name="CocoonPoweredBy">Translations are powered by\n**&#129370; Cocoon**.</string>
+    <string name="CocoonPoweredByLink">**How does it work?**</string>
+    <string name="CocoonSubtitle">Cocoon (**Co**nfidential **Co**mpute **O**pen **N**etwork)\nhandles AI tasks safely and efficiently.</string>
+    <string name="Understood">&#128076; Understood</string>
+
 </resources>

@@ -4507,6 +4507,48 @@ Minimum length is 5 characters.</value>
   <data name="CloudUpdateInstallingTitle" xml:space="preserve">
     <value>Please Wait...</value>
   </data>
+  <data name="CocoonFeature1Text" xml:space="preserve">
+    <value>No third party can access any data, such as translations, inside **@cocoon**</value>
+  </data>
+  <data name="CocoonFeature1TextLink" xml:space="preserve">
+    <value>https://t.me/cocoon</value>
+  </data>
+  <data name="CocoonFeature1Title" xml:space="preserve">
+    <value>Private</value>
+  </data>
+  <data name="CocoonFeature2Text" xml:space="preserve">
+    <value>Cocoon has allowed Telegram to reduce translation cost by 6x.</value>
+  </data>
+  <data name="CocoonFeature2Title" xml:space="preserve">
+    <value>Efficient</value>
+  </data>
+  <data name="CocoonFeature3Text" xml:space="preserve">
+    <value>Any developer can use Cocoon for AI features. Learn more at **cocoon.org**</value>
+  </data>
+  <data name="CocoonFeature3TextLink" xml:space="preserve">
+    <value>https://cocoon.org/</value>
+  </data>
+  <data name="CocoonFeature3Title" xml:space="preserve">
+    <value>For Everyone</value>
+  </data>
+  <data name="CocoonFooter" xml:space="preserve">
+    <value>Want to integrate Cocoon into your projects?
+Reach out at **t.me/cocoon?direct**</value>
+  </data>
+  <data name="CocoonFooterLink" xml:space="preserve">
+    <value>https://t.me/cocoon?direct</value>
+  </data>
+  <data name="CocoonPoweredBy" xml:space="preserve">
+    <value>Translations are powered by
+**🥚 Cocoon**.</value>
+  </data>
+  <data name="CocoonPoweredByLink" xml:space="preserve">
+    <value>**How does it work?**</value>
+  </data>
+  <data name="CocoonSubtitle" xml:space="preserve">
+    <value>Cocoon (**Co**nfidential **Co**mpute **O**pen **N**etwork)
+handles AI tasks safely and efficiently.</value>
+  </data>
   <data name="Code" xml:space="preserve">
     <value>Code</value>
   </data>

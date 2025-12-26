@@ -2078,6 +2078,85 @@
         </Setter>
     </Style>
 
+    <Style TargetType="local:PopupInfo">
+        <Setter Property="Background"
+                Value="{ThemeResource ListViewItemBackground}" />
+        <Setter Property="BorderBrush"
+                Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <Setter Property="CornerRadius"
+                Value="4" />
+        <Setter Property="Padding"
+                Value="12,0,0,0" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="HorizontalAlignment"
+                Value="Stretch" />
+        <Setter Property="VerticalAlignment"
+                Value="Stretch" />
+        <Setter Property="FontFamily"
+                Value="{ThemeResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontWeight"
+                Value="Normal" />
+        <Setter Property="FontSize"
+                Value="{ThemeResource ControlContentThemeFontSize}" />
+        <Setter Property="UseSystemFocusVisuals"
+                Value="True" />
+        <Setter Property="Width"
+                Value="Auto" />
+        <Setter Property="Height"
+                Value="Auto" />
+        <Setter Property="MinHeight"
+                Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:PopupInfo">
+                    <Grid x:Name="RootGrid"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="GlyphPresenter"
+                                   FontSize="{StaticResource GlyphMediumFontSize}"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   Margin="12,8,0,0"
+                                   AutomationProperties.AccessibilityView="Raw"
+                                   Text="{TemplateBinding Glyph}"
+                                   FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                   Grid.RowSpan="2" />
+
+                        <TextBlock x:Name="ContentPresenter"
+                                   FontSize="{ThemeResource ControlContentThemeFontSize}"
+                                   FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                   AutomationProperties.AccessibilityView="Raw"
+                                   Text="{TemplateBinding Title}"
+                                   Margin="0,4,12,0"
+                                   Grid.Column="1" />
+                        <TextBlock x:Name="BadgePresenter"
+                                   FontSize="{ThemeResource ControlContentThemeFontSize}"
+                                   FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                   common:TextBlockHelper.IsLink="True"
+                                   common:TextBlockHelper.Markdown="{TemplateBinding Subtitle}"
+                                   common:TextBlockHelper.FormattedText="{TemplateBinding common:TextBlockHelper.FormattedText}"
+                                   Style="{StaticResource InfoCaptionTextBlockStyle}"
+                                   Margin="0,0,12,12"
+                                   Grid.Column="1"
+                                   Grid.Row="1" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="local:DiceView">
         <Setter Property="IsTabStop"
                 Value="False" />
@@ -3262,6 +3341,7 @@
                 <ControlTemplate TargetType="local:SettingsFooter">
                     <TextBlock common:TextBlockHelper.IsLink="{TemplateBinding IsLink}"
                                common:TextBlockHelper.Markdown="{TemplateBinding Text}"
+                               common:TextBlockHelper.FormattedText="{TemplateBinding common:TextBlockHelper.FormattedText}"
                                TextAlignment="{TemplateBinding TextAlignment}"
                                Style="{TemplateBinding TextStyle}"
                                FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"

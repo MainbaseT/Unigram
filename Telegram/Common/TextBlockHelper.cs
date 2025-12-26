@@ -195,6 +195,11 @@ namespace Telegram.Common
                 textBlock.Inlines.Add(span);
             }
 
+            if (span == null)
+            {
+                return;
+            }
+
             markdown = markdown.ReplaceSpoilers(false);
 
             var entities = markdown.Entities;
@@ -454,6 +459,9 @@ namespace Telegram.Common
 
                     var headline = sender.GetParent<SettingsHeadline>();
                     headline?.OnClick(string.Empty);
+
+                    var info = sender.GetParent<PopupInfo>();
+                    info?.OnClick(string.Empty);
                 }
                 else
                 {
@@ -471,17 +479,30 @@ namespace Telegram.Common
             else if (type is TextEntityTypeUrl)
             {
                 var header = sender.GetParent<HeaderedControl>();
-                if (header != null)
+                if (header != null && header.OnClick(data))
                 {
-                    header?.OnClick(data);
                     return;
                 }
 
                 var footer = sender.GetParent<SettingsFooter>();
-                footer?.OnClick(data);
+                if (footer != null && footer.OnClick(data))
+                {
+                    return;
+                }
 
                 var headline = sender.GetParent<SettingsHeadline>();
-                headline?.OnClick(string.Empty);
+                if (headline != null && headline.OnClick(data))
+                {
+                    return;
+                }
+
+                var info = sender.GetParent<PopupInfo>();
+                if (info != null && info.OnClick(data))
+                {
+                    return;
+                }
+
+                MessageHelper.OpenUrl(clientService, navigationService, data);
             }
         }
     }

@@ -9,10 +9,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;
+using Telegram.Views.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
@@ -116,6 +119,68 @@ namespace Telegram.Controls.Chats
             flyout.CreateFlyoutSeparator();
             flyout.CreateFlyoutItem(ViewModel.StopTranslate, string.Format(Strings.DoNotTranslateLanguage, languageName), Icons.HandRight);
             flyout.CreateFlyoutItem(ViewModel.HideTranslate, Strings.Hide, Icons.DismissCircle);
+
+            var grid = new Grid
+            {
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+
+            var button = new Button
+            {
+                Content = grid,
+                Style = BootStrapper.Current.Resources["ListEmptyButtonStyle"] as Style,
+                CornerRadius = new CornerRadius(4),
+            };
+
+            var block = new FormattedTextBlock
+            {
+                FontSize = 12,
+                IsTextSelectionEnabled = false,
+                IsHitTestVisible = false,
+                AutoFontSize = false,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(11, 3, 11, 5),
+                VerticalAlignment = VerticalAlignment.Center,
+                HyperlinkStyle = Windows.UI.Xaml.Documents.UnderlineStyle.None,
+                EmojiStyle = BootStrapper.Current.Resources["MessageCustomEmojiStyle"] as Style
+            };
+
+            grid.Children.Add(block);
+
+            void click(object sender, RoutedEventArgs e)
+            {
+                button.Click -= click;
+                flyout.Hide();
+
+                ViewModel.ShowPopup(new CocoonAboutPopup());
+            }
+
+            button.Click += click;
+
+            var content = new MenuFlyoutContent
+            {
+                Content = button,
+                Padding = new Thickness(4, 2, 4, 2)
+            };
+
+            flyout.CreateFlyoutSeparator();
+            flyout.Items.Add(content);
+
+            var markdown = ClientEx.ParseMarkdown(Strings.CocoonPoweredBy);
+
+            var index = markdown.Text.IndexOf("\uD83E\uDD5A");
+            if (index >= 0)
+            {
+                markdown.Entities.Add(new TextEntity(index, 2, new TextEntityTypeCustomEmoji(5197252827247841976)));
+            }
+
+            var link = ClientEx.ParseMarkdown(Strings.CocoonPoweredByLink);
+            if (link.Entities.Count == 1)
+            {
+                link.Entities.Add(new TextEntity(link.Entities[0].Offset, link.Entities[0].Length, new TextEntityTypeTextUrl()));
+            }
+
+            block.SetText(ViewModel.ClientService, FormattedText.Join(" ", markdown, link));
 
             flyout.ShowAt(sender as Button, FlyoutPlacementMode.BottomEdgeAlignedRight);
         }

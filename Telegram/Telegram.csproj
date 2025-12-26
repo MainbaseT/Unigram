@@ -383,6 +383,7 @@
       <DependentUpon>SponsoredContent.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\NavigationButton.cs" />
+    <Compile Include="Controls\PopupInfo.cs" />
     <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
     <Compile Include="Controls\SlidePanel.cs" />
@@ -403,6 +404,7 @@
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
     <Compile Include="Services\TextRecognitionService.cs" />
     <Compile Include="Services\Session.g.cs" />
+    <Compile Include="Td\Api\FormattedText.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionApprove.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionDecline.cs" />
     <Compile Include="Td\Api\InlineKeyboardButtonTypeSuggestionEdit.cs" />
@@ -1287,6 +1289,9 @@
     </Compile>
     <Compile Include="Views\Popups\ChooseStoriesPopup.xaml.cs">
       <DependentUpon>ChooseStoriesPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\CocoonAboutPopup.xaml.cs">
+      <DependentUpon>CocoonAboutPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Popups\WebAppRestorePopup.xaml.cs">
       <DependentUpon>WebAppRestorePopup.xaml</DependentUpon>
@@ -2271,6 +2276,7 @@
     <Content Include="Assets\Animations\Birthdate.tgs" />
     <Content Include="Assets\Animations\ProfileColor.tgs" />
     <Content Include="Assets\Animations\Passkey.tgs" />
+    <Content Include="Assets\Animations\Cocoon.webp" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3372,6 +3378,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\ChooseStoriesPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\CocoonAboutPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
