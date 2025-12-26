@@ -148,7 +148,14 @@ namespace Telegram.ViewModels.Stories
 
         public void HideProfile(ActiveStoriesViewModel activeStories)
         {
-            ClientService.Send(new SetChatActiveStoriesList(activeStories.ChatId, new StoryListArchive()));
+            if (activeStories.CanBeArchived)
+            {
+                ClientService.Send(new SetChatActiveStoriesList(activeStories.ChatId, new StoryListArchive()));
+            }
+            else
+            {
+                ClientService.Send(new RemoveTopChat(new TopChatCategoryUsers(), activeStories.ChatId));
+            }
 
             if (ClientService.TryGetUser(activeStories.Chat, out User user))
             {

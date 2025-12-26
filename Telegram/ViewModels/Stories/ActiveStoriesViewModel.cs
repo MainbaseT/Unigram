@@ -93,6 +93,11 @@ namespace Telegram.ViewModels.Stories
 
         public long MaxReadStoryId => _activeStories?.MaxReadStoryId ?? 0;
 
+        /// <summary>
+        /// True, if the stories are shown in the main story list and can be archived; otherwise, the stories can be hidden from the main story list -only by calling removeTopChat with topChatCategoryUsers and the chat_id. Stories of the current user can't be archived nor hidden using removeTopChat
+        /// </summary>
+        public bool CanBeArchived => _activeStories?.CanBeArchived ?? true;
+
         public StoryList List => _activeStories?.List;
 
         public bool IsMyStory { get; }
