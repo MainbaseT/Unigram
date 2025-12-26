@@ -176,7 +176,16 @@ namespace Telegram.Services
                         text = ClientEx.MergeEntities(text, ClientEx.GetTextEntities(text.Text));
 
                         var styled = TextStyleRun.GetText(text);
-                        var result = new MessageTranslateResultText(toLanguage, styled);
+
+                        MessageTranslateResult result;
+                        if (string.IsNullOrWhiteSpace(text.Text))
+                        {
+                            result = new MessageTranslateResultError();
+                        }
+                        else
+                        {
+                            result = new MessageTranslateResultText(toLanguage, styled);
+                        }
 
                         message.TranslatedText = result;
 
@@ -209,14 +218,14 @@ namespace Telegram.Services
 
         struct TranslatedMessage
         {
-            public TranslatedMessage(string text, MessageTranslateResultText result)
+            public TranslatedMessage(string text, MessageTranslateResult result)
             {
                 Text = text;
                 Result = result;
             }
 
             public string Text;
-            public MessageTranslateResultText Result;
+            public MessageTranslateResult Result;
         }
     }
 }
