@@ -432,6 +432,20 @@ namespace Telegram.Td.Api
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WriteNumberString(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, long value)
+        {
+            Span<byte> buffer = stackalloc byte[20]; // max digits for long
+            if (Utf8Formatter.TryFormat(value, buffer, out int bytesWritten))
+            {
+                writer.WriteString(utf8PropertyName, buffer.Slice(0, bytesWritten));
+            }
+            else
+            {
+                writer.WriteNumber(utf8PropertyName, value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WriteObject(this Utf8JsonWriter writer, ReadOnlySpan<byte> utf8PropertyName, Object? obj)
         {
             if (obj == null)

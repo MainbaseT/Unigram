@@ -553,9 +553,13 @@ namespace Telegram.Generators
                         {
                             builder.AppendLine("        writer.WriteBoolean(\"" + prop.Name + "\"u8, " + fieldName + ");");
                         }
-                        else if (prop.Type == "int32" || prop.Type == "int53" || prop.Type == "int64" || prop.Type == "double")
+                        else if (prop.Type == "int32" || prop.Type == "int53" || prop.Type == "double")
                         {
                             builder.AppendLine("        writer.WriteNumber(\"" + prop.Name + "\"u8, " + fieldName + ");");
+                        }
+                        else if (prop.Type == "int64")
+                        {
+                            builder.AppendLine("        writer.WriteNumberString(\"" + prop.Name + "\"u8, " + fieldName + ");");
                         }
                         else if (prop.Type == "string")
                         {
