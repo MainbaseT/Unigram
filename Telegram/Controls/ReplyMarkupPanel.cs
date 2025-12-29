@@ -296,6 +296,11 @@ namespace Telegram.Controls
             Button = button;
         }
 
+        public ReplyMarkupInlineButton()
+        {
+            DefaultStyleKey = typeof(ReplyMarkupInlineButton);
+        }
+
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new ReplyMarkupInlineButtonAutomationPeer(this);

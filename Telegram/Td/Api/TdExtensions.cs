@@ -316,6 +316,20 @@ namespace Telegram.Td.Api
             };
         }
 
+        public static string ToCount(this GiftResalePrice resalePrice, long part = 100)
+        {
+            if (resalePrice is GiftResalePriceStar resalePriceStar)
+            {
+                return (resalePriceStar.StarCount * (part / 1000d)).ToString("N0");
+            }
+            else if (resalePrice is GiftResalePriceTon resalePriceTon)
+            {
+                return (resalePriceTon.ToncoinCentCount * (part / 1000d)).ToString("N0");
+            }
+
+            return string.Empty;
+        }
+
         public static int TotalReactions(this MessageInteractionInfo info)
         {
             if (info?.Reactions != null)

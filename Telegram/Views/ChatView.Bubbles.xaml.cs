@@ -1448,6 +1448,7 @@ namespace Telegram.Views
                     MessageGiveawayPrizeStars => ChatHistoryViewItemType.ServiceGiftCode,
                     MessageGiftedPremium or MessageGiftedStars or MessageGift or MessagePremiumGiftCode => ChatHistoryViewItemType.ServiceGift,
                     MessageUpgradedGift => ChatHistoryViewItemType.ServiceUpgradedGift,
+                    MessageUpgradedGiftPurchaseOffer => ChatHistoryViewItemType.ServiceUpgradedGiftPurchaseOffer,
                     MessageChatChangePhoto or MessageSuggestProfilePhoto or MessageAsyncStory => ChatHistoryViewItemType.ServicePhoto,
                     MessageSuggestBirthdate => ChatHistoryViewItemType.ServiceBirthdate,
                     MessageChatSetBackground { OldBackgroundMessageId: 0 } or MessageChatEvent { Action: ChatEventBackgroundChanged { NewBackground: not null } } => ChatHistoryViewItemType.ServiceBackground,

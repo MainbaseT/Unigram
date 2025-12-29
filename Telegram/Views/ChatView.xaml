@@ -12,6 +12,7 @@
                         xmlns:media="using:Telegram.Controls.Media"
                         xmlns:views="using:Telegram.Controls.Views"
                         xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+                        xmlns:service="using:Telegram.Controls.Messages.Service"
                         mc:Ignorable="d"
                         Connected="OnLoaded"
                         Disconnected="OnUnloaded"
@@ -581,6 +582,10 @@
                     </Grid>
                 </StackPanel>
             </messages:MessageService>
+        </DataTemplate>
+
+        <DataTemplate x:Name="ServiceMessageUpgradedGiftPurchaseOfferTemplate">
+            <service:MessageUpgradedGiftPurchaseOfferContent />
         </DataTemplate>
 
         <DataTemplate x:Name="ServiceMessageUpgradedGiftTemplate">

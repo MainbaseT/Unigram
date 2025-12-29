@@ -1015,6 +1015,9 @@ namespace Telegram.ViewModels
                         bubble.UpdateMessageContent(message);
                         Delegate?.ViewVisibleMessages();
                     }
+                }, (service, message) =>
+                {
+                    service.UpdateMessage(message);
                 });
 
                 PinnedMessages.UpdateMessageContent(update.MessageId, update.NewContent);
@@ -1268,7 +1271,7 @@ namespace Telegram.ViewModels
                     {
                         bubble.UpdateMessageText(message);
                     }
-                });
+                }, null);
             }
         }
 
@@ -1411,7 +1414,7 @@ namespace Telegram.ViewModels
             });
         }
 
-        private void Handle(long messageId, Action<MessageViewModel> update, Action<MessageBubble, MessageViewModel, bool> action)
+        private void Handle(long messageId, Action<MessageViewModel> update, Action<MessageBubble, MessageViewModel, bool> action1, Action<MessageService, MessageViewModel> action2)
         {
             BeginOnUIThread(() =>
             {
@@ -1426,20 +1429,30 @@ namespace Telegram.ViewModels
                             message.UpdateAlbum(album.Messages[0]);
                             album.Invalidate();
 
-                            Delegate?.UpdateBubbleWithMediaAlbumId(message.MediaAlbumId, bubble => action(bubble, albumMessage, false));
+                            Delegate?.UpdateBubbleWithMediaAlbumId(message.MediaAlbumId, bubble => action1(bubble, albumMessage, false));
                         }
                     }
                     else
                     {
                         update(message);
-                        Delegate?.UpdateBubbleWithMessageId(messageId, bubble => action(bubble, message, false));
+                        Delegate?.UpdateContainerWithMessageId(message.Id, container =>
+                        {
+                            if (container.ContentTemplateRoot is MessageSelector selector && selector.Content is MessageBubble bubble)
+                            {
+                                action1(bubble, message, false);
+                            }
+                            else if (action2 != null && container.ContentTemplateRoot is MessageService service)
+                            {
+                                action2.Invoke(service, message);
+                            }
+                        });
                     }
                 }
 
                 Delegate?.UpdateBubbleWithReplyToMessageId(messageId, (bubble, reply) =>
                 {
                     update(reply.ReplyToItem as MessageViewModel);
-                    action(bubble, reply, true);
+                    action1(bubble, reply, true);
                 });
             });
         }

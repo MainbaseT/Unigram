@@ -382,6 +382,9 @@
     <Compile Include="Controls\Messages\Content\SponsoredContent.xaml.cs">
       <DependentUpon>SponsoredContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Messages\Service\MessageUpgradedGiftPurchaseOfferContent.xaml.cs">
+      <DependentUpon>MessageUpgradedGiftPurchaseOfferContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NavigationButton.cs" />
     <Compile Include="Controls\PopupInfo.cs" />
     <Compile Include="Controls\PremiumProgressBar.cs" />
@@ -3006,6 +3009,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Messages\MessageSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Messages\Service\MessageUpgradedGiftPurchaseOfferContent.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

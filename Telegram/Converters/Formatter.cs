@@ -496,6 +496,19 @@ namespace Telegram.Converters
             return (percent * 100).ToString("0.##") + "%";
         }
 
+        public static string ShortDuration(int time)
+        {
+            int minutes = time / 60;
+            int hours = time / 3600;
+
+            if (hours > 0)
+            {
+                return Locale.Declension(Strings.R.ShortHoursAgo, hours) + " " + Locale.Declension(Strings.R.ShortMinutesAgo, minutes % 60);
+            }
+
+            return Locale.Declension(Strings.R.ShortMinutesAgo, minutes);
+        }
+
         public static string ShortNumber(long number)
         {
             return ShortNumber(number, false);

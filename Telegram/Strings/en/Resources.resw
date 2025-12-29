@@ -7407,6 +7407,177 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftMonths_other" xml:space="preserve">
     <value>{0}-months</value>
   </data>
+  <data name="GiftOfferAccept" xml:space="preserve">
+    <value>Accept</value>
+  </data>
+  <data name="GiftOfferAmount" xml:space="preserve">
+    <value>⭐️ {0}</value>
+  </data>
+  <data name="GiftOfferAmountHigher" xml:space="preserve">
+    <value>{0} higher</value>
+  </data>
+  <data name="GiftOfferAmountHigherHint" xml:space="preserve">
+    <value>The value of this gift is **{0} higher** than the offer</value>
+  </data>
+  <data name="GiftOfferAmountHigherHint2" xml:space="preserve">
+    <value>The price of this offer is **{0}** higher
+than the average price for {1}</value>
+  </data>
+  <data name="GiftOfferAmountLower" xml:space="preserve">
+    <value>{0} lower</value>
+  </data>
+  <data name="GiftOfferAmountLowerHint" xml:space="preserve">
+    <value>The value of this gift is **{0} lower** than the offer</value>
+  </data>
+  <data name="GiftOfferAmountLowerHint2" xml:space="preserve">
+    <value>The price of this offer is **{0}** lower
+than the average price for {1}</value>
+  </data>
+  <data name="GiftOfferButtonStars" xml:space="preserve">
+    <value>Offer ⭐️{0}</value>
+  </data>
+  <data name="GiftOfferConfirmSend" xml:space="preserve">
+    <value>Confirm Offer</value>
+  </data>
+  <data name="GiftOfferDecline" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="GiftOfferDuration" xml:space="preserve">
+    <value>Offer Duration</value>
+  </data>
+  <data name="GiftOfferDurationInfoStars" xml:space="preserve">
+    <value>Choose how long **{0}** has to accept your offer. When it expires, your **Stars** will be refunded.</value>
+  </data>
+  <data name="GiftOfferDurationInfoTON" xml:space="preserve">
+    <value>Choose how long **{0}** has to accept your offer. When it expires, your **TON** will be refunded.</value>
+  </data>
+  <data name="GiftOfferHours_one" xml:space="preserve">
+    <value>{0} hour</value>
+  </data>
+  <data name="GiftOfferHours_other" xml:space="preserve">
+    <value>{0} hours</value>
+  </data>
+  <data name="GiftOfferOfferedTextStars" xml:space="preserve">
+    <value>**{0}** offered you **{1} Stars** for **{2}**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextStarsOut" xml:space="preserve">
+    <value>You offered **{0}** **{1} Stars** for **{2}**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextStarsRejected" xml:space="preserve">
+    <value>**{0}** rejected your offer of **{1} Stars** for **{2}**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextStarsRejectedOut" xml:space="preserve">
+    <value>You rejected **{0}&apos;s** offer to buy your **{2}** for **{1} Stars**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextTON" xml:space="preserve">
+    <value>**{0}** offered you **{1} TON** for **{2}**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextTONOut" xml:space="preserve">
+    <value>You offered **{0}** **{1} TON** for **{2}**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextTONRejected" xml:space="preserve">
+    <value>**{0}** rejected your offer of **{1} TON** for **{2}**.</value>
+  </data>
+  <data name="GiftOfferOfferedTextTONRejectedOut" xml:space="preserve">
+    <value>You rejected **{0}&apos;s** offer to buy your **{2}** for **{1} TON**.</value>
+  </data>
+  <data name="GiftOfferPay" xml:space="preserve">
+    <value>Pay ⭐️{0}</value>
+  </data>
+  <data name="GiftOfferPayMulti" xml:space="preserve">
+    <value>Pay {0} and {0}</value>
+  </data>
+  <data name="GiftOfferPayMultiPart" xml:space="preserve">
+    <value>⭐️{0}</value>
+  </data>
+  <data name="GiftOfferRejectConfirmConfirm" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="GiftOfferRejectConfirmText" xml:space="preserve">
+    <value>Are you sure you want to reject the offer from **{0}**?</value>
+  </data>
+  <data name="GiftOfferRejectConfirmTitle" xml:space="preserve">
+    <value>Reject Offer</value>
+  </data>
+  <data name="GiftOfferRowDuration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="GiftOfferRowFee" xml:space="preserve">
+    <value>Fee</value>
+  </data>
+  <data name="GiftOfferRowOffer" xml:space="preserve">
+    <value>Offer</value>
+  </data>
+  <data name="GiftOfferRowValue" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="GiftOfferSellFor" xml:space="preserve">
+    <value>Sell for ⭐️{0}</value>
+  </data>
+  <data name="GiftOfferSentText" xml:space="preserve">
+    <value>You successfully sent an offer for **{0}** to **{1}**.</value>
+  </data>
+  <data name="GiftOfferSentTitle" xml:space="preserve">
+    <value>Gift offer sent</value>
+  </data>
+  <data name="GiftOfferStarsToOffer" xml:space="preserve">
+    <value>Stars to offer</value>
+  </data>
+  <data name="GiftOfferStarsToOfferInfo" xml:space="preserve">
+    <value>Enter the amount of Stars you’d like to offer for **{0}**.</value>
+  </data>
+  <data name="GiftOfferStarsToOfferInfoIsHigh" xml:space="preserve">
+    <value>This offer is too high. The maximum offer for **{1}** is **{0} Stars**.</value>
+  </data>
+  <data name="GiftOfferStarsToOfferInfoIsLow" xml:space="preserve">
+    <value>This offer is too low. The minimum offer for **{1}** is **{0} Stars**.</value>
+  </data>
+  <data name="GiftOfferStatusAccepted" xml:space="preserve">
+    <value>This offer was accepted.</value>
+  </data>
+  <data name="GiftOfferStatusExpired" xml:space="preserve">
+    <value>This offer has expired.</value>
+  </data>
+  <data name="GiftOfferStatusPending" xml:space="preserve">
+    <value>This offer expires in **{0}**.</value>
+  </data>
+  <data name="GiftOfferStatusRejected" xml:space="preserve">
+    <value>This offer was rejected.</value>
+  </data>
+  <data name="GiftOfferToBuyMenu" xml:space="preserve">
+    <value>Offer to buy</value>
+  </data>
+  <data name="GiftOfferToBuyTitle" xml:space="preserve">
+    <value>Offer to Buy</value>
+  </data>
+  <data name="GiftOfferTONToOffer" xml:space="preserve">
+    <value>TON to offer</value>
+  </data>
+  <data name="GiftOfferTONToOfferInfo" xml:space="preserve">
+    <value>Enter the amount of TON you’d like to offer for **{0}**.</value>
+  </data>
+  <data name="GiftOfferTONToOfferInfoIsHigh" xml:space="preserve">
+    <value>This offer is too high. The maximum offer for **{1}** is **{0} TON**.</value>
+  </data>
+  <data name="GiftOfferTONToOfferInfoIsLow" xml:space="preserve">
+    <value>This offer is too low. The minimum offer for **{1}** is **{0} TON**.</value>
+  </data>
+  <data name="GiftOfferTransferInfoTextSellStars" xml:space="preserve">
+    <value>Do you want to sell **{2}** to **{1}** for **{0} Stars**?
+
+You will receive **{3} Stars** after fees.</value>
+  </data>
+  <data name="GiftOfferTransferInfoTextSellTON" xml:space="preserve">
+    <value>Do you want to sell **{2}** to **{1}** for **{0} TON**?
+
+You will receive **{3} TON** after fees.</value>
+  </data>
+  <data name="GiftOfferTransferInfoTextStars" xml:space="preserve">
+    <value>Do you want to offer **{0} Stars** to **{1}** for **{2}**?</value>
+  </data>
+  <data name="GiftOfferTransferInfoTextTON" xml:space="preserve">
+    <value>Do you want to offer **{0} TON** to **{1}** for **{2}**?</value>
+  </data>
   <data name="GiftPremium" xml:space="preserve">
     <value>Gift Premium</value>
   </data>
@@ -12658,8 +12829,20 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="ShareYouPhoneNumberTitle" xml:space="preserve">
     <value>Share your phone number?</value>
   </data>
+  <data name="ShortHoursAgo_one" xml:space="preserve">
+    <value>{0}h</value>
+  </data>
+  <data name="ShortHoursAgo_other" xml:space="preserve">
+    <value>{0}h</value>
+  </data>
   <data name="ShortMessageLifetimeForever" xml:space="preserve">
     <value>Off</value>
+  </data>
+  <data name="ShortMinutesAgo_one" xml:space="preserve">
+    <value>{0}m</value>
+  </data>
+  <data name="ShortMinutesAgo_other" xml:space="preserve">
+    <value>{0}m</value>
   </data>
   <data name="ShortTimeNow" xml:space="preserve">
     <value>now</value>
@@ -14696,6 +14879,9 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   </data>
   <data name="Underline" xml:space="preserve">
     <value>Underline</value>
+  </data>
+  <data name="Understood" xml:space="preserve">
+    <value>👌 Understood</value>
   </data>
   <data name="Undo" xml:space="preserve">
     <value>Undo</value>

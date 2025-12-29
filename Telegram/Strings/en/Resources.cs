@@ -171,6 +171,7 @@ namespace Telegram
             public const string Gift2TransferPriceText = "Gift2TransferPriceText";
             public const string GiftAddedToCollectionTitle = "GiftAddedToCollectionTitle";
             public const string GiftMonths = "GiftMonths";
+            public const string GiftOfferHours = "GiftOfferHours";
             public const string GiftRemovedFromCollectionTitle = "GiftRemovedFromCollectionTitle";
             public const string GiftsPinLimit = "GiftsPinLimit";
             public const string GroupCallCreateInfo = "GroupCallCreateInfo";
@@ -261,6 +262,8 @@ namespace Telegram
             public const string Seconds = "Seconds";
             public const string Shared = "Shared";
             public const string Shares = "Shares";
+            public const string ShortHoursAgo = "ShortHoursAgo";
+            public const string ShortMinutesAgo = "ShortMinutesAgo";
             public const string ShowVotes = "ShowVotes";
             public const string StarRatingFuture = "StarRatingFuture";
             public const string StarRatingFuturePendingPoints = "StarRatingFuturePendingPoints";
@@ -11056,6 +11059,277 @@ namespace Telegram
         public static string GiftLocked => Resource.GetString("GiftLocked");
         
         /// <summary>
+        /// Localized resource similar to "Accept"
+        /// </summary>
+        public static string GiftOfferAccept => Resource.GetString("GiftOfferAccept");
+        
+        /// <summary>
+        /// Localized resource similar to "⭐️ {0}"
+        /// </summary>
+        public static string GiftOfferAmount => Resource.GetString("GiftOfferAmount");
+        
+        /// <summary>
+        /// Localized resource similar to "{0} higher"
+        /// </summary>
+        public static string GiftOfferAmountHigher => Resource.GetString("GiftOfferAmountHigher");
+        
+        /// <summary>
+        /// Localized resource similar to "The value of this gift is **{0} higher** than the offer"
+        /// </summary>
+        public static string GiftOfferAmountHigherHint => Resource.GetString("GiftOfferAmountHigherHint");
+        
+        /// <summary>
+        /// Localized resource similar to "The price of this offer is **{0}** higher
+        ///than the average price for {1}"
+        /// </summary>
+        public static string GiftOfferAmountHigherHint2 => Resource.GetString("GiftOfferAmountHigherHint2");
+        
+        /// <summary>
+        /// Localized resource similar to "{0} lower"
+        /// </summary>
+        public static string GiftOfferAmountLower => Resource.GetString("GiftOfferAmountLower");
+        
+        /// <summary>
+        /// Localized resource similar to "The value of this gift is **{0} lower** than the offer"
+        /// </summary>
+        public static string GiftOfferAmountLowerHint => Resource.GetString("GiftOfferAmountLowerHint");
+        
+        /// <summary>
+        /// Localized resource similar to "The price of this offer is **{0}** lower
+        ///than the average price for {1}"
+        /// </summary>
+        public static string GiftOfferAmountLowerHint2 => Resource.GetString("GiftOfferAmountLowerHint2");
+        
+        /// <summary>
+        /// Localized resource similar to "Offer ⭐️{0}"
+        /// </summary>
+        public static string GiftOfferButtonStars => Resource.GetString("GiftOfferButtonStars");
+        
+        /// <summary>
+        /// Localized resource similar to "Confirm Offer"
+        /// </summary>
+        public static string GiftOfferConfirmSend => Resource.GetString("GiftOfferConfirmSend");
+        
+        /// <summary>
+        /// Localized resource similar to "Reject"
+        /// </summary>
+        public static string GiftOfferDecline => Resource.GetString("GiftOfferDecline");
+        
+        /// <summary>
+        /// Localized resource similar to "Offer Duration"
+        /// </summary>
+        public static string GiftOfferDuration => Resource.GetString("GiftOfferDuration");
+        
+        /// <summary>
+        /// Localized resource similar to "Choose how long **{0}** has to accept your offer. When it expires, your **Stars** will be refunded."
+        /// </summary>
+        public static string GiftOfferDurationInfoStars => Resource.GetString("GiftOfferDurationInfoStars");
+        
+        /// <summary>
+        /// Localized resource similar to "Choose how long **{0}** has to accept your offer. When it expires, your **TON** will be refunded."
+        /// </summary>
+        public static string GiftOfferDurationInfoTON => Resource.GetString("GiftOfferDurationInfoTON");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** offered you **{1} Stars** for **{2}**."
+        /// </summary>
+        public static string GiftOfferOfferedTextStars => Resource.GetString("GiftOfferOfferedTextStars");
+        
+        /// <summary>
+        /// Localized resource similar to "You offered **{0}** **{1} Stars** for **{2}**."
+        /// </summary>
+        public static string GiftOfferOfferedTextStarsOut => Resource.GetString("GiftOfferOfferedTextStarsOut");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** rejected your offer of **{1} Stars** for **{2}**."
+        /// </summary>
+        public static string GiftOfferOfferedTextStarsRejected => Resource.GetString("GiftOfferOfferedTextStarsRejected");
+        
+        /// <summary>
+        /// Localized resource similar to "You rejected **{0}'s** offer to buy your **{2}** for **{1} Stars**."
+        /// </summary>
+        public static string GiftOfferOfferedTextStarsRejectedOut => Resource.GetString("GiftOfferOfferedTextStarsRejectedOut");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** offered you **{1} TON** for **{2}**."
+        /// </summary>
+        public static string GiftOfferOfferedTextTON => Resource.GetString("GiftOfferOfferedTextTON");
+        
+        /// <summary>
+        /// Localized resource similar to "You offered **{0}** **{1} TON** for **{2}**."
+        /// </summary>
+        public static string GiftOfferOfferedTextTONOut => Resource.GetString("GiftOfferOfferedTextTONOut");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** rejected your offer of **{1} TON** for **{2}**."
+        /// </summary>
+        public static string GiftOfferOfferedTextTONRejected => Resource.GetString("GiftOfferOfferedTextTONRejected");
+        
+        /// <summary>
+        /// Localized resource similar to "You rejected **{0}'s** offer to buy your **{2}** for **{1} TON**."
+        /// </summary>
+        public static string GiftOfferOfferedTextTONRejectedOut => Resource.GetString("GiftOfferOfferedTextTONRejectedOut");
+        
+        /// <summary>
+        /// Localized resource similar to "Pay ⭐️{0}"
+        /// </summary>
+        public static string GiftOfferPay => Resource.GetString("GiftOfferPay");
+        
+        /// <summary>
+        /// Localized resource similar to "Pay {0} and {0}"
+        /// </summary>
+        public static string GiftOfferPayMulti => Resource.GetString("GiftOfferPayMulti");
+        
+        /// <summary>
+        /// Localized resource similar to "⭐️{0}"
+        /// </summary>
+        public static string GiftOfferPayMultiPart => Resource.GetString("GiftOfferPayMultiPart");
+        
+        /// <summary>
+        /// Localized resource similar to "Reject"
+        /// </summary>
+        public static string GiftOfferRejectConfirmConfirm => Resource.GetString("GiftOfferRejectConfirmConfirm");
+        
+        /// <summary>
+        /// Localized resource similar to "Are you sure you want to reject the offer from **{0}**?"
+        /// </summary>
+        public static string GiftOfferRejectConfirmText => Resource.GetString("GiftOfferRejectConfirmText");
+        
+        /// <summary>
+        /// Localized resource similar to "Reject Offer"
+        /// </summary>
+        public static string GiftOfferRejectConfirmTitle => Resource.GetString("GiftOfferRejectConfirmTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Duration"
+        /// </summary>
+        public static string GiftOfferRowDuration => Resource.GetString("GiftOfferRowDuration");
+        
+        /// <summary>
+        /// Localized resource similar to "Fee"
+        /// </summary>
+        public static string GiftOfferRowFee => Resource.GetString("GiftOfferRowFee");
+        
+        /// <summary>
+        /// Localized resource similar to "Offer"
+        /// </summary>
+        public static string GiftOfferRowOffer => Resource.GetString("GiftOfferRowOffer");
+        
+        /// <summary>
+        /// Localized resource similar to "Value"
+        /// </summary>
+        public static string GiftOfferRowValue => Resource.GetString("GiftOfferRowValue");
+        
+        /// <summary>
+        /// Localized resource similar to "Sell for ⭐️{0}"
+        /// </summary>
+        public static string GiftOfferSellFor => Resource.GetString("GiftOfferSellFor");
+        
+        /// <summary>
+        /// Localized resource similar to "You successfully sent an offer for **{0}** to **{1}**."
+        /// </summary>
+        public static string GiftOfferSentText => Resource.GetString("GiftOfferSentText");
+        
+        /// <summary>
+        /// Localized resource similar to "Gift offer sent"
+        /// </summary>
+        public static string GiftOfferSentTitle => Resource.GetString("GiftOfferSentTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Stars to offer"
+        /// </summary>
+        public static string GiftOfferStarsToOffer => Resource.GetString("GiftOfferStarsToOffer");
+        
+        /// <summary>
+        /// Localized resource similar to "Enter the amount of Stars you’d like to offer for **{0}**."
+        /// </summary>
+        public static string GiftOfferStarsToOfferInfo => Resource.GetString("GiftOfferStarsToOfferInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer is too high. The maximum offer for **{1}** is **{0} Stars**."
+        /// </summary>
+        public static string GiftOfferStarsToOfferInfoIsHigh => Resource.GetString("GiftOfferStarsToOfferInfoIsHigh");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer is too low. The minimum offer for **{1}** is **{0} Stars**."
+        /// </summary>
+        public static string GiftOfferStarsToOfferInfoIsLow => Resource.GetString("GiftOfferStarsToOfferInfoIsLow");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer was accepted."
+        /// </summary>
+        public static string GiftOfferStatusAccepted => Resource.GetString("GiftOfferStatusAccepted");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer has expired."
+        /// </summary>
+        public static string GiftOfferStatusExpired => Resource.GetString("GiftOfferStatusExpired");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer expires in **{0}**."
+        /// </summary>
+        public static string GiftOfferStatusPending => Resource.GetString("GiftOfferStatusPending");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer was rejected."
+        /// </summary>
+        public static string GiftOfferStatusRejected => Resource.GetString("GiftOfferStatusRejected");
+        
+        /// <summary>
+        /// Localized resource similar to "Offer to buy"
+        /// </summary>
+        public static string GiftOfferToBuyMenu => Resource.GetString("GiftOfferToBuyMenu");
+        
+        /// <summary>
+        /// Localized resource similar to "Offer to Buy"
+        /// </summary>
+        public static string GiftOfferToBuyTitle => Resource.GetString("GiftOfferToBuyTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "TON to offer"
+        /// </summary>
+        public static string GiftOfferTONToOffer => Resource.GetString("GiftOfferTONToOffer");
+        
+        /// <summary>
+        /// Localized resource similar to "Enter the amount of TON you’d like to offer for **{0}**."
+        /// </summary>
+        public static string GiftOfferTONToOfferInfo => Resource.GetString("GiftOfferTONToOfferInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer is too high. The maximum offer for **{1}** is **{0} TON**."
+        /// </summary>
+        public static string GiftOfferTONToOfferInfoIsHigh => Resource.GetString("GiftOfferTONToOfferInfoIsHigh");
+        
+        /// <summary>
+        /// Localized resource similar to "This offer is too low. The minimum offer for **{1}** is **{0} TON**."
+        /// </summary>
+        public static string GiftOfferTONToOfferInfoIsLow => Resource.GetString("GiftOfferTONToOfferInfoIsLow");
+        
+        /// <summary>
+        /// Localized resource similar to "Do you want to sell **{2}** to **{1}** for **{0} Stars**?
+        ///
+        ///You will receive **{3} Stars** after fees."
+        /// </summary>
+        public static string GiftOfferTransferInfoTextSellStars => Resource.GetString("GiftOfferTransferInfoTextSellStars");
+        
+        /// <summary>
+        /// Localized resource similar to "Do you want to sell **{2}** to **{1}** for **{0} TON**?
+        ///
+        ///You will receive **{3} TON** after fees."
+        /// </summary>
+        public static string GiftOfferTransferInfoTextSellTON => Resource.GetString("GiftOfferTransferInfoTextSellTON");
+        
+        /// <summary>
+        /// Localized resource similar to "Do you want to offer **{0} Stars** to **{1}** for **{2}**?"
+        /// </summary>
+        public static string GiftOfferTransferInfoTextStars => Resource.GetString("GiftOfferTransferInfoTextStars");
+        
+        /// <summary>
+        /// Localized resource similar to "Do you want to offer **{0} TON** to **{1}** for **{2}**?"
+        /// </summary>
+        public static string GiftOfferTransferInfoTextTON => Resource.GetString("GiftOfferTransferInfoTextTON");
+        
+        /// <summary>
         /// Localized resource similar to "Gift Premium"
         /// </summary>
         public static string GiftPremium => Resource.GetString("GiftPremium");
@@ -21745,6 +22019,11 @@ namespace Telegram
         /// Localized resource similar to "Underline"
         /// </summary>
         public static string Underline => Resource.GetString("Underline");
+        
+        /// <summary>
+        /// Localized resource similar to "👌 Understood"
+        /// </summary>
+        public static string Understood => Resource.GetString("Understood");
         
         /// <summary>
         /// Localized resource similar to "Undo"

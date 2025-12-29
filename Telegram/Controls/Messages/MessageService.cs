@@ -165,7 +165,7 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private void UpdateContent(MessageViewModel message)
+        protected virtual void UpdateContent(MessageViewModel message)
         {
             if (message.Content is MessageHeaderAccountInfo)
             {
@@ -687,6 +687,8 @@ namespace Telegram.Controls.Messages
                 MessageSuggestProfilePhoto suggestProfilePhoto => UpdateSuggestProfilePhoto(message, suggestProfilePhoto, history),
                 MessageSupergroupChatCreate supergroupChatCreate => UpdateSupergroupChatCreate(message, supergroupChatCreate, history),
                 MessageUpgradedGift upgradedGift => UpdateUpgradedGift(message, upgradedGift, history),
+                MessageUpgradedGiftPurchaseOffer upgradedGiftPurchaseOffer => UpdateUpgradedGiftPurchaseOffer(message, upgradedGiftPurchaseOffer, history),
+                MessageUpgradedGiftPurchaseOfferDeclined upgradedGiftPurchaseOfferDeclined => UpdateUpgradedGiftPurchaseOfferDeclined(message, upgradedGiftPurchaseOfferDeclined, history),
                 MessageUsersShared usersShared => UpdateUsersShared(message, usersShared, history),
                 MessageVideoChatEnded videoChatEnded => UpdateVideoChatEnded(message, videoChatEnded, history),
                 MessageVideoChatScheduled videoChatScheduled => UpdateVideoChatScheduled(message, videoChatScheduled, history),
@@ -2467,6 +2469,120 @@ namespace Telegram.Controls.Messages
                 && message.ClientService.TryGetMessageSender(upgradedGift.SenderId, out Object inboundUser))
             {
                 return ReplaceWithLink(Strings.ActionUniqueGiftTransferService, inboundUser, outboundUser);
+            }
+
+            return _emptyString;
+        }
+
+        private static FormattedText UpdateUpgradedGiftPurchaseOffer(MessageWithOwner message, MessageUpgradedGiftPurchaseOffer upgradedGift, bool history)
+        {
+            message.ClientService.TryGetUser(message.Chat, out User user);
+
+            var content = string.Empty;
+
+            if (upgradedGift.Price is GiftResalePriceStar resalePriceStar)
+            {
+                if (message.IsOutgoing)
+                {
+                    content = string.Format(Strings.GiftOfferOfferedTextStarsOut, user.FullName(true), resalePriceStar.StarCount.ToString("N0"), upgradedGift.Gift.ToName());
+                }
+                else
+                {
+                    content = string.Format(Strings.GiftOfferOfferedTextStars, user.FullName(true), resalePriceStar.StarCount.ToString("N0"), upgradedGift.Gift.ToName());
+                }
+            }
+            else if (upgradedGift.Price is GiftResalePriceTon resalePriceTon)
+            {
+                if (message.IsOutgoing)
+                {
+                    content = string.Format(Strings.GiftOfferOfferedTextTONOut, user.FullName(true), resalePriceTon.ToncoinCentCount, upgradedGift.Gift.ToName());
+                }
+                else
+                {
+                    content = string.Format(Strings.GiftOfferOfferedTextTON, user.FullName(true), resalePriceTon.ToncoinCentCount, upgradedGift.Gift.ToName());
+                }
+            }
+
+            if (history)
+            {
+                if (upgradedGift.State is GiftPurchaseOfferStatePending)
+                {
+                    var now = DateTime.Now.ToTimestamp();
+                    if (now > upgradedGift.ExpirationDate)
+                    {
+                        content += "\n\n" + Strings.GiftOfferStatusExpired;
+                    }
+                    else
+                    {
+                        content += "\n\n" + string.Format(Strings.GiftOfferStatusPending, Formatter.ShortDuration(upgradedGift.ExpirationDate - now));
+                    }
+                }
+                else if (upgradedGift.State is GiftPurchaseOfferStateAccepted)
+                {
+                    content += "\n\n" + Strings.GiftOfferStatusAccepted;
+                }
+                else if (upgradedGift.State is GiftPurchaseOfferStateRejected)
+                {
+                    content += "\n\n" + Strings.GiftOfferStatusRejected;
+                }
+            }
+
+            return ClientEx.ParseMarkdown(content);
+        }
+
+        private static FormattedText UpdateUpgradedGiftPurchaseOfferDeclined(MessageWithOwner message, MessageUpgradedGiftPurchaseOfferDeclined upgradedGift, bool history)
+        {
+            message.ClientService.TryGetUser(message.Chat, out User user);
+
+            if (upgradedGift.WasExpired)
+            {
+                if (upgradedGift.Price is GiftResalePriceStar resalePriceStar)
+                {
+                    if (message.IsOutgoing)
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextStarsRejectedOut, user.FullName(true), upgradedGift.Gift.ToName(), resalePriceStar.StarCount.ToString("N0")));
+                    }
+                    else
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextStarsRejected, user.FullName(true), resalePriceStar.StarCount.ToString("N0"), upgradedGift.Gift.ToName()));
+                    }
+                }
+                else if (upgradedGift.Price is GiftResalePriceTon resalePriceTon)
+                {
+                    if (message.IsOutgoing)
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextTONRejectedOut, user.FullName(true), upgradedGift.Gift.ToName(), resalePriceTon.ToncoinCentCount));
+                    }
+                    else
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextTONRejected, user.FullName(true), resalePriceTon.ToncoinCentCount, upgradedGift.Gift.ToName()));
+                    }
+                }
+            }
+            else
+            {
+                if (upgradedGift.Price is GiftResalePriceStar resalePriceStar)
+                {
+                    if (message.IsOutgoing)
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextStarsRejectedOut, user.FullName(true), upgradedGift.Gift.ToName(), resalePriceStar.StarCount.ToString("N0")));
+                    }
+                    else
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextStarsRejected, user.FullName(true), resalePriceStar.StarCount.ToString("N0"), upgradedGift.Gift.ToName()));
+                    }
+                }
+                else if (upgradedGift.Price is GiftResalePriceTon resalePriceTon)
+                {
+                    if (message.IsOutgoing)
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextTONRejectedOut, user.FullName(true), upgradedGift.Gift.ToName(), resalePriceTon.ToncoinCentCount));
+                    }
+                    else
+                    {
+                        return ClientEx.ParseMarkdown(string.Format(Strings.GiftOfferOfferedTextTONRejected, user.FullName(true), resalePriceTon.ToncoinCentCount, upgradedGift.Gift.ToName()));
+                    }
+                }
             }
 
             return _emptyString;

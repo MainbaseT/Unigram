@@ -28,6 +28,7 @@ namespace Telegram.Controls.Chats
         ServiceGift,
         ServiceGiftCode,
         ServiceUpgradedGift,
+        ServiceUpgradedGiftPurchaseOffer,
         ServiceAccountInfo,
         ServiceNewThread,
     }
@@ -42,6 +43,8 @@ namespace Telegram.Controls.Chats
             _owner = owner;
             _typeName = typeName;
         }
+
+        public ChatHistoryView Owner => _owner;
 
         public ChatHistoryViewItemType TypeName
         {
