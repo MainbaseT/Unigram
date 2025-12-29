@@ -565,6 +565,16 @@ namespace Telegram.Views
                 ShowHideChatThemeDrawer(false, TextRoot.Children[1] as ChatThemeDrawer);
             }
 
+            if (ViewModel.IsInlineBotResultsVisible)
+            {
+                FindName(nameof(ListInline));
+                InlineBotResults_Loaded(null, null);
+            }
+            else
+            {
+                UnloadObject(ListInline);
+            }
+
             if (FromPreview)
             {
                 BackButton.Visibility = Visibility.Collapsed;
