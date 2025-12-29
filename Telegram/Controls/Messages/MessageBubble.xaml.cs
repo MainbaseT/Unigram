@@ -2368,6 +2368,42 @@ namespace Telegram.Controls.Messages
             panel.StartAnimation("Translation.X", offset);
         }
 
+        // TODO: this method seems to work in many cases but I'm not sure it's correct
+        private int ComputeDirection()
+        {
+            var selector = this.GetParent<ChatHistoryViewItem>();
+            if (selector == null)
+            {
+                return 1;
+            }
+
+            var panel = selector.Owner.ItemsPanelRoot as ItemsStackPanel;
+            if (panel == null)
+            {
+                return 1;
+            }
+
+            var index = selector.Owner.IndexFromContainer(selector);
+
+            var direction = panel.ItemsUpdatingScrollMode == ItemsUpdatingScrollMode.KeepItemsInView ? -1 : 1;
+            var edge = (index == panel.LastVisibleIndex && direction == 1) || (index == panel.FirstVisibleIndex && direction == -1);
+
+            if (edge && !selector.Owner.ScrollingHost.ViewportContains(selector))
+            {
+                direction *= -1;
+            }
+
+            var first = direction == 1 ? panel.FirstCacheIndex : index + 1;
+            var last = direction == 1 ? index : panel.LastCacheIndex;
+
+            if (index < first || index > last)
+            {
+                direction *= -1;
+            }
+
+            return direction;
+        }
+
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             var message = _message;
@@ -2384,74 +2420,95 @@ namespace Telegram.Controls.Messages
 
             var prev = e.PreviousSize.ToVector2();
             var next = e.NewSize.ToVector2();
+            var direction = ComputeDirection();
+
+            var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
 
             var anim = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
             anim.InsertKeyFrame(0, new Vector3(prev / next, 1));
             anim.InsertKeyFrame(1, Vector3.One);
+            //anim.Duration = TimeSpan.FromSeconds(5);
 
             var panel = ElementComposition.GetElementVisual(ContentPanel);
-            panel.CenterPoint = new Vector3(message.IsVisuallyOutgoing ? next.X : 0, 0, 0);
+            panel.CenterPoint = new Vector3(message.IsVisuallyOutgoing ? next.X : 0, direction < 0 ? next.Y : 0, 0);
             panel.StartAnimation("Scale", anim);
 
             var factor = BootStrapper.Current.Compositor.CreateExpressionAnimation("Vector3(1 / content.Scale.X, 1 / content.Scale.Y, 1)");
             factor.SetReferenceParameter("content", panel);
 
+            var bottomOffset = anim.Compositor.CreateScalarKeyFrameAnimation();
+            bottomOffset.InsertKeyFrame(0, prev.Y - next.Y);
+            bottomOffset.InsertKeyFrame(1, 0);
+            //bottomOffset.Duration = TimeSpan.FromSeconds(5);
+
             var header = ElementComposition.GetElementVisual(Header);
-            var text = ElementComposition.GetElementVisual(Message);
+            var text = ElementComposition.GetElementVisual(Panel);
             var footer = ElementComposition.GetElementVisual(Footer);
 
             var headerLeft = (float)Header.Margin.Left;
-            var textLeft = (float)Message.Margin.Left;
-            var mediaLeft = (float)Media.Margin.Left;
+            var textLeft = (float)Panel.Margin.Left;
 
-            var footerRight = (float)Footer.Margin.Right;
-            var footerBottom = (float)Footer.Margin.Bottom;
-
-            header.CenterPoint = new Vector3(-headerLeft, 0, 0);
-            text.CenterPoint = new Vector3(-textLeft, 0, 0);
-            footer.CenterPoint = new Vector3(Footer.ActualSize.X + footerRight, Footer.ActualSize.Y + footerBottom, 0);
+            header.CenterPoint = new Vector3(-headerLeft, -Header.ActualOffset.Y, 0);
+            text.CenterPoint = new Vector3(-textLeft, -Panel.ActualOffset.Y, 0);
 
             header.StartAnimation("Scale", factor);
             text.StartAnimation("Scale", factor);
-            footer.StartAnimation("Scale", factor);
 
-            if (Media.Child != null)
             {
-                var clip = anim.Compositor.CreateScalarKeyFrameAnimation();
-                clip.InsertKeyFrame(0, next.Y - prev.Y);
-                clip.InsertKeyFrame(1, 0);
+                var footerOffset = anim.Compositor.CreateVector3KeyFrameAnimation();
+                footerOffset.InsertKeyFrame(0, new Vector3(prev - next, 0));
+                footerOffset.InsertKeyFrame(1, Vector3.Zero);
+                //footerOffset.Duration = TimeSpan.FromSeconds(5);
 
-                var media = ElementComposition.GetElementVisual(Media);
-                media.CenterPoint = new Vector3(-mediaLeft, 0, 0);
-                media.StartAnimation("Scale", factor);
+                ElementCompositionPreview.SetIsTranslationEnabled(Footer, true);
+                footer.StartAnimation("Translation", footerOffset);
+            }
 
-                media.Clip = anim.Compositor.CreateInsetClip();
-                media.Clip.StartAnimation("BottomInset", clip);
+            if (Media.Child != null && _currentState == "MediaState")
+            {
+                AnimateBottom(Media, bottomOffset);
+            }
+
+            if (Thread != null)
+            {
+                var thread = ElementComposition.GetElementVisual(Thread);
+                thread.CenterPoint = new Vector3(0, Thread.ActualSize.Y, 0);
+                thread.StartAnimation("Scale", factor);
             }
 
             if (Reactions != null)
             {
-                var reactions = ElementComposition.GetElementVisual(Reactions);
-                reactions.CenterPoint = new Vector3(0, Reactions.ActualSize.Y, 0);
-                reactions.StartAnimation("Scale", factor);
+                AnimateBottom(Reactions, bottomOffset);
             }
 
             if (Panel.Children.Count > 0 && Panel.Children[0] is MessageFactCheck factChecko)
             {
-                var factCheck = ElementComposition.GetElementVisual(factChecko);
-                factCheck.CenterPoint = new Vector3(0, 0, 0);
-                factCheck.StartAnimation("Scale", factor);
+                AnimateBottom(Panel.Children[0], bottomOffset);
             }
 
             if (Photo != null && _photoId.HasValue)
             {
-                ElementCompositionPreview.SetIsTranslationEnabled(Photo, true);
+                AnimateBottom(Photo, bottomOffset);
+            }
 
-                var photo = ElementComposition.GetElementVisual(Photo);
-                var photoOffset = BootStrapper.Current.Compositor.CreateScalarKeyFrameAnimation();
-                photoOffset.InsertKeyFrame(0, prev.Y - next.Y);
-                photoOffset.InsertKeyFrame(1, 0);
-                photo.StartAnimation("Translation.Y", photoOffset);
+            if (Action?.Visibility == Visibility.Visible && direction == 1)
+            {
+                AnimateBottom(Action, bottomOffset);
+            }
+
+            if (Cocoon?.Visibility == Visibility.Visible && direction == 1)
+            {
+                AnimateBottom(Cocoon, bottomOffset);
+            }
+
+            batch.End();
+
+            static void AnimateBottom(UIElement element, CompositionAnimation animation)
+            {
+                ElementCompositionPreview.SetIsTranslationEnabled(element, true);
+
+                var photo = ElementComposition.GetElementVisual(element);
+                photo.StartAnimation("Translation.Y", animation);
             }
         }
 
