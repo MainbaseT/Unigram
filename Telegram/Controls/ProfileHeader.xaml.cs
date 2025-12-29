@@ -88,17 +88,31 @@ namespace Telegram.Controls
                 }
             }
 
-            Start(HeaderPhoto, "Photo");
-            Start(TitleRoot, "Title");
-            Start(SubtitleRoot, "Subtitle");
+            try
+            {
+                Start(HeaderPhoto, "Photo");
+                Start(TitleRoot, "Title");
+                Start(SubtitleRoot, "Subtitle");
+            }
+            catch
+            {
+                //
+            }
         }
 
         public void PrepareExit()
         {
-            var service = ConnectedAnimationService.GetForCurrentView();
-            service.PrepareToAnimate("Photo", HeaderPhoto);
-            service.PrepareToAnimate("Title", TitleRoot);
-            service.PrepareToAnimate("Subtitle", SubtitleRoot);
+            try
+            {
+                var service = ConnectedAnimationService.GetForCurrentView();
+                service.PrepareToAnimate("Photo", HeaderPhoto);
+                service.PrepareToAnimate("Title", TitleRoot);
+                service.PrepareToAnimate("Subtitle", SubtitleRoot);
+            }
+            catch
+            {
+                //
+            }
         }
 
         public CompositionPropertySet Properties { get; }

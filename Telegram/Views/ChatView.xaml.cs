@@ -616,17 +616,31 @@ namespace Telegram.Views
                 }
             }
 
-            Start("Photo", PhotoRoot);
-            Start("Title", TitleRoot);
-            Start("Subtitle", Subtitle);
+            try
+            {
+                Start("Photo", PhotoRoot);
+                Start("Title", TitleRoot);
+                Start("Subtitle", Subtitle);
+            }
+            catch
+            {
+                //
+            }
         }
 
         public void PrepareExit()
         {
-            var service = ConnectedAnimationService.GetForCurrentView();
-            service.PrepareToAnimate("Photo", PhotoRoot);
-            service.PrepareToAnimate("Title", TitleRoot);
-            service.PrepareToAnimate("Subtitle", Subtitle);
+            try
+            {
+                var service = ConnectedAnimationService.GetForCurrentView();
+                service.PrepareToAnimate("Photo", PhotoRoot);
+                service.PrepareToAnimate("Title", TitleRoot);
+                service.PrepareToAnimate("Subtitle", Subtitle);
+            }
+            catch
+            {
+                //
+            }
         }
 
         public double HeaderHeight
