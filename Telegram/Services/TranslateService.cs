@@ -187,10 +187,14 @@ namespace Telegram.Services
                             result = new MessageTranslateResultText(toLanguage, styled);
                         }
 
-                        message.TranslatedText = result;
-
                         _translations[key] = new TranslatedMessage(cached, result);
-                        Aggregator.Publish(new UpdateMessageTranslatedText(message.ChatId, message.Id, result));
+
+                        // Only dispatch the update if still pending
+                        if (message.TranslatedText is MessageTranslateResultPending)
+                        {
+                            message.TranslatedText = result;
+                            Aggregator.Publish(new UpdateMessageTranslatedText(message.ChatId, message.Id, result));
+                        }
                     }
                 });
 
