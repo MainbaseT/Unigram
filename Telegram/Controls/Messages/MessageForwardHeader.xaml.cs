@@ -5,11 +5,9 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using Microsoft.Graphics.Canvas.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Native;
@@ -71,12 +69,7 @@ namespace Telegram.Controls.Messages
             {
                 _width = ActualWidth;
 
-                var minX = double.MaxValue;
-                var minY = double.MaxValue;
-                var maxX = double.MinValue;
-                var maxY = double.MinValue;
-
-                var shapes = new List<List<Rect>>();
+                var shapes = new List<IList<Rect>>();
                 var current = new List<Rect>();
                 var last = default(Rect);
 
@@ -112,7 +105,7 @@ namespace Telegram.Controls.Messages
 
                     var rect = new Rect(left - 4, line.Key, right - left + 8, bottom - line.Key);
 
-                    if (current.Count > 0 && !rect.IntersectsWith(last))
+                    if (current.Count > 0 && !rect.IntersectsOrTouches(last))
                     {
                         shapes.Add(current);
                         current = new List<Rect>();
@@ -120,105 +113,11 @@ namespace Telegram.Controls.Messages
 
                     current.Add(rect);
                     last = rect;
-
-                    minX = Math.Min(minX, rect.Left);
-                    minY = Math.Min(minY, rect.Top);
-                    maxX = Math.Max(maxX, rect.Right);
-                    maxY = Math.Max(maxY, rect.Bottom);
                 }
 
                 if (current.Count > 0)
                 {
                     shapes.Add(current);
-                }
-
-                CanvasGeometry result;
-                using (var builder = new CanvasPathBuilder(null))
-                {
-                    var angle = MathFEx.ToRadians(-90);
-
-                    for (int j = 0; j < shapes.Count; j++)
-                    {
-                        var rectangles = shapes[j];
-
-                        for (int i = 0; i < rectangles.Count; i++)
-                        {
-                            var rect = rectangles[i];
-
-                            if (i == 0)
-                            {
-                                builder.BeginFigure(new Windows.Foundation.Point(rect.Right - 4, rect.Top).ToVector2());
-                                builder.AddArc(new Windows.Foundation.Point(rect.Right, rect.Top + 4).ToVector2(), 4, 4, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                            }
-                            else
-                            {
-                                var y1diff = i > 0 ? rect.Right - rectangles[i - 1].Right : 4;
-                                var y1radius = MathF.Min(4, MathF.Abs((float)y1diff));
-
-                                if (y1diff < 0)
-                                {
-                                    builder.AddLine(new Windows.Foundation.Point(rect.Right + y1radius, rect.Top).ToVector2());
-                                    builder.AddArc(new Windows.Foundation.Point(rect.Right, rect.Top + y1radius).ToVector2(), y1radius, y1radius, 0, CanvasSweepDirection.CounterClockwise, CanvasArcSize.Small);
-                                }
-                                else if (y1diff > 0)
-                                {
-                                    builder.AddLine(new Windows.Foundation.Point(rect.Right - y1radius, rect.Top).ToVector2());
-                                    builder.AddArc(new Windows.Foundation.Point(rect.Right, rect.Top + y1radius).ToVector2(), y1radius, y1radius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                                }
-                            }
-
-                            var y2diff = i < rectangles.Count - 1 ? rect.Right - rectangles[i + 1].Right : 4;
-                            var y2radius = MathF.Min(4, MathF.Abs((float)y2diff));
-
-                            builder.AddLine(new Windows.Foundation.Point(rect.Right, rect.Bottom - y2radius).ToVector2());
-
-                            if (y2diff < 0)
-                            {
-                                builder.AddArc(new Windows.Foundation.Point(rect.Right + y2radius, rectangles[i + 1].Top).ToVector2(), y2radius, y2radius, 0, CanvasSweepDirection.CounterClockwise, CanvasArcSize.Small);
-                            }
-                            else if (y2diff > 0)
-                            {
-                                builder.AddArc(new Windows.Foundation.Point(rect.Right - y2radius, rect.Bottom).ToVector2(), y2radius, y2radius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                            }
-                        }
-
-                        for (int i = rectangles.Count - 1; i >= 0; i--)
-                        {
-                            var rect = rectangles[i];
-
-                            var y1diff = i < rectangles.Count - 1 ? rect.Left - rectangles[i + 1].Left : -4;
-                            var y1radius = MathF.Min(4, MathF.Abs((float)y1diff));
-
-                            if (y1diff > 0)
-                            {
-                                builder.AddLine(new Windows.Foundation.Point(rect.Left - y1radius, rect.Bottom).ToVector2());
-                                builder.AddArc(new Windows.Foundation.Point(rect.Left, rect.Bottom - y1radius).ToVector2(), y1radius, y1radius, 0, CanvasSweepDirection.CounterClockwise, CanvasArcSize.Small);
-                            }
-                            else if (y1diff < 0)
-                            {
-                                builder.AddLine(new Windows.Foundation.Point(rect.Left + y1radius, rect.Bottom).ToVector2());
-                                builder.AddArc(new Windows.Foundation.Point(rect.Left, rect.Bottom - y1radius).ToVector2(), y1radius, y1radius, 0, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                            }
-
-                            var y2diff = i > 0 ? rect.Left - rectangles[i - 1].Left : -4;
-                            var y2radius = MathF.Min(4, MathF.Abs((float)y2diff));
-
-                            builder.AddLine(new Windows.Foundation.Point(rect.Left, rect.Top + y2radius).ToVector2());
-
-                            if (y2diff > 0)
-                            {
-                                builder.AddArc(new Windows.Foundation.Point(rect.Left - y2radius, rect.Top).ToVector2(), y2radius, y2radius, angle, CanvasSweepDirection.CounterClockwise, CanvasArcSize.Small);
-                            }
-                            else if (y2diff < 0)
-                            {
-                                builder.AddArc(new Windows.Foundation.Point(rect.Left + y2radius, rect.Top).ToVector2(), y2radius, y2radius, angle, CanvasSweepDirection.Clockwise, CanvasArcSize.Small);
-                            }
-                        }
-
-                        builder.EndFigure(CanvasFigureLoop.Closed);
-                    }
-
-                    result = CanvasGeometry.CreatePath(builder);
                 }
 
                 if (_visual?.Clip == null)
@@ -227,7 +126,7 @@ namespace Telegram.Controls.Messages
                     _visual.Clip = _clip = _visual.Compositor.CreateGeometricClip();
                 }
 
-                _clip.Geometry = BootStrapper.Current.Compositor.CreatePathGeometry(new CompositionPath(result));
+                _clip.Geometry = BootStrapper.Current.Compositor.CreatePathGeometry(PlaceholderHelper.Foreground.GetRoundedPolygon(shapes));
             }
 
             try

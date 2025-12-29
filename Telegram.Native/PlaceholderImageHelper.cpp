@@ -11,6 +11,8 @@
 
 #include <zlib.h>
 
+#include <numbers>
+
 #include <src\webp\decode.h>
 #include <src\webp\demux.h>
 
@@ -1961,6 +1963,114 @@ namespace winrt::Telegram::Native::implementation
         }
 
         delete[] bytes;
+
+        ReturnNullIfFailed(result, d2dGeometrySink->Close());
+
+        auto geometry = winrt::make_self<CompositionPathSource>(d2dPathGeometry);
+        return CompositionPath(geometry.as<winrt::Windows::Graphics::IGeometrySource2D>());
+    }
+
+    CompositionPath PlaceholderImageHelper::GetRoundedPolygon(IVector<IVector<Windows::Foundation::Rect>> shapes)
+    {
+        std::lock_guard const guard(m_criticalSection);
+        HRESULT result;
+
+        winrt::com_ptr<ID2D1GeometrySink> d2dGeometrySink;
+        winrt::com_ptr<ID2D1PathGeometry1> d2dPathGeometry;
+
+        ReturnNullIfFailed(result, m_d2dFactory->CreatePathGeometry(d2dPathGeometry.put()));
+        ReturnNullIfFailed(result, d2dPathGeometry->Open(d2dGeometrySink.put()));
+
+        auto angle = -90 * std::numbers::pi_v<float> / 180.0f; // MathFEx.ToRadians(-90);
+        static auto rightAt = [](const winrt::Windows::Foundation::Rect& rect)
+            {
+                return rect.X + rect.Width;
+            };
+
+        for (int j = 0; j < shapes.Size(); j++)
+        {
+            const auto& rectangles = shapes.GetAt(j);
+
+            for (int i = 0; i < rectangles.Size(); i++)
+            {
+                const auto& rect = rectangles.GetAt(i);
+                const auto right = rect.X + rect.Width;
+                const auto bottom = rect.Y + rect.Height;
+
+                if (i == 0)
+                {
+                    d2dGeometrySink->BeginFigure({ right - 4, rect.Y }, D2D1_FIGURE_BEGIN_FILLED);
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ right, rect.Y + 4 }, { 4, 4 }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+                else
+                {
+                    auto y1diff = i > 0 ? right - rightAt(rectangles.GetAt(i - 1)) : 4;
+                    auto y1radius = fminf(4, fabsf(y1diff));
+
+                    if (y1diff < 0)
+                    {
+                        d2dGeometrySink->AddLine({ right + y1radius, rect.Y });
+                        d2dGeometrySink->AddArc(D2D1::ArcSegment({ right, rect.Y + y1radius }, { y1radius, y1radius }, 0, D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                    }
+                    else if (y1diff > 0)
+                    {
+                        d2dGeometrySink->AddLine({ right - y1radius, rect.Y });
+                        d2dGeometrySink->AddArc(D2D1::ArcSegment({ right, rect.Y + y1radius }, { y1radius, y1radius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                    }
+                }
+
+                auto y2diff = i < rectangles.Size() - 1 ? right - rightAt(rectangles.GetAt(i + 1)) : 4;
+                auto y2radius = fminf(4, fabsf(y2diff));
+
+                d2dGeometrySink->AddLine({ right, bottom - y2radius });
+
+                if (y2diff < 0)
+                {
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ right + y2radius, rectangles.GetAt(i + 1).Y }, { y2radius, y2radius }, 0, D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+                else if (y2diff > 0)
+                {
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ right - y2radius, bottom }, { y2radius, y2radius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+            }
+
+            for (int i = rectangles.Size() - 1; i >= 0; i--)
+            {
+                const auto& rect = rectangles.GetAt(i);
+                const auto right = rect.X + rect.Width;
+                const auto bottom = rect.Y + rect.Height;
+
+                auto y1diff = i < rectangles.Size() - 1 ? rect.X - rectangles.GetAt(i + 1).X : -4;
+                auto y1radius = fminf(4, fabsf(y1diff));
+
+                if (y1diff > 0)
+                {
+                    d2dGeometrySink->AddLine({ rect.X - y1radius, bottom });
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ rect.X, bottom - y1radius }, { y1radius, y1radius }, 0, D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+                else if (y1diff < 0)
+                {
+                    d2dGeometrySink->AddLine({ rect.X + y1radius, bottom });
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ rect.X, bottom - y1radius }, { y1radius, y1radius }, 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+
+                auto y2diff = i > 0 ? rect.X - rectangles.GetAt(i - 1).X : -4;
+                auto y2radius = fminf(4, fabsf(y2diff));
+
+                d2dGeometrySink->AddLine({ rect.X, rect.Y + y2radius });
+
+                if (y2diff > 0)
+                {
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ rect.X - y2radius, rect.Y }, { y2radius, y2radius }, angle, D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+                else if (y2diff < 0)
+                {
+                    d2dGeometrySink->AddArc(D2D1::ArcSegment({ rect.X + y2radius, rect.Y }, { y2radius, y2radius }, angle, D2D1_SWEEP_DIRECTION_CLOCKWISE, D2D1_ARC_SIZE_SMALL));
+                }
+            }
+
+            d2dGeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+        }
 
         ReturnNullIfFailed(result, d2dGeometrySink->Close());
 

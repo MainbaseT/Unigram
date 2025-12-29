@@ -807,6 +807,12 @@ namespace Telegram.Controls
                 }
 
                 direct.SetStringProperty(_fastRun, XamlPropertyIndex.Run_Text, styled.Text);
+
+                if (!_skeletonCollapsed)
+                {
+                    RegisterLayoutChanged();
+                }
+
                 return;
             }
 
@@ -1296,7 +1302,7 @@ namespace Telegram.Controls
             Below.Margin = new Thickness(0, topPadding, 0, 0);
             TextBlock.Margin = new Thickness(0, topPadding, 0, 0);
 
-            if (spoilerChanged)
+            if (spoilerChanged || !_skeletonCollapsed)
             {
                 RegisterLayoutChanged();
             }
@@ -1332,6 +1338,11 @@ namespace Telegram.Controls
         {
             UpdateBelow();
             UpdateSpoilers();
+
+            if (!_skeletonCollapsed)
+            {
+                InvalidateSkeleton();
+            }
         }
 
         private void UpdateBelow()
@@ -1470,7 +1481,7 @@ namespace Telegram.Controls
                         rect.X += point.X;
                         rect.Y += point.Y;
 
-                        if (current.Count > 0 && !rect.IntersectsWith(last))
+                        if (current.Count > 0 && !rect.IntersectsOrTouches(last))
                         {
                             shapes.Add(current);
                             current = new List<Rect>();
@@ -1523,7 +1534,7 @@ namespace Telegram.Controls
                         rect.X += point.X;
                         rect.Y += point.Y;
 
-                        if (current.Count > 0 && !rect.IntersectsWith(last))
+                        if (current.Count > 0 && !rect.IntersectsOrTouches(last))
                         {
                             shapes.Add(current);
                             current = new List<Rect>();
@@ -2010,5 +2021,172 @@ namespace Telegram.Controls
         #endregion
 
         public bool HasOverflowContent => TextBlock?.HasOverflowContent ?? false;
+        
+        private bool _skeletonCollapsed = true;
+        private ContainerVisual _skeleton;
+        private SpriteVisual _foreground;
+
+        public void ShowHideSkeleton(bool show)
+        {
+            if (_skeletonCollapsed != show)
+            {
+                return;
+            }
+
+            _skeletonCollapsed = !show;
+
+            if (show)
+            {
+                var ease = BootStrapper.Current.Compositor.CreateLinearEasingFunction();
+                var animation = BootStrapper.Current.Compositor.CreateVector3KeyFrameAnimation();
+                animation.InsertKeyFrame(0, new Vector3(-1, 0, 0), ease);
+                animation.InsertKeyFrame(1, new Vector3(0, 0, 0), ease);
+                animation.IterationBehavior = AnimationIterationBehavior.Forever;
+                animation.Duration = TimeSpan.FromSeconds(1);
+
+                var transparent = Color.FromArgb(0x00, 0xFF, 0xFF, 0xFF);
+                var foregroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
+                var backgroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
+
+                // TODO: Improve colors
+                var lookup = ThemeService.GetLookup(ActualTheme);
+                lookup.TryGet("SystemControlDisabledChromeDisabledLowBrush", out backgroundColor);
+                lookup.TryGet("ApplicationPageBackgroundThemeBrush", out foregroundColor);
+
+                var gradient = BootStrapper.Current.Compositor.CreateLinearGradientBrush();
+                gradient.ColorStops.Add(BootStrapper.Current.Compositor.CreateColorGradientStop(0, Color.FromArgb(0x00, backgroundColor.R, backgroundColor.G, backgroundColor.B)));
+                gradient.ColorStops.Add(BootStrapper.Current.Compositor.CreateColorGradientStop(0.67f, Color.FromArgb(0x67, backgroundColor.R, backgroundColor.G, backgroundColor.B)));
+                gradient.ColorStops.Add(BootStrapper.Current.Compositor.CreateColorGradientStop(1, Color.FromArgb(0x00, backgroundColor.R, backgroundColor.G, backgroundColor.B)));
+                gradient.StartPoint = new Vector2(0, 0);
+                gradient.EndPoint = new Vector2(0.5f, 0);
+                gradient.ExtendMode = CompositionGradientExtendMode.Wrap;
+
+                var background = BootStrapper.Current.Compositor.CreateSpriteVisual();
+                background.RelativeSizeAdjustment = Vector2.One;
+                background.Brush = BootStrapper.Current.Compositor.CreateColorBrush(foregroundColor);
+
+                _foreground = BootStrapper.Current.Compositor.CreateSpriteVisual();
+                _foreground.RelativeSizeAdjustment = new Vector2(2, 1);
+                _foreground.Brush = gradient;
+                _foreground.StartAnimation("RelativeOffsetAdjustment", animation);
+
+                //Placeholder = GetTemplateChild(nameof(Placeholder)) as TextBlock;
+                //Presenter = GetTemplateChild(nameof(Presenter)) as TextBlock;
+
+                _skeleton = BootStrapper.Current.Compositor.CreateContainerVisual();
+                //_skeleton.Children.InsertAtTop(background);
+                _skeleton.Children.InsertAtTop(_foreground);
+                //_skeleton.Opacity = 0.67f;
+                //_skeleton.RelativeSizeAdjustment = Vector2.One;
+
+                //_skeleton.AnchorPoint = new Vector2(IsPlaceholderRightToLeft ? 1 : 0, 0);
+                //_skeleton.RelativeOffsetAdjustment = new Vector3(IsPlaceholderRightToLeft ? 1 : 0, 0, 0);
+
+                ElementCompositionPreview.SetElementChildVisual(this, _skeleton);
+
+                //InvalidateSkeleton();
+            }
+            else
+            {
+                _skeleton?.Opacity = 0;
+                _skeleton = null;
+                ElementCompositionPreview.SetElementChildVisual(this, null);
+            }
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            if (_skeleton == null)
+            {
+                return base.ArrangeOverride(finalSize);
+            }
+
+            finalSize = base.ArrangeOverride(finalSize);
+
+            InvalidateSkeleton();
+
+            return finalSize;
+        }
+
+        private void InvalidateSkeleton()
+        {
+            var width = LastAvailableWidth;
+            var inset = 0;
+
+            var fontSize = (AutoFontSize ? Theme.Current.MessageFontSize : TextBlock.FontSize) * BootStrapper.Current.TextScaleFactor;
+            var quoteSize = (AutoFontSize ? Theme.Current.CaptionFontSize : TextBlock.FontSize) * BootStrapper.Current.TextScaleFactor;
+
+            var shapes = new List<IList<Rect>>();
+            var current = new List<Rect>();
+            var last = default(Rect);
+
+            for (int block = 0; block < _text.Paragraphs.Count; block++)
+            {
+                StyledParagraph styled = _text.Paragraphs[block];
+                Paragraph paragraph = TextBlock.Blocks[block] as Paragraph;
+
+                if (paragraph == null)
+                {
+                    // TODO: figure out why this happens
+                    continue;
+                }
+
+                if (block == 0)
+                {
+                    inset = styled.Type switch
+                    {
+                        TextParagraphTypeMonospace { Language.Length: > 0 } => 22 + 6,
+                        not null => 6,
+                        _ => 0
+                    };
+                }
+
+                var partial = _text.Text.Substring(styled.Offset, styled.Length);
+                var entities = styled.Parts ?? Array.Empty<TextStylePart>();
+
+                var size = styled.Type is TextParagraphTypeQuote
+                    ? quoteSize
+                    : fontSize;
+
+                var rectangles = PlaceholderHelper.Foreground.LineMetrics(partial, entities, size, width - paragraph.Margin.Left - paragraph.Margin.Right, styled.Direction == TextDirectionality.RightToLeft);
+                var relative = paragraph.ContentStart.GetCharacterRect(paragraph.ContentStart.LogicalDirection);
+
+                var point = new Windows.Foundation.Point(paragraph.Margin.Left /*+ position.X*/, relative.Y /*+ position.Y*/ + inset);
+
+                for (int i = 0; i < rectangles.Count; i++)
+                {
+                    var rect = rectangles[i];
+                    if (rect.Width < 1 || rect.Height < 1)
+                    {
+                        continue;
+                    }
+
+                    rect = new Rect(rect.X - 2, rect.Y, rect.Width + 4, rect.Height);
+                    rect.X += point.X;
+                    rect.Y += point.Y;
+
+                    if (current.Count > 0 && !rect.IntersectsOrTouches(last))
+                    {
+                        shapes.Add(current);
+                        current = new List<Rect>();
+                    }
+
+                    current.Add(rect);
+                    last = rect;
+                }
+            }
+
+            if (current.Count > 0)
+            {
+                shapes.Add(current);
+            }
+
+            _skeleton.Clip = BootStrapper.Current.Compositor.CreateGeometricClip(BootStrapper.Current.Compositor.CreatePathGeometry(PlaceholderHelper.Foreground.GetRoundedPolygon(shapes)));
+            //_skeleton.Size = Placeholder.DesiredSize.ToVector2();
+            _skeleton.Size = new Vector2(TextBlock.ActualSize.X + 8, TextBlock.ActualSize.Y + 4);
+            _skeleton.Offset = new Vector3(-0, -0, 0);
+            //_skeleton.Size = new Vector2(TextBlock.ActualSize.X + 8, TextBlock.ActualSize.Y + 4);
+            //_skeleton.Offset = new Vector3(-4, -2, 0);
+        }
     }
 }

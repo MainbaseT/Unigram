@@ -984,6 +984,14 @@ namespace Telegram.Common
             return (long)(dateTime.ToUniversalTime() - dtDateTime).TotalMilliseconds;
         }
 
+        public static bool IntersectsOrTouches(this Rect a, Rect b)
+        {
+            return a.Left <= b.Right &&
+                   a.Right >= b.Left &&
+                   a.Top <= b.Bottom &&
+                   a.Bottom >= b.Top;
+        }
+
         public static Size ToSize(this Rect rectangle)
         {
             return new Size(rectangle.Width, rectangle.Height);
