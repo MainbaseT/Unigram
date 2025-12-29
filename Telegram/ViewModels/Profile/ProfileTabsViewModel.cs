@@ -387,6 +387,8 @@ namespace Telegram.ViewModels.Profile
             set => Set(ref _chat, value);
         }
 
+        public long ChatId => Chat?.Id ?? 0;
+
         public override MediaCollection SetSearch(object sender, string query)
         {
             var target = sender switch
