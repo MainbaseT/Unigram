@@ -401,7 +401,11 @@ namespace Telegram.Services
         {
             InitializeDiagnostics();
 
-            _runThread = new Thread(Client.Run);
+            _runThread = new Thread(Client.Run)
+            {
+                Name = "TdReceive",
+                IsBackground = true
+            };
             _runThread.Start();
         }
 
