@@ -6682,18 +6682,6 @@ public static class NativeUtils_stub
             throw new RuntimeException(ex);
         }
     }
-    public static int GetLastInputTime_stub()
-    {
-        try
-        {
-            return Telegram.Native.NativeUtils.GetLastInputTime();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
     public static int GetScaleForCurrentView_stub()
     {
         try
@@ -6735,18 +6723,6 @@ public static class NativeUtils_stub
         try
         {
             Telegram.Native.NativeUtils.OverrideScaleForCurrentView(value);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(Environment.StackTrace, ex);
-            throw new RuntimeException(ex);
-        }
-    }
-    public static void SetFatalErrorCallback_stub(Telegram.Native.FatalErrorCallback action)
-    {
-        try
-        {
-            Telegram.Native.NativeUtils.SetFatalErrorCallback(action);
         }
         catch (Exception ex)
         {

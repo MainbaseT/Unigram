@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Telegram.Common;
+using Telegram.Controls.Chats;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages.Content;
 using Telegram.Controls.Stories;

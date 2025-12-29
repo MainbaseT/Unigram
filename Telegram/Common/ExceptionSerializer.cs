@@ -490,7 +490,7 @@ namespace Telegram.Common
                 case "Paramètre incorrect.":
                 case "El parámetro no es correcto.":
                 case "Parametro non corretto.":
-                case "Parâmetro incorreto":
+                case "Parâmetro incorreto.":
                 case "Parametre hatalı.":
                 case "Параметр задан неверно.":
                 case "Parametri ei kelpaa":
