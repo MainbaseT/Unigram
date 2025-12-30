@@ -125,14 +125,39 @@ namespace winrt::Telegram::Native::implementation
 
         void Close()
         {
-            // Flush the decoder by sending NULL to avcodec_send_packet
-            if (has_decoded_frames && video_dec_ctx && frame && avcodec_send_packet(video_dec_ctx, NULL) >= 0)
+            if (closed)
             {
-                // Receive and process the remaining frames
-                while (avcodec_receive_frame(video_dec_ctx, frame) >= 0)
+                return;
+            }
+
+            closed = true;
+
+            if (has_decoded_frames && video_dec_ctx && frame)
+            {
+                int ret = avcodec_send_packet(video_dec_ctx, NULL);
+                if (ret >= 0 || ret == AVERROR_EOF)
                 {
-                    av_frame_unref(frame);
+                    while (true)
+                    {
+                        ret = avcodec_receive_frame(video_dec_ctx, frame);
+                        if (ret < 0)
+                            break;
+                        av_frame_unref(frame);
+                    }
                 }
+            }
+
+            // Free in correct order
+            if (frame)
+            {
+                av_frame_free(&frame);
+                frame = nullptr;
+            }
+
+            if (pkt)
+            {
+                av_packet_free(&pkt);
+                pkt = nullptr;
             }
 
             if (video_dec_ctx)
@@ -140,22 +165,14 @@ namespace winrt::Telegram::Native::implementation
                 avcodec_free_context(&video_dec_ctx);
                 video_dec_ctx = nullptr;
             }
+
             if (fmt_ctx)
             {
                 avformat_close_input(&fmt_ctx);
                 fmt_ctx = nullptr;
             }
-            if (frame)
-            {
-                av_frame_free(&frame);
-                frame = nullptr;
-            }
-            if (pkt)
-            {
-                av_packet_free(&pkt);
-                pkt = nullptr;
-            }
-            if (ioContext != nullptr)
+
+            if (ioContext)
             {
                 if (ioContext->buffer)
                 {
@@ -164,23 +181,24 @@ namespace winrt::Telegram::Native::implementation
                 avio_context_free(&ioContext);
                 ioContext = nullptr;
             }
-            if (sws_ctx != nullptr)
+
+            if (sws_ctx)
             {
                 sws_freeContext(sws_ctx);
                 sws_ctx = nullptr;
             }
-            if (dst_data != nullptr)
+
+            if (dst_data)
             {
                 av_free(dst_data);
                 dst_data = nullptr;
             }
+
             if (fd != INVALID_HANDLE_VALUE)
             {
                 CloseHandle(fd);
                 fd = INVALID_HANDLE_VALUE;
             }
-
-            //av_packet_unref(&orig_pkt);
 
             video_stream_idx = -1;
             video_stream = nullptr;
@@ -272,6 +290,7 @@ namespace winrt::Telegram::Native::implementation
         AVCodecContext* video_dec_ctx = nullptr;
         AVFrame* frame = nullptr;
         bool has_decoded_frames = false;
+        bool closed = false;
         AVPacket* pkt;
         //AVPacket orig_pkt;
         bool stopped = false;

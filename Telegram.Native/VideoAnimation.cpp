@@ -931,8 +931,11 @@ namespace winrt::Telegram::Native::implementation
 
             int32_t linesize = width * 4;
 
+            // Check if destination linesize is aligned to 64 bytes
+            bool dstAligned = (linesize % 64 == 0);
+
             // Direct scaling if no padding issues
-            if (padding == 0 || srcWidth % 30 == 0)
+            if (dstAligned && (padding == 0 || srcWidth % 30 == 0))
             {
                 uint8_t* dst_planes[4] = { pixels, nullptr, nullptr, nullptr };
                 int dst_linesize[4] = { linesize, 0, 0, 0 };
