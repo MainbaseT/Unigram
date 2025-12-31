@@ -19,15 +19,8 @@ namespace Telegram.Services.Settings
         private bool? _legacyScrollBars;
         public bool LegacyScrollBars
         {
-            get => _legacyScrollBars ??= GetValueOrDefault("LegacyScrollBars", true);
+            get => _legacyScrollBars ??= GetValueOrDefault("LegacyScrollBars", false);
             set => AddOrUpdateValue(ref _legacyScrollBars, "LegacyScrollBars", value);
-        }
-
-        private bool? _legacyScrollViewers;
-        public bool LegacyScrollViewers
-        {
-            get => _legacyScrollViewers ??= GetValueOrDefault("LegacyScrollViewers", true);
-            set => AddOrUpdateValue(ref _legacyScrollViewers, "LegacyScrollViewers", value);
         }
 
         private bool? _disableDatabase;

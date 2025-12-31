@@ -15,8 +15,6 @@ using Telegram.Td.Api;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 using AcrylicBrush = Microsoft.UI.Xaml.Media.AcrylicBrush;
 
@@ -43,7 +41,7 @@ namespace Telegram.Common
                 this.Add("ThreadStackLayout", new StackLayout());
 
                 UpdateEmojiSet();
-                //UpdateScrolls();
+                UpdateScrolls();
             }
             catch { }
 
@@ -126,54 +124,25 @@ namespace Telegram.Common
         public string XamlAutoFontFamily { get; private set; }
 
         private bool _legacyScrollBars;
-        private bool _legacyScrollViewer;
+        private ResourceDictionary _scrollBars;
 
         public void UpdateScrolls()
         {
-            if (_legacyScrollBars != SettingsService.Current.Diagnostics.LegacyScrollBars)
+            if (_legacyScrollBars != SettingsService.Current.Diagnostics.LegacyScrollBars || _scrollBars == null)
             {
-                if (SettingsService.Current.Diagnostics.LegacyScrollBars)
+                if (_scrollBars != null)
                 {
-                    var style = new Style
-                    {
-                        TargetType = typeof(ScrollBar)
-                    };
-
-                    // Microsoft recommends turning off layout rounding for VerticalPanningRoot and/or HorizontalPanningRoot.
-                    // We do it for the whole thing because it's just easier.
-                    // https://github.com/microsoft/microsoft-ui-xaml/issues/3779#issuecomment-1896403485
-                    style.Setters.Add(new Setter(UIElement.UseLayoutRoundingProperty, false));
-
-                    this.Add(typeof(ScrollBar), style);
+                    MergedDictionaries.Remove(_scrollBars);
                 }
-                else
+
+                _scrollBars = new ResourceDictionary
                 {
-                    this.Remove(typeof(ScrollBar));
-                }
+                    Source = new Uri("ms-appx:///Themes/ScrollBar_themeresources" + (SettingsService.Current.Diagnostics.LegacyScrollBars ? "_v1" : string.Empty) + ".xaml")
+                };
+
+                MergedDictionaries.Add(_scrollBars);
 
                 _legacyScrollBars = SettingsService.Current.Diagnostics.LegacyScrollBars;
-            }
-
-            if (_legacyScrollViewer != SettingsService.Current.Diagnostics.LegacyScrollViewers)
-            {
-                if (SettingsService.Current.Diagnostics.LegacyScrollViewers)
-                {
-                    var style = new Style
-                    {
-                        TargetType = typeof(ScrollViewer),
-                    };
-
-                    style.Setters.Add(new Setter(ScrollViewer.VerticalScrollBarVisibilityProperty, ScrollBarVisibility.Auto));
-                    style.Setters.Add(new Setter(ScrollViewer.VerticalScrollModeProperty, ScrollMode.Enabled));
-
-                    this.Add(typeof(ScrollViewer), style);
-                }
-                else
-                {
-                    this.Remove(typeof(ScrollViewer));
-                }
-
-                _legacyScrollViewer = SettingsService.Current.Diagnostics.LegacyScrollViewers;
             }
         }
 

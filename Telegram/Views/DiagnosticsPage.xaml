@@ -29,6 +29,10 @@
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Stickers.IsPointerOverEnabled, Mode=TwoWay}"
                               Content="Show Stickers Panel on Pointer Over"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
+                    
+                    <CheckBox IsChecked="{x:Bind ViewModel.LegacyScrollBars, Mode=TwoWay}"
+                              Content="Legacy ScrollBar Style"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
 
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.ShowMemoryUsage, Mode=TwoWay}"
                               Content="Show Memory Usage"
@@ -99,16 +103,6 @@
                     <controls:SettingsButton Click="{x:Bind services:SettingsService.Current.ToolTip.Reset}"
                                              Content="Reset Tool Tips"
                                              Foreground="{ThemeResource DangerButtonBackground}" />
-                </controls:HeaderedControl>
-
-                <controls:HeaderedControl Header="Crash Mitigation">
-                    <CheckBox IsChecked="{x:Bind ViewModel.LegacyScrollBars, Mode=TwoWay}"
-                              Content="Legacy ScrollBar Style"
-                              Style="{StaticResource SettingsCheckBoxStyle}" />
-
-                    <CheckBox IsChecked="{x:Bind ViewModel.LegacyScrollViewers, Mode=TwoWay}"
-                              Content="Legacy ScrollViewer Style"
-                              Style="{StaticResource SettingsCheckBoxStyle}" />
                 </controls:HeaderedControl>
 
                 <controls:HeaderedControl Header="Calls Logs">

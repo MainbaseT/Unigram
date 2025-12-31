@@ -138,17 +138,6 @@ namespace Telegram.ViewModels
             }
         }
 
-        public bool LegacyScrollViewers
-        {
-            get => Settings.Diagnostics.LegacyScrollViewers;
-            set
-            {
-                Settings.Diagnostics.LegacyScrollViewers = value;
-                RaisePropertyChanged();
-                Theme.Current.UpdateScrolls();
-            }
-        }
-
         public bool PreferIpv6
         {
             get => ClientService.Options.PreferIpv6;

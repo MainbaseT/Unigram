@@ -261,7 +261,11 @@ namespace Telegram
         {
             args.Handled = args.Exception is not LayoutCycleException;
 
-            if (args.Exception is NotSupportedException)
+            if (args.Exception is LayoutCycleException)
+            {
+                SettingsService.Current.Diagnostics.LegacyScrollBars = true;
+            }
+            else if (args.Exception is NotSupportedException)
             {
                 var popups = VisualTreeHelper.GetOpenPopups(Window.Current);
 
