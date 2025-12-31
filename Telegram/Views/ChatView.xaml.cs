@@ -98,6 +98,14 @@ namespace Telegram.Views
         private ExpressionAnimation _forumTopicHeaderScale;
 
         // Optimize by holding these in two structs
+        private Visual _stickySummaryAboveVisual;
+        private MessageViewModel _stickySummaryAboveMessage;
+        private SelectorItem _stickySummaryAboveTracked;
+        private Visual _stickySummaryBelowVisual;
+        private MessageViewModel _stickySummaryBelowMessage;
+        private SelectorItem _stickySummaryBelowTracked;
+        private ExpressionAnimation _stickySummaryExpression;
+
         private Visual _stickyPhotoAboveVisual;
         private MessageViewModel _stickyPhotoAboveMessage;
         private SelectorItem _stickyPhotoAboveTracked;
@@ -206,15 +214,21 @@ namespace Telegram.Views
             _forumTopicHeaderPanel = ElementComposition.GetElementVisual(ForumTopicHeaderPanel);
             _forumTopicHeader = ElementComposition.GetElementVisual(ForumTopicHeader);
 
+            _stickySummaryAboveVisual = ElementComposition.GetElementVisual(StickySummaryAbove);
+            _stickySummaryBelowVisual = ElementComposition.GetElementVisual(StickySummaryBelow);
+
             _stickyPhotoAboveVisual = ElementComposition.GetElementVisual(StickyPhotoRootAbove);
             _stickyPhotoBelowVisual = ElementComposition.GetElementVisual(StickyPhotoRootBelow);
 
             _messagesVisual = ElementComposition.GetElementVisual(Messages);
             _messagesPaddingSet = BootStrapper.Current.Compositor.CreatePropertySet();
             _messagesPaddingSet.InsertScalar("Padding", 0);
+            _messagesPaddingSet.InsertScalar("TopPadding", 0);
 
             ElementCompositionPreview.SetIsTranslationEnabled(DateHeader, true);
             ElementCompositionPreview.SetIsTranslationEnabled(ForumTopicHeader, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(StickySummaryAbove, true);
+            ElementCompositionPreview.SetIsTranslationEnabled(StickySummaryBelow, true);
             ElementCompositionPreview.SetIsTranslationEnabled(StickyPhotoRootAbove, true);
             ElementCompositionPreview.SetIsTranslationEnabled(StickyPhotoRootBelow, true);
 
@@ -402,6 +416,11 @@ namespace Telegram.Views
             _dateHeaderTracked = null;
             _forumTopicHeaderTracked = null;
             _forumTopicHeaderTopic = null;
+
+            _stickySummaryAboveTracked = null;
+            _stickySummaryAboveMessage = null;
+            _stickySummaryBelowTracked = null;
+            _stickySummaryBelowMessage = null;
 
             _stickyPhotoAboveTracked = null;
             _stickyPhotoAboveMessage = null;
@@ -930,6 +949,16 @@ namespace Telegram.Views
                 {
                     bubble.UpdateAttach(message);
                     bubble.UpdateMessageHeader(message);
+                }
+
+                if (_stickySummaryAboveTracked == container)
+                {
+                    _stickySummaryAboveTracked = null;
+                }
+
+                if (_stickySummaryBelowTracked == container)
+                {
+                    _stickySummaryBelowTracked = null;
                 }
 
                 if (_stickyPhotoAboveTracked == container)
@@ -7286,6 +7315,7 @@ namespace Telegram.Views
             {
                 _messagesScrollBarPadding = scrollBar;
                 _messagesScrollBarPaddingBottom = animate;
+                _messagesPaddingSet.InsertScalar("TopPadding", scrollBar);
 
                 Messages.ScrollingHost.SetVerticalPadding(animate ? 0 : scrollBar, animate ? scrollBar : 0);
             }
@@ -7835,6 +7865,16 @@ namespace Telegram.Views
         private void NewThread_Click(object sender, RoutedEventArgs e)
         {
             TextField.Focus(FocusState.Keyboard);
+        }
+
+        private void StickySummaryAbove_Click(object sender, RoutedEventArgs e)
+        {
+            _stickySummaryAboveMessage?.Delegate.SummarizeMessage(_stickySummaryAboveMessage);
+        }
+
+        private void StickySummaryBelow_Click(object sender, RoutedEventArgs e)
+        {
+            _stickySummaryBelowMessage?.Delegate.SummarizeMessage(_stickySummaryBelowMessage);
         }
 
         private void StickyPhotoAbove_Click(object sender, RoutedEventArgs e)

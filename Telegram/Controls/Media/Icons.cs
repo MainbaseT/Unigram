@@ -60,6 +60,8 @@ namespace Telegram.Controls.Media
 
         public const string ArrowMinimize = "\uE965";
         public const string ArrowMaximize = "\uE966";
+        public const string ArrowMinimizeSparkles16 = "\uEAF7";
+        public const string ArrowMaximizeSparkles16 = "\uEAFA";
 
         public const string PersonFilled16 = "\uEA48";
         public const string MegaphoneFilled16 = "\uEA47";

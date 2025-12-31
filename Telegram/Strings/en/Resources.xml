@@ -13197,5 +13197,7 @@
     <string name="CocoonPoweredByLink">**How does it work?**</string>
     <string name="CocoonSubtitle">Cocoon (**Co**nfidential **Co**mpute **O**pen **N**etwork)\nhandles AI tasks safely and efficiently.</string>
     <string name="Understood">&#128076; Understood</string>
+    <string name="SummarySubtitle">Click to see original text</string>
+    <string name="SummaryTitle">AI Summary</string>
 
 </resources>

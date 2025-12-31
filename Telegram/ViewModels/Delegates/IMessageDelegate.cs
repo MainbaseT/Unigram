@@ -41,6 +41,7 @@ namespace Telegram.ViewModels.Delegates
         void DownloadFile(MessageViewModel message, File file);
 
         void ForwardMessage(MessageViewModel message);
+        void SummarizeMessage(MessageViewModel message);
 
         void OpenReply(MessageViewModel message);
         void OpenThread(MessageViewModel message);

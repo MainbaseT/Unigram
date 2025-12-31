@@ -54,6 +54,7 @@
         <ResourceDictionary Source="ms-appx:///Controls/Messages/MessageFooter.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/MessageReply.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/MessageFactCheck.xaml" />
+        <ResourceDictionary Source="ms-appx:///Controls/Messages/MessageSummary.xaml" />
         <ResourceDictionary Source="ms-appx:///Controls/Messages/MessageSelector.xaml" />
     </ResourceDictionary.MergedDictionaries>
 

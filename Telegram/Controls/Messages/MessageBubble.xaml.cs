@@ -210,6 +210,9 @@ namespace Telegram.Controls.Messages
         private Border Action;
         private GlyphButton ActionButton;
 
+        private Border Summary;
+        private GlyphButton SummaryButton;
+
         private bool _templateApplied;
 
         protected override void OnApplyTemplate()
@@ -740,6 +743,22 @@ namespace Telegram.Controls.Messages
             }
         }
 
+        private bool _summaryCollapsed = false;
+
+        public void ShowHideSummary(bool show)
+        {
+            if (Summary != null)
+            {
+                if (_summaryCollapsed != show)
+                {
+                    return;
+                }
+
+                _summaryCollapsed = !show;
+                Summary.Opacity = show ? 1 : 0;
+            }
+        }
+
         private bool _photoCollapsed = false;
 
         public void ShowHidePhoto(bool show)
@@ -821,6 +840,7 @@ namespace Telegram.Controls.Messages
         }
 
         private bool _outgoingAction;
+        private bool _outgoingSummary;
 
         private void UpdateAction(MessageViewModel message)
         {
@@ -933,6 +953,30 @@ namespace Telegram.Controls.Messages
             }
         }
 
+        private void FindSummary(bool outgoing)
+        {
+            if (Summary == null)
+            {
+                Summary = GetTemplateChild(nameof(Summary)) as Border;
+                SummaryButton = GetTemplateChild(nameof(SummaryButton)) as GlyphButton;
+
+                SummaryButton.Click += Summary_Click;
+            }
+
+            if (outgoing && !_outgoingSummary)
+            {
+                _outgoingSummary = true;
+                Summary.Margin = new Thickness(0, 0, 8, 0);
+                Grid.SetColumn(Summary, 0);
+            }
+            else if (_outgoingSummary && !outgoing)
+            {
+                _outgoingSummary = false;
+                Summary.Margin = new Thickness(8, 0, 0, 0);
+                Grid.SetColumn(Summary, 2);
+            }
+        }
+
         private void Action_Click(object sender, RoutedEventArgs e)
         {
             var message = _message;
@@ -975,6 +1019,17 @@ namespace Telegram.Controls.Messages
             {
                 message.Delegate.ForwardMessage(message);
             }
+        }
+
+        private void Summary_Click(object sender, RoutedEventArgs e)
+        {
+            var message = _message;
+            if (message == null)
+            {
+                return;
+            }
+
+            message.Delegate.SummarizeMessage(message);
         }
 
         public void UpdateMessageReply(MessageViewModel message)
@@ -1619,6 +1674,19 @@ namespace Telegram.Controls.Messages
 
         public void UpdateMessageContent(MessageViewModel message)
         {
+            UpdateMessageContentLayout(message);
+            UpdateMessageText(message);
+            UpdateMessageContentControl(message);
+        }
+
+        public void UpdateMessageTextLayout(MessageViewModel message)
+        {
+            UpdateMessageContentLayout(message);
+            UpdateMessageText(message);
+        }
+
+        public void UpdateMessageContentLayout(MessageViewModel message)
+        {
             var chat = message?.Chat;
             if (chat == null || !_templateApplied)
             {
@@ -1631,12 +1699,12 @@ namespace Telegram.Controls.Messages
             var outgoing = (message.IsOutgoing && !message.IsChannelPost && message.SenderId is MessageSenderUser) || (message.IsSaved && message.ForwardInfo?.Source is { IsOutgoing: true });
 
             var aboveMedia = message.ShowCaptionAboveMedia();
-            var factCheck = message.FactCheck == null ? 0 : 1;
+            var factCheck = message.FactCheck == null && message.SummarizedText == null ? 0 : 1;
 
             var content = message.GeneratedContent ?? message.Content;
             if (content is MessageText text)
             {
-                if (text.LinkPreview == null && message.FactCheck == null)
+                if (text.LinkPreview == null && factCheck == 0)
                 {
                     ContentPanel.Padding = new Thickness(0, 4, 0, 0);
                     Media.Margin = new Thickness(0);
@@ -1682,7 +1750,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 var caption = content is MessageVenue || (content.HasCaption() && !aboveMedia);
-                if (caption || factCheck > 0)
+                if (caption || (factCheck > 0 && !aboveMedia))
                 {
                     FooterToNormal();
                     bottom = 4;
@@ -1698,7 +1766,7 @@ namespace Telegram.Controls.Messages
 
                 ContentPanel.Padding = new Thickness(0, top, 0, 0);
                 Media.Margin = new Thickness(0, aboveMedia ? 0 : top, 0, bottom);
-                Grid.SetRow(Footer, factCheck + (caption ? 4 : 3));
+                Grid.SetRow(Footer, (aboveMedia ? 0 : factCheck) + (caption ? 4 : 3));
                 Grid.SetRow(Message, caption ? 4 : aboveMedia ? 2 : 5);
                 Panel.Placeholder = caption;
             }
@@ -1779,11 +1847,29 @@ namespace Telegram.Controls.Messages
                 Panel.Placeholder = caption;
             }
 
-            UpdateMessageText(message);
-
-            if (Panel.Children.Count > 0 && Panel.Children[0] is MessageFactCheck factChecko)
+            if (Panel.Children.Count > 0 && Panel.Children[0] is MessageSummary summary)
             {
-                if (message.FactCheck != null)
+                if (message.SummarizedText == null)
+                {
+                    Panel.Children.Remove(summary);
+
+                    if (message.FactCheck != null)
+                    {
+                        Panel.Children.Insert(0, new MessageFactCheck(message));
+                    }
+                }
+            }
+            else if (Panel.Children.Count > 0 && Panel.Children[0] is MessageFactCheck factChecko)
+            {
+                if (message.SummarizedText != null)
+                {
+                    summary = new MessageSummary();
+                    summary.Click += Summary_Click;
+
+                    Panel.Children.Remove(factChecko);
+                    Panel.Children.Insert(0, summary);
+                }
+                else if (message.FactCheck != null)
                 {
                     factChecko.UpdateMessage(message);
                 }
@@ -1792,10 +1878,22 @@ namespace Telegram.Controls.Messages
                     Panel.Children.Remove(factChecko);
                 }
             }
+            else if (message.SummarizedText != null)
+            {
+                summary = new MessageSummary();
+                summary.Click += Summary_Click;
+
+                Panel.Children.Insert(0, summary);
+            }
             else if (message.FactCheck != null)
             {
                 Panel.Children.Insert(0, new MessageFactCheck(message));
             }
+        }
+
+        public void UpdateMessageContentControl(MessageViewModel message)
+        {
+            var content = message.GeneratedContent ?? message.Content;
 
             if (Media.Child is IContent media)
             {
@@ -1870,15 +1968,18 @@ namespace Telegram.Controls.Messages
         public void UpdateMessageText(MessageViewModel message)
         {
             var result = false;
-            var textz = message.TranslatedText switch
+            var processedText = message.SummarizedText ?? message.TranslatedText;
+
+            var styledText = processedText switch
             {
+                MessageTranslateResultSummary summary => summary.Text,
                 MessageTranslateResultText translated => message.Delegate?.IsTranslating ?? false
                     ? translated.Text
                     : message.Text,
                 _ => message.Text
             };
 
-            if (textz != null && message.Content is not MessageAnimatedEmoji)
+            if (styledText != null && message.Content is not MessageAnimatedEmoji)
             {
                 var fontSize = 0d;
 
@@ -1899,14 +2000,28 @@ namespace Telegram.Controls.Messages
                     }
                 }
 
-                Message.ShowHideSkeleton(textz is MessageTranslateResultPending);
-                Message.SetText(message.ClientService, textz, fontSize);
+                Message.ShowHideSkeleton(processedText is MessageTranslateResultPending);
+                Message.SetText(message.ClientService, styledText, fontSize);
                 Message.SetQuery(_query);
 
                 ContentPanel.MaxWidth = Message.HasCodeBlocks ? double.PositiveInfinity : 432;
-                Message.Visibility = textz.Text.Length > 0
+                Message.Visibility = styledText.Text.Length > 0
                     ? Visibility.Visible
                     : Visibility.Collapsed;
+
+                if (message.CanSummarizeText)
+                {
+                    FindSummary(message.IsVisuallyOutgoing);
+
+                    SummaryButton.Glyph = message.SummarizedText == null ? Icons.ArrowMinimizeSparkles16 : Icons.ArrowMaximizeSparkles16;
+                    Summary.Visibility = Visibility.Visible;
+
+                    Automation.SetToolTip(SummaryButton, Strings.SummaryTitle);
+                }
+                else
+                {
+                    Summary?.Visibility = Visibility.Collapsed;
+                }
 
                 return;
             }
@@ -1985,6 +2100,8 @@ namespace Telegram.Controls.Messages
             ContentPanel.MaxWidth = Message.HasCodeBlocks ? double.PositiveInfinity : 432;
             Message.Visibility = result ? Visibility.Visible : Visibility.Collapsed;
             //Footer.HorizontalAlignment = adjust ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+
+            Summary?.Visibility = Visibility.Collapsed;
         }
 
         private bool GetEntities(MessageViewModel message, string text)
@@ -2482,7 +2599,7 @@ namespace Telegram.Controls.Messages
                 AnimateBottom(Reactions, bottomOffset);
             }
 
-            if (Panel.Children.Count > 0 && Panel.Children[0] is MessageFactCheck factChecko)
+            if (Panel.Children.Count > 0 && Panel.Children[0] is MessageFactCheck or MessageSummary)
             {
                 AnimateBottom(Panel.Children[0], bottomOffset);
             }
@@ -2495,11 +2612,6 @@ namespace Telegram.Controls.Messages
             if (Action?.Visibility == Visibility.Visible && direction == 1)
             {
                 AnimateBottom(Action, bottomOffset);
-            }
-
-            if (Cocoon?.Visibility == Visibility.Visible && direction == 1)
-            {
-                AnimateBottom(Cocoon, bottomOffset);
             }
 
             batch.End();

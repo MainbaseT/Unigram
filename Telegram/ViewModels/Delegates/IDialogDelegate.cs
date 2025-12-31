@@ -61,6 +61,7 @@ namespace Telegram.ViewModels.Delegates
         void ChangeTheme();
 
         void UpdateMessageSendSucceeded(long oldMessageId, MessageViewModel message);
+        void UpdateMessageSummary(MessageViewModel message);
 
         void UpdateContainerWithMessageId(long messageId, Action<SelectorItem> action);
 

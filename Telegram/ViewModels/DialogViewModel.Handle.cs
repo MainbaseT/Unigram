@@ -59,6 +59,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateMessageSendFailed>(Handle)
                 .Subscribe<UpdateMessageSendSucceeded>(Handle)
                 .Subscribe<UpdateMessageTranslatedText>(Handle)
+                .Subscribe<UpdateMessageSummarizedText>(Handle)
                 .Subscribe<UpdateMessageFactCheck>(Handle)
                 .Subscribe<UpdateMessageEffect>(Handle)
                 .Subscribe<UpdateMessageSuggestedPostInfo>(Handle)
@@ -1269,8 +1270,29 @@ namespace Telegram.ViewModels
                     }
                     else
                     {
-                        bubble.UpdateMessageText(message);
+                        bubble.UpdateMessageTextLayout(message);
                     }
+                }, null);
+            }
+        }
+
+        public void Handle(UpdateMessageSummarizedText update)
+        {
+            if (update.ChatId == _chat?.Id)
+            {
+                Handle(update.MessageId, message =>
+                {
+                    message.SummarizedText = update.SummarizedText;
+                },
+                (bubble, message, reply) =>
+                {
+                    if (reply)
+                    {
+                        return;
+                    }
+
+                    bubble.UpdateMessageTextLayout(message);
+                    Delegate?.UpdateMessageSummary(message);
                 }, null);
             }
         }

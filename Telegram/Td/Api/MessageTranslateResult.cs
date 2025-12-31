@@ -14,6 +14,16 @@ namespace Telegram.Td.Api
 
     }
 
+    public partial class MessageTranslateResultSummary : MessageTranslateResult
+    {
+        public MessageTranslateResultSummary(StyledText text)
+        {
+            Text = text;
+        }
+
+        public StyledText Text { get; }
+    }
+
     public partial class MessageTranslateResultError : MessageTranslateResult
     {
 

@@ -29,6 +29,7 @@ namespace Telegram.Services
         Task<object> TranslateAsync(FormattedText text, string toLanguage);
 
         bool Translate(MessageViewModel message, string toLanguage);
+        bool Summarize(MessageViewModel message, string toLanguage);
     }
 
     public partial class TranslateService : ServiceBase, ITranslateService
@@ -138,6 +139,7 @@ namespace Telegram.Services
         }
 
         private readonly ConcurrentDictionary<TranslatedKey, TranslatedMessage> _translations = new();
+        private readonly ConcurrentDictionary<TranslatedKey, TranslatedMessage> _summaries = new();
 
         public bool Translate(MessageViewModel message, string toLanguage)
         {
@@ -205,6 +207,71 @@ namespace Telegram.Services
             return false;
         }
 
+        public bool Summarize(MessageViewModel message, string toLanguage)
+        {
+            if (/*message.IsOutgoing ||*/ string.IsNullOrEmpty(message.Text?.Text))
+            {
+                return false;
+            }
+
+            var key = new TranslatedKey(message.ChatId, message.Id, toLanguage);
+            var cached = message.Text.Text;
+
+            if (_summaries.TryGetValue(key, out var value))
+            {
+                if (string.Equals(cached, value.Text))
+                {
+                    if (value.Result != null)
+                    {
+                        message.SummarizedText = value.Result;
+                    }
+
+                    message.SummarizedText ??= new MessageTranslateResultPending();
+                    return false;
+                }
+            }
+
+            if (CanTranslateText(message.Text.Text, true))
+            {
+                message.SummarizedText = new MessageTranslateResultPending();
+
+                _summaries[key] = new TranslatedMessage(cached, null);
+                ClientService.Send(new SummarizeMessage(message.ChatId, message.Id, toLanguage), handler =>
+                {
+                    if (handler is FormattedText text && string.Equals(message.Text?.Text, cached))
+                    {
+                        // Entities are lost!!!
+                        text = ClientEx.MergeEntities(text, ClientEx.GetTextEntities(text.Text));
+
+                        var styled = TextStyleRun.GetText(text);
+
+                        MessageTranslateResult result;
+                        if (string.IsNullOrWhiteSpace(text.Text))
+                        {
+                            result = new MessageTranslateResultError();
+                        }
+                        else
+                        {
+                            result = new MessageTranslateResultSummary(styled);
+                        }
+
+                        _summaries[key] = new TranslatedMessage(cached, result);
+
+                        // Only dispatch the update if still pending
+                        if (message.SummarizedText is MessageTranslateResultPending)
+                        {
+                            message.SummarizedText = result;
+                            Aggregator.Publish(new UpdateMessageSummarizedText(message.ChatId, message.Id, result));
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            message.SummarizedText = null;
+            return false;
+        }
 
         struct TranslatedKey
         {

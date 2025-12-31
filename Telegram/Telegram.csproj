@@ -382,6 +382,9 @@
     <Compile Include="Controls\Messages\Content\SponsoredContent.xaml.cs">
       <DependentUpon>SponsoredContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Messages\MessageSummary.xaml.cs">
+      <DependentUpon>MessageSummary.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Messages\Service\MessageUpgradedGiftPurchaseOfferContent.xaml.cs">
       <DependentUpon>MessageUpgradedGiftPurchaseOfferContent.xaml</DependentUpon>
     </Compile>
@@ -633,6 +636,7 @@
     <Compile Include="Td\Api\UpdateGiftIsSaved.cs" />
     <Compile Include="Td\Api\UpdateGreetingSticker.cs" />
     <Compile Include="Td\Api\UpdateMessageEffect.cs" />
+    <Compile Include="Td\Api\UpdateMessageSummarizedText.cs" />
     <Compile Include="Td\Api\UpdateMessageTranslatedText.cs" />
     <Compile Include="Td\Api\UpdatePaymentCompleted.cs" />
     <Compile Include="Td\Api\UpdateTextRecognition.cs" />
@@ -2925,6 +2929,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Messages\MessageEffectMenuFlyout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Messages\MessageSummary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -15,6 +15,7 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Chats;
+using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Converters;
 using Telegram.Navigation;
@@ -193,6 +194,16 @@ namespace Telegram.Views
                 _forumTopicHeaderScale.SetReferenceParameter("props", _messagesPaddingSet);
             }
 
+            if (_stickySummaryExpression == null)
+            {
+                _stickySummaryExpression = _forumTopicHeader.Compositor.CreateExpressionAnimation();
+                //animation.SetReferenceParameter("reference", reference);
+                //animation.SetReferenceParameter("child", ElementComposition.GetElementVisual(container.ContentTemplateRoot));
+                _stickySummaryExpression.SetReferenceParameter("scroll", Messages.ScrollingPropertySet);
+                _stickySummaryExpression.SetReferenceParameter("messages", _messagesVisual);
+                _stickySummaryExpression.SetReferenceParameter("props", _messagesPaddingSet);
+            }
+
             if (_stickyPhotoExpression == null)
             {
                 _stickyPhotoExpression = _forumTopicHeader.Compositor.CreateExpressionAnimation();
@@ -205,6 +216,9 @@ namespace Telegram.Views
 
             var top = 0d;
             var bottom = 0d;
+
+            var summaryAbove = false;
+            var summaryBelow = false;
 
             var stickyAbove = false;
             var stickyBelow = false;
@@ -392,6 +406,69 @@ namespace Telegram.Views
                     SetContentOpacity(1);
                 }
 
+                bool AnimateStickySummary(Visual visual, GlyphButton stickySummary, ref SelectorItem tracked, ref MessageViewModel item, bool below)
+                {
+                    if (message.CanSummarizeText && container.ContentTemplateRoot is MessageSelector selector && selector.ContentTemplateRoot is MessageBubble bubble)
+                    {
+                        const string topExp = "(reference.Offset.Y + scroll.Translation.Y) - props.TopPadding";
+                        const string bottomExp = $"(reference.Offset.Y + child.Size.Y + scroll.Translation.Y) - props.TopPadding";
+
+                        const string trueTrueExp = $"{bottomExp} >= 73 ? Max(props.TopPadding, {topExp}) : {bottomExp} - 26";
+                        const string trueFalseExp = $"{bottomExp} - 26"; //$"{bottomExp} > 0 ? props.TopPadding : {bottomExp} + 8";
+                        const string falseTrueExp = $"Max(0, {topExp})";
+
+                        // 38 = min bubble height + top margin
+                        string exp;
+                        if (below)
+                        {
+                            exp = trueFalseExp;
+                        }
+                        else
+                        {
+                            exp = trueTrueExp;
+                        }
+
+                        if (exp != null)
+                        {
+                            if (tracked != container)
+                            {
+                                var reference = ElementComposition.GetElementVisual(container);
+                                var bubbly = ElementComposition.GetElementVisual(selector.ContentTemplateRoot);
+
+                                _stickySummaryExpression.Expression = $"Vector3(bubble.Size.X - 30 + child.Offset.X + child.Translation.X, {exp}, 0)";
+                                _stickySummaryExpression.SetReferenceParameter("reference", reference);
+                                _stickySummaryExpression.SetReferenceParameter("child", selector.ContentVisual);
+                                _stickySummaryExpression.SetReferenceParameter("bubble", bubbly);
+
+                                visual.StartAnimation("Translation", _stickySummaryExpression);
+                                tracked = container;
+                            }
+                        }
+                        else
+                        {
+                            visual.Properties.InsertVector3("Translation", Vector3.Zero);
+                            tracked = null;
+                        }
+
+                        if (below && exp == null)
+                        {
+                            return false;
+                        }
+
+                        item = message;
+                        bubble.ShowHideSummary(false);
+
+                        stickySummary.Glyph = message.SummarizedText == null ? Icons.ArrowMinimizeSparkles16 : Icons.ArrowMaximizeSparkles16;
+
+                        //stickyPhoto.Source = ProfilePictureSource.Message(message);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
                 bool AnimateStickyPhoto(Visual visual, ProfilePicture stickyPhoto, ref SelectorItem tracked, ref MessageViewModel item, bool below)
                 {
                     if (message.HasSenderPhoto && container.ContentTemplateRoot is MessageSelector selector && selector.ContentTemplateRoot is MessageBubble bubble)
@@ -458,6 +535,19 @@ namespace Telegram.Views
                 }
 
                 var childHeight = container.ContentTemplateRoot.ActualSize.Y;
+
+                if (top <= 0 && top + childHeight <= 38 && !summaryBelow)
+                {
+                    summaryBelow = AnimateStickySummary(_stickySummaryBelowVisual, StickySummaryBelowButton, ref _stickySummaryBelowTracked, ref _stickySummaryBelowMessage, true);
+                }
+                else if (top <= 0 && !summaryAbove)
+                {
+                    summaryAbove = AnimateStickySummary(_stickySummaryAboveVisual, StickySummaryAboveButton, ref _stickySummaryAboveTracked, ref _stickySummaryAboveMessage, false);
+                }
+                else if (container.ContentTemplateRoot is MessageSelector { ContentTemplateRoot: MessageBubble bubble })
+                {
+                    bubble.ShowHideSummary(true);
+                }
 
                 if (bottom + childHeight >= 0 && bottom + childHeight <= childHeight)
                 {
@@ -548,6 +638,30 @@ namespace Telegram.Views
                 _forumTopicHeader.Scale = Vector3.One;
                 _forumTopicHeader.Properties.InsertVector3("Translation", Vector3.Zero);
                 _forumTopicHeaderTracked = null;
+            }
+
+            if (!summaryAbove)
+            {
+                StickySummaryAbove.Visibility = Visibility.Collapsed;
+                _stickySummaryAboveVisual.Properties.InsertVector3("Translation", Vector3.Zero);
+                _stickySummaryAboveTracked = null;
+                _stickySummaryAboveMessage = null;
+            }
+            else
+            {
+                StickySummaryAbove.Visibility = Visibility.Visible;
+            }
+
+            if (!summaryBelow)
+            {
+                StickySummaryBelow.Visibility = Visibility.Collapsed;
+                _stickySummaryBelowVisual.Properties.InsertVector3("Translation", Vector3.Zero);
+                _stickySummaryBelowTracked = null;
+                _stickySummaryBelowMessage = null;
+            }
+            else
+            {
+                StickySummaryBelow.Visibility = Visibility.Visible;
             }
 
             if (!stickyAbove)
@@ -1594,6 +1708,22 @@ namespace Telegram.Views
             {
                 ids.Add(message.Id);
                 ids.Remove(oldMessageId);
+            }
+        }
+
+        public void UpdateMessageSummary(MessageViewModel message)
+        {
+            if (_stickySummaryAboveMessage == message)
+            {
+                StickySummaryAboveButton.Glyph = message.SummarizedText == null
+                    ? Icons.ArrowMinimizeSparkles16
+                    : Icons.ArrowMaximizeSparkles16;
+            }
+            else if (_stickySummaryBelowMessage == message)
+            {
+                StickySummaryBelowButton.Glyph = message.SummarizedText == null
+                    ? Icons.ArrowMinimizeSparkles16
+                    : Icons.ArrowMaximizeSparkles16;
             }
         }
 

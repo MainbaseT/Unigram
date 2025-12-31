@@ -366,6 +366,22 @@
                                               Grid.Column="1"
                                               Grid.Row="2" />
 
+                        <Border x:Name="Summary"
+                                x:Load="False"
+                                Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                VerticalAlignment="Top"
+                                CornerRadius="15"
+                                Margin="8,0,0,34"
+                                Grid.Column="2">
+                            <controls:GlyphButton x:Name="SummaryButton"
+                                                  Foreground="{ThemeResource MessageServiceForegroundBrush}"
+                                                  FontSize="{StaticResource GlyphSmallFontSize}"
+                                                  Width="30"
+                                                  Height="30"
+                                                  CornerRadius="15"
+                                                  Padding="0" />
+                        </Border>
+
                         <Border x:Name="Action"
                                 x:Load="False"
                                 Background="{ThemeResource MessageServiceBackgroundBrush}"

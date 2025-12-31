@@ -48,12 +48,12 @@ namespace Telegram.Controls.Messages
             UIElement third;
 
             var first = Children[0];
-            if (first is MessageFactCheck)
+            if (first is MessageFactCheck or MessageSummary)
             {
                 text = Children[1] as FormattedTextBlock;
                 media = Children[2] as FrameworkElement;
                 third = Children[3];
-                factCheck = first as MessageFactCheck;
+                factCheck = first;
             }
             else
             {
@@ -139,14 +139,16 @@ namespace Telegram.Controls.Messages
         {
             FormattedTextBlock text;
             FrameworkElement media;
+            UIElement factCheck;
             UIElement third;
 
             var first = Children[0];
-            if (first is MessageFactCheck factCheck)
+            if (first is MessageFactCheck or MessageSummary)
             {
                 text = Children[1] as FormattedTextBlock;
                 media = Children[2] as FrameworkElement;
                 third = Children[3];
+                factCheck = first;
             }
             else
             {

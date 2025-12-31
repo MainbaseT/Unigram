@@ -14022,6 +14022,12 @@ list of viewers.</value>
   <data name="SuggestStickersNone" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="SummarySubtitle" xml:space="preserve">
+    <value>Click to see original text</value>
+  </data>
+  <data name="SummaryTitle" xml:space="preserve">
+    <value>AI Summary</value>
+  </data>
   <data name="SupportStatus" xml:space="preserve">
     <value>support</value>
   </data>

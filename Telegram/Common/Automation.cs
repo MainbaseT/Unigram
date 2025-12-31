@@ -80,7 +80,13 @@ namespace Telegram.Common
 
         public static string GetSummary(MessageWithOwner message, bool details = false, bool addCaption = true)
         {
-            var altText = message.TranslatedText is MessageTranslateResultText resultText ? resultText.Text.Text : null;
+            var altText = (message.SummarizedText ?? message.TranslatedText) switch
+            {
+                MessageTranslateResultSummary summary => summary.Text.Text,
+                MessageTranslateResultText translated => translated.Text.Text,
+                _ => null
+            };
+
             var clientService = message.ClientService;
 
             if (message.Content.IsService() && clientService.TryGetChat(message.ChatId, out Chat chat))

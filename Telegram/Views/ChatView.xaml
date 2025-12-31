@@ -1645,6 +1645,40 @@
                                                      Shape="Ellipse"
                                                      IsCachingEnabled="True" />
                         </HyperlinkButton>
+
+                        <Border x:Name="StickySummaryAbove"
+                                Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                CornerRadius="15"
+                                Margin="0,8,0,0"
+                                Grid.Column="2">
+                            <controls:GlyphButton x:Name="StickySummaryAboveButton"
+                                                  Click="StickySummaryAbove_Click"
+                                                  Foreground="{ThemeResource MessageServiceForegroundBrush}"
+                                                  FontSize="{StaticResource GlyphSmallFontSize}"
+                                                  Width="30"
+                                                  Height="30"
+                                                  CornerRadius="15"
+                                                  Padding="0" />
+                        </Border>
+
+                        <Border x:Name="StickySummaryBelow"
+                                Background="{ThemeResource MessageServiceBackgroundBrush}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                CornerRadius="15"
+                                Margin="0,8,0,0"
+                                Grid.Column="2">
+                            <controls:GlyphButton x:Name="StickySummaryBelowButton"
+                                                  Click="StickySummaryBelow_Click"
+                                                  Foreground="{ThemeResource MessageServiceForegroundBrush}"
+                                                  FontSize="{StaticResource GlyphSmallFontSize}"
+                                                  Width="30"
+                                                  Height="30"
+                                                  CornerRadius="15"
+                                                  Padding="0" />
+                        </Border>
                     </Grid>
                 </Grid>
                 <Grid x:Name="MessagesOverlay">

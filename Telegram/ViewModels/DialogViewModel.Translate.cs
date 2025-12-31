@@ -141,6 +141,28 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void SummarizeMessage(MessageViewModel message)
+        {
+            var changed = message.SummarizedText == null;
+            if (changed)
+            {
+                _translateService.Summarize(message, Settings.Translate.To);
+            }
+            else
+            {
+                message.SummarizedText = null;
+            }
+
+            if (changed != (message.SummarizedText == null))
+            {
+                Delegate?.UpdateBubbleWithMessageId(message.Id, bubble =>
+                {
+                    bubble.UpdateMessageTextLayout(message);
+                    Delegate?.UpdateMessageSummary(message);
+                });
+            }
+        }
+
         private void UpdateChatIsTranslatable()
         {
             Delegate?.UpdateChatIsTranslatable(_chat, _languageDetected);
