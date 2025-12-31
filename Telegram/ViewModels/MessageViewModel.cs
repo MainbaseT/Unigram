@@ -196,6 +196,7 @@ namespace Telegram.ViewModels
             EffectId = message.EffectId;
             PaidMessageStarCount = message.PaidMessageStarCount;
             RestrictionInfo = message.RestrictionInfo;
+            SummaryLanguageCode = message.SummaryLanguageCode;
             AutoDeleteIn = message.AutoDeleteIn;
         }
 
@@ -237,6 +238,7 @@ namespace Telegram.ViewModels
             EffectId = message.EffectId;
             PaidMessageStarCount = message.PaidMessageStarCount;
             RestrictionInfo = message.RestrictionInfo;
+            SummaryLanguageCode = message.SummaryLanguageCode;
             AutoDeleteIn = message.AutoDeleteIn;
         }
 
@@ -308,6 +310,8 @@ namespace Telegram.ViewModels
         private bool? _hasSenderPhoto;
         public bool HasSenderPhoto => _hasSenderPhoto ??= GetHasSenderPhoto();
 
+        public bool CanSummarizeText => Text?.Text.Length >= 1000 && !IsVisuallyOutgoing;
+
         private bool GetHasSenderPhoto()
         {
             if (IsService || _directMessagesChatTopic != null)
@@ -373,6 +377,7 @@ namespace Telegram.ViewModels
             InteractionInfo = message.InteractionInfo;
             UnreadReactions = message.UnreadReactions;
             RestrictionInfo = message.RestrictionInfo;
+            SummaryLanguageCode = message.SummaryLanguageCode;
             ImportInfo = message.ImportInfo;
             TopicId = message.TopicId;
             HasTimestampedMedia = message.HasTimestampedMedia;
@@ -476,6 +481,7 @@ namespace Telegram.ViewModels
             EffectId = message.EffectId;
             PaidMessageStarCount = message.PaidMessageStarCount;
             RestrictionInfo = message.RestrictionInfo;
+            SummaryLanguageCode = message.SummaryLanguageCode;
             AutoDeleteIn = message.AutoDeleteIn;
         }
 
@@ -555,6 +561,7 @@ namespace Telegram.ViewModels
         public long PaidMessageStarCount { get; protected set; }
         public RestrictionInfo RestrictionInfo { get; protected set; }
         public double AutoDeleteIn { get; protected set; }
+        public string SummaryLanguageCode { get; protected set; }
 
         public MessageEffect Effect { get; set; }
 
@@ -587,6 +594,8 @@ namespace Telegram.ViewModels
 
         public MessageTranslateResult TranslatedText { get; set; }
 
+        public MessageTranslateResult SummarizedText { get; set; }
+
         public override bool Equals(object obj)
         {
             if (obj is Message y)
@@ -609,7 +618,7 @@ namespace Telegram.ViewModels
         // TODO: Get rid of this
         public Message Get()
         {
-            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, RestrictionInfo, Content, ReplyMarkup);
+            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, RestrictionInfo, SummaryLanguageCode, Content, ReplyMarkup);
         }
 
         public virtual bool CanBeAddedToDownloads

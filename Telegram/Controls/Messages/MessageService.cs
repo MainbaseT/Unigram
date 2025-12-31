@@ -688,7 +688,7 @@ namespace Telegram.Controls.Messages
                 MessageSupergroupChatCreate supergroupChatCreate => UpdateSupergroupChatCreate(message, supergroupChatCreate, history),
                 MessageUpgradedGift upgradedGift => UpdateUpgradedGift(message, upgradedGift, history),
                 MessageUpgradedGiftPurchaseOffer upgradedGiftPurchaseOffer => UpdateUpgradedGiftPurchaseOffer(message, upgradedGiftPurchaseOffer, history),
-                MessageUpgradedGiftPurchaseOfferDeclined upgradedGiftPurchaseOfferDeclined => UpdateUpgradedGiftPurchaseOfferDeclined(message, upgradedGiftPurchaseOfferDeclined, history),
+                MessageUpgradedGiftPurchaseOfferRejected upgradedGiftPurchaseOfferRejected => UpdateUpgradedGiftPurchaseOfferRejected(message, upgradedGiftPurchaseOfferRejected, history),
                 MessageUsersShared usersShared => UpdateUsersShared(message, usersShared, history),
                 MessageVideoChatEnded videoChatEnded => UpdateVideoChatEnded(message, videoChatEnded, history),
                 MessageVideoChatScheduled videoChatScheduled => UpdateVideoChatScheduled(message, videoChatScheduled, history),
@@ -2530,7 +2530,7 @@ namespace Telegram.Controls.Messages
             return ClientEx.ParseMarkdown(content);
         }
 
-        private static FormattedText UpdateUpgradedGiftPurchaseOfferDeclined(MessageWithOwner message, MessageUpgradedGiftPurchaseOfferDeclined upgradedGift, bool history)
+        private static FormattedText UpdateUpgradedGiftPurchaseOfferRejected(MessageWithOwner message, MessageUpgradedGiftPurchaseOfferRejected upgradedGift, bool history)
         {
             message.ClientService.TryGetUser(message.Chat, out User user);
 

@@ -795,7 +795,7 @@ namespace Telegram.ViewModels
             {
                 var topicId = new MessageTopicForum(update.ForumTopicId);
                 var content = new MessageText(update.Text, null, null);
-                var message = CreateMessage(new Message(long.MaxValue, new MessageSenderUser(user.Id), update.ChatId, null, null, false, false, false, false, false, false, false, false, false, DateTime.Now.ToTimestamp(), 0, null, null, null, null, null, null, null, topicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, content, null));
+                var message = CreateMessage(new Message(long.MaxValue, new MessageSenderUser(user.Id), update.ChatId, null, null, false, false, false, false, false, false, false, false, false, DateTime.Now.ToTimestamp(), 0, null, null, null, null, null, null, null, topicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, string.Empty, content, null));
                 message.GeneratedContentUnread = true;
                 message.IsInitial = false;
 
