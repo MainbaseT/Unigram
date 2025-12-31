@@ -33,7 +33,6 @@ namespace Telegram.Controls
 
             PopupHost = GetTemplateChild(nameof(PopupHost)) as Border;
             PopupRoot = GetTemplateChild(nameof(PopupRoot)) as ContentPresenter;
-            PopupRoot.SizeChanged += OnSizeChanged;
             PopupHost.BorderThickness = new Thickness(BorderThickness.Left, 0, BorderThickness.Right, BorderThickness.Bottom);
             PopupHost.CornerRadius = new CornerRadius(0, 0, CornerRadius.BottomRight, CornerRadius.BottomLeft);
 
@@ -41,11 +40,6 @@ namespace Telegram.Controls
 
             OnExpandedChanged(IsExpanded, IsExpanded);
             base.OnApplyTemplate();
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            PopupRoot.Margin = new Thickness(0, 0, 0, IsExpanded ? 0 : -e.NewSize.Height);
         }
 
         private void OnClick(object sender, RoutedEventArgs e)
@@ -76,7 +70,7 @@ namespace Telegram.Controls
 
         private void OnExpandedChanged(bool newValue, bool oldValue)
         {
-            if (PopupHost == null)
+            if (ActionButton == null || PopupHost == null)
             {
                 return;
             }
