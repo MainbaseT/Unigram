@@ -59,7 +59,9 @@ namespace Telegram.Common
             };
             _monitorThread.Start();
 
-            NativeUtils.SetCollectCallback(RhCollect, SettingsService.Current.Diagnostics.DisableXamlGcCollect);
+            NativeUtils.SetCollectCallback(RhCollect,
+                SettingsService.Current.Diagnostics.DisableXamlGcCollect,
+                SettingsService.Current.Diagnostics.DisableMemoryPressure);
         }
 
         private static void MonitorThreadProc()

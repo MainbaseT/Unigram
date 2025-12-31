@@ -62,6 +62,10 @@
                               Content="Disable XAML GC Collect"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.DisableMemoryPressure, Mode=TwoWay}"
+                              Content="Disable Memory Pressure"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
+
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.DisablePackageManager, Mode=TwoWay}"
                               Content="Disable Package Manager"
                               Style="{StaticResource SettingsCheckBoxStyle}" />

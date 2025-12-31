@@ -54,7 +54,7 @@ namespace winrt::Telegram::Native::implementation
         }
     }
 
-    void NativeUtils::SetCollectCallback(CollectCallback callback, bool disableGcCollect)
+    void NativeUtils::SetCollectCallback(CollectCallback callback, bool disableGcCollect, bool disablePressure)
     {
         std::lock_guard const guard(s_collectLock);
 
@@ -72,7 +72,8 @@ namespace winrt::Telegram::Native::implementation
             {
                 s_RhCollect = reinterpret_cast<PFN_RhCollect>(GetProcAddress(mrt100, "RhCollect"));
             }
-            else
+
+            if (disablePressure)
             {
                 s_RhGetCurrentObjSize = reinterpret_cast<PFN_RhGetCurrentObjSize>(GetProcAddress(mrt100, "RhGetCurrentObjSize"));
             }

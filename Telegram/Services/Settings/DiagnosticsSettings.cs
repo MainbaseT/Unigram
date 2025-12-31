@@ -142,6 +142,13 @@ namespace Telegram.Services.Settings
             set => AddOrUpdateValue(ref _disableXamlGcCollect, "DisableXamlGcCollect", value);
         }
 
+        private bool? _disableMemoryPressure;
+        public bool DisableMemoryPressure
+        {
+            get => _disableMemoryPressure ??= GetValueOrDefault("DisableMemoryPressure", ApiInfo.IsStoreRelease);
+            set => AddOrUpdateValue(ref _disableMemoryPressure, "DisableMemoryPressure", value);
+        }
+
         private bool? _forumTabsDebug;
         public bool ForumTabsDebug
         {

@@ -72,7 +72,7 @@ namespace Telegram.Native
         static Int32 GetScaleForCurrentView();
 
         static void SetFatalErrorCallback(FatalErrorCallback action);
-        static void SetCollectCallback(CollectCallback action, Boolean disableGcCollect);
+        static void SetCollectCallback(CollectCallback action, Boolean disableGcCollect, Boolean disablePressure);
 
         static FatalError GetStowedException();
         static FatalError GetBackTrace(String type, String message);
