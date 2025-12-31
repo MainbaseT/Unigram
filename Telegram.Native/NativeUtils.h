@@ -99,7 +99,8 @@ namespace winrt::Telegram::Native::implementation
 
         static bool Collect()
         {
-            return s_collect.load();
+            std::lock_guard const guard(s_collectLock);
+            return s_collect;
         }
 
         static void Collect(bool value);
@@ -119,7 +120,8 @@ namespace winrt::Telegram::Native::implementation
         static ULONGLONG FileTimeToSeconds(FILETIME& ft);
         static bool IsFileReadableInternal(hstring path, int64_t* fileSize, int64_t* fileTime);
 
-        static std::atomic<bool> s_collect;
+        static std::mutex s_collectLock;
+        static bool s_collect;
 
         static INT64 RhGetCurrentObjSize()
         {
@@ -128,7 +130,7 @@ namespace winrt::Telegram::Native::implementation
 
         static void RhCollect(int generation, int mode)
         {
-            if ((generation == 2 && mode == 6) || s_collect.load())
+            if ((generation == 2 && mode == 6))
             {
                 s_RhCollect(generation, mode);
             }

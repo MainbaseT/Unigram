@@ -34,7 +34,8 @@ namespace winrt::Telegram::Native::implementation
     PFN_RhCollect NativeUtils::s_RhCollect;
 
     CollectCallback NativeUtils::s_collectCallback;
-    std::atomic<bool> NativeUtils::s_collect = false;
+    std::mutex NativeUtils::s_collectLock;
+    bool NativeUtils::s_collect = false;
 
     void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {
@@ -55,24 +56,36 @@ namespace winrt::Telegram::Native::implementation
 
     void NativeUtils::SetCollectCallback(CollectCallback callback, bool disableGcCollect)
     {
+        std::lock_guard const guard(s_collectLock);
+
+        if (s_collectCallback)
+        {
+            return;
+        }
+
         s_collectCallback = callback;
 
         auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
         if (mrt100)
         {
-            s_RhGetCurrentObjSize = reinterpret_cast<PFN_RhGetCurrentObjSize>(GetProcAddress(mrt100, "RhGetCurrentObjSize"));
-
             if (disableGcCollect)
             {
                 s_RhCollect = reinterpret_cast<PFN_RhCollect>(GetProcAddress(mrt100, "RhCollect"));
             }
+            else
+            {
+                s_RhGetCurrentObjSize = reinterpret_cast<PFN_RhGetCurrentObjSize>(GetProcAddress(mrt100, "RhGetCurrentObjSize"));
+            }
 
-            if (s_RhGetCurrentObjSize)
+            if (s_RhCollect || s_RhGetCurrentObjSize)
             {
                 DetourTransactionBegin();
                 DetourUpdateThread(GetCurrentThread());
 
-                DetourAttach(reinterpret_cast<PVOID*>(&s_RhGetCurrentObjSize), NativeUtils::RhGetCurrentObjSize);
+                if (s_RhGetCurrentObjSize)
+                {
+                    DetourAttach(reinterpret_cast<PVOID*>(&s_RhGetCurrentObjSize), NativeUtils::RhGetCurrentObjSize);
+                }
 
                 if (s_RhCollect)
                 {
@@ -86,7 +99,9 @@ namespace winrt::Telegram::Native::implementation
 
     void NativeUtils::Collect(bool value)
     {
-        if (value == s_collect.load())
+        std::lock_guard const guard(s_collectLock);
+
+        if (value == s_collect || !s_RhCollect)
         {
             return;
         }
@@ -94,29 +109,21 @@ namespace winrt::Telegram::Native::implementation
         s_collect = value;
 
         auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
-        if (mrt100)
+        if (mrt100 && s_RhCollect)
         {
-            if (s_RhCollect == nullptr && value)
+            DetourTransactionBegin();
+            DetourUpdateThread(GetCurrentThread());
+
+            if (value)
             {
-                s_RhCollect = reinterpret_cast<PFN_RhCollect>(GetProcAddress(mrt100, "RhCollect"));
+                DetourDetach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
+            }
+            else
+            {
+                DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
             }
 
-            if (s_RhCollect)
-            {
-                DetourTransactionBegin();
-                DetourUpdateThread(GetCurrentThread());
-
-                if (value)
-                {
-                    DetourDetach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
-                }
-                else
-                {
-                    DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
-                }
-
-                DetourTransactionCommit();
-            }
+            DetourTransactionCommit();
         }
     }
 
