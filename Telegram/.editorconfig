@@ -4,7 +4,7 @@
 root = true
 
 [*.cs]
-file_header_template = \nCopyright (c) Fela Ameghino 2015-2025\n\nDistributed under the GNU General Public License v3.0. (See accompanying\nfile LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)\n
+file_header_template = \nCopyright (c) Fela Ameghino 2015-2026\n\nDistributed under the GNU General Public License v3.0. (See accompanying\nfile LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)\n
 
 # IDE0005: Using directive is unnecessary.
 dotnet_diagnostic.IDE0005.severity = error
