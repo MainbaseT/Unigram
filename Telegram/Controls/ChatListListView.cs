@@ -67,9 +67,12 @@ namespace Telegram.Controls
 
         private void OnItemsSourceChanged(DependencyObject sender, DependencyProperty dp)
         {
-            _itemsSource?.Moved -= OnCollectionChanged;
-            _itemsSource = ItemsSource as ChatListViewModel.ItemsCollection;
-            _itemsSource?.Moved += OnCollectionChanged;
+            if (IsConnected)
+            {
+                _itemsSource?.Moved -= OnCollectionChanged;
+                _itemsSource = ItemsSource as ChatListViewModel.ItemsCollection;
+                _itemsSource?.Moved += OnCollectionChanged;
+            }
         }
 
         private async void OnCollectionChanged(object sender, ChatListMovedEventArgs args)
@@ -417,6 +420,12 @@ namespace Telegram.Controls
                     _trackerOwner.CustomAnimationStateEntered += OnCustomAnimationStateEntered;
                 }
             }
+
+            if (_itemsSource == null)
+            {
+                _itemsSource = ItemsSource as ChatListViewModel.ItemsCollection;
+                _itemsSource?.Moved += OnCollectionChanged;
+            }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -433,6 +442,12 @@ namespace Telegram.Controls
             }
 
             _hasInitialLoadedEventFired = false;
+
+            if (_itemsSource != null)
+            {
+                _itemsSource.Moved -= OnCollectionChanged;
+                _itemsSource = null;
+            }
         }
 
         private void ConfigureInteractionTracker()
