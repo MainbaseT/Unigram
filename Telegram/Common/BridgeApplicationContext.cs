@@ -27,7 +27,7 @@ namespace Telegram.Common
         private static AppServiceConnection _connection;
         private static BackgroundTaskDeferral _deferral;
 
-        private static TaskCompletionSource<bool> _connected;
+        private static TaskCompletionSource<bool> _connected = new();
 
         private static readonly DisposableMutex _lock = new();
 
