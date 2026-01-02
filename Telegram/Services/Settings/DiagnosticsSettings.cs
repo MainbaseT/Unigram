@@ -145,7 +145,7 @@ namespace Telegram.Services.Settings
         private bool? _disableMemoryPressure;
         public bool DisableMemoryPressure
         {
-            get => _disableMemoryPressure ??= GetValueOrDefault("DisableMemoryPressure", ApiInfo.IsStoreRelease);
+            get => _disableMemoryPressure ??= GetValueOrDefault("DisableMemoryPressure", true);
             set => AddOrUpdateValue(ref _disableMemoryPressure, "DisableMemoryPressure", value);
         }
 
@@ -194,7 +194,7 @@ namespace Telegram.Services.Settings
         private bool? _connectedAnimationsDebug;
         public bool ConnectedAnimationsDebug
         {
-            get => _connectedAnimationsDebug ??= GetValueOrDefault("ConnectedAnimationsDebug", true);
+            get => _connectedAnimationsDebug ??= GetValueOrDefault("ConnectedAnimationsDebug", ApiInfo.IsPackagedRelease);
             set => AddOrUpdateValue(ref _connectedAnimationsDebug, "ConnectedAnimationsDebug", value);
         }
 
