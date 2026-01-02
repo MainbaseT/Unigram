@@ -170,7 +170,7 @@ namespace Telegram.Common
                 Logger.Info();
 
                 NativeUtils.Collect = true;
-                GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+                GC.Collect(2, GCCollectionMode.Optimized, blocking: true, compacting: false);
                 NativeUtils.Collect = false;
             }
             else
@@ -232,7 +232,7 @@ namespace Telegram.Common
             Logger.Info();
 
             NativeUtils.Collect = true;
-            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: false, compacting: true);
+            GC.Collect();
             NativeUtils.Collect = false;
         }
     }
