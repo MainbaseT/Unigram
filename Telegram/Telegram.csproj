@@ -357,6 +357,9 @@
     <Compile Include="Controls\MenuFlyoutContent.cs" />
     <Compile Include="Composition\CompositionColorSource.cs" />
     <Compile Include="Controls\MenuFlyoutInfoItem.cs" />
+    <Compile Include="Controls\Messages\Content\StakeDiceContent.xaml.cs">
+      <DependentUpon>StakeDiceContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Messages\Content\PaidMediaContent.xaml.cs">
       <DependentUpon>PaidMediaContent.xaml</DependentUpon>
     </Compile>
@@ -387,6 +390,9 @@
     </Compile>
     <Compile Include="Controls\Messages\Service\MessageUpgradedGiftPurchaseOfferContent.xaml.cs">
       <DependentUpon>MessageUpgradedGiftPurchaseOfferContent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Messages\Service\StakeDiceInfoCell.xaml.cs">
+      <DependentUpon>StakeDiceInfoCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\NavigationButton.cs" />
     <Compile Include="Controls\PopupInfo.cs" />
@@ -1288,6 +1294,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\StakeDicePopup.xaml.cs">
+      <DependentUpon>StakeDicePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\PlaybackPopup.xaml.cs">
       <DependentUpon>PlaybackPopup.xaml</DependentUpon>
     </Compile>
@@ -2868,6 +2877,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\Messages\Content\StakeDiceContent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\Messages\Content\PaidMediaContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3021,6 +3034,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Messages\Service\MessageUpgradedGiftPurchaseOfferContent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Messages\Service\StakeDiceInfoCell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -3381,6 +3398,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\StakeDicePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

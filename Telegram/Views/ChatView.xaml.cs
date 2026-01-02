@@ -749,7 +749,7 @@ namespace Telegram.Views
                 var animateSendout = !message.IsChannelPost
                     && message.IsOutgoing
                     && pending
-                    && message.Content is MessageText or MessageDice or MessageAnimatedEmoji
+                    && message.Content is MessageText or MessageDice or MessageStakeDice or MessageAnimatedEmoji
                     && message.GeneratedContent is MessageBigEmoji or MessageSticker or null;
 
                 await panel.UpdateLayoutAsync();
@@ -864,14 +864,14 @@ namespace Telegram.Views
                         var xOffset = content switch
                         {
                             MessageBigEmoji => 48 + more,
-                            MessageSticker or MessageAnimatedEmoji or MessageDice => 48 + more,
+                            MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice => 48 + more,
                             _ => 48 + more - 12f
                         };
 
                         var yOffset = content switch
                         {
                             MessageBigEmoji => 66,
-                            MessageSticker or MessageAnimatedEmoji or MessageDice => 36,
+                            MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice => 36,
                             _ => reply ? 29 : 44f
                         };
 

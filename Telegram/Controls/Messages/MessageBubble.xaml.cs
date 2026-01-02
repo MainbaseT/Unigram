@@ -104,7 +104,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 var content = _message?.GeneratedContent ?? _message?.Content;
-                if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
+                if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji)
                 {
                     return true;
                 }
@@ -604,7 +604,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             if (message.ReplyMarkup is ReplyMarkupInlineKeyboard)
             {
-                if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
+                if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji)
                 {
                     _hasReplyMarkup = false;
                     SetCorners(0, 0, 0, 0);
@@ -619,7 +619,7 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
+                if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji)
                 {
                     _hasReplyMarkup = false;
                     SetCorners(0, 0, 0, 0);
@@ -853,6 +853,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
+                or MessageStakeDice
                 or MessageVideoNote
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;
@@ -988,6 +989,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
+                or MessageStakeDice
                 or MessageVideoNote
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;
@@ -1063,6 +1065,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
+                or MessageStakeDice
                 or MessageVideoNote
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;
@@ -1521,7 +1524,7 @@ namespace Telegram.Controls.Messages
             UpdateAction(message);
 
             var content = message.GeneratedContent ?? message.Content;
-            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
+            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji)
             {
                 Thread?.Visibility = Visibility.Collapsed;
 
@@ -1612,7 +1615,7 @@ namespace Telegram.Controls.Messages
             var footer = Grid.GetRow(Footer);
 
             var content = message.GeneratedContent ?? message.Content;
-            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji || (media == footer && IsFullMedia(content)))
+            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji || (media == footer && IsFullMedia(content)))
             {
                 Reactions?.UpdateMessageReactions(null);
 
@@ -1674,6 +1677,11 @@ namespace Telegram.Controls.Messages
 
         public void UpdateMessageContent(MessageViewModel message)
         {
+            if (Parent is MessageSelector selector)
+            {
+                selector.UpdateMessageStakeDice(message);
+            }
+
             UpdateMessageContentLayout(message);
             UpdateMessageText(message);
             UpdateMessageContentControl(message);
@@ -1770,7 +1778,7 @@ namespace Telegram.Controls.Messages
                 Grid.SetRow(Message, caption ? 4 : aboveMedia ? 2 : 5);
                 Panel.Placeholder = caption;
             }
-            else if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
+            else if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji)
             {
                 ContentPanel.Padding = new Thickness(0);
                 Media.Margin = new Thickness(0);
@@ -1935,6 +1943,7 @@ namespace Telegram.Controls.Messages
                 MessagePoll => new PollContent(message),
                 MessageChecklist => new ChecklistContent(message),
                 MessageSticker => new StickerContent(message),
+                MessageStakeDice => new StakeDiceContent(message),
                 MessageVenue => new VenueContent(message),
                 MessageVideo => new VideoContent(message),
                 MessageVideoNote => new VideoNoteContent(message),
@@ -2433,7 +2442,7 @@ namespace Telegram.Controls.Messages
             var textOffsetX = 0f;
             var textOffsetY = 0f;
 
-            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice)
+            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice)
             {
                 headerOffsetY = reply ? 46 : 0;
                 textOffsetX = ContentPanel.ActualSize.X - Media.ActualSize.X; // - 10;
@@ -2463,7 +2472,7 @@ namespace Telegram.Controls.Messages
             textOffset.DelayTime = TimeSpan.FromMilliseconds(delay);
             textOffset.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
 
-            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice)
+            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice)
             {
                 media.StartAnimation("Translation", textOffset);
             }
@@ -2531,7 +2540,7 @@ namespace Telegram.Controls.Messages
             }
 
             var content = message.GeneratedContent ?? message.Content;
-            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageVideoNote or MessageBigEmoji)
+            if (content is MessageSticker or MessageAnimatedEmoji or MessageDice or MessageStakeDice or MessageVideoNote or MessageBigEmoji)
             {
                 return;
             }
@@ -2640,6 +2649,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
+                or MessageStakeDice
                 or MessageVideoNote
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;

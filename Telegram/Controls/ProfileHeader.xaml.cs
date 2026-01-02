@@ -1814,7 +1814,7 @@ namespace Telegram.Controls
 
         private string ConvertCryptoCount(long count)
         {
-            return string.Format("{0:N3}", count / 1000000000.0d);
+            return string.Format("{0:N3}", count / Constants.ToncoinMin);
         }
 
         public string ConvertStarCount(StarAmount amount)

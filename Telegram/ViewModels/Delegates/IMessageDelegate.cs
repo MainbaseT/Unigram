@@ -75,6 +75,7 @@ namespace Telegram.ViewModels.Delegates
         void OpenBankCardNumber(string number);
 
         void SendBotCommand(string command);
+        void SendMessage(InputMessageContent content);
 
         void HideSponsoredMessage(MessageViewModel message);
 

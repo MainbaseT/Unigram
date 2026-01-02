@@ -1788,21 +1788,41 @@ namespace Telegram.Td.Api
                     }
                     return false;
                 case MessageDice dice:
-                    var state = dice.InitialState;
-                    if (state is DiceStickersRegular regular)
                     {
-                        return regular.Sticker.StickerValue.Local.IsDownloadingCompleted;
-                    }
-                    else if (state is DiceStickersSlotMachine slotMachine)
-                    {
-                        return slotMachine.Background.StickerValue.Local.IsDownloadingCompleted
-                            && slotMachine.LeftReel.StickerValue.Local.IsDownloadingCompleted
-                            && slotMachine.CenterReel.StickerValue.Local.IsDownloadingCompleted
-                            && slotMachine.RightReel.StickerValue.Local.IsDownloadingCompleted
-                            && slotMachine.Lever.StickerValue.Local.IsDownloadingCompleted;
-                    }
+                        var state = dice.InitialState;
+                        if (state is DiceStickersRegular regular)
+                        {
+                            return regular.Sticker.StickerValue.Local.IsDownloadingCompleted;
+                        }
+                        else if (state is DiceStickersSlotMachine slotMachine)
+                        {
+                            return slotMachine.Background.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.LeftReel.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.CenterReel.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.RightReel.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.Lever.StickerValue.Local.IsDownloadingCompleted;
+                        }
 
-                    return false;
+                        return false;
+                    }
+                case MessageStakeDice stakeDice:
+                    {
+                        var state = stakeDice.InitialState;
+                        if (state is DiceStickersRegular regular)
+                        {
+                            return regular.Sticker.StickerValue.Local.IsDownloadingCompleted;
+                        }
+                        else if (state is DiceStickersSlotMachine slotMachine)
+                        {
+                            return slotMachine.Background.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.LeftReel.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.CenterReel.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.RightReel.StickerValue.Local.IsDownloadingCompleted
+                                && slotMachine.Lever.StickerValue.Local.IsDownloadingCompleted;
+                        }
+
+                        return false;
+                    }
                 case MessageVideo:
                 case MessageSponsored:
                     // Videos are streamed
@@ -1825,6 +1845,17 @@ namespace Telegram.Td.Api
             return false;
         }
 
+        public static bool IsInitialState(this MessageStakeDice dice)
+        {
+            var state = dice.FinalState;
+            if (state == null || !state.IsDownloadingCompleted())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool IsFinalState(this MessageDice dice)
         {
             var state = dice.FinalState;
@@ -1836,7 +1867,29 @@ namespace Telegram.Td.Api
             return true;
         }
 
+        public static bool IsFinalState(this MessageStakeDice dice)
+        {
+            var state = dice.FinalState;
+            if (state == null || !state.IsDownloadingCompleted())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static DiceStickers GetState(this MessageDice dice)
+        {
+            var state = dice.FinalState;
+            if (state == null || !state.IsDownloadingCompleted())
+            {
+                state = dice.InitialState;
+            }
+
+            return state;
+        }
+
+        public static DiceStickers GetState(this MessageStakeDice dice)
         {
             var state = dice.FinalState;
             if (state == null || !state.IsDownloadingCompleted())
@@ -2163,6 +2216,7 @@ namespace Telegram.Td.Api
                 case MessageChecklist:
                 case MessageContact:
                 case MessageDice:
+                case MessageStakeDice:
                 case MessageDocument:
                 case MessageGame:
                 case MessageGiveaway:

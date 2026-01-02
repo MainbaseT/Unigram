@@ -128,6 +128,7 @@ namespace Telegram.Services
         Task<AuthorizationState> GetAuthorizationStateAsync();
         AuthorizationState AuthorizationState { get; }
         ConnectionState ConnectionState { get; }
+        StakeDiceState StakeDiceState { get; }
         UpdateFreezeState FreezeState { get; }
 
         ChatMemberStatus GetChatMemberStatus(Chat chat, out bool channel);
@@ -383,6 +384,7 @@ namespace Telegram.Services
         private AuthorizationState _authorizationState;
         private ConnectionState _connectionState;
         private UpdateFreezeState _freezeState = new();
+        private StakeDiceState _stakeDiceState = new();
 
         private StarAmount _ownedStarCount;
         private long? _ownedTonCount;
@@ -962,6 +964,7 @@ namespace Telegram.Services
             _authorizationStateTask = new();
             _authorizationState = null;
             _connectionState = null;
+            _stakeDiceState = new();
             _freezeState = new();
 
             _config = null;
@@ -1393,6 +1396,8 @@ namespace Telegram.Services
         public ConnectionState ConnectionState => _connectionState;
 
         public UpdateFreezeState FreezeState => _freezeState;
+
+        public StakeDiceState StakeDiceState => _stakeDiceState;
 
         public Settings.NotificationsSettings Notifications => _settings.Notifications;
 
@@ -3898,6 +3903,9 @@ namespace Telegram.Services
                     break;
                 case UpdateFreezeState updateFreezeState:
                     _freezeState = updateFreezeState;
+                    break;
+                case UpdateStakeDiceState updateStakeDiceState:
+                    _stakeDiceState = updateStakeDiceState.State;
                     break;
                 case UpdateAgeVerificationParameters updateAgeVerificationParameters:
                     AgeVerificationParameters = updateAgeVerificationParameters.Parameters;

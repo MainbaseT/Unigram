@@ -1014,6 +1014,19 @@ namespace Telegram.Views
                     return (message.AnimationHash(), null);
                 }
             }
+            else if (message.Content is MessageStakeDice stakeDice)
+            {
+                if (message.GeneratedContentUnread)
+                {
+                    message.GeneratedContentUnread = stakeDice.IsInitialState();
+                }
+                else
+                {
+                    // We don't want to start already played dices
+                    // but we don't even want to stop them if they're already playing.
+                    return (message.AnimationHash(), null);
+                }
+            }
 
             if (message.IsAnimatedContentDownloadCompleted())
             {
@@ -1060,6 +1073,21 @@ namespace Telegram.Views
                     if (message.GeneratedContentUnread)
                     {
                         message.GeneratedContentUnread = dice.IsInitialState();
+                    }
+                    else
+                    {
+                        // We don't want to start already played dices
+                        // but we don't even want to stop them if they're already playing.
+                        prev ??= new HashSet<long>();
+                        prev.Add(message.AnimationHash());
+                        continue;
+                    }
+                }
+                else if (message.Content is MessageStakeDice stakeDice)
+                {
+                    if (message.GeneratedContentUnread)
+                    {
+                        message.GeneratedContentUnread = stakeDice.IsInitialState();
                     }
                     else
                     {

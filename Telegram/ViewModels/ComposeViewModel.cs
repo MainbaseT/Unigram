@@ -675,6 +675,11 @@ namespace Telegram.ViewModels
             return SendMessageAsync(reply, input, options);
         }
 
+        public void SendContent(InputMessageContent content)
+        {
+            _ = SendContentAsync(content);
+        }
+
         public async Task<Object> SendContentAsync(InputMessageContent input)
         {
             var reply = GetReply(true);

@@ -13043,6 +13043,45 @@ messages?</value>
   <data name="SponsoredMessageSponsorReportable" xml:space="preserve">
     <value>Sponsor Info</value>
   </data>
+  <data name="StakeDiceActionLost" xml:space="preserve">
+    <value>un1 lost 💎 {0}</value>
+  </data>
+  <data name="StakeDiceActionWon" xml:space="preserve">
+    <value>un1 won 💎 {0}</value>
+  </data>
+  <data name="StakeDiceActionYouLost" xml:space="preserve">
+    <value>You lost 💎 {0}</value>
+  </data>
+  <data name="StakeDiceActionYouWon" xml:space="preserve">
+    <value>You won 💎 {0}</value>
+  </data>
+  <data name="StakeDiceButton" xml:space="preserve">
+    <value>Save and Roll</value>
+  </data>
+  <data name="StakeDicePlaceholder" xml:space="preserve">
+    <value>Your Stake</value>
+  </data>
+  <data name="StakeDiceReturns" xml:space="preserve">
+    <value>Results and Returns</value>
+  </data>
+  <data name="StakeDiceReturnsInfo" xml:space="preserve">
+    <value>A streak resets after 3 🎲 or a stake change.</value>
+  </data>
+  <data name="StakeDiceText" xml:space="preserve">
+    <value>A limited playtest of the upcoming emoji mini-game platform for a small group of users.</value>
+  </data>
+  <data name="StakeDiceTitle" xml:space="preserve">
+    <value>Emoji Stake</value>
+  </data>
+  <data name="StakeDiceTitleBeta" xml:space="preserve">
+    <value>Beta</value>
+  </data>
+  <data name="StakeDiceToast" xml:space="preserve">
+    <value>&quot;Your Stake: 💎 &quot;</value>
+  </data>
+  <data name="StakeDiceToastButton" xml:space="preserve">
+    <value>Send</value>
+  </data>
   <data name="StarGiftTransactionGiftPurchase" xml:space="preserve">
     <value>Gift Purchase</value>
   </data>

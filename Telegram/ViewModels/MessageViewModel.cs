@@ -259,7 +259,7 @@ namespace Telegram.ViewModels
             {
                 return true;
             }
-            else if (Content is MessageSticker or MessageDice)
+            else if (Content is MessageSticker or MessageDice or MessageStakeDice)
             {
                 return false;
             }

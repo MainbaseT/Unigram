@@ -1931,6 +1931,17 @@ namespace Telegram.ViewModels
                         message.GeneratedContentUnread = dice.IsInitialState();
                     }
                 }
+                else if (message.Content is MessageStakeDice stakeDice)
+                {
+                    if (message.Id > chat.LastReadInboxMessageId)
+                    {
+                        message.GeneratedContentUnread = true;
+                    }
+                    else if (!message.GeneratedContentUnread)
+                    {
+                        message.GeneratedContentUnread = stakeDice.IsInitialState();
+                    }
+                }
                 else if (message.Id > chat.LastReadInboxMessageId)
                 {
                     message.GeneratedContentUnread = true;

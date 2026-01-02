@@ -13200,4 +13200,18 @@
     <string name="SummarySubtitle">Click to see original text</string>
     <string name="SummaryTitle">AI Summary</string>
 
+    <string name="StakeDiceTitle">Emoji Stake</string>
+    <string name="StakeDiceTitleBeta">Beta</string>
+    <string name="StakeDiceText">A limited playtest of the upcoming emoji mini-game platform for a small group of users.</string>
+    <string name="StakeDiceReturns">Results and Returns</string>
+    <string name="StakeDiceReturnsInfo">A streak resets after 3 &#127922; or a stake change.</string>
+    <string name="StakeDicePlaceholder">Your Stake</string>
+    <string name="StakeDiceButton">Save and Roll</string>
+    <string name="StakeDiceToast">"Your Stake: &#128142; "</string>
+    <string name="StakeDiceToastButton">Send</string>
+    <string name="StakeDiceActionYouWon">You won &#128142; {0}</string>
+    <string name="StakeDiceActionYouLost">You lost &#128142; {0}</string>
+    <string name="StakeDiceActionWon">un1 won &#128142; {0}</string>
+    <string name="StakeDiceActionLost">un1 lost &#128142; {0}</string>
+
 </resources>

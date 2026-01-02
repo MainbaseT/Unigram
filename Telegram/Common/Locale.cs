@@ -203,7 +203,7 @@ namespace Telegram.Common
                     break;
                 case "TON":
                     customFormat = " {0:N0}";
-                    doubleAmount = amount / 1000000000.0d;
+                    doubleAmount = amount / Constants.ToncoinMin;
                     break;
                 case "XTR":
                     customFormat = Icons.Premium + "\u200A{0:N0}";

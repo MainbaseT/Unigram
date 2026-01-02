@@ -36,6 +36,7 @@ namespace Telegram.Controls.Messages
     public sealed partial class MessageSelector : ToggleButtonEx
     {
         private Border Header;
+        private Border Footer;
         private Border Icon;
         private ContentPresenter Presenter;
 
@@ -177,8 +178,6 @@ namespace Telegram.Controls.Messages
             Presenter = GetTemplateChild(nameof(Presenter)) as ContentPresenter;
             ElementCompositionPreview.SetIsTranslationEnabled(Presenter, true);
 
-            Header = GetTemplateChild(nameof(Header)) as Border;
-
             _hitTest = ElementComposition.GetElementVisual(this);
             _visual = ElementComposition.GetElementVisual(Presenter);
             _templateApplied = true;
@@ -304,6 +303,7 @@ namespace Telegram.Controls.Messages
 
             UpdateSelectionEnabled(selectionEnabled, false);
             UpdateMessageSuggestedPostInfo(message);
+            UpdateMessageStakeDice(message);
         }
 
         private bool _hasSuggestedPostInfo;
@@ -318,12 +318,35 @@ namespace Telegram.Controls.Messages
             if (message.SuggestedPostInfo != null)
             {
                 _hasSuggestedPostInfo = true;
+                Header ??= GetTemplateChild(nameof(Header)) as Border;
                 Header.Child = new SuggestedPostInfoCell(message);
             }
             else if (_hasSuggestedPostInfo)
             {
                 _hasSuggestedPostInfo = false;
                 Header.Child = null;
+            }
+        }
+
+        private bool _hasStakeDice;
+
+        public void UpdateMessageStakeDice(MessageViewModel message)
+        {
+            if (message == null || !_templateApplied)
+            {
+                return;
+            }
+
+            if (message.Content is MessageStakeDice { Value: not 0 })
+            {
+                _hasStakeDice = true;
+                Footer ??= GetTemplateChild(nameof(Footer)) as Border;
+                Footer.Child = new StakeDiceInfoCell(message);
+            }
+            else if (_hasStakeDice)
+            {
+                _hasStakeDice = false;
+                Footer.Child = null;
             }
         }
 

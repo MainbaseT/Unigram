@@ -54,6 +54,9 @@ namespace Telegram
 
         public const string WebAppHostName = "windows";
 
+        public const string StakeDice = "\U0001F3B2";
+        public const double ToncoinMin = 1000000000.0;
+
         public const int FontSize = 14;
         public const int CaptionFontSize = 12;
 

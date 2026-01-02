@@ -2776,7 +2776,7 @@ namespace Telegram.Controls.Messages
             }
             else if (suggestedPostPaid.TonAmount > 0)
             {
-                return string.Format(Strings.SuggestedOfferCompleteAmountF.ReplaceStar(Icons.Ton), sender, suggestedPostPaid.TonAmount / 1000000000d).AsFormattedText();
+                return string.Format(Strings.SuggestedOfferCompleteAmountF.ReplaceStar(Icons.Ton), sender, suggestedPostPaid.TonAmount / Constants.ToncoinMin).AsFormattedText();
             }
 
             return string.Format(Strings.SuggestedOfferCompleteAmountUnknown, sender).AsFormattedText();

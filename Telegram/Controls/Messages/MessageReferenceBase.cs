@@ -147,6 +147,7 @@ namespace Telegram.Controls.Messages
             var content = message.GeneratedContent ?? message.Content;
             var light = content is MessageSticker
                 or MessageDice
+                or MessageStakeDice
                 or MessageVideoNote
                 or MessageBigEmoji
                 or MessageAnimatedEmoji;
@@ -361,6 +362,9 @@ namespace Telegram.Controls.Messages
                 case MessageDice dice:
                     SetDiceTemplate(message, sender, dice, title, outgoing, white);
                     break;
+                case MessageStakeDice stakeDice:
+                    SetStakeDiceTemplate(message, sender, stakeDice, title, outgoing, white);
+                    break;
                 case MessageDocument document:
                     SetDocumentTemplate(message, sender, quote, manual, document, title, outgoing, white);
                     break;
@@ -449,6 +453,9 @@ namespace Telegram.Controls.Messages
                     break;
                 case MessageDice dice:
                     SetDiceTemplate(message, sender, dice, title, outgoing, white);
+                    break;
+                case MessageStakeDice stakeDice:
+                    SetStakeDiceTemplate(message, sender, stakeDice, title, outgoing, white);
                     break;
                 case MessageDocument document:
                     SetDocumentTemplate(message, sender, quote, manual, document, title, outgoing, white);
@@ -564,6 +571,20 @@ namespace Telegram.Controls.Messages
                 sender,
                 title,
                 dice.Emoji,
+                null,
+                false,
+                white);
+        }
+
+        private void SetStakeDiceTemplate(MessageViewModel message, MessageSender sender, MessageStakeDice stakeDice, string title, bool outgoing, bool white)
+        {
+            HideThumbnail();
+
+            SetText(message,
+                outgoing,
+                sender,
+                title,
+                Constants.StakeDice,
                 null,
                 false,
                 white);

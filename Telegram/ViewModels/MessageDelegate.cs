@@ -435,6 +435,11 @@ namespace Telegram.ViewModels
         /// </summary>
         public virtual void SendBotCommand(string command) { }
 
+        /// <summary>
+        /// Only available when created through DialogViewModel
+        /// </summary>
+        public virtual void SendMessage(InputMessageContent content) { }
+
 
 
         /// <summary>
@@ -567,6 +572,8 @@ namespace Telegram.ViewModels
 
 
         public override void SendBotCommand(string command) => _viewModel.SendBotCommand(command);
+
+        public override void SendMessage(InputMessageContent content) => _viewModel.SendContent(content);
 
 
         public override bool IsTranslating => _viewModel.IsTranslating;

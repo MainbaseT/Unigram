@@ -202,6 +202,10 @@ namespace Telegram.Common
             {
                 return dice.Emoji + ", ";
             }
+            else if (message.Content is MessageStakeDice)
+            {
+                return Constants.StakeDice + ", ";
+            }
             else if (message.Content is MessageAnimatedEmoji animatedEmoji)
             {
                 return animatedEmoji.Emoji + ", ";
@@ -512,6 +516,10 @@ namespace Telegram.Common
             else if (message.Content is MessageDice dice)
             {
                 return dice.Emoji + ", ";
+            }
+            else if (message.Content is MessageStakeDice)
+            {
+                return Constants.StakeDice + ", ";
             }
             else if (message.Content is MessageAnimatedEmoji animatedEmoji)
             {

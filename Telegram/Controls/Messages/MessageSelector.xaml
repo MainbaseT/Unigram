@@ -60,8 +60,10 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Border x:Name="Header"
+                                x:Load="False"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Stretch" />
 
@@ -83,6 +85,12 @@
                                           VerticalContentAlignment="Stretch"
                                           Grid.Row="1"
                                           Grid.Column="1" />
+
+                        <Border x:Name="Footer"
+                                x:Load="False"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                Grid.Row="2" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
