@@ -101,9 +101,6 @@ namespace Telegram.Views
         private Visual _stickySummaryAboveVisual;
         private MessageViewModel _stickySummaryAboveMessage;
         private SelectorItem _stickySummaryAboveTracked;
-        private Visual _stickySummaryBelowVisual;
-        private MessageViewModel _stickySummaryBelowMessage;
-        private SelectorItem _stickySummaryBelowTracked;
         private ExpressionAnimation _stickySummaryExpression;
 
         private Visual _stickyPhotoAboveVisual;
@@ -215,7 +212,6 @@ namespace Telegram.Views
             _forumTopicHeader = ElementComposition.GetElementVisual(ForumTopicHeader);
 
             _stickySummaryAboveVisual = ElementComposition.GetElementVisual(StickySummaryAbove);
-            _stickySummaryBelowVisual = ElementComposition.GetElementVisual(StickySummaryBelow);
 
             _stickyPhotoAboveVisual = ElementComposition.GetElementVisual(StickyPhotoRootAbove);
             _stickyPhotoBelowVisual = ElementComposition.GetElementVisual(StickyPhotoRootBelow);
@@ -228,7 +224,6 @@ namespace Telegram.Views
             ElementCompositionPreview.SetIsTranslationEnabled(DateHeader, true);
             ElementCompositionPreview.SetIsTranslationEnabled(ForumTopicHeader, true);
             ElementCompositionPreview.SetIsTranslationEnabled(StickySummaryAbove, true);
-            ElementCompositionPreview.SetIsTranslationEnabled(StickySummaryBelow, true);
             ElementCompositionPreview.SetIsTranslationEnabled(StickyPhotoRootAbove, true);
             ElementCompositionPreview.SetIsTranslationEnabled(StickyPhotoRootBelow, true);
 
@@ -419,8 +414,6 @@ namespace Telegram.Views
 
             _stickySummaryAboveTracked = null;
             _stickySummaryAboveMessage = null;
-            _stickySummaryBelowTracked = null;
-            _stickySummaryBelowMessage = null;
 
             _stickyPhotoAboveTracked = null;
             _stickyPhotoAboveMessage = null;
@@ -954,11 +947,6 @@ namespace Telegram.Views
                 if (_stickySummaryAboveTracked == container)
                 {
                     _stickySummaryAboveTracked = null;
-                }
-
-                if (_stickySummaryBelowTracked == container)
-                {
-                    _stickySummaryBelowTracked = null;
                 }
 
                 if (_stickyPhotoAboveTracked == container)
@@ -7870,11 +7858,6 @@ namespace Telegram.Views
         private void StickySummaryAbove_Click(object sender, RoutedEventArgs e)
         {
             _stickySummaryAboveMessage?.Delegate.SummarizeMessage(_stickySummaryAboveMessage);
-        }
-
-        private void StickySummaryBelow_Click(object sender, RoutedEventArgs e)
-        {
-            _stickySummaryBelowMessage?.Delegate.SummarizeMessage(_stickySummaryBelowMessage);
         }
 
         private void StickyPhotoAbove_Click(object sender, RoutedEventArgs e)

@@ -218,7 +218,6 @@ namespace Telegram.Views
             var bottom = 0d;
 
             var summaryAbove = false;
-            var summaryBelow = false;
 
             var stickyAbove = false;
             var stickyBelow = false;
@@ -536,11 +535,7 @@ namespace Telegram.Views
 
                 var childHeight = container.ContentTemplateRoot.ActualSize.Y;
 
-                if (top <= 0 && top + childHeight <= 38 && !summaryBelow)
-                {
-                    summaryBelow = AnimateStickySummary(_stickySummaryBelowVisual, StickySummaryBelowButton, ref _stickySummaryBelowTracked, ref _stickySummaryBelowMessage, true);
-                }
-                else if (top <= 0 && !summaryAbove)
+                if (top <= 0 && top + childHeight > 0 && !summaryAbove)
                 {
                     summaryAbove = AnimateStickySummary(_stickySummaryAboveVisual, StickySummaryAboveButton, ref _stickySummaryAboveTracked, ref _stickySummaryAboveMessage, false);
                 }
@@ -650,18 +645,6 @@ namespace Telegram.Views
             else
             {
                 StickySummaryAbove.Visibility = Visibility.Visible;
-            }
-
-            if (!summaryBelow)
-            {
-                StickySummaryBelow.Visibility = Visibility.Collapsed;
-                _stickySummaryBelowVisual.Properties.InsertVector3("Translation", Vector3.Zero);
-                _stickySummaryBelowTracked = null;
-                _stickySummaryBelowMessage = null;
-            }
-            else
-            {
-                StickySummaryBelow.Visibility = Visibility.Visible;
             }
 
             if (!stickyAbove)
@@ -1744,12 +1727,6 @@ namespace Telegram.Views
             if (_stickySummaryAboveMessage == message)
             {
                 StickySummaryAboveButton.Glyph = message.SummarizedText == null
-                    ? Icons.ArrowMinimizeSparkles16
-                    : Icons.ArrowMaximizeSparkles16;
-            }
-            else if (_stickySummaryBelowMessage == message)
-            {
-                StickySummaryBelowButton.Glyph = message.SummarizedText == null
                     ? Icons.ArrowMinimizeSparkles16
                     : Icons.ArrowMaximizeSparkles16;
             }
