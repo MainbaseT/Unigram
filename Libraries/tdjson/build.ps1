@@ -80,7 +80,7 @@ function export {
     Remove-Item $arch -Force -Recurse -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Force -Path $arch
 
-    cp ${arch}/RelWithDebInfo/* -include "SSLEAY*","LIBEAY*","libcrypto*","libssl*","zlib*","tdjson.pdb","tdjson.dll" $arch
+    cp build-uwp/${arch}/RelWithDebInfo/* -include "SSLEAY*","LIBEAY*","libcrypto*","libssl*","zlib*","tdjson.pdb","tdjson.dll" $arch
   }
 }
 

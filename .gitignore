@@ -277,3 +277,4 @@ _Pvt_Extensions
 /Telegram/Constants.Secret.cs
 /Telegram2
 /Libraries/tdjson/td_api.tl
+/Libraries/tdjson/build-native
