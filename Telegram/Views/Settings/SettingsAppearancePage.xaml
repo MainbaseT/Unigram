@@ -128,21 +128,24 @@
                     <Grid Background="{ThemeResource SettingsItemBackground}"
                           BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="56" />
+                            <ColumnDefinition Width="58" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="208" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="44" />
+                            <RowDefinition Height="46" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock FontSize="{StaticResource GlyphMediumFontSize}"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   Margin="20,0,0,0"
-                                   AutomationProperties.AccessibilityView="Raw"
-                                   Text="&#xE9E8;"
-                                   FontFamily="{StaticResource SymbolThemeFontFamily}" />
+                        <Border Width="24"
+                                Height="24"
+                                Margin="16,0,18,0">
+                            <TextBlock FontSize="25"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       AutomationProperties.AccessibilityView="Raw"
+                                       Text="&#xE9E8;"
+                                       FontFamily="{StaticResource SymbolThemeFontFamily}" />
+                        </Border>
 
                         <TextBlock x:Name="BubbleRadiusHeader"
                                    Text="{CustomResource BubbleRadius}"
@@ -164,21 +167,24 @@
                     <Grid Background="{ThemeResource SettingsItemBackground}"
                           BorderBrush="{ThemeResource SettingsItemBorderBrush}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="56" />
+                            <ColumnDefinition Width="58" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="208" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="44" />
+                            <RowDefinition Height="46" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock FontSize="{StaticResource GlyphMediumFontSize}"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   Margin="20,0,0,0"
-                                   AutomationProperties.AccessibilityView="Raw"
-                                   Text="&#xE9EB;"
-                                   FontFamily="{StaticResource SymbolThemeFontFamily}" />
+                        <Border Width="24"
+                                Height="24"
+                                Margin="16,0,18,0">
+                            <TextBlock FontSize="25"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       AutomationProperties.AccessibilityView="Raw"
+                                       Text="&#xE9EB;"
+                                       FontFamily="{StaticResource SymbolThemeFontFamily}" />
+                        </Border>
 
                         <TextBlock x:Name="TextSizeHeader"
                                    Text="{CustomResource TextSizeHeader}"
@@ -240,6 +246,7 @@
                         <RadioButton IsChecked="{x:Bind ViewModel.DoubleClickToReact, Mode=TwoWay}"
                                      Content="{CustomResource DoubleClickReact}"
                                      Style="{StaticResource SettingsRadioButtonStyle}"
+                                     MinHeight="46"
                                      GroupName="DoubleClick"
                                      CornerRadius="4" />
                         <messages:ReactionButton x:Name="Reaction"

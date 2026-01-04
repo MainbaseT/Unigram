@@ -34,7 +34,7 @@
                                    Visibility="Collapsed"
                                    Width="36"
                                    Height="36"
-                                   Margin="0,0,8,0"
+                                   Margin="0,0,10,0"
                                    Grid.RowSpan="2"
                                    StrokeThickness="2"
                                    Stroke="{ThemeResource SystemControlBackgroundAccentBrush}" />
@@ -44,7 +44,7 @@
                                                         IsEnabled="False"
                                                         Width="36"
                                                         Height="36"
-                                                        Margin="0,6,8,6"
+                                                        Margin="0,6,10,6"
                                                         Grid.RowSpan="2">
                             <controls:ProfilePicture x:Name="Photo"
                                                      Size="36" />
@@ -54,7 +54,7 @@
                                 x:Load="False"
                                 Width="36"
                                 Height="36"
-                                Margin="0,0,8,0"
+                                Margin="0,0,10,0"
                                 Grid.RowSpan="2">
                             <Border HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"

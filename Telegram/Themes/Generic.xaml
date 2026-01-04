@@ -5380,7 +5380,7 @@
                         </VisualStateManager.VisualStateGroups>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"
-                                              MinWidth="12" />
+                                              MinWidth="16" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
@@ -5391,13 +5391,14 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Border x:Name="GlyphPresenter"
-                                Width="56"
+                                Width="24"
+                                Height="24"
+                                Margin="16,0,18,0"
                                 Grid.RowSpan="2">
                             <TextBlock x:Name="GlyphIcon"
                                        FontSize="25"
-                                       HorizontalAlignment="Left"
+                                       HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
-                                       Margin="15.5,0,0,0"
                                        AutomationProperties.AccessibilityView="Raw"
                                        Text="{TemplateBinding Glyph}"
                                        FontFamily="{StaticResource SymbolThemeFontFamily}" />
@@ -5456,7 +5457,7 @@
                                 </TransitionCollection>
                             </ContentControl.ContentTransitions>
                             <ContentControl.Clip>
-                                <RectangleGeometry Rect="0,0,3600,44" />
+                                <RectangleGeometry Rect="0,0,1000,48" />
                             </ContentControl.Clip>
                         </ContentControl>
 

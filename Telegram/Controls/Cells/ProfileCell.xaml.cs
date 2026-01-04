@@ -1439,8 +1439,8 @@ namespace Telegram.Controls.Cells
             var random = new Random();
 
             shapes.Add(CanvasGeometry.CreateEllipse(null, borderLeft + 12 + 18, borderTop + 6 + 18, 18, 18));
-            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, borderLeft + 12 + 36 + 8, borderTop + 6, random.Next(80, maxWidth), 18, 4, 4));
-            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, borderLeft + 12 + 36 + 8, borderTop + 6 + 18 + 4, random.Next(80, maxWidth), 14, 4, 4));
+            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, borderLeft + 12 + 36 + 10, borderTop + 6, random.Next(80, maxWidth), 18, 4, 4));
+            shapes.Add(CanvasGeometry.CreateRoundedRectangle(null, borderLeft + 12 + 36 + 10, borderTop + 6 + 18 + 4, random.Next(80, maxWidth), 14, 4, 4));
 
             var compositor = BootStrapper.Current.Compositor;
 

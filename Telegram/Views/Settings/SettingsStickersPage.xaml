@@ -158,7 +158,7 @@
                                                 DecodeFrameType="Logical"
                                                 Width="36"
                                                 Height="36"
-                                                Margin="0,0,8,0"
+                                                Margin="0,0,10,0"
                                                 VerticalAlignment="Top"
                                                 Grid.RowSpan="2" />
 

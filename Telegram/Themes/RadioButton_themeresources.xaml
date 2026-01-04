@@ -16,7 +16,7 @@
         <Setter Property="BorderBrush"
                 Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="Padding"
-                Value="16,6,0,0" />
+                Value="0,11,0,12" />
         <Setter Property="HorizontalAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
@@ -24,7 +24,7 @@
         <Setter Property="HorizontalContentAlignment"
                 Value="Left" />
         <Setter Property="VerticalContentAlignment"
-                Value="Top" />
+                Value="Center" />
         <Setter Property="FontFamily"
                 Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize"
@@ -46,8 +46,7 @@
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="{TemplateBinding CornerRadius}"
-                          Padding="20,6,12,6">
+                          CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid.BackgroundTransition>
                             <BrushTransition Duration="0:0:0.083" />
                         </Grid.BackgroundTransition>
@@ -338,13 +337,15 @@
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
                         <Grid x:Name="Chevron"
                               VerticalAlignment="Center"
-                              Height="20">
+                              Height="20"
+                              Width="20"
+                              Margin="18,0,20,0">
                             <Ellipse x:Name="OuterEllipse"
                                      Width="20"
                                      Height="20"
@@ -387,8 +388,8 @@
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           Foreground="{TemplateBinding Foreground}"
                                           Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                           Grid.Column="1"
                                           AutomationProperties.AccessibilityView="Raw"
                                           TextWrapping="Wrap" />
@@ -407,7 +408,7 @@
         <Setter Property="BorderBrush"
                 Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="Padding"
-                Value="16,6,0,0" />
+                Value="0,11,0,12" />
         <Setter Property="HorizontalAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
@@ -435,8 +436,7 @@
                           Background="{TemplateBinding Background}"
                           BorderBrush="{TemplateBinding BorderBrush}"
                           BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="{TemplateBinding CornerRadius}"
-                          Padding="20,6,12,12">
+                          CornerRadius="{TemplateBinding CornerRadius}">
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -725,8 +725,8 @@
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -734,7 +734,10 @@
                         </Grid.RowDefinitions>
 
                         <Grid VerticalAlignment="Center"
-                              Height="32">
+                              Width="20"
+                              Height="20"
+                              Margin="18,0,20,0"
+                              Grid.RowSpan="2">
                             <Ellipse x:Name="OuterEllipse"
                                      Width="20"
                                      Height="20"
@@ -788,7 +791,7 @@
                                         FontFamily="{ThemeResource ContentControlThemeFontFamily}"
                                         Content="{TemplateBinding Tag}"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        Padding="16,-6,12,0"
+                                        Padding="0,-10,12,12"
                                         IsTabStop="False"
                                         Grid.Column="1"
                                         Grid.Row="1">

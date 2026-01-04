@@ -42,7 +42,7 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid CornerRadius="8"
-                              Margin="0,6,8,6"
+                              Margin="0,6,10,6"
                               Grid.RowSpan="2">
                             <TextBlock Text="&#xE192;"
                                        FontFamily="{StaticResource SymbolThemeFontFamily}"

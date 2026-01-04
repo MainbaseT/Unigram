@@ -45,7 +45,8 @@
                                                               IsFaux="True"
                                                               IsChecked="{x:Bind IsChecked, Mode=OneWay}"
                                                               Click="OnChecked"
-                                                              Style="{StaticResource SettingsRadioButtonStyle}" />
+                                                              Style="{StaticResource SettingsRadioButtonStyle}"
+                                                              MinHeight="46" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </controls:HeaderedControl>

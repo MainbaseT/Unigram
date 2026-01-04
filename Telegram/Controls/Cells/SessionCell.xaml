@@ -22,7 +22,7 @@
             UseLayoutRounding="False"
             VerticalAlignment="Top"
             CornerRadius="18"
-            Margin="0,0,8,0"
+            Margin="0,0,10,0"
             Width="36"
             Height="36"
             Grid.RowSpan="3">

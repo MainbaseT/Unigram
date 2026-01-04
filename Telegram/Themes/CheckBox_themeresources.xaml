@@ -22,7 +22,7 @@
         <Setter Property="BorderBrush"
                 Value="{ThemeResource CardStrokeColorDefaultBrush}" />
         <Setter Property="Padding"
-                Value="16,11,0,0" />
+                Value="0,11,0,12" />
         <Setter Property="HorizontalAlignment"
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
@@ -30,7 +30,7 @@
         <Setter Property="HorizontalContentAlignment"
                 Value="Left" />
         <Setter Property="VerticalContentAlignment"
-                Value="Top" />
+                Value="Center" />
         <Setter Property="FontFamily"
                 Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize"
@@ -571,7 +571,7 @@
                         <Grid x:Name="Chevron"
                               Grid.Column="0"
                               VerticalAlignment="Center"
-                              Margin="20,0,0,0"
+                              Margin="18,0,20,0"
                               Height="{StaticResource CheckBoxSize}"
                               Width="{StaticResource CheckBoxSize}">
                             <Rectangle x:Name="NormalRectangle"
@@ -602,8 +602,8 @@
                                           ContentTransitions="{TemplateBinding ContentTransitions}"
                                           Content="{TemplateBinding Content}"
                                           Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                           AutomationProperties.AccessibilityView="Raw"
                                           TextWrapping="Wrap" />
                     </Grid>
