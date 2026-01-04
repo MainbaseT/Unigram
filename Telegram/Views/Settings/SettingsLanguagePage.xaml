@@ -17,7 +17,7 @@
             <ListView.Header>
                 <controls:SettingsPanel IsHeader="True">
                     <controls:HeaderedControl Header="{CustomResource TranslateMessages}"
-                                              Footer="{x:Bind ConvertTranslateInfo(ViewModel.TranslateMessages), Mode=OneWay}">
+                                              Footer="{CustomResource TranslateMessagesInfo1}">
                         <CheckBox IsChecked="{x:Bind ViewModel.TranslateMessages, Mode=TwoWay}"
                                   Content="{CustomResource ShowTranslateButton}"
                                   Style="{StaticResource SettingsCheckBoxStyle}" />
