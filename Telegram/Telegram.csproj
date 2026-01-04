@@ -222,6 +222,7 @@
     <Compile Include="Common\MediaDevicePermissions.cs" />
     <Compile Include="Common\NativeMethodChecker.cs" />
     <Compile Include="Common\SliderHelper.cs" />
+    <Compile Include="Common\StackCapture.cs" />
     <Compile Include="Common\ThemeShadowEx.cs" />
     <Compile Include="Common\NormalizingStringBuilder.cs" />
     <Compile Include="Common\VideoPreloader.cs" />

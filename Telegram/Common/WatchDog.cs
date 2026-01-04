@@ -146,19 +146,19 @@ namespace Telegram
                     stowed.Message = ex.Message;
                     stowed.StackTrace = ex.StackTrace;
 
-                    ProcessException(stowed);
+                    ProcessException(stowed, ex.HResult == unchecked((int)0x8001010A));
                 }
                 else
                 {
-                    ProcessException(ex);
+                    ProcessException(ex, ex.HResult == unchecked((int)0x8001010A));
                 }
             }
         }
 
-        private static void ProcessException(Exception ex)
+        private static void ProcessException(Exception ex, bool captureAllThreads)
         {
             var reportId = Guid.NewGuid().ToString();
-            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, BuildReport(ex.HResult));
+            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, captureAllThreads, BuildReport(ex.HResult));
 
             var reportPath = GetErrorReportPath(reportId);
 
@@ -168,10 +168,10 @@ namespace Telegram
             _channel.Writer.TryWrite(reportPath);
         }
 
-        private static void ProcessException(FatalError ex)
+        private static void ProcessException(FatalError ex, bool captureAllThreads)
         {
             var reportId = Guid.NewGuid().ToString();
-            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, BuildReport(0));
+            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, captureAllThreads, BuildReport(0));
 
             var reportPath = GetErrorReportPath(reportId);
 
@@ -183,7 +183,7 @@ namespace Telegram
 
         public static void TrackError(Exception ex)
         {
-            ProcessException(ex);
+            ProcessException(ex, false);
         }
 
         private static void LoadReports()
@@ -336,7 +336,7 @@ namespace Telegram
 
         public static void FatalErrorCallback(FatalError error)
         {
-            ProcessException(error);
+            ProcessException(error, false);
         }
 
         private static Exception ToException(FatalError error)
