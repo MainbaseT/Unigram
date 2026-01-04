@@ -359,11 +359,6 @@ namespace Telegram.ViewModels
 
                 foreach (var folder in Folders)
                 {
-                    if (folder.ChatList is ChatListMain)
-                    {
-                        continue;
-                    }
-
                     var unreadCount = ClientService.GetUnreadCount(folder.ChatList);
                     if (unreadCount == null)
                     {

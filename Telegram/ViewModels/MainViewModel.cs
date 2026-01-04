@@ -173,7 +173,7 @@ namespace Telegram.ViewModels
             {
                 foreach (var folder in _folders)
                 {
-                    if (folder.ChatList is ChatListFolder && folder.ChatList.AreTheSame(update.ChatList))
+                    if (folder.ChatList.AreTheSame(update.ChatList))
                     {
                         folder.UpdateCount(update, base.Settings.Notifications.IncludeMutedChatsInFolderCounters);
                         return;
@@ -236,11 +236,6 @@ namespace Telegram.ViewModels
 
                 foreach (var folder in _folders)
                 {
-                    if (folder.ChatList is ChatListMain)
-                    {
-                        continue;
-                    }
-
                     var unreadCount = ClientService.GetUnreadCount(folder.ChatList);
                     if (unreadCount == null)
                     {
