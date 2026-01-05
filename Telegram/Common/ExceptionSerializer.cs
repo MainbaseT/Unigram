@@ -574,7 +574,9 @@ namespace Telegram.Common
                 case "Parametr jest niepoprawny.":
                 case "Felaktig parameter.":
                 case "매개 변수가 틀립니다.":
+                case "パラメーターが間違っています。":
                 case "参数错误。":
+                case "參數錯誤。":
                     return "The parameter is incorrect.";
 
                 case "Geçersiz işaretçi":
@@ -629,6 +631,7 @@ namespace Telegram.Common
                 case "Ikke nok minneressurser tilgjengelig for å fullføre denne operasjonen.":
                 case "Bu işlemi tamamlamak için yeterli bellek kaynağı yok.":
                 case "Недостаточно ресурсов памяти для завершения операции.":
+                case "Недостаточно ресурсов памяти для обработки этой команды.":
                 case "メモリ リソースが不足しているため、この操作を完了できません。":
                 case "記憶體資源不足，無法完成此作業。":
                 case "系统资源不足，无法完成请求的服务。":
@@ -663,6 +666,7 @@ namespace Telegram.Common
                 case "Operación anulada":
                 case "Операция прервана":
                 case "İşlem iptal edildi":
+                case "작업이 중단되었습니다.":
                     return "Operation aborted";
 
                 case "Défaillance irrémédiable":
@@ -715,8 +719,17 @@ namespace Telegram.Common
                 case "Источник мультимедиа не может перейти из остановленного состояния в приостановленное.":
                     return "A media source cannot go from the stopped state to the paused state.";
 
+                case "Un événement n’a pu invoquer aucun des abonnés.":
                 case "Событие не смогло вызвать ни одного из абонентов":
                     return "An event was unable to invoke any of the subscribers";
+
+                case "Le package n'a pas de répertoire mutable.":
+                case "Пакет не имеет изменяемого каталога.":
+                    return "The package does not have a mutable directory.";
+
+                case "Die Ressource wurde auf dem falschen Renderziel erkannt.":
+                case "Kaynak yanlış işleme hedefinde gerçekleştirildi.":
+                    return "The resource was realized on the wrong render target.";
 
                 default:
                     return text;
