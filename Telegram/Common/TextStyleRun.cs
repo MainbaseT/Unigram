@@ -230,7 +230,7 @@ namespace Telegram.Common
             var starts = offset == 0 || _lineBreakChars.Contains(text[offset - 1]);
             var ends = offset + length == text.Length || _lineBreakChars.Contains(text[offset + length]);
 
-            return (starts && ends) || text.IndexOfAny(_lineBreakChars) >= 0;
+            return (starts && ends) || text.IndexOfAny(_lineBreakChars, offset, length) >= 0;
         }
 
         public static IList<TextEntity> GetEntities(string text, IList<TextStyleRun> runs)
