@@ -384,17 +384,13 @@ namespace Telegram
 
         [DllImport("kernelbase.dll", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX lpBuffer);
+        private static extern unsafe bool GlobalMemoryStatusEx(MEMORYSTATUSEX* lpBuffer);
 #endif
 
         public static unsafe void MemoryStatus()
         {
             var status = MEMORYSTATUSEX.Create();
-#if NET9_0_OR_GREATER
             GlobalMemoryStatusEx(&status);
-#else
-            GlobalMemoryStatusEx(status);
-#endif
 
             var memoryUsage = FileSizeConverter.Convert((long)MemoryManager.AppMemoryUsage);
             var memoryUsageAvailable = FileSizeConverter.Convert((long)status.ullAvailPhys);
@@ -414,11 +410,7 @@ namespace Telegram
             var count = SettingsService.Current.Diagnostics.UpdateCount;
 
             var status = MEMORYSTATUSEX.Create();
-#if NET9_0_OR_GREATER
             GlobalMemoryStatusEx(&status);
-#else
-            GlobalMemoryStatusEx(status);
-#endif
 
             var memoryUsage = FileSizeConverter.Convert((long)MemoryManager.AppMemoryUsage);
             var memoryUsageAvailable = FileSizeConverter.Convert((long)status.ullAvailPhys);
