@@ -63,11 +63,10 @@ namespace Telegram.Controls.Cells.Revenue
 
             var doubleAmount = Formatter.Amount(Math.Abs(info.CryptocurrencyAmount), info.Cryptocurrency);
             var stringAmount = doubleAmount.ToString(CultureInfo.InvariantCulture).Split('.');
-            var integerAmount = long.Parse(stringAmount[0]);
             var decimalAmount = stringAmount.Length > 1 ? stringAmount[1] : "0";
 
             Symbol.Text = info.CryptocurrencyAmount < 0 ? "-" : "+";
-            Amount.Text = integerAmount.ToString("N0");
+            Amount.Text = stringAmount[0];
             Decimal.Text = string.Format(".{0}", decimalAmount.PadRight(2, '0'));
 
             Value.Foreground = BootStrapper.Current.Resources[info.CryptocurrencyAmount < 0 ? "SystemFillColorCriticalBrush" : "SystemFillColorSuccessBrush"] as Brush;
