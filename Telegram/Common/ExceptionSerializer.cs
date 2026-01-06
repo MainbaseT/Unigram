@@ -163,7 +163,16 @@ namespace Telegram.Common
 
             hashBuilder.Append(report.ApplicationVersion);
             hashBuilder.Append(report.Type.ToLowerInvariant());
-            hashBuilder.Append(report.Message.ToLowerInvariant());
+
+            var lineBreak = report.Message.IndexOf('\n');
+            if (lineBreak != -1)
+            {
+                hashBuilder.Append(report.Message[..lineBreak].ToLowerInvariant());
+            }
+            else
+            {
+                hashBuilder.Append(report.Message.ToLowerInvariant());
+            }
 
             report.GroupHash = ComputeHash(hashBuilder.ToString());
 
@@ -461,7 +470,7 @@ namespace Telegram.Common
 
         private static string TranslateMessage(string message)
         {
-            var parts = message.Split(new[] { '\n' });
+            var parts = message.Split('\n');
             var builder = new StringBuilder();
 
             for (int i = 0; i < parts.Length; i++)
