@@ -631,7 +631,7 @@ namespace Telegram.Controls.Gallery
                 return;
             }
 
-            var viewModel = _window.ViewModel;
+            var viewModel = _window?.ViewModel;
             if (viewModel == null)
             {
                 return;
