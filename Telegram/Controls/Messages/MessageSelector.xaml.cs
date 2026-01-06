@@ -67,7 +67,7 @@ namespace Telegram.Controls.Messages
             {
                 _hasInitialLoadedEventFired = true;
 
-                _compositor = _hitTest.Compositor;
+                _compositor = BootStrapper.Current.Compositor;
                 _container ??= _compositor.CreateContainerVisual();
 
                 if (_requiresArrange)
