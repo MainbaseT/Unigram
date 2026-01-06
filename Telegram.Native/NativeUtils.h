@@ -120,8 +120,12 @@ namespace winrt::Telegram::Native::implementation
         static ULONGLONG FileTimeToSeconds(FILETIME& ft);
         static bool IsFileReadableInternal(hstring path, int64_t* fileSize, int64_t* fileTime);
 
+        static Application::Suspending_revoker s_suspending;
+        static Application::Resuming_revoker s_resuming;
+
         static std::mutex s_collectLock;
         static bool s_collect;
+        static bool s_suspended;
 
         static INT64 RhGetCurrentObjSize()
         {
@@ -130,15 +134,11 @@ namespace winrt::Telegram::Native::implementation
 
         static void RhCollect(int generation, int mode)
         {
-            if ((generation == 2 && mode == 6))
-            {
-                s_RhCollect(generation, mode);
-            }
-            else
-            {
-                post_to_threadpool([&]() { s_collectCallback(generation, mode); });
-            }
+            post_to_threadpool([&]() { s_collectCallback(generation, mode); });
         }
+
+        static void OnSuspending(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::ApplicationModel::SuspendingEventArgs const& e);
+        static void OnResuming(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& e);
     };
 } // namespace winrt::Telegram::Native::implementation
 

@@ -33,9 +33,13 @@ namespace winrt::Telegram::Native::implementation
     PFN_RhGetCurrentObjSize NativeUtils::s_RhGetCurrentObjSize;
     PFN_RhCollect NativeUtils::s_RhCollect;
 
+    Application::Suspending_revoker NativeUtils::s_suspending = {};
+    Application::Resuming_revoker NativeUtils::s_resuming = {};
+
     CollectCallback NativeUtils::s_collectCallback;
     std::mutex NativeUtils::s_collectLock;
     bool NativeUtils::s_collect = false;
+    bool NativeUtils::s_suspended = false;
 
     void NativeUtils::SetFatalErrorCallback(FatalErrorCallback callback)
     {
@@ -94,6 +98,12 @@ namespace winrt::Telegram::Native::implementation
                 }
 
                 DetourTransactionCommit();
+
+                if (s_RhCollect)
+                {
+                    s_suspending = Application::Current().Suspending(winrt::auto_revoke, &NativeUtils::OnSuspending);
+                    s_resuming = Application::Current().Resuming(winrt::auto_revoke, &NativeUtils::OnResuming);
+                }
             }
         }
     }
@@ -102,7 +112,7 @@ namespace winrt::Telegram::Native::implementation
     {
         std::lock_guard const guard(s_collectLock);
 
-        if (value == s_collect || !s_RhCollect)
+        if (value == s_collect || s_suspended || !s_RhCollect)
         {
             return;
         }
@@ -124,6 +134,48 @@ namespace winrt::Telegram::Native::implementation
                 DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
             }
 
+            DetourTransactionCommit();
+        }
+    }
+
+    void NativeUtils::OnSuspending(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::ApplicationModel::SuspendingEventArgs const& e)
+    {
+        std::lock_guard const guard(s_collectLock);
+
+        if (s_suspended || !s_RhCollect)
+        {
+            return;
+        }
+
+        s_suspended = true;
+
+        auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
+        if (mrt100 && s_RhCollect)
+        {
+            DetourTransactionBegin();
+            DetourUpdateThread(GetCurrentThread());
+            DetourDetach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
+            DetourTransactionCommit();
+        }
+    }
+
+    void NativeUtils::OnResuming(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::Foundation::IInspectable const& e)
+    {
+        std::lock_guard const guard(s_collectLock);
+
+        if (!s_suspended || !s_RhCollect)
+        {
+            return;
+        }
+
+        s_suspended = false;
+
+        auto mrt100 = GetModuleHandle(L"mrt100_app.dll");
+        if (mrt100 && s_RhCollect)
+        {
+            DetourTransactionBegin();
+            DetourUpdateThread(GetCurrentThread());
+            DetourAttach(reinterpret_cast<PVOID*>(&s_RhCollect), NativeUtils::RhCollect);
             DetourTransactionCommit();
         }
     }
