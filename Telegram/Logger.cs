@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using Telegram.Native;
 using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
@@ -80,6 +81,16 @@ namespace Telegram
         [SuppressUnmanagedCodeSecurity]
         [DllImport("kernel32.dll")]
         private unsafe static extern void GetSystemTimeAsFileTime(long* pSystemTimeAsFileTime);
+
+        static Logger()
+        {
+            NativeUtils.SetLogCallback(LogCallback);
+        }
+
+        private static void LogCallback(int level, string message, string member, string filePath, int line)
+        {
+            Log((LogLevel)level, message, member, filePath, line);
+        }
 
         private static unsafe void Log(LogLevel level, object message, string member, string filePath, int line)
         {

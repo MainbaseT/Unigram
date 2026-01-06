@@ -1192,5 +1192,6 @@
       <Filter>Controls</Filter>
     </Midl>
     <Midl Include="FreeformGradientSurface.idl" />
+    <Midl Include="GarbageCollectionMonitor.idl" />
   </ItemGroup>
 </Project>

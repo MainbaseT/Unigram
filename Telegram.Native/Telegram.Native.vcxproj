@@ -355,6 +355,10 @@
       <DependentUpon>FreeformGradientSurface.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="GarbageCollectionMonitor.h">
+      <DependentUpon>GarbageCollectionMonitor.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="Helpers\BlurHelper.h" />
     <ClInclude Include="Helpers\COMHelper.h" />
     <ClInclude Include="Helpers\DebugHelper.h" />
@@ -1033,6 +1037,10 @@
       <DependentUpon>FreeformGradientSurface.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="GarbageCollectionMonitor.cpp">
+      <DependentUpon>GarbageCollectionMonitor.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="Highlight\SyntaxToken.cpp" />
     <ClCompile Include="Highlight\TextToken.cpp" />
     <ClCompile Include="InternalsRT\CoreWindowHelpers.cpp" />
@@ -1190,6 +1198,9 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="FreeformGradientSurface.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="GarbageCollectionMonitor.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Highlight\SyntaxToken.idl" />

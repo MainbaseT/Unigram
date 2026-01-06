@@ -5,6 +5,8 @@ namespace Telegram.Native
     delegate void FatalErrorCallback(FatalError error);
     delegate void CollectCallback(Int32 generation, Int32 mode);
 
+    delegate void LogCallback(Int32 level, String message, String member, String filePath, Int32 line);
+
     enum TextDirectionality
     {
         Neutral,
@@ -72,7 +74,8 @@ namespace Telegram.Native
         static Int32 GetScaleForCurrentView();
 
         static void SetFatalErrorCallback(FatalErrorCallback action);
-        static void SetCollectCallback(CollectCallback action, Boolean disableGcCollect, Boolean disablePressure);
+        static void SetLogCallback(LogCallback callback);
+        static void Log(Int32 level, String message, String member, String filePath, Int32 line);
 
         static FatalError GetStowedException();
         static FatalError GetBackTrace(String type, String message);
@@ -80,6 +83,5 @@ namespace Telegram.Native
         static String GetLogMessage(Int64 format, Int64 args);
 
         static void Crash();
-        static Boolean Collect;
     }
 } // namespace Telegram.Native

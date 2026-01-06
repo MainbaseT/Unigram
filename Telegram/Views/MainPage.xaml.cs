@@ -20,6 +20,7 @@ using Telegram.Controls.Gallery;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Controls.Views;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -126,7 +127,7 @@ namespace Telegram.Views
 
         private string PollGC()
         {
-            var occurred = InactivityGarbageCollectionMonitor.Debug;
+            var occurred = GarbageCollectionMonitor.Debug();
             var first = true;
 
             for (int i = 0; i <= 2; i++)
@@ -1212,7 +1213,7 @@ namespace Telegram.Views
                     //GC.Collect();
                     //NativeUtils.Collect = false;
 
-                    InactivityGarbageCollectionMonitor.DisconnectUnusedReferenceSources();
+                    GarbageCollectionMonitor.DisconnectUnusedReferenceSources();
                     return;
                 }
 

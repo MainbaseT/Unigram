@@ -8,6 +8,7 @@
 using System;
 using System.Threading.Tasks;
 using Telegram.Common;
+using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -71,6 +72,7 @@ namespace Telegram
             TypeCrosserGenerator.Generate();
 
             SettingsService.Current.Initialize();
+            GarbageCollectionMonitor.Initialize(GC.Collect, SettingsService.Current.Diagnostics.DisableXamlGcCollect, SettingsService.Current.Diagnostics.DisableMemoryPressure);
             WatchDog.Initialize();
             LifetimeService.Initialize();
 
