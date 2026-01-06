@@ -259,7 +259,8 @@ namespace Telegram
         [HandleProcessCorruptedStateExceptions, SecurityCritical]
         private static void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs args)
         {
-            args.Handled = args.Exception is not LayoutCycleException;
+            args.Handled = args.Exception is not LayoutCycleException
+                && args.Exception.HResult != unchecked((int)0x8001010A);
 
             if (args.Exception is LayoutCycleException)
             {
@@ -279,10 +280,6 @@ namespace Telegram
                     }
                 }
 
-                return;
-            }
-            else if (args.Exception is COMException { ErrorCode: -2147467259 })
-            {
                 return;
             }
 
@@ -337,25 +334,6 @@ namespace Telegram
         public static void FatalErrorCallback(FatalError error)
         {
             ProcessException(error, false);
-        }
-
-        private static Exception ToException(FatalError error)
-        {
-            if (error == null)
-            {
-                return null;
-            }
-
-            if (error.StackTrace.Contains("libvlc.dll") || error.StackTrace.Contains("libvlccore.dll"))
-            {
-                return new VLCException(error.Message, error.StackTrace);
-            }
-            else if (error.StackTrace.Contains("Telegram.Native.Calls.dll"))
-            {
-                return new VoipException(error.Message, error.StackTrace);
-            }
-
-            return new NativeException(error.Message, error.StackTrace);
         }
 
         public static void Launch(ApplicationExecutionState previousExecutionState)
