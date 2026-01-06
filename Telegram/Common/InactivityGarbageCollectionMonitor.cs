@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Telegram.Native;
+using Telegram.Navigation;
 using Telegram.Services;
 using Windows.Foundation;
 using Windows.System;
@@ -168,10 +169,7 @@ namespace Telegram.Common
 
                 _count++;
                 Logger.Info();
-
-                NativeUtils.Collect = true;
-                GC.Collect(2, GCCollectionMode.Optimized, blocking: true, compacting: false);
-                NativeUtils.Collect = false;
+                WindowContext.Main?.Dispatcher.Dispatch(BlockingCollect);
             }
             else
             {
@@ -229,10 +227,21 @@ namespace Telegram.Common
             _xamlCollectionRequested = false;
 
             _count++;
-            Logger.Info();
+            Logger.Info($"{_count}/{_requested}");
+            WindowContext.Main?.Dispatcher.Dispatch(Collect);
+        }
 
+        private static void Collect()
+        {
             NativeUtils.Collect = true;
             GC.Collect();
+            NativeUtils.Collect = false;
+        }
+
+        private static void BlockingCollect()
+        {
+            NativeUtils.Collect = true;
+            GC.Collect(2, GCCollectionMode.Optimized, blocking: true, compacting: false);
             NativeUtils.Collect = false;
         }
     }
