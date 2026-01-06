@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Controls;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Popups
 {
@@ -53,8 +55,8 @@ namespace Telegram.Views.Popups
             }
 
             _items = items;
-            FieldSeconds.ItemsSource = items;
-            FieldSeconds.SelectedIndex = 2;
+            ItemsHost.ItemsSource = items;
+            ItemsHost.SelectedIndex = 2;
         }
 
         public int Value
@@ -65,8 +67,64 @@ namespace Telegram.Views.Popups
 
         public SettingsOptionItem<int> SelectedItem
         {
-            get => FieldSeconds.SelectedItem as SettingsOptionItem<int>;
-            set => FieldSeconds.SelectedItem = value;
+            get => ItemsHost.SelectedItem as SettingsOptionItem<int>;
+            set => ItemsHost.SelectedItem = value;
+        }
+
+        private void ItemsHost_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue || args.Item is not SettingsOptionItem<int> value)
+            {
+                return;
+            }
+
+            args.ItemContainer.Content = value.Text;
+            args.ItemContainer.HorizontalContentAlignment = HorizontalAlignment.Center;
+            args.Handled = true;
+        }
+
+        private void ItemsHost_Loaded(object sender, RoutedEventArgs e)
+        {
+            var scrollingHost = ItemsHost.GetScrollViewer();
+            if (scrollingHost != null)
+            {
+                scrollingHost.ViewChanged += ItemsHost_ViewChanged;
+            }
+
+            ItemsHost_SelectionChanged(sender, null);
+        }
+
+        private void ItemsHost_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            if (e.IsIntermediate || sender is not ScrollViewer scrollingHost)
+            {
+                return;
+            }
+
+            var index = (int)(scrollingHost.VerticalOffset / 40);
+            if (index >= 0 && index < ItemsHost.Items.Count)
+            {
+                ItemsHost.SelectionChanged -= ItemsHost_SelectionChanged;
+                ItemsHost.SelectedIndex = index;
+                ItemsHost.SelectionChanged += ItemsHost_SelectionChanged;
+            }
+        }
+
+        private void ItemsHost_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var scrollingHost = ItemsHost.GetScrollViewer();
+            if (scrollingHost != null && ItemsHost.SelectedIndex != -1)
+            {
+                if (e == null)
+                {
+                    scrollingHost.ViewChanged -= ItemsHost_ViewChanged;
+                    ItemsHost.ScrollIntoView(ItemsHost.SelectedItem);
+                    scrollingHost.UpdateLayout();
+                    scrollingHost.ViewChanged += ItemsHost_ViewChanged;
+                }
+
+                scrollingHost?.TryChangeView(null, ItemsHost.SelectedIndex * 40, null, e == null);
+            }
         }
     }
 }
