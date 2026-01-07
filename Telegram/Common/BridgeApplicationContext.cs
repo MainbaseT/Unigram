@@ -130,7 +130,7 @@ namespace Telegram.Common
             var method = _webAuthNGetApiVersionNumber.Value;
             if (method != null)
             {
-                return method() != 0;
+                return method() >= 3;
             }
 
             return false;
@@ -138,6 +138,7 @@ namespace Telegram.Common
 
         public static async Task<Object> AddLoginPasskeyAsync(IClientService clientService)
         {
+            Logger.Info();
             await ConnectAsync();
 
             var response = await clientService.SendAsync(new GetPasskeyParameters());
@@ -176,6 +177,7 @@ namespace Telegram.Common
 
         public static async Task<Object> CheckAuthenticationPasskeyAsync(IClientService clientService)
         {
+            Logger.Info();
             await ConnectAsync();
 
             var response = await clientService.SendAsync(new GetAuthenticationPasskeyParameters());

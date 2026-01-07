@@ -58,6 +58,7 @@ namespace Telegram.ViewModels.Authorization
             {
                 LocaleService.Current.Changed += OnLocaleChanged;
                 Handle(new UpdateOption(OptionsService.R.SuggestedLanguagePackId, new OptionValueString(ClientService.Options.SuggestedLanguagePackId)));
+                Handle(new UpdateOption(OptionsService.R.CanUseLoginPasskey, new OptionValueBoolean(ClientService.Options.CanUseLoginPasskey)));
 
                 IsLoading = false;
 
@@ -331,7 +332,8 @@ namespace Telegram.ViewModels.Authorization
             }
         }
 
-        public bool CanUseLoginPasskey => ClientService.Options.CanUseLoginPasskey;
+        public bool CanUseLoginPasskey => ClientService.Options.CanUseLoginPasskey
+            && BridgeApplicationContext.IsPasskeySupported();
 
         #region Strings
 
