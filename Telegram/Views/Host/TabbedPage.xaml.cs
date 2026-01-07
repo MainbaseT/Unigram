@@ -39,9 +39,7 @@ namespace Telegram.Views.Host
         public TabbedPage(TabViewItem newTab, bool forWebApps)
         {
             InitializeComponent();
-
             Window.Current.SetTitleBar(Footer);
-            BackdropMaterial.SetApplyToRootOrPageBackground(this, true);
 
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
