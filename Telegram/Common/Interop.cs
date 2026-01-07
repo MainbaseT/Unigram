@@ -131,16 +131,4 @@ namespace Telegram.Common
     {
         unsafe void Buffer(out byte* value);
     }
-
-#if NET9_0_OR_GREATER
-    [GeneratedComInterface]
-#else
-    [ComImport]
-#endif
-    [Guid("0D8FB190-F122-5B8D-9FDD-543B0D8EB7F3")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    internal interface ICompositorWithBlurredWallpaperBackdropBrush
-    {
-        CompositionBackdropBrush TryCreateBlurredWallpaperBackdropBrush();
-    }
 }

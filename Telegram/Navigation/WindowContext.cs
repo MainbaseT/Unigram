@@ -319,10 +319,7 @@ namespace Telegram.Navigation
 
             _window.Content = _content;
 
-            if ((object)_window.Compositor is ICompositorWithBlurredWallpaperBackdropBrush)
-            {
-                BackdropMaterial.SetApplyToRootOrPageBackground(_content, true);
-            }
+            BackdropMaterial.SetApplyToRootOrPageBackground(_content, true);
         }
 
         private void OnLoading(FrameworkElement sender, object args)
