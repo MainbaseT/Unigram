@@ -19,6 +19,7 @@ using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
+using Telegram.Views.Gifts.Popups;
 using Telegram.Views.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -672,27 +673,33 @@ namespace Telegram.Views.Stars.Popups
             }
         }
 
-        private void UpgradedModelRarity_Click(object sender, RoutedEventArgs e)
+        private async void UpgradedModelRarity_Click(object sender, RoutedEventArgs e)
         {
-            if (_gift.Gift is SentGiftUpgraded upgraded)
-            {
-                ToastPopup.Show(UpgradedModelRarity, string.Format(Strings.Gift2RarityHint, (upgraded.Gift.Model.RarityPerMille / 10d).ToString("0.##") + "%"), TeachingTipPlacementMode.Top);
-            }
+            ShowVariants();
         }
 
         private void UpgradedBackdropRarity_Click(object sender, RoutedEventArgs e)
         {
-            if (_gift.Gift is SentGiftUpgraded upgraded)
-            {
-                ToastPopup.Show(UpgradedBackdropRarity, string.Format(Strings.Gift2RarityHint, (upgraded.Gift.Backdrop.RarityPerMille / 10d).ToString("0.##") + "%"), TeachingTipPlacementMode.Top);
-            }
+            ShowVariants();
         }
 
         private void UpgradedSymbolRarity_Click(object sender, RoutedEventArgs e)
         {
+            ShowVariants();
+        }
+
+        private async void ShowVariants()
+        {
             if (_gift.Gift is SentGiftUpgraded upgraded)
             {
-                ToastPopup.Show(UpgradedSymbolRarity, string.Format(Strings.Gift2RarityHint, (upgraded.Gift.Symbol.RarityPerMille / 10d).ToString("0.##") + "%"), TeachingTipPlacementMode.Top);
+                var response = await _clientService.SendAsync(new GetGiftUpgradeVariants(upgraded.Gift.RegularGiftId));
+                if (response is GiftUpgradeVariants variants)
+                {
+                    Hide();
+
+                    await _navigationService.ShowPopupAsync(new GiftVariantsPopup(_clientService, _navigationService, _gift, variants));
+                    await this.ShowQueuedAsync(XamlRoot);
+                }
             }
         }
 

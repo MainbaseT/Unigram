@@ -276,6 +276,9 @@
     <Compile Include="Controls\Cells\ChatInviteLinkCell.xaml.cs">
       <DependentUpon>ChatInviteLinkCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Cells\GiftVariantCell.xaml.cs">
+      <DependentUpon>GiftVariantCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Cells\ReceivedGiftCell.xaml.cs">
       <DependentUpon>ReceivedGiftCell.xaml</DependentUpon>
     </Compile>
@@ -1262,6 +1265,9 @@
       <DependentUpon>ShareFolderPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Collections\MultiValueDictionary.cs" />
+    <Compile Include="Views\Gifts\Popups\GiftVariantsPopup.xaml.cs">
+      <DependentUpon>GiftVariantsPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\HostedPage.cs" />
     <Compile Include="Views\Host\SharePage.xaml.cs">
       <DependentUpon>SharePage.xaml</DependentUpon>
@@ -2609,6 +2615,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\Cells\GiftVariantCell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\Cells\ReceivedGiftCell.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -3358,6 +3368,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Folders\Popups\ShareFolderPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Gifts\Popups\GiftVariantsPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

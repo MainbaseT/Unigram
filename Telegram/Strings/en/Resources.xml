@@ -13214,4 +13214,19 @@
     <string name="StakeDiceActionWon">un1 won &#128142; {0}</string>
     <string name="StakeDiceActionLost">un1 lost &#128142; {0}</string>
 
+    <string name="GiftPreviewBackdrop">backdrop</string>
+    <string name="GiftPreviewBackdrops">Backdrops</string>
+    <string name="GiftPreviewCountBackdrops_one">This collectible features **{0}** unique backdrop</string>
+    <string name="GiftPreviewCountBackdrops_other">This collectible features **{0}** unique backdrops</string>
+    <string name="GiftPreviewCountModels_one">This collectible features **{0}** unique models</string>
+    <string name="GiftPreviewCountModels_other">This collectible features **{0}** unique models</string>
+    <string name="GiftPreviewCountSymbols_one">This collectible features **{0}** unique symbol</string>
+    <string name="GiftPreviewCountSymbols_other">This collectible features **{0}** unique symbols</string>
+    <string name="GiftPreviewModel">model</string>
+    <string name="GiftPreviewModels">Models</string>
+    <string name="GiftPreviewSymbol">symbol</string>
+    <string name="GiftPreviewSymbols">Symbols</string>
+    <string name="Gift2PreviewRandomTraits">Random Traits</string>
+    <string name="Gift2PreviewSelectedTraits">Selected Traits</string>
+
 </resources>

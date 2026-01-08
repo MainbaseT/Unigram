@@ -478,5 +478,11 @@ namespace Telegram.Common
             // OLD: .WithBrightness(-0.2f)
             return color.WithSatuation(satuation, value);
         }
+
+        public static Color Lighten(this Color color, float satuation = -0.05f, float value = 0.1f)
+        {
+            // OLD: .WithBrightness(0.2f)
+            return color.WithSatuation(satuation, value);
+        }
     }
 }

@@ -74,6 +74,16 @@ namespace Telegram.Controls
             Update(source, centerColor, edgeColor, symbolColor);
         }
 
+        public void Update(IClientService clientService, UpgradedGiftBackdrop backdrop, UpgradedGiftSymbol symbol)
+        {
+            var source = DelayedFileSource.FromSticker(clientService, symbol.Sticker);
+            var centerColor = backdrop.Colors.CenterColor.ToColor();
+            var edgeColor = backdrop.Colors.EdgeColor.ToColor();
+            var symbolColor = backdrop.Colors.SymbolColor.ToColor();
+
+            Update(source, centerColor, edgeColor, symbolColor);
+        }
+
         public void Update(AnimatedImageSource pattern, Color centerColor, Color edgeColor, Color symbolColor)
         {
             _pattern = pattern;
@@ -100,6 +110,17 @@ namespace Telegram.Controls
 
             Pattern.Foreground = new SolidColorBrush(symbolColor);
             Pattern.Source = pattern;
+        }
+
+        public void Clear()
+        {
+            if (!_templateApplied)
+            {
+                return;
+            }
+
+            HeaderRoot.Background = null;
+            Pattern.Source = null;
         }
 
         #region Footer

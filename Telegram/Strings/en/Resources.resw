@@ -7032,6 +7032,12 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="Gift2PrepayUpgradeTitle" xml:space="preserve">
     <value>Make Unique</value>
   </data>
+  <data name="Gift2PreviewRandomTraits" xml:space="preserve">
+    <value>Random Traits</value>
+  </data>
+  <data name="Gift2PreviewSelectedTraits" xml:space="preserve">
+    <value>Selected Traits</value>
+  </data>
   <data name="Gift2ProfileInvisible" xml:space="preserve">
     <value>This gift is hidden. Only you can see it.</value>
   </data>
@@ -7604,6 +7610,42 @@ You will receive **{3} TON** after fees.</value>
   </data>
   <data name="GiftPremiumUseGiftBtn" xml:space="preserve">
     <value>Use Gift</value>
+  </data>
+  <data name="GiftPreviewBackdrop" xml:space="preserve">
+    <value>backdrop</value>
+  </data>
+  <data name="GiftPreviewBackdrops" xml:space="preserve">
+    <value>Backdrops</value>
+  </data>
+  <data name="GiftPreviewCountBackdrops_one" xml:space="preserve">
+    <value>This collectible features **{0}** unique backdrop</value>
+  </data>
+  <data name="GiftPreviewCountBackdrops_other" xml:space="preserve">
+    <value>This collectible features **{0}** unique backdrops</value>
+  </data>
+  <data name="GiftPreviewCountModels_one" xml:space="preserve">
+    <value>This collectible features **{0}** unique models</value>
+  </data>
+  <data name="GiftPreviewCountModels_other" xml:space="preserve">
+    <value>This collectible features **{0}** unique models</value>
+  </data>
+  <data name="GiftPreviewCountSymbols_one" xml:space="preserve">
+    <value>This collectible features **{0}** unique symbol</value>
+  </data>
+  <data name="GiftPreviewCountSymbols_other" xml:space="preserve">
+    <value>This collectible features **{0}** unique symbols</value>
+  </data>
+  <data name="GiftPreviewModel" xml:space="preserve">
+    <value>model</value>
+  </data>
+  <data name="GiftPreviewModels" xml:space="preserve">
+    <value>Models</value>
+  </data>
+  <data name="GiftPreviewSymbol" xml:space="preserve">
+    <value>symbol</value>
+  </data>
+  <data name="GiftPreviewSymbols" xml:space="preserve">
+    <value>Symbols</value>
   </data>
   <data name="GiftRemovedFromCollectionTitle_one" xml:space="preserve">
     <value>{0} gift removed from **{1}**</value>
