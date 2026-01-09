@@ -5,6 +5,8 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System;
+using Telegram.Common;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -30,7 +32,8 @@ namespace Telegram.Controls.Messages.Service
             Pattern.Update(message.ClientService, upgradedGiftPurchaseOffer.Gift);
             Animation.Source = DelayedFileSource.FromSticker(message.ClientService, upgradedGiftPurchaseOffer.Gift.Model.Sticker);
 
-            if (upgradedGiftPurchaseOffer.State is GiftPurchaseOfferStatePending && !message.IsOutgoing)
+            var now = DateTime.Now.ToTimestamp();
+            if (now < upgradedGiftPurchaseOffer.ExpirationDate && upgradedGiftPurchaseOffer.State is GiftPurchaseOfferStatePending && !message.IsOutgoing)
             {
                 Accept.Visibility = Visibility.Visible;
                 Reject.Visibility = Visibility.Visible;

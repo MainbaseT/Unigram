@@ -2508,7 +2508,7 @@ namespace Telegram.Controls.Messages
                 if (upgradedGift.State is GiftPurchaseOfferStatePending)
                 {
                     var now = DateTime.Now.ToTimestamp();
-                    if (now > upgradedGift.ExpirationDate)
+                    if (now >= upgradedGift.ExpirationDate)
                     {
                         content += "\n\n" + Strings.GiftOfferStatusExpired;
                     }
