@@ -148,6 +148,14 @@ namespace Telegram.Views
             ViewModel.NavigationService.NavigateToInstant(Strings.PrivacyPolicyUrl);
         }
 
+        private void Features_Click(object sender, RoutedEventArgs e)
+        {
+            if (Uri.TryCreate(Strings.TelegramFeaturesUrl, UriKind.Absolute, out Uri tipsUri))
+            {
+                MessageHelper.OpenTelegramUrl(ViewModel.ClientService, ViewModel.NavigationService, tipsUri);
+            }
+        }
+
         private void Premium_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.NavigationService.ShowPromo(new PremiumSourceSettings());

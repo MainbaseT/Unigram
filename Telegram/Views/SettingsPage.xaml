@@ -300,6 +300,13 @@
                             <icons:FAQ />
                         </controls:SettingsButton.IconSource>
                     </controls:SettingsButton>
+                    <controls:SettingsButton Content="{CustomResource TelegramFeatures}"
+                                             Click="Features_Click"
+                                             Style="{StaticResource IconBadgeButtonStyle}">
+                        <controls:SettingsButton.IconSource>
+                            <icons:Tips />
+                        </controls:SettingsButton.IconSource>
+                    </controls:SettingsButton>
                     <controls:SettingsButton Content="{CustomResource PrivacyPolicy}"
                                              Click="PrivacyPolicy_Click"
                                              Style="{StaticResource IconBadgeButtonStyle}">
