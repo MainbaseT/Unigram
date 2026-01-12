@@ -173,7 +173,7 @@ namespace Telegram.Views.Supergroups
             ViewModel.HasAutomaticTranslation = group.HasAutomaticTranslation;
 
             var canChangeInfo = group.CanChangeInfo(chat);
-            var canInviteUsers = group.CanInviteUsers();
+            var canInviteUsers = group.CanInviteUsers(chat);
             var canRestrictMembers = group.CanRestrictMembers();
             var canPostMessages = group.CanPostMessages();
             var hasActiveUsername = group.HasActiveUsername();
@@ -286,7 +286,7 @@ namespace Telegram.Views.Supergroups
             ViewModel.IsAllHistoryAvailable = 1;
 
             var canChangeInfo = group.CanChangeInfo(chat);
-            var canInviteUsers = group.CanInviteUsers();
+            var canInviteUsers = group.CanInviteUsers(chat);
 
             TitleLabel.IsReadOnly = !canChangeInfo;
             About.IsReadOnly = !canChangeInfo;

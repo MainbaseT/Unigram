@@ -186,7 +186,7 @@ namespace Telegram.Views.Supergroups
             Title = group.IsChannel ? Strings.ChannelSubscribers : Strings.ChannelMembers;
 
             AddNew.Content = group.IsChannel ? Strings.AddSubscriber : Strings.AddMember;
-            AddNewPanel.Visibility = group.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
+            AddNewPanel.Visibility = group.CanInviteUsers(chat) ? Visibility.Visible : Visibility.Collapsed;
 
             Footer.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -204,7 +204,7 @@ namespace Telegram.Views.Supergroups
             }
 
             AddNew.Content = Strings.AddMember;
-            AddNewPanel.Visibility = group.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
+            AddNewPanel.Visibility = group.CanInviteUsers(chat) ? Visibility.Visible : Visibility.Collapsed;
 
             Footer.Visibility = Visibility.Collapsed;
         }

@@ -571,7 +571,7 @@ namespace Telegram.ViewModels.Folders
                 }
                 else if (ClientService.TryGetSupergroup(chat, out Supergroup supergroup))
                 {
-                    if (supergroup.CanInviteUsers())
+                    if (supergroup.CanInviteUsers(chat))
                     {
                         continue;
                     }
@@ -582,7 +582,7 @@ namespace Telegram.ViewModels.Folders
                 }
                 else if (ClientService.TryGetBasicGroup(chat, out BasicGroup basicGroup))
                 {
-                    if (basicGroup.CanInviteUsers())
+                    if (basicGroup.CanInviteUsers(chat))
                     {
                         continue;
                     }

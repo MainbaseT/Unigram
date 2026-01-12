@@ -2048,11 +2048,11 @@ namespace Telegram.Services
         {
             if (TryGetSupergroup(chat, out Supergroup supergroup))
             {
-                return supergroup.CanInviteUsers();
+                return supergroup.CanInviteUsers(chat);
             }
             else if (TryGetBasicGroup(chat, out BasicGroup basicGroup))
             {
-                return basicGroup.CanInviteUsers();
+                return basicGroup.CanInviteUsers(chat);
             }
 
             // TODO: secret chats maybe?

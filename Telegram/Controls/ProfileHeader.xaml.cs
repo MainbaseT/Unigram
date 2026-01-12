@@ -1612,7 +1612,7 @@ namespace Telegram.Controls
                     {
                         //flyout.CreateFlyoutItem(ViewModel.EditCommand, Strings.ManageChannelMenu, Icons.Edit);
                     }
-                    else if (chat.Permissions.CanInviteUsers || supergroup.CanInviteUsers())
+                    else if (supergroup.CanInviteUsers(chat))
                     {
                         flyout.CreateFlyoutItem(ViewModel.Invite, Strings.AddMember, Icons.PersonAdd);
                     }

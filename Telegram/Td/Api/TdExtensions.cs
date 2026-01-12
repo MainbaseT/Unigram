@@ -3928,7 +3928,7 @@ namespace Telegram.Td.Api
             return basicGroup.Status is ChatMemberStatusCreator;
         }
 
-        public static bool CanInviteUsers(this Supergroup supergroup)
+        public static bool CanInviteUsers(this Supergroup supergroup, Chat chat)
         {
             if (supergroup.Status == null)
             {
@@ -3939,26 +3939,24 @@ namespace Telegram.Td.Api
             {
                 return false;
             }
-
-            //if (supergroup.AnyoneCanInvite && supergroup.Status is ChatMemberStatusMember)
-            //{
-            //    return true;
-            //}
+            else if (supergroup.Status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanInviteUsers;
+            }
 
             return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanInviteUsers: true };
         }
 
-        public static bool CanInviteUsers(this BasicGroup basicGroup)
+        public static bool CanInviteUsers(this BasicGroup basicGroup, Chat chat)
         {
             if (basicGroup.Status == null)
             {
                 return false;
             }
-
-            //if (basicGroup.EveryoneIsAdministrator)
-            //{
-            //    return true;
-            //}
+            else if (basicGroup.Status is ChatMemberStatusMember)
+            {
+                return chat.Permissions.CanInviteUsers;
+            }
 
             return basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanInviteUsers: true };
         }

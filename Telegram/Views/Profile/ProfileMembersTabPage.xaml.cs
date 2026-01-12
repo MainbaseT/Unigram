@@ -33,12 +33,12 @@ namespace Telegram.Views.Profile
             if (ViewModel.ClientService.TryGetSupergroup(ViewModel.Chat, out Supergroup supergroup))
             {
                 AddNew.Content = supergroup.IsChannel ? Strings.AddSubscriber : Strings.AddMember;
-                AddNewPanel.Visibility = supergroup.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
+                AddNewPanel.Visibility = supergroup.CanInviteUsers(ViewModel.Chat) ? Visibility.Visible : Visibility.Collapsed;
             }
             else if (ViewModel.ClientService.TryGetBasicGroup(ViewModel.Chat, out BasicGroup basicGroup))
             {
                 AddNew.Content = Strings.AddMember;
-                AddNewPanel.Visibility = basicGroup.CanInviteUsers() ? Visibility.Visible : Visibility.Collapsed;
+                AddNewPanel.Visibility = basicGroup.CanInviteUsers(ViewModel.Chat) ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

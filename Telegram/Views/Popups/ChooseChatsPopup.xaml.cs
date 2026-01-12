@@ -291,7 +291,7 @@ namespace Telegram.Views.Popups
                         }
                         else if (CanInviteUsers)
                         {
-                            return super.CanInviteUsers();
+                            return super.CanInviteUsers(chat);
                         }
                         else if (CanPromoteMembers)
                         {
