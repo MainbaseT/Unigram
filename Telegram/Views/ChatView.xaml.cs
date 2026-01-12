@@ -2710,29 +2710,7 @@ namespace Telegram.Views
             var flyout = new MenuFlyout();
 
             var header = ViewModel.ComposerHeader;
-            if (header?.ReplyTo != null && header.ReplyTo.CanBeRepliedInAnotherChat && !ViewModel.IsDirectMessagesGroup)
-            {
-                if (header.ReplyTo.Quote != null)
-                {
-                    var quote = new MessageQuote(header.ReplyTo);
-
-                    flyout.CreateFlyoutItem(ViewModel.QuoteToMessageInAnotherChat, quote, Strings.ReplyToAnotherChat, Icons.Replace);
-                }
-                else if (header.ReplyTo.ChecklistTaskId != 0)
-                {
-                    var checklist = new MessageChecklistTask(header.ReplyTo);
-
-                    flyout.CreateFlyoutItem(ViewModel.ReplyToChecklistTaskInAnotherChat, checklist, Strings.ReplyToAnotherChat, Icons.Replace);
-                }
-                else
-                {
-                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyTo.Message, Strings.ReplyToAnotherChat, Icons.Replace);
-                }
-
-                flyout.CreateFlyoutSeparator();
-                flyout.CreateFlyoutItem(ViewModel.ClearReply, Strings.DoNotReply, Icons.DismissCircle, destructive: true);
-            }
-            else if (header?.LinkPreview != null)
+            if (header?.LinkPreview != null)
             {
                 static void ChangeShowAbove(MessageComposerHeader header)
                 {
@@ -2824,6 +2802,28 @@ namespace Telegram.Views
 
                 flyout.CreateFlyoutSeparator();
                 flyout.CreateFlyoutItem(ViewModel.ClearReply, Strings.DoNotLinkPreview, Icons.DismissCircle, destructive: true);
+            }
+            else if (header?.ReplyTo != null && header.ReplyTo.CanBeRepliedInAnotherChat && !ViewModel.IsDirectMessagesGroup)
+            {
+                if (header.ReplyTo.Quote != null)
+                {
+                    var quote = new MessageQuote(header.ReplyTo);
+
+                    flyout.CreateFlyoutItem(ViewModel.QuoteToMessageInAnotherChat, quote, Strings.ReplyToAnotherChat, Icons.Replace);
+                }
+                else if (header.ReplyTo.ChecklistTaskId != 0)
+                {
+                    var checklist = new MessageChecklistTask(header.ReplyTo);
+
+                    flyout.CreateFlyoutItem(ViewModel.ReplyToChecklistTaskInAnotherChat, checklist, Strings.ReplyToAnotherChat, Icons.Replace);
+                }
+                else
+                {
+                    flyout.CreateFlyoutItem(ViewModel.ReplyToMessageInAnotherChat, header.ReplyTo.Message, Strings.ReplyToAnotherChat, Icons.Replace);
+                }
+
+                flyout.CreateFlyoutSeparator();
+                flyout.CreateFlyoutItem(ViewModel.ClearReply, Strings.DoNotReply, Icons.DismissCircle, destructive: true);
             }
 
             flyout.ShowAt(sender, args);
