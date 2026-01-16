@@ -1658,12 +1658,12 @@ namespace Telegram.Td.Api
                 return GetFile(viewModel.GeneratedContent ?? message.Content);
             }
 
-            return GetFile(message.Content);
+            return GetFile(message?.Content);
         }
 
         public static File GetFile(this Message message)
         {
-            return GetFile(message.Content);
+            return GetFile(message?.Content);
         }
 
         public static File GetFile(this MessageContent content)
