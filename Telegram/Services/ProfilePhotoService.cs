@@ -143,7 +143,7 @@ namespace Telegram.Services
             }
             else if (file is StoragePhoto photo)
             {
-                var serialized = JsonSerializer.Serialize(photo.EditState, GenerationJsonContext.Default.VideoGeneration);
+                var serialized = JsonSerializer.Serialize(photo.EditState, GenerationJsonContext.Default.ImageGeneration);
                 var generated = await photo.File.ToGeneratedAsync(ConversionType.Compress, serialized);
                 inputPhoto = new InputChatPhotoStatic(generated);
             }
