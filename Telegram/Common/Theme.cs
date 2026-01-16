@@ -70,55 +70,30 @@ namespace Telegram.Common
                 xamlAutoFontFamilyValue = "Segoe UI";
             }
 
-            //if (false)
-            //{
-            //    foreach (var language in Formatter.Languages)
-            //    {
-            //        // We copy XAML behavior, only resolve for Japanese and Korean
-            //        if (language == "ja" || language == "ko" || language == "ja-JP" || language == "ko-KR")
-            //        {
-            //            try
-            //            {
-            //                var recommendedFonts = new LanguageFontGroup(language);
-            //                var family = recommendedFonts.UITextFont.FontFamily;
-
-            //                xamlAutoFontFamily.Prepend(family, comma);
-            //            }
-            //            catch
-            //            {
-            //                // All the remote procedure calls must be wrapped in a try-catch block
-            //            }
-            //        }
-            //    }
-
-            //    xamlAutoFontFamily.Prepend("Segoe UI", comma);
-            //}
-
-            switch (SettingsService.Current.Appearance.EmojiSet)
+            var emojiFontFamily = SettingsService.Current.Appearance.EmojiSet switch
             {
-                case "microsoft":
-                    XamlAutoFontFamily = "ms-appx:///Assets/Emoji/microsoft.ttf#Segoe UI Emoji";
-                    break;
-                default:
-                    XamlAutoFontFamily = "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji";
-                    break;
-            }
+                "microsoft" => "ms-appx:///Assets/Emoji/microsoft.ttf#Segoe UI Emoji",
+                _ => "ms-appx:///Assets/Emoji/apple.ttf#Segoe UI Emoji",
+            };
+
+            // When using custom fonts we prioritize the user choice over emojis.
+            // This will break all keycaps emojis, but preserves 
 
             if (xamlAutoFontFamilyDefault)
             {
-                this["EmojiTextThemeFontFamily"] = new FontFamily(XamlAutoFontFamily + comma + xamlAutoFontFamilyValue);
+                XamlAutoFontFamily = emojiFontFamily;
+                this["EmojiTextThemeFontFamily"] = new FontFamily(emojiFontFamily + comma + xamlAutoFontFamilyValue);
             }
             else
             {
-                XamlAutoFontFamily += comma + xamlAutoFontFamilyValue;
-                this["EmojiTextThemeFontFamily"] = new FontFamily(XamlAutoFontFamily + comma + xamlAutoFontFamilyValue);
+                XamlAutoFontFamily = xamlAutoFontFamilyValue + comma + emojiFontFamily;
+                this["EmojiTextThemeFontFamily"] = new FontFamily(xamlAutoFontFamilyValue + comma + emojiFontFamily);
             }
 
             this["ContentControlThemeFontFamily"] = new FontFamily(XamlAutoFontFamily);
             this["EmojiThemeFontFamily"] = new FontFamily(XamlAutoFontFamily);
             this["EmojiThemeFontFamilyWithSymbols"] = new FontFamily(XamlAutoFontFamily + comma + "ms-appx:///Assets/Fonts/Telegram.ttf#Telegram");
             this["EmojiThemeFontFamilyWithRounded"] = new FontFamily(XamlAutoFontFamily + comma + "ms-appx:///Assets/Fonts/Nunito.ttf#Nunito" + comma + "ms-appx:///Assets/Fonts/Telegram.ttf#Telegram");
-            this["EmojiTextThemeFontFamily"] = new FontFamily(XamlAutoFontFamily + comma + xamlAutoFontFamilyValue);
         }
 
         public string XamlAutoFontFamily { get; private set; }
