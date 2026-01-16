@@ -337,7 +337,7 @@ namespace Telegram.Controls.Messages
                 return;
             }
 
-            if (message.Content is MessageStakeDice { Value: not 0 })
+            if (message.Content is MessageStakeDice { Value: not 0 } && !message.GeneratedContentUnread)
             {
                 _hasStakeDice = true;
                 Footer ??= GetTemplateChild(nameof(Footer)) as Border;
