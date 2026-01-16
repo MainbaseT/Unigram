@@ -412,7 +412,7 @@ namespace Telegram.Views
                         const string topExp = "(reference.Offset.Y + scroll.Translation.Y) - props.TopPadding";
                         const string bottomExp = $"(reference.Offset.Y + child.Size.Y + scroll.Translation.Y) - props.TopPadding";
 
-                        const string trueTrueExp = $"{bottomExp} >= 73 ? Max(props.TopPadding, {topExp}) : {bottomExp} - 26";
+                        const string trueTrueExp = $"{bottomExp} >= 73 ? Max(props.TopPadding, {topExp}) : {bottomExp} - (30 + 4 + 30)";
                         const string trueFalseExp = $"{bottomExp} - 26"; //$"{bottomExp} > 0 ? props.TopPadding : {bottomExp} + 8";
                         const string falseTrueExp = $"Max(0, {topExp})";
 
@@ -564,7 +564,7 @@ namespace Telegram.Views
                 bottom += container.ActualHeight;
 
                 // Read and play messages logic:
-                if (message.Id == 0)
+                if (message.Id is 0 or long.MaxValue)
                 {
                     continue;
                 }
