@@ -460,10 +460,10 @@ namespace Telegram.Common
             "RLottie",
             "swresample-5",
             "swscale-8",
+            "tdjson",
             "Telegram",
             "Telegram.Native.Calls",
             "Telegram.Native",
-            "Telegram.Td",
             "WebView2Loader",
             "zlib1",
         };
@@ -556,6 +556,7 @@ namespace Telegram.Common
 
                 case "L’instance de périphérique GPU a été suspendue. Utilisez GetDeviceRemovedReason pour déterminer l’action appropriée.":
                 case "La instancia de dispositivo de GPU se ha suspendido. Use GetDeviceRemovedReason para averiguar cuál es la acción adecuada.":
+                case "Istanza del dispositivo GPU sospesa. Utilizzare GetDeviceRemovedReason per determinare l'azione appropriata.":
                 case "Die GPU-Geräteinstanz wurde angehalten. Verwenden Sie GetDeviceRemovedReason, um die erforderliche Aktion zu bestimmen.":
                 case "GPU aygıt örneği askıya alınmış. Uygun eylemi belirlemek için GetDeviceRemovedReason komutunu kullanın.":
                 case "Wystąpienie urządzenia GPU zostało zawieszone. Użyj obiektu GetDeviceRemovedReason, aby określić odpowiednią akcję.":
@@ -708,6 +709,7 @@ namespace Telegram.Common
                 case "O filtro de mensagens indicou que o aplicativo está ocupado.":
                 case "El filtro de mensaje indicó que la aplicación está ocupada.":
                 case "Het berichtenfilter heeft aangegeven dat de toepassing bezet is.":
+                case "Filtr wiadomości wykazał, że aplikacja jest zajęta.":
                 case "Il filtro messaggi ha indicato che l'applicazione è impegnata.":
                 case "İleti filtresi uygulamanın kullanımda olduğunu belirledi.":
                 case "Фильтр сообщений выдал диагностику о занятости приложения.":
@@ -733,9 +735,11 @@ namespace Telegram.Common
                     return "An event was unable to invoke any of the subscribers";
 
                 case "Le package n'a pas de répertoire mutable.":
+                case "Das Paket hat kein variables Verzeichnis.":
                 case "Пакет не имеет изменяемого каталога.":
                     return "The package does not have a mutable directory.";
 
+                case "Risorsa realizzata sulla destinazione di rendering errata.":
                 case "Die Ressource wurde auf dem falschen Renderziel erkannt.":
                 case "Kaynak yanlış işleme hedefinde gerçekleştirildi.":
                     return "The resource was realized on the wrong render target.";
