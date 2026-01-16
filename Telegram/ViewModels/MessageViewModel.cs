@@ -310,7 +310,11 @@ namespace Telegram.ViewModels
         private bool? _hasSenderPhoto;
         public bool HasSenderPhoto => _hasSenderPhoto ??= GetHasSenderPhoto();
 
+#if DEBUG
+        public bool CanSummarizeText => Text?.Text.Length > 1000 && !IsVisuallyOutgoing;
+#else
         public bool CanSummarizeText => SummaryLanguageCode?.Length > 0 && !IsVisuallyOutgoing;
+#endif
 
         private bool GetHasSenderPhoto()
         {
