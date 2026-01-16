@@ -710,6 +710,11 @@ namespace Telegram.Services
                 notification.SuppressPopup = suppressPopup || ticks - _lastShownToast <= 7000;
                 notifier.Show(notification);
 
+                if (ticks - _lastShownToast <= 7000)
+                {
+                    Logger.Info("Suppress popup");
+                }
+
                 if (soundFile != null && notifier.Setting == NotificationSetting.Enabled)
                 {
                     SoundEffects.Play(soundFile);
