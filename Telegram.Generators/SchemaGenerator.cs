@@ -957,7 +957,7 @@ namespace Telegram.Generators
                     var temp = _index + 1;
                     while (temp < _lines.Length && _lines[temp].StartsWith("//"))
                     {
-                        Value += " " + _lines[temp].Substring(2);
+                        Value += " " + _lines[temp].Substring(2).TrimStart('-');
                         temp++;
                     }
 
