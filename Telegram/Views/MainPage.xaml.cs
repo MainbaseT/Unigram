@@ -237,9 +237,10 @@ namespace Telegram.Views
                 ? HorizontalAlignment.Right
                 : HorizontalAlignment.Left;
 
-            Stories.SystemOverlayLeftInset = metrics.LeftInset > 0 ? 138 : 0;
-
             UpdateTitleBarMargins();
+
+            Stories.SystemOverlayLeftInset = metrics.LeftInset > 0 ? 138 : 0;
+            Stories.SystemOverlayRightInset = metrics.RightInset > 0 ? 138 : 0;
         }
 
         private void UpdateTitleBarMargins()
@@ -250,11 +251,11 @@ namespace Telegram.Views
 
             if (TitleText.FlowDirection == FlowDirection.LeftToRight)
             {
-                TitleBarrr.Margin = new Thickness(left, 0, right, 0);
+                TitleBarrr.Margin = new Thickness(left, TitleBarrr.Margin.Top, right, TitleBarrr.Margin.Bottom);
             }
             else
             {
-                TitleBarrr.Margin = new Thickness(right, 0, left, 0);
+                TitleBarrr.Margin = new Thickness(right, TitleBarrr.Margin.Top, left, TitleBarrr.Margin.Bottom);
             }
         }
 

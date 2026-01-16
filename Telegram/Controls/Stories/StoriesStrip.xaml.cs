@@ -9,9 +9,12 @@ using System;
 using System.Collections.Specialized;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Composition;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
+using Telegram.Controls.Messages;
 using Telegram.Td.Api;
+using Telegram.ViewModels.Drawers;
 using Telegram.ViewModels.Stories;
 using Telegram.Views.Stories.Popups;
 using Windows.Foundation;
@@ -111,10 +114,20 @@ namespace Telegram.Controls.Stories
                 Show.Width = count * 12 + 12 + 8;
                 Show.Margin = new Thickness(_first > 0 ? 26 : 14, 20, 0, 0);
                 Show.Visibility = Visibility.Visible;
+
+                Icon.Margin = new Thickness(Show.Width + Show.Margin.Left + 8, 20, 0, 0);
+                Icon.Visibility = Visibility.Visible;
+
+                TitleBarrr?.Margin = new Thickness(TitleBarrr.Margin.Left, 40, TitleBarrr.Margin.Right, -40);
+                TitleBarHandle?.Margin = new Thickness(SystemOverlayLeftInset > 0 ? SystemOverlayLeftInset + (count * 12 + 12 + 8) : 80 + (count * 12 + 12 + 8), 0, SystemOverlayRightInset > 0 ? SystemOverlayRightInset : 80, 0);
             }
             else
             {
                 Show.Visibility = Visibility.Collapsed;
+                Icon.Visibility = Visibility.Collapsed;
+
+                TitleBarrr?.Margin = new Thickness(TitleBarrr.Margin.Left, 0, TitleBarrr.Margin.Right, 0);
+                TitleBarHandle?.Margin = new Thickness(SystemOverlayLeftInset > 0 ? SystemOverlayLeftInset : 80, 0, SystemOverlayRightInset > 0 ? SystemOverlayRightInset : 80, 0);
             }
 
             ScrollingHost.IsHitTestVisible = !_collapsed;
@@ -347,6 +360,7 @@ namespace Telegram.Controls.Stories
         }
 
         public FrameworkElement TitleBarrr { get; set; }
+        public Border TitleBarHandle { get; set; }
         public FrameworkElement Header { get; set; }
 
         private bool _tabsLeftCollapsed = true;
@@ -368,6 +382,17 @@ namespace Telegram.Controls.Stories
             {
                 _systemOverlayLeftInset = value;
                 UpdatePadding();
+            }
+        }
+
+        private float _systemOverlayRightInset;
+        public float SystemOverlayRightInset
+        {
+            get => _systemOverlayRightInset;
+            set
+            {
+                _systemOverlayRightInset = value;
+                UpdateIndexes();
             }
         }
 
@@ -487,8 +512,10 @@ namespace Telegram.Controls.Stories
 
             ForEach(_progress, _progressAnimation);
 
-            var titleVisualOffsetAnimation = compositor.CreateExpressionAnimation(
-                "_.RightToLeft ? 0 : _.Visible && _.Count > 0 ? (24 + (12 * _.Count)) * (1 - _.Progress) : 0");
+            var titleVisualOffsetAnimation = compositor.CreateExpressionAnimation("Vector3(_.RightToLeft ? 0 : _.Visible && _.Count > 0 ? 40 + (12 * _.Count) + (((72 * _.Count) - (40 + (12 * _.Count))) * _.Progress) : 0, 16, 0)");
+            var titleVisualScaleAnimation = compositor.CreateExpressionAnimation("_.Visible && _.Count > 0 ? Vector3(Clamp(_.Progress < 0.5 ? 0.5 : 0.5 + (_.Progress - 0.5), 0.5, 1), Clamp(_.Progress < 0.5 ? 0.5 : 0.5 + (_.Progress - 0.5), 0.5, 1), 1) : Vector3(1, 1, 1)");
+            var titleVisualOpacityAnimation = compositor.CreateExpressionAnimation("_.Visible && _.Count > 0 ? _.Progress < 0.5 ? 0 : (_.Progress - 0.5) * 2 : 1");
+            var titleVisualOpacityInverseAnimation = compositor.CreateExpressionAnimation("Clamp(1 - _.Progress * 2, 0, 1)");
 
             var storiesVisualOffsetAnimationX = compositor.CreateExpressionAnimation(
                 "(_.Padding - _.First * 12) * (1 - _.Progress)");
@@ -500,6 +527,9 @@ namespace Telegram.Controls.Stories
                 "84 * _.Progress");
 
             titleVisualOffsetAnimation.SetReferenceParameter("_", _progress);
+            titleVisualScaleAnimation.SetReferenceParameter("_", _progress);
+            titleVisualOpacityAnimation.SetReferenceParameter("_", _progress);
+            titleVisualOpacityInverseAnimation.SetReferenceParameter("_", _progress);
             storiesVisualOffsetAnimationX.SetReferenceParameter("_", _progress);
             storiesVisualOffsetAnimation.SetReferenceParameter("_", _progress);
             headerVisualOffsetAnimation.SetReferenceParameter("_", _progress);
@@ -508,6 +538,11 @@ namespace Telegram.Controls.Stories
             var storiesVisual = ElementComposition.GetElementVisual(this);
             var headerVisual = ElementComposition.GetElementVisual(Header);
 
+            var titleRedirect = compositor.CreateRedirectVisual(TitleBarrr, Vector2.Zero, new Vector2(200, 40));
+            titleRedirect.CenterPoint = new Vector3(0, 20, 0);
+            ElementCompositionPreview.SetElementChildVisual(this, titleRedirect);
+
+            titleVisual.CenterPoint = new Vector3(0, 10, 0);
             storiesVisual.Clip = clip;
 
             titleVisual.Properties.InsertVector3("Translation", Vector3.Zero);
@@ -518,7 +553,10 @@ namespace Telegram.Controls.Stories
             ElementCompositionPreview.SetIsTranslationEnabled(this, true);
             ElementCompositionPreview.SetIsTranslationEnabled(Header, true);
 
-            titleVisual.StartAnimation("Translation.X", titleVisualOffsetAnimation);
+            titleRedirect.StartAnimation("Offset", titleVisualOffsetAnimation);
+            titleRedirect.StartAnimation("Opacity", titleVisualOpacityInverseAnimation);
+            titleVisual.StartAnimation("Scale", titleVisualScaleAnimation);
+            titleVisual.StartAnimation("Opacity", titleVisualOpacityAnimation);
             storiesVisual.StartAnimation("Translation.X", storiesVisualOffsetAnimationX);
             clip.StartAnimation("RightInset", storiesVisualOffsetAnimationX);
             storiesVisual.StartAnimation("Translation.Y", storiesVisualOffsetAnimation);
@@ -797,5 +835,13 @@ namespace Telegram.Controls.Stories
 
 
         #endregion
+
+        private void Icon_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.IsPremium)
+            {
+                EmojiMenuFlyout.ShowAt(ViewModel.ClientService, EmojiDrawerMode.EmojiStatus, Icon, EmojiFlyoutAlignment.TopLeft);
+            }
+        }
     }
 }
