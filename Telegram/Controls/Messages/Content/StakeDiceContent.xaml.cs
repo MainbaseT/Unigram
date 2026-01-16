@@ -6,7 +6,9 @@
 //
 
 using System;
+using System.Threading;
 using Telegram.Common;
+using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views.Popups;
@@ -14,6 +16,7 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Messages.Content
 {
@@ -48,6 +51,7 @@ namespace Telegram.Controls.Messages.Content
             Player = GetTemplateChild(nameof(Player)) as DiceView;
 
             Player.FirstFrameRendered += Player_FirstFrameRendered;
+            Player.Completed += Player_Completed;
 
             _templateApplied = true;
 
@@ -162,6 +166,20 @@ namespace Telegram.Controls.Messages.Content
             ElementCompositionPreview.SetElementChildVisual(Player, null);
         }
 
+        private void Player_Completed(object sender, EventArgs e)
+        {
+            if (_message?.Content is MessageStakeDice)
+            {
+                _message.GeneratedContentUnread = false;
+
+                this.BeginOnUIThread(() =>
+                {
+                    var selector = this.GetParent<MessageSelector>();
+                    selector?.UpdateMessageStakeDice(_message);
+                });
+            }
+        }
+
         private void DownloadFile(MessageViewModel message, DiceStickers stickers)
         {
             if (stickers is DiceStickersRegular regular)
@@ -233,7 +251,53 @@ namespace Telegram.Controls.Messages.Content
 
             await _message.ClientService.SendAsync(new GetStakeDiceState());
 
-            _message.Delegate.NavigationService.ShowPopup(new StakeDicePopup(_message));
+            using var cancellationToken = new CancellationTokenSource();
+            var label = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSymbols"] as FontFamily
+            };
+
+            TextBlockHelper.SetMarkdown(label, Strings.StakeDiceToast + (_message.ClientService.StakeDiceState.StakeToncoinAmount / Constants.ToncoinMin).ToString("0.#"));
+
+            var button = new SettingsButton
+            {
+                Style = BootStrapper.Current.Resources["SmallButtonStyle"] as Style,
+                Glyph = Strings.Change.ToLower(),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                FontSize = 11,
+                Padding = new Thickness(8, 0, 8, 0),
+                Margin = new Thickness(8, 0, 0, 2),
+                CornerRadius = new CornerRadius(8),
+                BorderThickness = new Thickness(0),
+                Height = 16
+            };
+
+            void handler(object _, RoutedEventArgs args)
+            {
+                _message.Delegate.NavigationService.ShowPopup(new StakeDicePopup(_message));
+                button.Click -= handler;
+                cancellationToken.Cancel();
+            }
+
+            button.Click += handler;
+
+            var grid = new Grid();
+            grid.Children.Add(label);
+            grid.Children.Add(button);
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.VerticalAlignment = VerticalAlignment.Center;
+
+            Grid.SetColumn(button, 1);
+
+            var confirm = await ToastPopup.ShowActionAsync(XamlRoot, grid, Strings.StakeDiceButton, null, Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Center, cancellationToken: cancellationToken.Token);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                _message.Delegate.SendMessage(new InputMessageStakeDice(_message.ClientService.StakeDiceState.StateHash, _message.ClientService.StakeDiceState.StakeToncoinAmount, false));
+            }
+
             return;
 
             //string text;

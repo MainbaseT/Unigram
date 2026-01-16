@@ -7,6 +7,7 @@
 
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls.Messages;
@@ -472,6 +473,60 @@ namespace Telegram.Controls
             var toast = ShowImpl(xamlRoot, text, icon, placement, requestedTheme, dismissAfter);
             if (toast?.Content is Grid content)
             {
+                var tsc = new TaskCompletionSource<ContentDialogResult>();
+                var undo = new Button()
+                {
+                    Content = action,
+                    FontWeight = FontWeights.SemiBold,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Style = BootStrapper.Current.Resources["AccentTextButtonStyle"] as Style,
+                    Margin = new Thickness(8, -4, -4, -4),
+                    Padding = new Thickness(4, 5, 4, 6)
+                };
+
+                void handler(object sender, RoutedEventArgs e)
+                {
+                    Logger.Info("closed");
+
+                    tsc.TrySetResult(ContentDialogResult.Primary);
+                    undo.Click -= handler;
+
+                    toast.IsOpen = false;
+                }
+
+                void closed(TeachingTip sender, TeachingTipClosedEventArgs e)
+                {
+                    tsc.TrySetResult(ContentDialogResult.None);
+                    sender.Closed -= closed;
+                }
+
+                undo.Click += handler;
+                toast.Closed += closed;
+
+                Grid.SetColumn(undo, 2);
+                content.Children.Add(undo);
+
+                return tsc.Task;
+            }
+
+            return Task.FromResult(ContentDialogResult.None);
+        }
+
+        public static Task<ContentDialogResult> ShowActionAsync(XamlRoot xamlRoot, FrameworkElement text, string action, FrameworkElement icon, TeachingTipPlacementMode placement, ElementTheme requestedTheme = ElementTheme.Dark, TimeSpan? dismissAfter = null, CancellationToken cancellationToken = default)
+        {
+            var toast = ShowImpl(xamlRoot, text, icon, placement, requestedTheme, dismissAfter);
+            if (toast?.Content is Grid content)
+            {
+                toast.MaxWidth = 500;
+
+                if (cancellationToken != default)
+                {
+                    cancellationToken.Register(() =>
+                    {
+                        toast.IsOpen = false;
+                    });
+                }
+
                 var tsc = new TaskCompletionSource<ContentDialogResult>();
                 var undo = new Button()
                 {

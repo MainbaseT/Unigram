@@ -313,6 +313,8 @@ namespace Telegram.Controls
                     }
                     else if (i == 1)
                     {
+                        Completed?.Invoke(this, null);
+
                         lock (_subscribeLock)
                         {
                             _subscribed = false;
@@ -625,6 +627,8 @@ namespace Telegram.Controls
         #endregion
 
         public event EventHandler<int> IndexChanged;
+
+        public event EventHandler Completed;
 
         public event EventHandler FirstFrameRendered;
 

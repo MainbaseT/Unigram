@@ -1745,6 +1745,8 @@ namespace Telegram.Controls.Cells
                     return text.Text;
                 case MessageDice dice:
                     return dice.Emoji.AsFormattedText();
+                case MessageStakeDice dice:
+                    return Constants.StakeDice.AsFormattedText();
                 default:
                     return string.Empty.AsFormattedText();
             }

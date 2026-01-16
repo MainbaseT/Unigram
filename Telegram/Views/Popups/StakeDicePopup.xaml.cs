@@ -87,6 +87,13 @@ namespace Telegram.Views.Popups
             Label.Text = Formatter.FormatDouble(state.StakeToncoinAmount / Constants.ToncoinMin);
             Label.SelectionStart = Label.Text.Length;
 
+            var index = Strings.StakeDiceReturnsInfo.IndexOf("\U0001F3B2");
+            if (index != -1)
+            {
+                InfoPrefix.Text = Strings.StakeDiceReturnsInfo.Substring(0, index);
+                InfoSuffix.Text = Strings.StakeDiceReturnsInfo.Substring(index + 2);
+            }
+
             PrimaryButtonText = Strings.StakeDiceButton;
 
             static void ApplyPrizeValue(int prize, TextBlock textBlock)
