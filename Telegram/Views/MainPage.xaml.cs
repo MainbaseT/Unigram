@@ -2336,11 +2336,11 @@ namespace Telegram.Views
             }
             else if (destination == RootDestination.Contacts)
             {
-                _ = ViewModel.NavigationService.ShowPopupAsync(new ContactsPopup());
+                ViewModel.NavigationService.ShowPopup(new ContactsPopup());
             }
             else if (destination == RootDestination.Calls)
             {
-                _ = ViewModel.NavigationService.ShowPopupAsync(new CallsPopup());
+                ViewModel.NavigationService.ShowPopup(new CallsPopup());
             }
             else if (destination == RootDestination.Settings)
             {
@@ -2356,11 +2356,11 @@ namespace Telegram.Views
             }
             else if (destination == RootDestination.NewGroup)
             {
-                _ = ViewModel.NavigationService.ShowPopupAsync(new NewGroupPopup());
+                ViewModel.NavigationService.ShowPopup(new NewGroupPopup());
             }
             else if (destination == RootDestination.NewChannel)
             {
-                _ = ViewModel.NavigationService.ShowPopupAsync(new NewChannelPopup());
+                ViewModel.NavigationService.ShowPopup(new NewChannelPopup());
             }
             else if (destination == RootDestination.MyProfile)
             {

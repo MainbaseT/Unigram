@@ -9,7 +9,6 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
-using Telegram.Navigation;
 using Telegram.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -73,28 +72,8 @@ namespace Telegram.Views.Popups
 
         private void NewCall_Click(object sender, RoutedEventArgs e)
         {
-            var popup = new ChooseChatsPopup();
-            var button = new SettingsButton
-            {
-                Content = Strings.GroupCallCreateLink,
-                Glyph = Icons.LinkAdd,
-                Style = BootStrapper.Current.Resources["GlyphBadgeButtonPopupStyle"] as Style,
-                Margin = new Thickness(12, 0, 12, 0),
-            };
-
-            void handler(object sender, RoutedEventArgs e)
-            {
-                button.Click -= handler;
-                popup.Hide();
-
-                ViewModel.CreateLink();
-            }
-
-            button.Click += handler;
-            popup.Header = button;
-
             Hide();
-            ViewModel.NavigationService.ShowPopup(popup, new ChooseChatsConfigurationCreateGroupCall());
+            ViewModel.NewCall();
         }
 
         private void ScrollingHeader_SizeChanged(object sender, SizeChangedEventArgs e)
