@@ -1768,17 +1768,19 @@ namespace Telegram.Common
             }
 
             var tcs = new TaskCompletionSource<bool>();
+            var registration = token.Register(() =>
+            {
+                element.LayoutUpdated -= layoutUpdated;
+                tcs.TrySetResult(false);
+            });
+
             void layoutUpdated(object s1, object e1)
             {
                 element.LayoutUpdated -= layoutUpdated;
                 tcs.TrySetResult(true);
-            }
 
-            token.Register(() =>
-            {
-                element.LayoutUpdated -= layoutUpdated;
-                tcs.TrySetCanceled();
-            });
+                registration.Dispose();
+            }
 
             element.LayoutUpdated += layoutUpdated;
             return tcs.Task;
