@@ -169,7 +169,6 @@
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\ContentNegotiation.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\DirectNetworkingImpl.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\ExternalSignalingConnection.h" />
-    <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\ikcp.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\InstanceNetworking.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\InstanceV2Impl.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\InstanceV2ReferenceImpl.h" />
@@ -180,7 +179,6 @@
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\Signaling.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\SignalingConnection.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\SignalingEncryption.h" />
-    <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\SignalingKcpConnection.h" />
     <ClInclude Include="..\Libraries\tgcalls\tgcalls\v2\SignalingSctpConnection.h" />
     <ClInclude Include="BroadcastTimeRequestedEventArgs.h">
       <DependentUpon>BroadcastTimeRequestedEventArgs.idl</DependentUpon>
@@ -328,9 +326,6 @@
     <ClCompile Include="..\Libraries\tgcalls\tgcalls\v2\ExternalSignalingConnection.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\Libraries\tgcalls\tgcalls\v2\ikcp.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\Libraries\tgcalls\tgcalls\v2\InstanceV2Impl.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -356,9 +351,6 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Libraries\tgcalls\tgcalls\v2\SignalingEncryption.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\Libraries\tgcalls\tgcalls\v2\SignalingKcpConnection.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Libraries\tgcalls\tgcalls\v2\SignalingSctpConnection.cpp">
