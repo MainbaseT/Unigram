@@ -183,6 +183,9 @@ namespace Telegram.Controls
                     var scopedBatch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
                     scopedBatch.Completed += OnAnimationCompleted;
 
+                    SetZIndex(prevIndicator, -1);
+                    SetZIndex(nextIndicator, -2);
+
                     // Play the animation on both the previous and next indicators
                     PlayIndicatorAnimations(prevIndicator,
                         0,
@@ -210,6 +213,15 @@ namespace Telegram.Controls
                 }
 
                 _activeIndicator = nextIndicator;
+            }
+        }
+
+        private void SetZIndex(UIElement indicator, int index)
+        {
+            var selector = indicator.GetParent<SelectorItem>();
+            if (selector != null)
+            {
+                Canvas.SetZIndex(selector, index);
             }
         }
 
