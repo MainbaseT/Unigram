@@ -104,12 +104,9 @@ namespace Telegram.Views.Profile
                 }
 
                 var container = ScrollingHost.ContainerFromItem(topic) as SelectorItem;
-                if (container?.ContentTemplateRoot is Grid content)
+                if (container?.ContentTemplateRoot is ChatCell cell)
                 {
-                    if (content.Children[0] is ChatCell cell)
-                    {
-                        cell.UpdateSavedMessagesTopic(clientService, topic);
-                    }
+                    cell.UpdateSavedMessagesTopic(clientService, topic);
                 }
             });
         }

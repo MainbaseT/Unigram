@@ -582,7 +582,7 @@ namespace Telegram.ViewModels
             }
         }
 
-        public interface ITopicListCollection : IList
+        public interface ITopicListCollection : IList, ICollectionWithTotalCount
         {
             Chat Chat { get; }
 
@@ -941,6 +941,20 @@ namespace Telegram.ViewModels
                 }
             }
 
+            private int _totalCount;
+            public int TotalCount
+            {
+                get => _totalCount;
+                set
+                {
+                    if (_totalCount != value)
+                    {
+                        _totalCount = value;
+                        OnPropertyChanged(new PropertyChangedEventArgs(nameof(TotalCount)));
+                    }
+                }
+            }
+
             private void NotifyChanged()
             {
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsEmpty)));
@@ -1285,11 +1299,24 @@ namespace Telegram.ViewModels
                 }
             }
 
+            private int _totalCount;
+            public int TotalCount
+            {
+                get => _totalCount;
+                set
+                {
+                    if (_totalCount != value)
+                    {
+                        _totalCount = value;
+                        OnPropertyChanged(new PropertyChangedEventArgs(nameof(TotalCount)));
+                    }
+                }
+            }
+
             private void NotifyChanged()
             {
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsEmpty)));
             }
         }
-
     }
 }

@@ -103,6 +103,7 @@ namespace Telegram
                 typeof(ProfileBotsTabViewModel),
                 typeof(ProfileGiftsTabViewModel),
                 typeof(ProfileSavedChatsTabViewModel),
+                typeof(ProfileTopicsTabViewModel),
                 typeof(UserEditViewModel),
                 typeof(UserAffiliateViewModel),
                 typeof(SupergroupEditViewModel),

@@ -63,7 +63,8 @@ namespace Telegram.ViewModels
 
         public ITranslateService TranslateService => _translateService;
 
-        public ProfileSavedChatsTabViewModel SavedChatsTab => _savedChatsViewModel;
+        public ProfileSavedChatsTabViewModel SavedChatsTab => _savedChatsTabViewModel;
+        public ProfileTopicsTabViewModel TopicsTab => _topicsTabViewModel;
         public ProfileStoriesTabViewModel PinnedStoriesTab => _pinnedStoriesTabViewModel;
         public ProfileStoriesTabViewModel ArchivedStoriesTab => _archivedStoriesTabViewModel;
         public ProfileGroupsTabViewModel GroupsTab => _groupsTabViewModel;
@@ -235,6 +236,11 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
+                    if (user.Type is UserTypeBot { HasTopics: true })
+                    {
+                        tabs.Add(new ProfileTabItem(new ProfileTabTopics(), null, TopicsTab.Items, Strings.R.Chats));
+                    }
+
                     if (user.Id == ClientService.Options.MyId)
                     {
                         tabs.Add(new ProfileTabItem(new ProfileTabSavedChats(), null, SavedChatsTab.Items, Strings.R.Chats));
@@ -307,6 +313,11 @@ namespace Telegram.ViewModels
                 {
                     if (ForumTopic == null)
                     {
+                        if (supergroup.HasForumTabs)
+                        {
+                            tabs.Add(new ProfileTabItem(new ProfileTabTopics(), null, TopicsTab.Items, Strings.R.Chats));
+                        }
+
                         tabs.Add(new ProfileTabItem(new ProfileTabMembers(), null, ClientService.GetMembersCount(chat), Strings.R.Members));
                     }
 
@@ -1479,6 +1490,24 @@ namespace Telegram.ViewModels
         public void OpenSavedMessagesTopic(SavedMessagesTopic topic)
         {
             NavigationService.NavigateToChat(_chat.Id, topic: new MessageTopicSavedMessages(topic.Id));
+        }
+
+        public void OpenForumTopic(ForumTopic topic)
+        {
+            if (_chat is not Chat chat)
+            {
+                return;
+            }
+
+            if (NavigationService.IsChatOpen(chat.Id))
+            {
+                NavigationService.ReplaceChatInBackStack(chat.Id, new ChatMessageTopic(chat.Id, new MessageTopicForum(topic.Info.ForumTopicId)));
+                NavigationService.GoBack();
+            }
+            else
+            {
+                NavigationService.NavigateToChat(chat, topic: new MessageTopicForum(topic.Info.ForumTopicId));
+            }
         }
 
         private StarAmount _starCount;

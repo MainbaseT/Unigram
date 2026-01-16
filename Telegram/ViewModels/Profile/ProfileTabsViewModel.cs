@@ -37,6 +37,14 @@ namespace Telegram.ViewModels.Profile
         }
     }
 
+    public class ProfileTabTopics : ProfileTab
+    {
+        public override string ToString()
+        {
+            return nameof(ProfileTabTopics);
+        }
+    }
+
     public class ProfileTabPreviews : ProfileTab
     {
         public override string ToString()
@@ -131,6 +139,7 @@ namespace Telegram.ViewModels.Profile
                 ProfileTabGifts => (Strings.ProfileGifts, typeof(ProfileGiftsTabPage)),
                 ProfileTabArchivedPosts => (Strings.ArchivedStories, typeof(ProfileStoriesTabPage)),
                 ProfileTabSavedChats => (Strings.SavedDialogsTab, typeof(ProfileSavedChatsTabPage)),
+                ProfileTabTopics => (Strings.Topics, typeof(ProfileTopicsTabPage)),
                 ProfileTabPreviews => (Strings.ProfileBotPreviewTab, typeof(ProfileStoriesTabPage)),
                 ProfileTabGroups => (Strings.SharedGroupsTab2, typeof(ProfileGroupsTabPage)),
                 ProfileTabSimilarBots => (Strings.SimilarBotsTab, typeof(ProfileBotsTabPage)),
@@ -175,7 +184,8 @@ namespace Telegram.ViewModels.Profile
 
     public abstract partial class ProfileTabsViewModel : MediaTabsViewModelBase, IHandle
     {
-        protected readonly ProfileSavedChatsTabViewModel _savedChatsViewModel;
+        protected readonly ProfileSavedChatsTabViewModel _savedChatsTabViewModel;
+        protected readonly ProfileTopicsTabViewModel _topicsTabViewModel;
         protected readonly ProfileStoriesTabViewModel _pinnedStoriesTabViewModel;
         protected readonly ProfileStoriesTabViewModel _archivedStoriesTabViewModel;
         protected readonly ProfileGroupsTabViewModel _groupsTabViewModel;
@@ -187,7 +197,8 @@ namespace Telegram.ViewModels.Profile
         public ProfileTabsViewModel(IClientService clientService, ISettingsService settingsService, IStorageService storageService, IEventAggregator aggregator)
             : base(clientService, settingsService, storageService, aggregator)
         {
-            _savedChatsViewModel = Session.Resolve<ProfileSavedChatsTabViewModel>();
+            _savedChatsTabViewModel = Session.Resolve<ProfileSavedChatsTabViewModel>();
+            _topicsTabViewModel = Session.Resolve<ProfileTopicsTabViewModel>();
             _pinnedStoriesTabViewModel = Session.Resolve<ProfileStoriesTabViewModel>();
             _archivedStoriesTabViewModel = Session.Resolve<ProfileStoriesTabViewModel>();
             _groupsTabViewModel = Session.Resolve<ProfileGroupsTabViewModel>();
@@ -200,7 +211,8 @@ namespace Telegram.ViewModels.Profile
             _pinnedStoriesTabViewModel.SetType(ChatStoriesType.Pinned);
             _archivedStoriesTabViewModel.SetType(ChatStoriesType.Archive);
 
-            Children.Add(_savedChatsViewModel);
+            Children.Add(_savedChatsTabViewModel);
+            Children.Add(_topicsTabViewModel);
             Children.Add(_pinnedStoriesTabViewModel);
             Children.Add(_archivedStoriesTabViewModel);
             Children.Add(_groupsTabViewModel);

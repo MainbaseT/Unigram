@@ -694,6 +694,7 @@
     <Compile Include="ViewModels\Profile\MediaTabsViewModelBase.cs" />
     <Compile Include="ViewModels\Profile\ProfileBotsTabViewModel.cs" />
     <Compile Include="ViewModels\Profile\ProfileGiftsTabViewModel.cs" />
+    <Compile Include="ViewModels\Profile\ProfileTopicsTabViewModel.cs" />
     <Compile Include="ViewModels\RevenueViewModel.cs" />
     <Compile Include="ViewModels\Profile\ProfileChannelsTabViewModel.cs" />
     <Compile Include="ViewModels\Profile\ProfileGroupsTabViewModel.cs" />
@@ -1415,6 +1416,9 @@
     </Compile>
     <Compile Include="Views\Profile\Popups\ProfileRatingPopup.xaml.cs">
       <DependentUpon>ProfileRatingPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profile\ProfileTopicsTabPage.xaml.cs">
+      <DependentUpon>ProfileTopicsTabPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Profile\ProfileSavedMessagesTabPage.xaml.cs">
       <DependentUpon>ProfileSavedMessagesTabPage.xaml</DependentUpon>
@@ -3577,6 +3581,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Profile\ProfileTopicsTabPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Profile\ProfileSavedMessagesTabPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -4402,6 +4410,7 @@
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
