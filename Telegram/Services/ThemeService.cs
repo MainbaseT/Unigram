@@ -75,16 +75,23 @@ namespace Telegram.Services
         {
             var result = new List<ThemeInfoBase>();
 
-            var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("themes", CreationCollisionOption.OpenIfExists);
-            var files = await folder.GetFilesAsync();
-
-            foreach (var file in files)
+            try
             {
-                try
+                var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("themes", CreationCollisionOption.OpenIfExists);
+                var files = await folder.GetFilesAsync();
+
+                foreach (var file in files)
                 {
-                    result.Add(await DeserializeAsync(file));
+                    try
+                    {
+                        result.Add(await DeserializeAsync(file));
+                    }
+                    catch { }
                 }
-                catch { }
+            }
+            catch
+            {
+                // GetFilesAsync seems to throw at times
             }
 
             return result;
