@@ -826,6 +826,12 @@ namespace Telegram.Controls.Gallery
 
         private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
         {
+            var focused = FocusManagerEx.TryGetFocusedElement();
+            if (focused is Slider or TextBox or RichEditBox)
+            {
+                return;
+            }
+
             var modifiers = WindowContext.KeyModifiers();
             var keyCode = (int)args.Key;
 
@@ -836,29 +842,11 @@ namespace Telegram.Controls.Gallery
             }
             else if (args.Key is VirtualKey.Left or VirtualKey.GamepadLeftShoulder && modifiers == VirtualKeyModifiers.None)
             {
-                if (args.Key == VirtualKey.Left)
-                {
-                    var focused = FocusManagerEx.TryGetFocusedElement();
-                    if (focused is Slider)
-                    {
-                        return;
-                    }
-                }
-
                 ChangeView(CarouselDirection.Previous);
                 args.Handled = true;
             }
             else if (args.Key is VirtualKey.Right or VirtualKey.GamepadRightShoulder && modifiers == VirtualKeyModifiers.None)
             {
-                if (args.Key == VirtualKey.Right)
-                {
-                    var focused = FocusManagerEx.TryGetFocusedElement();
-                    if (focused is Slider)
-                    {
-                        return;
-                    }
-                }
-
                 ChangeView(CarouselDirection.Next);
                 args.Handled = true;
             }
