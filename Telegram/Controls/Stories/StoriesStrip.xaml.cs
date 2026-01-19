@@ -9,7 +9,6 @@ using System;
 using System.Collections.Specialized;
 using System.Numerics;
 using Telegram.Common;
-using Telegram.Composition;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
@@ -109,7 +108,7 @@ namespace Telegram.Controls.Stories
             }
 
             var count = _last - _first + 1;
-            if (count > 0 && _collapsed)
+            if (count > 0 && _collapsed && _isVisible)
             {
                 Show.Width = count * 12 + 12 + 8;
                 Show.Margin = new Thickness(_first > 0 ? 26 : 14, 20, 0, 0);
@@ -118,16 +117,16 @@ namespace Telegram.Controls.Stories
                 Icon.Margin = new Thickness(Show.Width + Show.Margin.Left + 8, 20, 0, 0);
                 Icon.Visibility = Visibility.Visible;
 
-                TitleBarrr?.Margin = new Thickness(TitleBarrr.Margin.Left, 40, TitleBarrr.Margin.Right, -40);
-                TitleBarHandle?.Margin = new Thickness(SystemOverlayLeftInset > 0 ? SystemOverlayLeftInset + (count * 12 + 12 + 8) : 80 + (count * 12 + 12 + 8), 0, SystemOverlayRightInset > 0 ? SystemOverlayRightInset : 80, 0);
+                TitleBarrr?.IsHitTestVisible = false;
+                TitleBarHandle?.Margin = new Thickness(SystemOverlayLeftInset > 0 ? SystemOverlayLeftInset + (count * 12 + 12 + 8) : TitleBarrr.Margin.Left + 40 + (count * 12 + 12 + 8), 0, SystemOverlayRightInset > 0 ? SystemOverlayRightInset : 88, 0);
             }
             else
             {
                 Show.Visibility = Visibility.Collapsed;
                 Icon.Visibility = Visibility.Collapsed;
 
-                TitleBarrr?.Margin = new Thickness(TitleBarrr.Margin.Left, 0, TitleBarrr.Margin.Right, 0);
-                TitleBarHandle?.Margin = new Thickness(SystemOverlayLeftInset > 0 ? SystemOverlayLeftInset : 80, 0, SystemOverlayRightInset > 0 ? SystemOverlayRightInset : 80, 0);
+                TitleBarrr?.IsHitTestVisible = true;
+                TitleBarHandle?.Margin = new Thickness(SystemOverlayLeftInset > 0 ? SystemOverlayLeftInset : TitleBarrr.Margin.Left + 40, 0, SystemOverlayRightInset > 0 ? SystemOverlayRightInset : 88, 0);
             }
 
             ScrollingHost.IsHitTestVisible = !_collapsed;
@@ -410,6 +409,8 @@ namespace Telegram.Controls.Stories
             {
                 _isVisible = value;
                 _progress?.InsertBoolean("Visible", value);
+
+                UpdateIndexes();
             }
         }
 
@@ -504,6 +505,7 @@ namespace Telegram.Controls.Stories
             _progress.InsertScalar("First", _first);
             _progress.InsertScalar("Last", _last);
             _progress.InsertScalar("Count", _last - _first + 1);
+            _progress.InsertScalar("Total", _last + 1);
             _progress.InsertScalar("Progress", 0);
             _progress.StartAnimation("Progress", _progressAnimation);
 
@@ -512,9 +514,20 @@ namespace Telegram.Controls.Stories
 
             ForEach(_progress, _progressAnimation);
 
-            var titleVisualOffsetAnimation = compositor.CreateExpressionAnimation("Vector3(_.RightToLeft ? 0 : _.Visible && _.Count > 0 ? 40 + (12 * _.Count) + (((72 * _.Count) - (40 + (12 * _.Count))) * _.Progress) : 0, 16, 0)");
-            var titleVisualScaleAnimation = compositor.CreateExpressionAnimation("_.Visible && _.Count > 0 ? Vector3(Clamp(_.Progress < 0.5 ? 0.5 : 0.5 + (_.Progress - 0.5), 0.5, 1), Clamp(_.Progress < 0.5 ? 0.5 : 0.5 + (_.Progress - 0.5), 0.5, 1), 1) : Vector3(1, 1, 1)");
-            var titleVisualOpacityAnimation = compositor.CreateExpressionAnimation("_.Visible && _.Count > 0 ? _.Progress < 0.5 ? 0 : (_.Progress - 0.5) * 2 : 1");
+            // >= 0.5 : above
+            // <  0.5 : below
+            var offsetExpandedX = "-(_.Padding - _.First * 12) * (_.Progress)";
+            var offsetExpandedX2 = "24 + (12 * _.Count) + (((72 * _.Total) - (40 + (12 * _.Total))) * _.Progress)";
+            var offsetExpandedY = "48 * _.Progress";
+
+            var offsetExpressionX = $"_.Progress < 0.5 ? ({offsetExpandedX}) + ({offsetExpandedX2}) : 0";
+            var offsetExpressionY = $"_.Progress < 0.5 ? {offsetExpandedY} : 0";
+            var scaleExpression = "_.Progress < 0.5 ? 1 : 0.5 + (_.Progress - 0.5)";
+            var opacityExpression = "_.Progress < 0.5 ? 1 - _.Progress * 2 : (_.Progress - 0.5) * 2";
+
+            var titleVisualOffsetAnimation = compositor.CreateExpressionAnimation($"_.Visible && _.Count > 0 ? Vector3({offsetExpressionX}, {offsetExpressionY}, 0) : Vector3(0, 0, 0)");
+            var titleVisualScaleAnimation = compositor.CreateExpressionAnimation($"_.Visible && _.Count > 0 ? Vector3(Clamp({scaleExpression}, 0.5, 1), Clamp({scaleExpression}, 0.5, 1), 1) : Vector3(1, 1, 1)");
+            var titleVisualOpacityAnimation = compositor.CreateExpressionAnimation($"_.Visible && _.Count > 0 ? Clamp({opacityExpression}, 0, 1) : 1");
             var titleVisualOpacityInverseAnimation = compositor.CreateExpressionAnimation("Clamp(1 - _.Progress * 2, 0, 1)");
 
             var storiesVisualOffsetAnimationX = compositor.CreateExpressionAnimation(
@@ -538,10 +551,6 @@ namespace Telegram.Controls.Stories
             var storiesVisual = ElementComposition.GetElementVisual(this);
             var headerVisual = ElementComposition.GetElementVisual(Header);
 
-            var titleRedirect = compositor.CreateRedirectVisual(TitleBarrr, Vector2.Zero, new Vector2(200, 40));
-            titleRedirect.CenterPoint = new Vector3(0, 20, 0);
-            ElementCompositionPreview.SetElementChildVisual(this, titleRedirect);
-
             titleVisual.CenterPoint = new Vector3(0, 10, 0);
             storiesVisual.Clip = clip;
 
@@ -553,8 +562,7 @@ namespace Telegram.Controls.Stories
             ElementCompositionPreview.SetIsTranslationEnabled(this, true);
             ElementCompositionPreview.SetIsTranslationEnabled(Header, true);
 
-            titleRedirect.StartAnimation("Offset", titleVisualOffsetAnimation);
-            titleRedirect.StartAnimation("Opacity", titleVisualOpacityInverseAnimation);
+            titleVisual.StartAnimation("Translation", titleVisualOffsetAnimation);
             titleVisual.StartAnimation("Scale", titleVisualScaleAnimation);
             titleVisual.StartAnimation("Opacity", titleVisualOpacityAnimation);
             storiesVisual.StartAnimation("Translation.X", storiesVisualOffsetAnimationX);
