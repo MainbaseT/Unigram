@@ -7,7 +7,6 @@
 
 using System;
 using Telegram.Common;
-using Telegram.Navigation;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -95,10 +94,8 @@ namespace Telegram.Controls.Messages.Content
             }
             else
             {
-                var navigationService = WindowContext.Current.GetNavigationService();
                 var service = _message.ClientService.Session.Resolve<ICloudUpdateService>();
-
-                if (navigationService != null && service != null)
+                if (service != null)
                 {
                     if (service.NextUpdate == null)
                     {
@@ -107,7 +104,7 @@ namespace Telegram.Controls.Messages.Content
 
                     if (service.NextUpdate != null)
                     {
-                        await CloudUpdateService.LaunchAsync(navigationService, false);
+                        await CloudUpdateService.LaunchAsync(false);
                     }
                     else
                     {
