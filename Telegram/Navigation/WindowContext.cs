@@ -109,6 +109,8 @@ namespace Telegram.Navigation
         public WindowContext(Window window)
         {
             _window = window;
+            _current = this;
+
             GarbageCollectionMonitor.StartMonitoring(window.CoreWindow);
 
             //Current = this;
@@ -920,10 +922,12 @@ namespace Telegram.Navigation
             {
                 if (_current == null)
                 {
-                    if (Window.Current != null)
-                    {
-                        _current = new WindowContext(Window.Current);
-                    }
+                    //if (Window.Current != null)
+                    //{
+                    //    _current = new WindowContext(Window.Current);
+                    //}
+
+                    Logger.Info(Environment.StackTrace);
                 }
 
                 return _current;
