@@ -3206,9 +3206,15 @@ namespace Telegram.ViewModels
             var factory = header.Editing.Media;
             if (factory is InputMessageContent input)
             {
+                var topicId = editing.TopicId;
+                if (topicId is MessageTopicSavedMessages)
+                {
+                    topicId = null;
+                }
+
                 var options = new MessageSendOptions(header.SuggestedPostInfo, false, false, 0, false, null, 0, 0, true);
 
-                var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, editing.TopicId, null, options, input));
+                var response = await ClientService.SendAsync(new SendMessage(editing.ChatId, topicId, null, options, input));
                 if (response is Message preview)
                 {
                     _contentOverrides[editing.CombinedId] = preview.Content;
