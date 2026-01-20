@@ -410,15 +410,15 @@ namespace Telegram.Controls
                 ElementCompositionPreview.SetElementChildVisual(Ghost, _redirect);
                 ElementCompositionPreview.SetElementChildVisual(this, _container);
                 ConfigureInteractionTracker();
+            }
 
-                if (_trackerOwner != null)
-                {
-                    _trackerOwner.ValuesChanged += OnValuesChanged;
-                    _trackerOwner.InertiaStateEntered += OnInertiaStateEntered;
-                    _trackerOwner.InteractingStateEntered += OnInteractingStateEntered;
-                    _trackerOwner.IdleStateEntered += OnIdleStateEntered;
-                    _trackerOwner.CustomAnimationStateEntered += OnCustomAnimationStateEntered;
-                }
+            if (_trackerOwner != null)
+            {
+                _trackerOwner.ValuesChanged += OnValuesChanged;
+                _trackerOwner.InertiaStateEntered += OnInertiaStateEntered;
+                _trackerOwner.InteractingStateEntered += OnInteractingStateEntered;
+                _trackerOwner.IdleStateEntered += OnIdleStateEntered;
+                _trackerOwner.CustomAnimationStateEntered += OnCustomAnimationStateEntered;
             }
 
             if (_itemsSource == null)
