@@ -67,10 +67,8 @@ namespace Telegram.Controls
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (!_hasInitialLoadedEventFired)
+            if (_trackerOwner == null)
             {
-                _hasInitialLoadedEventFired = true;
-
                 _hitTest = BootStrapper.Current.Compositor.CreateSpriteVisual();
                 _hitTest.Brush = BootStrapper.Current.Compositor.CreateColorBrush(Windows.UI.Colors.Transparent);
 
@@ -300,7 +298,6 @@ namespace Telegram.Controls
         private readonly FrameworkElement[] _elements = new FrameworkElement[3];
         private readonly Visual[] _visuals = new Visual[3];
 
-        private bool _hasInitialLoadedEventFired;
         private bool _hasConfiguredElements;
 
         private WeakInteractionTrackerOwner _trackerOwner;

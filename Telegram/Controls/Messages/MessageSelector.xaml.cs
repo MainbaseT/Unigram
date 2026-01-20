@@ -63,10 +63,8 @@ namespace Telegram.Controls.Messages
 
         protected override void OnLoaded()
         {
-            if (!_hasInitialLoadedEventFired && RootGrid != null && IsTrackerEnabled && (SettingsService.Current.SwipeToReply || SettingsService.Current.SwipeToShare))
+            if (_trackerOwner == null && RootGrid != null && IsTrackerEnabled && (SettingsService.Current.SwipeToReply || SettingsService.Current.SwipeToShare))
             {
-                _hasInitialLoadedEventFired = true;
-
                 _compositor = BootStrapper.Current.Compositor;
                 _container ??= _compositor.CreateContainerVisual();
 
@@ -563,7 +561,6 @@ namespace Telegram.Controls.Messages
         private ContainerVisual _container;
         private ContainerVisual _indicator;
 
-        private bool _hasInitialLoadedEventFired;
         private WeakInteractionTrackerOwner _trackerOwner;
         private InteractionTracker _tracker;
         private VisualInteractionSource _interactionSource;

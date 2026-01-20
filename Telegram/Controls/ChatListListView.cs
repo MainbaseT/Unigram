@@ -383,17 +383,14 @@ namespace Telegram.Controls
         private SpriteVisual _redirect;
         private ContainerVisual _indicator;
 
-        private bool _hasInitialLoadedEventFired;
         private WeakInteractionTrackerOwner _trackerOwner;
         private InteractionTracker _tracker;
         private VisualInteractionSource _interactionSource;
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (!_hasInitialLoadedEventFired)
+            if (_trackerOwner == null)
             {
-                _hasInitialLoadedEventFired = true;
-
                 _visual = ElementComposition.GetElementVisual(ScrollViewer.ContentTemplateRoot);
 
                 _redirect = _visual.Compositor.CreateSpriteVisual();
@@ -440,8 +437,6 @@ namespace Telegram.Controls
                 _trackerOwner.IdleStateEntered -= OnIdleStateEntered;
                 _trackerOwner.CustomAnimationStateEntered -= OnCustomAnimationStateEntered;
             }
-
-            _hasInitialLoadedEventFired = false;
 
             if (_itemsSource != null)
             {
