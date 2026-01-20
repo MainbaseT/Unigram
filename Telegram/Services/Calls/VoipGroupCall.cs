@@ -455,13 +455,20 @@ namespace Telegram.Services.Calls
                     _systemCall.TryNotifyCallActive();
                     _systemCall.EndRequested += OnEndRequested;
                 }
+                else
+                {
+                    Logger.Error(status);
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex);
+
+                _coordinator?.MuteStateChanged += OnMuteStateChanged;
                 _coordinator = null;
+
                 _systemCall = null;
             }
-
             WatchDog.TrackEvent("VoipGroupCall", new Properties
             {
                 { "Requested", _systemCall != null },

@@ -339,15 +339,15 @@ namespace Telegram.Services.Calls
             try
             {
                 _systemCall?.TryShowAppUI();
-
-                // NotifyCallActive causes the main app window to be focused
-                // We call it immediately, so that the focus can move to the call window.
-                _systemCall?.NotifyCallActive();
             }
             catch
             {
                 // All the remote procedure calls must be wrapped in a try-catch block
             }
+
+            // NotifyCallActive causes the main app window to be focused
+            // We call it immediately, so that the focus can move to the call window.
+            _systemCall?.TryNotifyCallActive();
 
             ClientService.Send(new AcceptCall(Id, VoipManager.Protocol.ToTd()));
 
@@ -842,7 +842,7 @@ namespace Telegram.Services.Calls
                             user.FullName(),
                             Strings.AppName,
                             VoipPhoneCallMedia.Audio | VoipPhoneCallMedia.Video);
-                        //_systemCall.TryNotifyCallActive();
+                        _systemCall.TryNotifyCallActive();
                     }
                     else
                     {
@@ -874,10 +874,18 @@ namespace Telegram.Services.Calls
 
                     _systemCall.EndRequested += OnEndRequested;
                 }
+                else
+                {
+                    Logger.Error(status);
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Error(ex);
+
+                _coordinator?.MuteStateChanged -= OnMuteStateChanged;
                 _coordinator = null;
+
                 _systemCall = null;
             }
 
