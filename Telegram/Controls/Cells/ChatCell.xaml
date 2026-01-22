@@ -208,7 +208,7 @@
 
                             <TextBlock x:Name="TimeLabel"
                                        Text="11:10"
-                                       FontFamily="Segoe UI, ms-appx:///Assets/Fonts/Telegram.ttf#Telegram"
+                                       FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                        Style="{StaticResource CaptionTextBlockStyle}"
                                        Foreground="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"
                                        Margin="0,0,8,3"
