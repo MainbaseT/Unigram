@@ -622,7 +622,7 @@
     <local:HostedPage.Action>
         <controls:MoreButton Click="Menu_ContextRequested" />
     </local:HostedPage.Action>
-    
+
     <Grid Background="{ThemeResource SettingsPageBackground}">
         <controls:TableListView x:Name="ScrollingHost"
                                 ItemsSource="{x:Bind ViewModel.Statistics.ByChat, Mode=OneWay}"
@@ -679,8 +679,7 @@
                     </Grid>
 
                     <StackPanel Visibility="{x:Bind ViewModel.ItemsView, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}">
-                        <controls:HeaderedControl ItemsSource="{x:Bind ViewModel.ItemsView, Mode=OneWay}"
-                                                  CornerRadius="8,8,0,0">
+                        <controls:HeaderedControl ItemsSource="{x:Bind ViewModel.ItemsView, Mode=OneWay}">
                             <controls:HeaderedControl.ItemTemplate>
                                 <DataTemplate x:DataType="controls:StorageChartItem">
                                     <controls:FauxCheckBox Click="StorageChartItem_Checked"
@@ -708,10 +707,9 @@
                             </controls:HeaderedControl.ItemTemplate>
                         </controls:HeaderedControl>
                         <controls:HeaderedControl Footer="{CustomResource StorageUsageInfo}"
-                                                  BorderThickness="1,0,1,1"
-                                                  CornerRadius="0,0,8,8"
-                                                  Padding="0">
+                                                  Padding="0,3,0,0">
                             <Grid Background="{ThemeResource SettingsItemBackground}"
+                                  BorderBrush="{ThemeResource SettingsItemBorderBrush}"
                                   Padding="12,8">
 
                                 <Button Click="{x:Bind ViewModel.ClearCache}"
@@ -723,7 +721,8 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="{CustomResource ClearMediaCache}" />
-                                        <TextBlock Text="{x:Bind ViewModel.Statistics.Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
+                                        <TextBlock x:Name="ClearSize"
+                                                   Text="{x:Bind ViewModel.Statistics.Size, Mode=OneWay, Converter={StaticResource FileSizeConverter}, ConverterParameter=allowGb}"
                                                    Opacity="0.6"
                                                    Margin="4,0,0,0"
                                                    Grid.Column="1" />
@@ -735,9 +734,10 @@
 
                     <controls:HeaderedControl x:Name="KeepMediaPanel"
                                               Header="{CustomResource KeepMedia}"
-                                              Footer="{CustomResource KeepMediaInfoPart}"
-                                              Background="{ThemeResource SettingsItemBackground}">
+                                              Footer="{CustomResource KeepMediaInfoPart}">
                         <Grid x:Name="KeepMediaTicks"
+                              Background="{ThemeResource SettingsItemBackground}"
+                              BorderBrush="{ThemeResource SettingsItemBorderBrush}"
                               Padding="12,6,12,6">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />

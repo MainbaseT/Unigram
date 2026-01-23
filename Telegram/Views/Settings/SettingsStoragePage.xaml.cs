@@ -272,10 +272,13 @@ namespace Telegram.Views.Settings
             }
 
             var size = Chart.Items.Where(x => x.IsVisible).Sum(x => x.TotalBytes);
-            var readable = FileSizeConverter.Convert(size, true).Split(' ');
+            var formatted = FileSizeConverter.Convert(size, true);
+            var readable = formatted.Split(' ');
 
             SizeLabel.Text = readable[0];
             UnitLabel.Text = readable[1];
+
+            ClearSize.Text = formatted;
         }
 
         private void Menu_ContextRequested(object sender, RoutedEventArgs e)
