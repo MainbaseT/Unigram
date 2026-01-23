@@ -2647,7 +2647,7 @@ namespace Telegram.Td.Api
             return x.ColorId == y.ColorId
                 && x.Icon.AreTheSame(y.Icon)
                 && x.Name.AreTheSame(y.Name)
-                && x.IsShareable == y.IsShareable
+                //&& x.IsShareable == y.IsShareable
                 && x.ExcludeArchived == y.ExcludeArchived
                 && x.ExcludeMuted == y.ExcludeMuted
                 && x.ExcludeRead == y.ExcludeRead
