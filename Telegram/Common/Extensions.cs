@@ -415,6 +415,11 @@ namespace Telegram.Common
                 }
 
                 // Element end
+                if (paragraph.Padding == 0)
+                {
+                    index++;
+                }
+
                 //index += paragraph.Padding;
             }
 
