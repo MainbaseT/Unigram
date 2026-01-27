@@ -281,6 +281,8 @@ namespace Telegram.Navigation
 
         public XamlRoot XamlRoot => _content?.XamlRoot;
 
+        private bool _contentMaterial;
+
         private WindowControl _content;
         public UIElement Content
         {
@@ -305,23 +307,28 @@ namespace Telegram.Navigation
             if (_content != null)
             {
                 _content.Content = content;
-                return;
+            }
+            else
+            {
+                _content = new WindowControl
+                {
+                    RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme(),
+                    Content = content,
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                    VerticalContentAlignment = VerticalAlignment.Stretch
+                };
+
+                _content.Loading += OnLoading;
+                _content.Loaded += OnLoaded;
+
+                _window.Content = _content;
             }
 
-            _content = new WindowControl
+            if (!_contentMaterial && content is RootPage or StandalonePage or TabbedPage or WebAppPage)
             {
-                RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme(),
-                Content = content,
-                HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                VerticalContentAlignment = VerticalAlignment.Stretch
-            };
-
-            _content.Loading += OnLoading;
-            _content.Loaded += OnLoaded;
-
-            _window.Content = _content;
-
-            BackdropMaterial.SetApplyToRootOrPageBackground(_content, true);
+                _contentMaterial = true;
+                BackdropMaterial.SetApplyToRootOrPageBackground(_content, true);
+            }
         }
 
         private void OnLoading(FrameworkElement sender, object args)
