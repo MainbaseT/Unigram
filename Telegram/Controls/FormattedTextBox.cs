@@ -1053,8 +1053,8 @@ namespace Telegram.Controls
             }
 
             var builder = storyLength <= 1024
-                ? new NormalizingStringBuilder(stackalloc char[range.StoryLength])
-                : new NormalizingStringBuilder(range.StoryLength);
+                ? new NormalizingStringBuilder(stackalloc char[storyLength])
+                : new NormalizingStringBuilder(storyLength);
 
             // We need to do this because TextRangeUnit.CharacterFormat still breaks every space/new line.
             // TODO: unfortunately this doesn't seem to work when the range contains mixed font families (eg, monospace)
@@ -1067,9 +1067,11 @@ namespace Telegram.Controls
                 range.Collapse(true);
             }
 
-            while (range.EndPosition < storyLength)
+            while (range.EndPosition < storyLength && storyLength > Math.Abs(hidden))
             {
                 var startPos = range.StartPosition;
+                var endPos = range.EndPosition;
+
                 var shouldBreak = false;
 
                 // Move to next format boundary
@@ -1079,10 +1081,10 @@ namespace Telegram.Controls
                 }
 
                 // Check if we actually moved (prevent infinite loop)
-                if (range.StartPosition == startPos && range.EndPosition == startPos)
+                if (range.StartPosition == startPos && range.EndPosition == endPos)
                 {
                     range.MoveEnd(TextRangeUnit.Character, 1);
-                    if (range.EndPosition == startPos)
+                    if (range.EndPosition == endPos)
                     {
                         break; // Can't move at all
                     }
@@ -1799,6 +1801,38 @@ namespace Telegram.Controls
             return long.TryParse(customEmoji, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out customEmojiId);
         }
 
+        private bool IsSelectionCustomEmoji(bool before, out ITextRange customEmoji)
+        {
+            var range = Document.Selection.GetClone();
+            var start = range.StartPosition;
+            var end = range.EndPosition;
+
+            if (before)
+            {
+                range.StartPosition -= 1;
+
+                if (range.Text == "\uEA4F" && -1 == range.MoveStart(TextRangeUnit.Hidden, -1))
+                {
+                    customEmoji = range;
+                    return true;
+
+                }
+            }
+            else if (0 < range.Expand(TextRangeUnit.Hidden))
+            {
+                range.EndPosition += 1;
+
+                if (range.Text.EndsWith("\uEA4F"))
+                {
+                    customEmoji = range;
+                    return true;
+                }
+            }
+
+            customEmoji = null;
+            return false;
+        }
+
         private void UpdateFormat()
         {
             if (_reusableRange == null)
@@ -1939,6 +1973,11 @@ namespace Telegram.Controls
 
                     EndUndoGroup();
                 }
+            }
+            else if (e.Key is VirtualKey.Back or VirtualKey.Delete && IsSelectionCustomEmoji(e.Key is VirtualKey.Back, out ITextRange emojiBack))
+            {
+                emojiBack.SetText(TextSetOptions.Unhide, string.Empty);
+                e.Handled = true;
             }
             else if (e.Key == VirtualKey.Back)
             {
