@@ -1150,6 +1150,7 @@ namespace winrt::Telegram::Native::implementation
         ));
         ReturnDefaultIfFailed(result, textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
         ReturnDefaultIfFailed(result, textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
+        ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_EMERGENCY_BREAK));
 
         winrt::com_ptr<IDWriteTextLayout> textLayout;
         ReturnDefaultIfFailed(result, m_dwriteFactory->CreateTextLayout(
@@ -1231,11 +1232,11 @@ namespace winrt::Telegram::Native::implementation
         ReturnDefaultIfFailed(result, textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
         ReturnDefaultIfFailed(result, textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
         ReturnDefaultIfFailed(result, textFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
-        ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(wrap ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP));
+        ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(wrap ? DWRITE_WORD_WRAPPING_EMERGENCY_BREAK : DWRITE_WORD_WRAPPING_NO_WRAP));
 
         if (wrap)
         {
-            ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP));
+            ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_EMERGENCY_BREAK));
         }
         else
         {
@@ -1347,7 +1348,7 @@ namespace winrt::Telegram::Native::implementation
         ReturnDefaultIfFailed(result, textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
         ReturnDefaultIfFailed(result, textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
         ReturnDefaultIfFailed(result, textFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
-        //ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(wrap ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP));
+        ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_EMERGENCY_BREAK));
 
         winrt::com_ptr<IDWriteTextLayout> textLayout;
         ReturnDefaultIfFailed(result, m_dwriteFactory->CreateTextLayout(
@@ -1419,6 +1420,7 @@ namespace winrt::Telegram::Native::implementation
         ReturnDefaultIfFailed(result, textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
         ReturnDefaultIfFailed(result, textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
         ReturnDefaultIfFailed(result, textFormat->SetReadingDirection(rtl ? DWRITE_READING_DIRECTION_RIGHT_TO_LEFT : DWRITE_READING_DIRECTION_LEFT_TO_RIGHT));
+        ReturnDefaultIfFailed(result, textFormat->SetWordWrapping(DWRITE_WORD_WRAPPING_EMERGENCY_BREAK));
 
         winrt::com_ptr<IDWriteTextLayout> textLayout;
         ReturnDefaultIfFailed(result, m_dwriteFactory->CreateTextLayout(
