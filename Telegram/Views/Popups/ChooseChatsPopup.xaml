@@ -177,11 +177,12 @@
                                      SelectedItem="{x:Bind ViewModel.SelectedFolder, Mode=TwoWay}"
                                      ScrollViewer.IsHorizontalScrollChainingEnabled="False"
                                      FocusFollowsSingleSelection="True"
-                                     Padding="12,0"
+                                     Padding="20,0"
                                      Height="40">
                     <controls:TopNavView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:ChatFolderViewModel">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal"
+                                        Height="20">
                                 <RichTextBlock cells:ChatFolderCell.Title="{x:Bind Name, Mode=OneWay}"
                                                FontFamily="{ThemeResource EmojiThemeFontFamily}"
                                                VerticalAlignment="Bottom"
@@ -193,7 +194,8 @@
                                                        IsUnmuted="{x:Bind IsUnmuted, Mode=OneWay}"
                                                        Visibility="{x:Bind ShowCount, Mode=OneWay}"
                                                        VerticalAlignment="Bottom"
-                                                       Margin="4,0,0,0" />
+                                                       FontWeight="Normal"
+                                                       Margin="4,0,-4,0" />
                             </StackPanel>
                         </DataTemplate>
                     </controls:TopNavView.ItemTemplate>
