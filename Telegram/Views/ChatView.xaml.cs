@@ -2601,9 +2601,11 @@ namespace Telegram.Views
             }
 
             flyout.ShowAt(sender, FlyoutPlacementMode.TopEdgeAlignedRight);
+        }
 
-            // Supposedly cancels click by touch
-            sender.ReleasePointerCaptures();
+        private void Send_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            e.Handled = true;
         }
 
         private void RemoveMessageEffect()
