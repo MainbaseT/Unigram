@@ -8,8 +8,7 @@
       xmlns:navigation="using:Telegram.Navigation.Services"
       mc:Ignorable="d"
       Loaded="OnLoaded"
-      Unloaded="OnUnloaded"
-      PreviewKeyDown="OnPreviewKeyDown">
+      Unloaded="OnUnloaded">
 
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>

@@ -346,6 +346,23 @@ namespace Telegram.Navigation
 
         #endregion
 
+        public bool RaiseShortcutInvoked(InvokedShortcut shortcut, VirtualKeyModifiers modifiers)
+        {
+            var args = new ShortcutInvokedEventArgs(shortcut, modifiers);
+
+            foreach (var frame in WindowContext.Current.NavigationServices.Select(x => x.FrameFacade).Reverse())
+            {
+                frame.RaiseShortcutInvoked(args);
+
+                if (args.Handled)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void RaiseBackRequested()
         {
             var handled = false;

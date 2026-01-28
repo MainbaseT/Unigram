@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Telegram.Common;
+using Telegram.Services;
 using Telegram.Views;
 using Telegram.Views.Authorization;
 using Windows.UI.Xaml.Controls;
@@ -92,6 +93,12 @@ namespace Telegram.Navigation.Services
             {
                 GoForward();
             }
+        }
+
+        public event EventHandler<ShortcutInvokedEventArgs> ShortcutInvoked;
+        public void RaiseShortcutInvoked(ShortcutInvokedEventArgs args)
+        {
+            ShortcutInvoked?.Invoke(this, args);
         }
 
         #region state
@@ -344,5 +351,18 @@ namespace Telegram.Navigation.Services
 
             e.Cancel = args.Cancel;
         }
+    }
+
+    public class ShortcutInvokedEventArgs : HandledEventArgs
+    {
+        public ShortcutInvokedEventArgs(InvokedShortcut shortcut, VirtualKeyModifiers modifiers)
+        {
+            Shortcut = shortcut;
+            Modifiers = modifiers;
+        }
+
+        public InvokedShortcut Shortcut { get; }
+
+        public VirtualKeyModifiers Modifiers { get; }
     }
 }

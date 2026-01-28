@@ -1181,20 +1181,9 @@ namespace Telegram.Views
             }
         }
 
-        public void ProcessKeyboardAccelerators(KeyRoutedEventArgs args)
+        public void ProcessKeyboardAccelerators(ShortcutInvokedEventArgs args)
         {
-            var invoked = ViewModel.ShortcutService.Process(args, out VirtualKeyModifiers modifiers);
-            if (invoked == null)
-            {
-                if (SettingsService.Current.Diagnostics.ShowMemoryUsage && args.Key == VirtualKey.Q && modifiers == (VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift))
-                {
-                    ViewModel.ClientService.Close(true);
-                }
-
-                return;
-            }
-
-            foreach (var command in invoked.Commands)
+            foreach (var command in args.Shortcut.Commands)
             {
                 if (SettingsService.Current.Diagnostics.ShowMemoryUsage && command == ShortcutCommand.Quit)
                 {
@@ -1224,7 +1213,7 @@ namespace Telegram.Views
             }
         }
 
-        private async void ProcessAppCommands(ShortcutCommand command, KeyRoutedEventArgs args)
+        private async void ProcessAppCommands(ShortcutCommand command, ShortcutInvokedEventArgs args)
         {
             if (command is ShortcutCommand.SetStatus)
             {
@@ -1288,7 +1277,7 @@ namespace Telegram.Views
             }
         }
 
-        private void ProcessFolderCommands(ShortcutCommand command, KeyRoutedEventArgs args)
+        private void ProcessFolderCommands(ShortcutCommand command, ShortcutInvokedEventArgs args)
         {
             var folders = ViewModel.Folders;
             if (folders.Empty())
@@ -1331,7 +1320,7 @@ namespace Telegram.Views
             }
         }
 
-        private async void ProcessChatCommands(ShortcutCommand command, KeyRoutedEventArgs args)
+        private async void ProcessChatCommands(ShortcutCommand command, ShortcutInvokedEventArgs args)
         {
             if (command == ShortcutCommand.ChatRecentPrevious)
             {

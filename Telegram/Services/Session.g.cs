@@ -14,6 +14,7 @@ namespace Telegram.Services
         private readonly Telegram.Services.ILifetimeService _lifetimeService;
         private readonly Telegram.Services.ILocaleService _localeService;
         private readonly Telegram.Services.IPasscodeService _passcodeService;
+        private readonly Telegram.Services.IShortcutsService _shortcutsService;
 
         private readonly Telegram.Services.IDeviceInfoService _deviceInfoService;
         private readonly Telegram.Services.ISettingsService _settingsService;
@@ -28,7 +29,6 @@ namespace Telegram.Services
 
         private Telegram.Services.ISettingsSearchService _settingsSearchService;
         private Telegram.Services.ICloudUpdateService _cloudUpdateService;
-        private Telegram.Services.IShortcutsService _shortcutsService;
         private Telegram.Services.ILocationService _locationService;
         private Telegram.Services.IThemeService _themeService;
         private Telegram.Services.IViewService _viewService;
@@ -37,7 +37,7 @@ namespace Telegram.Services
         private Telegram.Services.IProfilePhotoService _profilePhotoService;
         private Telegram.Services.ITextRecognitionService _textRecognitionService;
 
-        public SessionImpl(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, int session, bool active)
+        public SessionImpl(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, Telegram.Services.IShortcutsService shortcutsService, int session, bool active)
         {
             _id = session;
             _sessionService = this;
@@ -45,6 +45,7 @@ namespace Telegram.Services
             _lifetimeService = lifetimeService;
             _localeService = localeService;
             _passcodeService = passcodeService;
+            _shortcutsService = shortcutsService;
 
             _deviceInfoService = new Telegram.Services.DeviceInfoService();
             _settingsService = new Telegram.Services.SettingsService(_id);
@@ -136,10 +137,7 @@ namespace Telegram.Services
                             _clientService,
                             _networkService,
                             _eventAggregator),
-                        _shortcutsService ??= new Telegram.Services.ShortcutsService(
-                            _clientService,
-                            _settingsService,
-                            _eventAggregator));
+                        _shortcutsService);
                 case "Telegram.ViewModels.ContactsViewModel":
                     return (T)(object)new Telegram.ViewModels.ContactsViewModel(
                         _clientService,
@@ -722,10 +720,7 @@ namespace Telegram.Services
                         _clientService,
                         _settingsService,
                         _eventAggregator,
-                        _shortcutsService ??= new Telegram.Services.ShortcutsService(
-                            _clientService,
-                            _settingsService,
-                            _eventAggregator));
+                        _shortcutsService);
                 case "Telegram.ViewModels.Settings.SettingsPowerSavingViewModel":
                     return (T)(object)new Telegram.ViewModels.Settings.SettingsPowerSavingViewModel(
                         _clientService,
@@ -900,10 +895,7 @@ namespace Telegram.Services
                         _networkService,
                         _eventAggregator));
                 case "Telegram.Services.IShortcutsService":
-                    return (T)(_shortcutsService ??= new Telegram.Services.ShortcutsService(
-                        _clientService,
-                        _settingsService,
-                        _eventAggregator));
+                    return (T)(_shortcutsService);
                 case "Telegram.Services.ILocationService":
                     return (T)(_locationService ??= new Telegram.Services.LocationService(_clientService));
                 case "Telegram.Services.IThemeService":

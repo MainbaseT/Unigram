@@ -41,17 +41,20 @@ namespace Telegram.Services
         private readonly IPasscodeService _passcode;
         private readonly ILocaleService _locale;
         private readonly IPlaybackService _playback;
+        private readonly IShortcutsService _shortcuts;
         private readonly VoipCoordinator _voip;
 
         public IPasscodeService Passcode => _passcode;
         public ILocaleService Locale => _locale;
         public IPlaybackService Playback => _playback;
+        public IShortcutsService Shortcuts => _shortcuts;
         public VoipCoordinator Voip => _voip;
 
         public LifetimeService()
         {
             _passcode = new PasscodeService(SettingsService.Current.PasscodeLock);
             _playback = new PlaybackService(SettingsService.Current);
+            _shortcuts = new ShortcutsService();
             _voip = new VoipCoordinator();
             _locale = LocaleService.Current;
 
@@ -82,7 +85,7 @@ namespace Telegram.Services
 
         private ISession Build(int id, bool active)
         {
-            var session = new SessionImpl(this, _locale, _passcode, id, active);
+            var session = new SessionImpl(this, _locale, _passcode, _shortcuts, id, active);
             _sessions[id] = session;
             return session;
         }

@@ -42,7 +42,8 @@ namespace Telegram
             {
                 typeof(ILifetimeService),
                 typeof(ILocaleService),
-                typeof(IPasscodeService)
+                typeof(IPasscodeService),
+                typeof(IShortcutsService),
             };
 
             _singletons = new List<(Type, Type)>
@@ -60,7 +61,6 @@ namespace Telegram
                 ( typeof(ISettingsService), typeof(SettingsService) ),
                 ( typeof(ISettingsSearchService), typeof(SettingsSearchService) ),
                 ( typeof(ICloudUpdateService), typeof(CloudUpdateService) ),
-                ( typeof(IShortcutsService), typeof(ShortcutsService) ),
                 ( typeof(IDeviceInfoService), typeof(DeviceInfoService) ),
                 ( typeof(IEventAggregator), typeof(EventAggregator) ),
                 ( typeof(ILocationService), typeof(LocationService) ),

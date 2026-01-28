@@ -33,7 +33,6 @@ using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
@@ -100,6 +99,7 @@ namespace Telegram.Views.Host
 
             service.Frame.Navigating += OnNavigating;
             service.Frame.Navigated += OnNavigated;
+            service.FrameFacade.ShortcutInvoked += OnShortcutInvoked;
 
             _navigationService = service;
             InitializeNavigation(service.Frame);
@@ -224,6 +224,7 @@ namespace Telegram.Views.Host
                 service = BootStrapper.Current.NavigationServiceFactory(session, _context, BootStrapper.BackButton.Attach, new Frame { CacheSize = 0 }, $"{session.Id}", true) as NavigationService;
                 service.Frame.Navigating += OnNavigating;
                 service.Frame.Navigated += OnNavigated;
+                service.FrameFacade.ShortcutInvoked += OnShortcutInvoked;
 
                 switch (session.ClientService.AuthorizationState)
                 {
@@ -292,6 +293,7 @@ namespace Telegram.Views.Host
 
             master.Frame.Navigating -= OnNavigating;
             master.Frame.Navigated -= OnNavigated;
+            master.FrameFacade.ShortcutInvoked -= OnShortcutInvoked;
             master.Suspend();
 
             WindowContext.Current.NavigationServices.Remove(master);
@@ -1207,7 +1209,7 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
+        private void OnShortcutInvoked(object sender, ShortcutInvokedEventArgs args)
         {
             if (_navigationService?.Frame.Content is MainPage mainPage)
             {

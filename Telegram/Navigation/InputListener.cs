@@ -67,6 +67,14 @@ namespace Telegram.Services.Keyboard
                     args.Handled = BootStrapper.Current.RaiseForwardRequested();
                 }
             }
+            else
+            {
+                var invoked = LifetimeService.Current.Shortcuts.Process(args, out VirtualKeyModifiers modifiers);
+                if (invoked != null)
+                {
+                    args.Handled = BootStrapper.Current.RaiseShortcutInvoked(invoked, modifiers);
+                }
+            }
         }
 
         /// <summary>

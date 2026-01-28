@@ -13,13 +13,14 @@ using Telegram.Collections;
 using Telegram.Navigation;
 using Windows.Data.Json;
 using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Services
 {
     public interface IShortcutsService
     {
-        InvokedShortcut Process(KeyRoutedEventArgs args, out VirtualKeyModifiers modifiers);
+        InvokedShortcut Process(AcceleratorKeyEventArgs args, out VirtualKeyModifiers modifiers);
 
         bool TryGetShortcut(KeyRoutedEventArgs args, out Shortcut shortcut);
 
@@ -38,7 +39,7 @@ namespace Telegram.Services
         }
     }
 
-    public partial class ShortcutsService : ViewModelBase, IShortcutsService
+    public partial class ShortcutsService : IShortcutsService
     {
         #region Const
 
@@ -183,23 +184,22 @@ namespace Telegram.Services
 
         private readonly Dictionary<Shortcut, List<ShortcutCommand>> _commands = new();
 
-        public ShortcutsService(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
-            : base(clientService, settingsService, aggregator)
+        public ShortcutsService()
         {
             InitializeDefault();
             InitializeCustom();
         }
 
-        public InvokedShortcut Process(KeyRoutedEventArgs args, out VirtualKeyModifiers modifiers)
+        public InvokedShortcut Process(AcceleratorKeyEventArgs args, out VirtualKeyModifiers modifiers)
         {
             modifiers = WindowContext.KeyModifiers();
 
-            if (args.Key is >= VirtualKey.NumberPad0 and <= VirtualKey.NumberPad9)
+            if (args.VirtualKey is >= VirtualKey.NumberPad0 and <= VirtualKey.NumberPad9)
             {
-                return Process(modifiers, VirtualKey.Number0 + (args.Key - VirtualKey.NumberPad0));
+                return Process(modifiers, VirtualKey.Number0 + (args.VirtualKey - VirtualKey.NumberPad0));
             }
 
-            return Process(modifiers, args.Key);
+            return Process(modifiers, args.VirtualKey);
         }
 
         private InvokedShortcut Process(VirtualKeyModifiers modifiers, VirtualKey key)

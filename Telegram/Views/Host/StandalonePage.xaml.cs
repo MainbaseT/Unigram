@@ -14,7 +14,6 @@ using Telegram.Services;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views.Host
 {
@@ -30,7 +29,6 @@ namespace Telegram.Views.Host
     {
         private readonly IClientService _clientService;
         private readonly INavigationService _navigationService;
-        private readonly IShortcutsService _shortcutsService;
 
         public StandalonePage(INavigationService navigationService)
         {
@@ -38,7 +36,6 @@ namespace Telegram.Views.Host
 
             _clientService = navigationService.Session.Resolve<IClientService>();
             _navigationService = navigationService;
-            _shortcutsService = navigationService.Session.Resolve<IShortcutsService>();
 
             //Grid.SetRow(navigationService.Frame, 2);
             //LayoutRoot.Children.Add(navigationService.Frame);
@@ -52,6 +49,7 @@ namespace Telegram.Views.Host
 
             MasterDetail.Initialize(navigationService as NavigationService, null, new StandaloneViewModel(_clientService, settingsService, aggregator), false);
             MasterDetail.NavigationService.FrameFacade.Navigating += OnNavigating;
+            MasterDetail.NavigationService.FrameFacade.ShortcutInvoked += OnShortcutInvoked;
 
             OnNavigating(null, new NavigatingEventArgs(null, null, null, null)
             {
@@ -144,21 +142,15 @@ namespace Telegram.Views.Host
             }
         }
 
-        private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs args)
+        private void OnShortcutInvoked(object sender, ShortcutInvokedEventArgs args)
         {
-            var invoked = _shortcutsService.Process(args, out _);
-            if (invoked == null)
-            {
-                return;
-            }
-
-            foreach (var command in invoked.Commands)
+            foreach (var command in args.Shortcut.Commands)
             {
                 ProcessAppCommands(command, args);
             }
         }
 
-        private async void ProcessAppCommands(ShortcutCommand command, KeyRoutedEventArgs args)
+        private async void ProcessAppCommands(ShortcutCommand command, ShortcutInvokedEventArgs args)
         {
             if (command == ShortcutCommand.Search)
             {
