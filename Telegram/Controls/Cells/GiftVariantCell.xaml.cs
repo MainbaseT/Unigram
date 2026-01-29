@@ -30,7 +30,7 @@ namespace Telegram.Controls.Cells
             Title.Text = model.Name;
             Title.RequestedTheme = ElementTheme.Default;
 
-            Rarity.Text = (model.RarityPerMille / 10d).ToString("0.##") + "%";
+            Rarity.Text = model.Rarity.ToText();
             Rarity.ClearValue(BackgroundProperty);
         }
 
@@ -42,7 +42,7 @@ namespace Telegram.Controls.Cells
             Title.Text = backdrop.Name;
             Title.RequestedTheme = ElementTheme.Dark;
 
-            Rarity.Text = (backdrop.RarityPerMille / 10d).ToString("0.##") + "%";
+            Rarity.Text = backdrop.Rarity.ToText();
             Rarity.Background = new SolidColorBrush(Color.FromArgb(0x54, 0, 0, 0));
         }
 
@@ -54,7 +54,7 @@ namespace Telegram.Controls.Cells
             Title.Text = symbol.Name;
             Title.RequestedTheme = ElementTheme.Dark;
 
-            Rarity.Text = (symbol.RarityPerMille / 10d).ToString("0.##") + "%";
+            Rarity.Text = symbol.Rarity.ToText();
             Rarity.Background = new SolidColorBrush(Color.FromArgb(0x54, 0, 0, 0));
         }
     }

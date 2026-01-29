@@ -210,13 +210,13 @@ namespace Telegram.Views.Gifts.Popups
             UpgradedAnimatedPhoto.Source = DelayedFileSource.FromSticker(_clientService, _selectedModel.Sticker);
 
             ModelName.Text = _selectedModel.Name;
-            ModelRarity.Text = (_selectedModel.RarityPerMille / 10d).ToString("0.##") + "%";
+            ModelRarity.Text = _selectedModel.Rarity.ToText();
 
             BackdropName.Text = _selectedBackdrop.Name;
-            BackdropRarity.Text = (_selectedBackdrop.RarityPerMille / 10d).ToString("0.##") + "%";
+            BackdropRarity.Text = _selectedBackdrop.Rarity.ToText();
 
             SymbolName.Text = _selectedSymbol.Name;
-            SymbolRarity.Text = (_selectedSymbol.RarityPerMille / 10d).ToString("0.##") + "%";
+            SymbolRarity.Text = _selectedSymbol.Rarity.ToText();
 
             var badgeColor = _selectedBackdrop.Colors.CenterColor.ToColor();
             var badgeBrush = new SolidColorBrush(badgeColor.Lighten());

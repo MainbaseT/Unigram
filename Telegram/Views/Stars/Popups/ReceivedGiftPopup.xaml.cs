@@ -267,7 +267,7 @@ namespace Telegram.Views.Stars.Popups
                     return;
                 }
 
-                _clientService.Send(new SearchGiftsForResale(availableGift.Gift.Id, new GiftForResaleOrderPrice(), Array.Empty<UpgradedGiftAttributeId>(), string.Empty, 1), result =>
+                _clientService.Send(new SearchGiftsForResale(availableGift.Gift.Id, new GiftForResaleOrderPrice(), false, Array.Empty<UpgradedGiftAttributeId>(), string.Empty, 1), result =>
                 {
                     if (result is GiftsForResale gifts && gifts.Gifts.Count > 0)
                     {
@@ -326,11 +326,11 @@ namespace Telegram.Views.Stars.Popups
             Title.Text = Strings.Gift2TitleReceived;
 
             UpgradedModel.Text = gift.Model.Name;
-            UpgradedModelRarity.Glyph = (gift.Model.RarityPerMille / 10d).ToString("0.##") + "%";
+            UpgradedModelRarity.Glyph = gift.Model.Rarity.ToText();
             UpgradedBackdrop.Text = gift.Backdrop.Name;
-            UpgradedBackdropRarity.Glyph = (gift.Backdrop.RarityPerMille / 10d).ToString("0.##") + "%";
+            UpgradedBackdropRarity.Glyph = gift.Backdrop.Rarity.ToText();
             UpgradedSymbol.Text = gift.Symbol.Name;
-            UpgradedSymbolRarity.Glyph = (gift.Symbol.RarityPerMille / 10d).ToString("0.##") + "%";
+            UpgradedSymbolRarity.Glyph = gift.Symbol.Rarity.ToText();
 
             if (gift.ValueAmount != 0)
             {
@@ -692,7 +692,7 @@ namespace Telegram.Views.Stars.Popups
         {
             if (_gift.Gift is SentGiftUpgraded upgraded)
             {
-                var response = await _clientService.SendAsync(new GetGiftUpgradeVariants(upgraded.Gift.RegularGiftId));
+                var response = await _clientService.SendAsync(new GetUpgradedGiftVariants(upgraded.Gift.RegularGiftId, true, false));
                 if (response is GiftUpgradeVariants variants)
                 {
                     Hide();

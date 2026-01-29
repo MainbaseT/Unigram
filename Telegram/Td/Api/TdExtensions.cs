@@ -44,6 +44,19 @@ namespace Telegram.Td.Api
             };
         }
 
+        public static string ToText(this UpgradedGiftAttributeRarity rarity)
+        {
+            return rarity switch
+            {
+                UpgradedGiftAttributeRarityPerMille perMille => (perMille.PerMille / 10d).ToString("0.##") + "%",
+                UpgradedGiftAttributeRarityRare => "rare",
+                UpgradedGiftAttributeRarityLegendary => "legendary",
+                UpgradedGiftAttributeRarityUncommon => "uncommon",
+                UpgradedGiftAttributeRarityEpic => "epic",
+                _ => rarity.ToString()
+            };
+        }
+
         public static CallProtocol ToTd(this VoipCallProtocol protocol)
         {
             return new CallProtocol(protocol.UdpP2p, protocol.UdpReflector, protocol.MinLayer, protocol.MaxLayer, protocol.LibraryVersions);
