@@ -45,9 +45,9 @@ namespace Telegram.Controls
                 width = Math.Max(width, child.ColumnWidth);
             }
 
-            if (RootGrid.Margin.Left != width)
+            if (RootGrid.Width != width)
             {
-                RootGrid.Margin = new Thickness(width, 0, 0, 0);
+                RootGrid.Width = width;
 
                 foreach (TableViewItem child in ItemsPanelRoot.Children)
                 {

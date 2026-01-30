@@ -216,10 +216,11 @@
                           BorderThickness="{TemplateBinding BorderThickness}"
                           CornerRadius="{TemplateBinding CornerRadius}">
                         <Border x:Name="RootGrid"
-                                Background="{ThemeResource ButtonBackground}"
+                                HorizontalAlignment="Left"
+                                Background="{ThemeResource ContentDialogBackground}"
                                 BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
-                                BorderThickness="1,0,0,0"
-                                CornerRadius="0,2,2,0" />
+                                BorderThickness="0,0,1,0"
+                                CornerRadius="2,0,0,2" />
 
                         <ItemsPresenter />
                     </Grid>
