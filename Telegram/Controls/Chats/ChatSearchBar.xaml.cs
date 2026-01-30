@@ -8,6 +8,7 @@
 using System;
 using System.Numerics;
 using Telegram.Common;
+using Telegram.Controls.Cells;
 using Telegram.Navigation;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -76,7 +77,7 @@ namespace Telegram.Controls.Chats
 
                 SearchPrevious.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
                 SearchNext.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
-                ToolsPanel.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
+                FilterByMember.Visibility = history ? Visibility.Collapsed : Visibility.Visible;
 
                 if (viewModel.From != null)
                 {
@@ -228,9 +229,7 @@ namespace Telegram.Controls.Chats
                 return;
             }
 
-            var content = args.ItemContainer.ContentTemplateRoot as Grid;
-
-            if (args.Item is User user)
+            if (args.Item is User user && args.ItemContainer.ContentTemplateRoot is Grid content)
             {
                 var photo = content.Children[0] as ProfilePicture;
                 var title = content.Children[1] as TextBlock;
@@ -250,6 +249,10 @@ namespace Telegram.Controls.Chats
                 }
 
                 photo.Source = ProfilePictureSource.User(ViewModel.ClientService, user);
+            }
+            else if (args.Item is Message message && args.ItemContainer.ContentTemplateRoot is ChatCell cell)
+            {
+                cell.UpdateMessage(ViewModel.ClientService, message, true);
             }
 
             args.Handled = true;
@@ -348,6 +351,10 @@ namespace Telegram.Controls.Chats
             {
                 SetState(ChatSearchState.TextByMember, new MessageSenderUser(from.Id));
             }
+            else if (e.ClickedItem is Message message)
+            {
+                ViewModel.SetSelectedItem(message);
+            }
         }
 
         private void SetState(ChatSearchState state, MessageSender from = null)
@@ -383,20 +390,23 @@ namespace Telegram.Controls.Chats
             switch (state)
             {
                 case ChatSearchState.Members:
-                    ToolsPanel.Visibility = Visibility.Collapsed;
+                    FilterByMember.Visibility = Visibility.Collapsed;
                     viewModel.Autocomplete = new UsernameCollection(viewModel.ClientService, viewModel.Dialog.Chat.Id, viewModel.Dialog.TopicId, string.Empty, false, true, true);
                     break;
                 case ChatSearchState.TextByMember:
-                    ToolsPanel.Visibility = Visibility.Collapsed;
+                    FilterByMember.Visibility = Visibility.Collapsed;
                     viewModel.Autocomplete = null;
                     break;
                 default:
-                    ToolsPanel.Visibility = viewModel.Dialog.Type is not DialogType.History and not DialogType.Thread ? Visibility.Collapsed : Visibility.Visible;
+                    FilterByMember.Visibility = viewModel.Dialog.Type is not DialogType.History and not DialogType.Thread ? Visibility.Collapsed : Visibility.Visible;
                     viewModel.Autocomplete = null;
                     break;
             }
 
             DeleteButton.Visibility = string.IsNullOrEmpty(Field.Text) && state == ChatSearchState.Text ? Visibility.Collapsed : Visibility.Visible;
+
+            _debouncer.Cancel();
+            ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag);
         }
 
         private void Delete(bool allowDispose)
@@ -446,6 +456,16 @@ namespace Telegram.Controls.Chats
         {
             var visible = e.NewSize.Width > 0 && e.NewSize.Height > 0;
             Field.CornerRadius = new CornerRadius(4, 4, visible ? 0 : 4, visible ? 0 : 4);
+        }
+
+        private void OnGotFocus(object sender, RoutedEventArgs e)
+        {
+            RootAutocomplete.Visibility = Visibility.Visible;
+        }
+
+        private void OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            RootAutocomplete.Visibility = Visibility.Collapsed;
         }
     }
 }

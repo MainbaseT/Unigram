@@ -343,7 +343,7 @@ namespace Telegram.Controls.Cells
             }
 
             _dateLabel = Formatter.DateExtended(message.Date);
-            _stateLabel = UpdateStateIcon(chat.LastReadOutboxMessageId, chat, null, message, message.SendingState);
+            _stateLabel = UpdateStateIcon(chat.LastReadOutboxMessageId, chat, null, showAsSender ? null : message, message.SendingState);
 
             TimeLabel.Text = _stateLabel + "\u00A0" + _dateLabel;
 

@@ -15,6 +15,11 @@
     </DataTemplate>
 
     <selectors:AutocompleteTemplateSelector x:Name="AutocompleteTemplate">
+        <selectors:AutocompleteTemplateSelector.MessageTemplate>
+            <DataTemplate>
+                <cells:ChatCell />
+            </DataTemplate>
+        </selectors:AutocompleteTemplateSelector.MessageTemplate>
         <selectors:AutocompleteTemplateSelector.MentionTemplate>
             <DataTemplate>
                 <Grid Padding="12,6">

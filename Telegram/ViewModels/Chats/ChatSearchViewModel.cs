@@ -14,8 +14,6 @@ using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
-using Telegram.Views.Popups;
-using Windows.UI.Xaml.Controls;
 
 namespace Telegram.ViewModels.Chats
 {
@@ -46,7 +44,7 @@ namespace Telegram.ViewModels.Chats
         private ICollection _autocomplete;
         public ICollection Autocomplete
         {
-            get => _autocomplete;
+            get => _autocomplete ?? Items;
             set => Set(ref _autocomplete, value);
         }
 
@@ -164,21 +162,21 @@ namespace Telegram.ViewModels.Chats
         public SearchChatMessagesCollection Items
         {
             get => _items;
-            set => Set(ref _items, value);
+            set
+            {
+                if (Set(ref _items, value) && _autocomplete == null)
+                {
+                    RaisePropertyChanged(nameof(Autocomplete));
+                }
+            }
         }
 
         #endregion
 
-        public async void ShowResults()
+        public void SetSelectedItem(Message message)
         {
-            var popup = new SearchChatResultsPopup(Items);
-
-            var confirm = await ShowPopupAsync(popup);
-            if (confirm == ContentDialogResult.Primary && popup.SelectedItem != null)
-            {
-                SelectedItem = popup.SelectedItem;
-                await Dialog.LoadMessageSliceAsync(null, popup.SelectedItem.Id);
-            }
+            SelectedItem = message;
+            _ = Dialog.LoadMessageSliceAsync(null, message.Id);
         }
 
         public async void Search(string query, MessageSender from, ReactionType savedMessagesTag)
