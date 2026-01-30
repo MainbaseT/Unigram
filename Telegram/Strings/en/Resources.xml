@@ -13229,4 +13229,19 @@
     <string name="Gift2PreviewRandomTraits">Random Traits</string>
     <string name="Gift2PreviewSelectedTraits">Selected Traits</string>
 
+
+    <string name="BotAuthAllowMessages">Allow Messages</string>
+    <string name="BotAuthAllowMessagesInfo">This will allow {0} to message you.</string>
+    <string name="BotAuthBasedOnIP">Based on the IP ({0})</string>
+    <string name="BotAuthBotSubtitle">This bot will receive your **name**,\n**username** and **profile photo**.</string>
+    <string name="BotAuthInfo">This login attempt came from the device above.</string>
+    <string name="BotAuthLoggedInSuccess">You\'ve successfully logged into **{0}**.</string>
+    <string name="BotAuthLogin">Log In</string>
+    <string name="BotAuthPhoneNumber">Phone Number</string>
+    <string name="BotAuthPhoneNumberAccept">Allow</string>
+    <string name="BotAuthPhoneNumberDeny">Deny</string>
+    <string name="BotAuthPhoneNumberText">**{0}** wants to access your phone number **{1}**.\n\nAllow access?</string>
+    <string name="BotAuthSiteSubtitle">This site will receive your **name**,\n**username** and **profile photo**.</string>
+    <string name="BotAuthTitle">Log in to **{0}**</string>
+
 </resources>

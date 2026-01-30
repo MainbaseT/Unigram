@@ -421,7 +421,7 @@ namespace Telegram.Common
             {
                 OpenTelegramUrl(clientService, navigation, internalLink, source);
             }
-            else if (!string.Equals(uri.Scheme, "tg", StringComparison.OrdinalIgnoreCase))
+            else
             {
                 OpenLoginUrl(clientService, navigation, url, await clientService.SendAsync(new GetExternalLinkInfo(url)));
             }
@@ -435,7 +435,7 @@ namespace Telegram.Common
             }
             else if (info is LoginUrlInfoRequestConfirmation requestConfirmation)
             {
-                var popup = new LoginUrlInfoPopup(clientService, requestConfirmation);
+                var popup = new LoginUrlInfoPopup(clientService,  navigation, requestConfirmation);
 
                 var confirm = await navigation.ShowPopupAsync(popup);
                 if (confirm != ContentDialogResult.Primary || !popup.HasAccepted)
@@ -443,7 +443,7 @@ namespace Telegram.Common
                     return;
                 }
 
-                var response = await clientService.SendAsync(new GetExternalLink(url, popup.HasWriteAccess));
+                var response = await clientService.SendAsync(new GetExternalLink(url, popup.AllowWriteAccess, popup.AllowPhoneNumberAccess));
                 if (response is HttpUrl httpUrl)
                 {
                     OpenUrl(null, null, httpUrl.Url);

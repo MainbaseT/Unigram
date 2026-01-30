@@ -2596,6 +2596,49 @@ from **{0}**.</value>
   <data name="BotAffiliateProgramTitle" xml:space="preserve">
     <value>Affiliate Program</value>
   </data>
+  <data name="BotAuthAllowMessages" xml:space="preserve">
+    <value>Allow Messages</value>
+  </data>
+  <data name="BotAuthAllowMessagesInfo" xml:space="preserve">
+    <value>This will allow {0} to message you.</value>
+  </data>
+  <data name="BotAuthBasedOnIP" xml:space="preserve">
+    <value>Based on the IP ({0})</value>
+  </data>
+  <data name="BotAuthBotSubtitle" xml:space="preserve">
+    <value>This bot will receive your **name**,
+**username** and **profile photo**.</value>
+  </data>
+  <data name="BotAuthInfo" xml:space="preserve">
+    <value>This login attempt came from the device above.</value>
+  </data>
+  <data name="BotAuthLoggedInSuccess" xml:space="preserve">
+    <value>You&apos;ve successfully logged into **{0}**.</value>
+  </data>
+  <data name="BotAuthLogin" xml:space="preserve">
+    <value>Log In</value>
+  </data>
+  <data name="BotAuthPhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="BotAuthPhoneNumberAccept" xml:space="preserve">
+    <value>Allow</value>
+  </data>
+  <data name="BotAuthPhoneNumberDeny" xml:space="preserve">
+    <value>Deny</value>
+  </data>
+  <data name="BotAuthPhoneNumberText" xml:space="preserve">
+    <value>**{0}** wants to access your phone number **{1}**.
+
+Allow access?</value>
+  </data>
+  <data name="BotAuthSiteSubtitle" xml:space="preserve">
+    <value>This site will receive your **name**,
+**username** and **profile photo**.</value>
+  </data>
+  <data name="BotAuthTitle" xml:space="preserve">
+    <value>Log in to **{0}**</value>
+  </data>
   <data name="BotCantJoinGroups" xml:space="preserve">
     <value>This bot can&apos;t join groups.</value>
   </data>
