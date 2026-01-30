@@ -1300,6 +1300,9 @@
       <DependentUpon>BackgroundPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CaptureSessionService.cs" />
+    <Compile Include="Views\Popups\AddProxyPopup.xaml.cs">
+      <DependentUpon>AddProxyPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\StakeDicePopup.xaml.cs">
       <DependentUpon>StakeDicePopup.xaml</DependentUpon>
     </Compile>
@@ -3424,6 +3427,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\BackgroundPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\AddProxyPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

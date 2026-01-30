@@ -13229,6 +13229,13 @@
     <string name="Gift2PreviewRandomTraits">Random Traits</string>
     <string name="Gift2PreviewSelectedTraits">Selected Traits</string>
 
+    <string name="UseProxyTitle">Proxy Server</string>
+    <string name="ProxyStatus">Status</string>
+    <string name="ProxyBottomSheetCheckStatus">Check Status</string>
+    <string name="ProxyBottomSheetCheckWarning">Warning</string>
+    <string name="ProxyBottomSheetCheckWarningText">This will expose your IP address to the admin of the proxy server.</string>
+    <string name="ProxyBottomSheetChecking">Checking</string>
+    <string name="Proceed">Proceed</string>
 
     <string name="BotAuthAllowMessages">Allow Messages</string>
     <string name="BotAuthAllowMessagesInfo">This will allow {0} to message you.</string>

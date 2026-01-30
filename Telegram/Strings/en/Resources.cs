@@ -17131,6 +17131,11 @@ namespace Telegram
         public static string PrivateStory => Resource.GetString("PrivateStory");
         
         /// <summary>
+        /// Localized resource similar to "Proceed"
+        /// </summary>
+        public static string Proceed => Resource.GetString("Proceed");
+        
+        /// <summary>
         /// Localized resource similar to "Processing..."
         /// </summary>
         public static string ProcessingVideo => Resource.GetString("ProcessingVideo");
@@ -17276,6 +17281,26 @@ namespace Telegram
         public static string Proxy => Resource.GetString("Proxy");
         
         /// <summary>
+        /// Localized resource similar to "Checking"
+        /// </summary>
+        public static string ProxyBottomSheetChecking => Resource.GetString("ProxyBottomSheetChecking");
+        
+        /// <summary>
+        /// Localized resource similar to "Check Status"
+        /// </summary>
+        public static string ProxyBottomSheetCheckStatus => Resource.GetString("ProxyBottomSheetCheckStatus");
+        
+        /// <summary>
+        /// Localized resource similar to "Warning"
+        /// </summary>
+        public static string ProxyBottomSheetCheckWarning => Resource.GetString("ProxyBottomSheetCheckWarning");
+        
+        /// <summary>
+        /// Localized resource similar to "This will expose your IP address to the admin of the proxy server."
+        /// </summary>
+        public static string ProxyBottomSheetCheckWarningText => Resource.GetString("ProxyBottomSheetCheckWarningText");
+        
+        /// <summary>
         /// Localized resource similar to "Connections"
         /// </summary>
         public static string ProxyConnections => Resource.GetString("ProxyConnections");
@@ -17304,6 +17329,11 @@ namespace Telegram
         /// Localized resource similar to "Proxy Settings"
         /// </summary>
         public static string ProxySettings => Resource.GetString("ProxySettings");
+        
+        /// <summary>
+        /// Localized resource similar to "Status"
+        /// </summary>
+        public static string ProxyStatus => Resource.GetString("ProxyStatus");
         
         /// <summary>
         /// Localized resource similar to "Hide"
@@ -22516,6 +22546,11 @@ namespace Telegram
         /// Localized resource similar to "This proxy may display a sponsored channel in your chat list. This doesn't reveal any of your Telegram traffic."
         /// </summary>
         public static string UseProxyTelegramInfo2 => Resource.GetString("UseProxyTelegramInfo2");
+        
+        /// <summary>
+        /// Localized resource similar to "Proxy Server"
+        /// </summary>
+        public static string UseProxyTitle => Resource.GetString("UseProxyTitle");
         
         /// <summary>
         /// Localized resource similar to "Username"

@@ -535,10 +535,7 @@ namespace Telegram.Common
                     NavigateToConfirmPhone(clientService, phoneNumberConfirmation.PhoneNumber, phoneNumberConfirmation.Hash);
                     break;
                 case InternalLinkTypeProxy proxy:
-                    NavigateToProxy(clientService, navigation, proxy.Server, proxy.Port, proxy.Type);
-                    break;
-                case InternalLinkTypeUnsupportedProxy:
-                    navigation.ShowToast(Strings.ProxyLinkUnsupported, ToastPopupIcon.Error);
+                    NavigateToProxy(clientService, navigation, proxy.Proxy);
                     break;
                 case InternalLinkTypePublicChat publicChat:
                     NavigateToUsername(clientService, navigation, publicChat.ChatUsername, draftText: publicChat.DraftText, openProfile: publicChat.OpenProfile);
@@ -1217,30 +1214,15 @@ namespace Telegram.Common
             await navigation.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationPostText(text));
         }
 
-        public static async void NavigateToProxy(IClientService clientService, INavigationService navigation, string server, int port, ProxyType type)
+        public static async void NavigateToProxy(IClientService clientService, INavigationService navigation, Proxy proxy)
         {
-            string userText = string.Empty;
-            string passText = string.Empty;
-            string secretText = string.Empty;
-            string secretInfo = string.Empty;
-
-            if (type is ProxyTypeHttp http)
+            if (proxy == null)
             {
-                userText = !string.IsNullOrEmpty(http.Username) ? $"{Strings.UseProxyUsername}: {http.Username}\n" : string.Empty;
-                passText = !string.IsNullOrEmpty(http.Password) ? $"{Strings.UseProxyPassword}: {http.Password}\n" : string.Empty;
-            }
-            else if (type is ProxyTypeSocks5 socks5)
-            {
-                userText = !string.IsNullOrEmpty(socks5.Username) ? $"{Strings.UseProxyUsername}: {socks5.Username}\n" : string.Empty;
-                passText = !string.IsNullOrEmpty(socks5.Password) ? $"{Strings.UseProxyPassword}: {socks5.Password}\n" : string.Empty;
-            }
-            else if (type is ProxyTypeMtproto mtproto)
-            {
-                secretText = !string.IsNullOrEmpty(mtproto.Secret) ? $"{Strings.UseProxySecret}: {mtproto.Secret}\n" : string.Empty;
-                secretInfo = !string.IsNullOrEmpty(mtproto.Secret) ? $"\n\n{Strings.UseProxyTelegramInfo2}" : string.Empty;
+                navigation.ShowToast(Strings.ProxyLinkUnsupported, ToastPopupIcon.Error);
+                return;
             }
 
-            var confirm = await navigation.ShowPopupAsync($"{Strings.EnableProxyAlert}\n\n{Strings.UseProxyAddress}: {server}\n{Strings.UseProxyPort}: {port}\n{userText}{passText}{secretText}\n{Strings.EnableProxyAlert2}{secretInfo}", Strings.Proxy, Strings.ConnectingConnectProxy, Strings.Cancel);
+            var confirm = await navigation.ShowPopupAsync(new AddProxyPopup(clientService, navigation, proxy));
             if (confirm == ContentDialogResult.Primary)
             {
                 clientService.Send(new AddProxy(server ?? string.Empty, port, Constants.RELEASE, type));

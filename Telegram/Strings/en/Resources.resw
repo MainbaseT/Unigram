@@ -11478,6 +11478,9 @@ seamlessly and efficiently.</value>
   <data name="PrivateStory" xml:space="preserve">
     <value>Private story</value>
   </data>
+  <data name="Proceed" xml:space="preserve">
+    <value>Proceed</value>
+  </data>
   <data name="ProcessingVideo" xml:space="preserve">
     <value>Processing...</value>
   </data>
@@ -11589,6 +11592,18 @@ seamlessly and efficiently.</value>
   <data name="Proxy" xml:space="preserve">
     <value>Proxy</value>
   </data>
+  <data name="ProxyBottomSheetChecking" xml:space="preserve">
+    <value>Checking</value>
+  </data>
+  <data name="ProxyBottomSheetCheckStatus" xml:space="preserve">
+    <value>Check Status</value>
+  </data>
+  <data name="ProxyBottomSheetCheckWarning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="ProxyBottomSheetCheckWarningText" xml:space="preserve">
+    <value>This will expose your IP address to the admin of the proxy server.</value>
+  </data>
   <data name="ProxyConnections" xml:space="preserve">
     <value>Connections</value>
   </data>
@@ -11606,6 +11621,9 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ProxySettings" xml:space="preserve">
     <value>Proxy Settings</value>
+  </data>
+  <data name="ProxyStatus" xml:space="preserve">
+    <value>Status</value>
   </data>
   <data name="PsaHide" xml:space="preserve">
     <value>Hide</value>
@@ -15207,6 +15225,9 @@ If you are not comfortable with Telegram&apos;s modest needs, it won&apos;t be p
   </data>
   <data name="UseProxyTelegramInfo2" xml:space="preserve">
     <value>This proxy may display a sponsored channel in your chat list. This doesn&apos;t reveal any of your Telegram traffic.</value>
+  </data>
+  <data name="UseProxyTitle" xml:space="preserve">
+    <value>Proxy Server</value>
   </data>
   <data name="UseProxyUsername" xml:space="preserve">
     <value>Username</value>
