@@ -77,6 +77,8 @@ namespace Telegram.Services
 
         bool UseSystemProxy { get; set; }
         int LastProxyId { get; set; }
+        int EnabledProxyId { get; set; }
+        bool MigratedProxy { get; set; }
 
         int[] AccountsSelectorOrder { get; set; }
 
@@ -703,6 +705,20 @@ namespace Telegram.Services
         {
             get => _installBetaUpdates ??= GetValueOrDefault("InstallBetaUpdates", true);
             set => AddOrUpdateValue(ref _installBetaUpdates, _local, "InstallBetaUpdates", value);
+        }
+
+        private static int? _enabledProxyId;
+        public int EnabledProxyId
+        {
+            get => _enabledProxyId ??= GetValueOrDefault("EnabledProxyId", 0);
+            set => AddOrUpdateValue(ref _enabledProxyId, _local, "EnabledProxyId", value);
+        }
+
+        private static bool? _migratedProxy;
+        public bool MigratedProxy
+        {
+            get => _migratedProxy ??= GetValueOrDefault("MigratedProxy", false);
+            set => AddOrUpdateValue(ref _migratedProxy, _local, "MigratedProxy", value);
         }
 
         private int? _useLessData;

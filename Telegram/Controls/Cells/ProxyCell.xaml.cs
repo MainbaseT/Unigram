@@ -24,13 +24,6 @@ namespace Telegram.Controls.Cells
             set => DisplayNameLabel.Text = value;
         }
 
-        public bool IsEnabled
-        {
-            set => EnabledLabel.Visibility = value
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-        }
-
         public ConnectionStatus Status
         {
             set => UpdateView(value);

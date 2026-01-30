@@ -22,30 +22,18 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Settings
 {
-    public enum SettingsProxyType
-    {
-        Disabled,
-        System,
-        Custom
-    }
-
     public partial class SettingsProxyViewModel : ViewModelBase, IHandle
     {
-        private readonly INetworkService _networkService;
-        private int _systemProxyId;
+        private readonly IProxyService _proxyService;
         private bool _ready;
 
         public ContentPopup Popup { get; set; }
 
-        public SettingsProxyViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, INetworkService networkService)
+        public SettingsProxyViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, IProxyService proxyService)
             : base(clientService, settingsService, aggregator)
         {
-            _networkService = networkService;
-            _type = ClientService.Options.EnabledProxyId != 0
-                ? _networkService.UseSystemProxy
-                ? SettingsProxyType.System
-                : SettingsProxyType.Custom
-                : SettingsProxyType.Disabled;
+            _proxyService = proxyService;
+            _type = settingsService.EnabledProxyId;
 
             Items = new MvxObservableCollection<ProxyViewModel>();
         }
@@ -54,28 +42,19 @@ namespace Telegram.ViewModels.Settings
         {
             BridgeApplicationContext.LoopbackExempt(true);
 
-            var systemId = _systemProxyId = await _networkService.GetSystemProxyId();
-
-            var response = await ClientService.SendAsync(new GetProxies());
-            if (response is Proxies proxies)
+            var response = await _proxyService.GetProxiesAsync();
+            if (response is AddedProxies proxies)
             {
-                Items.ReplaceWith(proxies.ProxiesValue.Where(x => x.Id != systemId).Select(x => new ProxyViewModel(x)));
+                Items.ReplaceWith(proxies.Proxies.Select(x => new ProxyViewModel(x)));
 
                 Parallel.ForEach(Items, async (item) =>
                 {
                     await UpdateAsync(item);
                 });
-
-                _networkService.ProxyChanged += OnSystemProxyChanged;
             }
 
             _ready = true;
-            Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy);
-        }
-
-        protected override void OnNavigatedFrom(NavigationState pageState, bool suspending)
-        {
-            _networkService.ProxyChanged -= OnSystemProxyChanged;
+            Handle(ClientService.ConnectionState);
         }
 
         public override void Subscribe()
@@ -92,7 +71,7 @@ namespace Telegram.ViewModels.Settings
             //    proxyId = 0;
             //}
 
-            var status = await ClientService.SendAsync(new PingProxy(proxyId));
+            var status = await ClientService.SendAsync(new PingProxy(proxy.Proxy));
             BeginOnUIThread(() =>
             {
                 if (status is Seconds seconds)
@@ -110,63 +89,24 @@ namespace Telegram.ViewModels.Settings
             });
         }
 
-        private void OnSystemProxyChanged(object sender, Proxy proxy)
-        {
-            //var connection = Items.FirstOrDefault(x => x is SystemProxyViewModel);
-            //if (connection == null || proxy == null)
-            //{
-            //    return;
-            //}
-
-            //BeginOnUIThread(async () =>
-            //{
-            //    var selected = SelectedItem == connection;
-            //    var index = Items.IndexOf(connection);
-            //    if (index != 1)
-            //    {
-            //        return;
-            //    }
-
-            //    var edited = new SystemProxyViewModel(proxy);
-            //    Items.Remove(connection);
-            //    Items.Insert(index, edited);
-
-            //    if (selected)
-            //    {
-            //        SelectedItem = edited;
-            //    }
-
-            //    await UpdateAsync(edited);
-            //});
-        }
-
         public void Handle(UpdateConnectionState update)
         {
-            BeginOnUIThread(() => Handle(update.State, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy));
+            BeginOnUIThread(() => Handle(update.State));
         }
 
         public void Handle(UpdateOption update)
         {
             if (update.Name == OptionsService.R.EnabledProxyId)
             {
-                BeginOnUIThread(() => Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy));
+                BeginOnUIThread(() => Handle(ClientService.ConnectionState));
             }
         }
 
-        private void Handle(ConnectionState state, long enabledProxyId, bool useSystemProxy)
+        private void Handle(ConnectionState state)
         {
-            if (enabledProxyId == _systemProxyId || useSystemProxy)
-            {
-                SetType(SettingsProxyType.System, false);
-            }
-            else if (enabledProxyId == 0)
-            {
-                SetType(SettingsProxyType.Disabled, false);
-            }
-            else
-            {
-                SetType(SettingsProxyType.Custom, false);
-            }
+            var enabledProxyId = Settings.EnabledProxyId;
+
+            SetType(enabledProxyId, false);
 
             foreach (var item in Items)
             {
@@ -178,9 +118,13 @@ namespace Telegram.ViewModels.Settings
                     {
                         item.Status = new ConnectionStatusError(item.Error);
                     }
-                    else
+                    else if (item.Seconds > 0)
                     {
                         item.Status = new ConnectionStatusReady(false, item.Seconds);
+                    }
+                    else
+                    {
+                        item.Status = new ConnectionStatusChecking();
                     }
 
                     continue;
@@ -203,26 +147,26 @@ namespace Telegram.ViewModels.Settings
             }
         }
 
-        private SettingsProxyType _type;
-        public SettingsProxyType Type
+        private int _type;
+        public int Type
         {
             get => _type;
             set => SetType(value);
         }
 
-        private async void SetType(SettingsProxyType value, bool update = true)
+        private async void SetType(int value, bool update = true)
         {
             if (_ready is false)
             {
                 return;
             }
 
-            if (value == SettingsProxyType.Custom && update && Items.Empty())
+            if (value > 0 && update && Items.Empty())
             {
                 Add();
                 RaisePropertyChanged(nameof(IsDisabled));
                 RaisePropertyChanged(nameof(IsSystem));
-                RaisePropertyChanged(nameof(IsCustom));
+                //RaisePropertyChanged(nameof(IsCustom));
 
                 return;
             }
@@ -231,60 +175,48 @@ namespace Telegram.ViewModels.Settings
             {
                 RaisePropertyChanged(nameof(IsDisabled));
                 RaisePropertyChanged(nameof(IsSystem));
-                RaisePropertyChanged(nameof(IsCustom));
+                //RaisePropertyChanged(nameof(IsCustom));
 
                 if (update)
                 {
                     if (IsDisabled)
                     {
-                        await _networkService.UpdateProxyAsync(0);
+                        _proxyService.DisableProxy();
                     }
                     else if (IsSystem)
                     {
-                        await _networkService.UpdateProxyAsync(_systemProxyId);
+                        _proxyService.EnableSystemProxy();
                     }
-                    else if (IsCustom)
-                    {
-                        await _networkService.UpdateProxyAsync(Settings.LastProxyId);
-                    }
+                    //else if (IsCustom)
+                    //{
+                    //    _proxyService.EnableProxy(Settings.LastProxyId);
+                    //}
 
-                    Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy);
+                    Handle(ClientService.ConnectionState);
                 }
             }
         }
 
         public bool IsDisabled
         {
-            get => _type == SettingsProxyType.Disabled;
+            get => _type == 0;
             set
             {
                 if (value)
                 {
-                    SetType(SettingsProxyType.Disabled);
+                    SetType(0);
                 }
             }
         }
 
         public bool IsSystem
         {
-            get => _type == SettingsProxyType.System;
+            get => _type == -1;
             set
             {
                 if (value)
                 {
-                    SetType(SettingsProxyType.System);
-                }
-            }
-        }
-
-        public bool IsCustom
-        {
-            get => _type == SettingsProxyType.Custom;
-            set
-            {
-                if (value)
-                {
-                    SetType(SettingsProxyType.Custom);
+                    SetType(-1);
                 }
             }
         }
@@ -308,8 +240,8 @@ namespace Telegram.ViewModels.Settings
                 return;
             }
 
-            var response = await ClientService.SendAsync(new AddProxy(popup.Server, popup.Port, false, popup.Type));
-            if (response is Proxy proxy)
+            var response = _proxyService.AddProxy(popup.Proxy, false);
+            if (response is AddedProxy proxy)
             {
                 var connection = new ProxyViewModel(proxy);
                 Items.Add(connection);
@@ -323,12 +255,12 @@ namespace Telegram.ViewModels.Settings
         {
             SelectedItems.Clear();
 
-            SetType(SettingsProxyType.Custom, false);
+            SetType(proxy.Id, false);
 
             Settings.LastProxyId = proxy.Id;
 
-            await _networkService.UpdateProxyAsync(proxy.Id);
-            Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy);
+            _proxyService.EnableProxy(proxy.Id);
+            Handle(ClientService.ConnectionState);
         }
 
         public async void Edit(ProxyViewModel connection)
@@ -343,8 +275,8 @@ namespace Telegram.ViewModels.Settings
                 return;
             }
 
-            var response = await ClientService.SendAsync(new EditProxy(connection.Id, popup.Server, popup.Port, false, popup.Type));
-            if (response is Proxy proxy)
+            var response = _proxyService.EditProxy(connection.Id, popup.Proxy);
+            if (response is AddedProxy proxy)
             {
                 var index = Items.IndexOf(connection);
                 Items.Remove(connection);
@@ -354,7 +286,7 @@ namespace Telegram.ViewModels.Settings
                 await UpdateAsync(edited);
             }
 
-            Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy);
+            Handle(ClientService.ConnectionState);
         }
 
         public async void Delete(ProxyViewModel proxy)
@@ -367,13 +299,10 @@ namespace Telegram.ViewModels.Settings
                 return;
             }
 
-            var response = await ClientService.SendAsync(new RemoveProxy(proxy.Id));
-            if (response is Ok)
-            {
-                Items.Remove(proxy);
-            }
+            _proxyService.RemoveProxy(proxy.Id);
+            Items.Remove(proxy);
 
-            Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy);
+            Handle(ClientService.ConnectionState);
         }
 
         public async void DeleteSelected()
@@ -390,26 +319,23 @@ namespace Telegram.ViewModels.Settings
 
             foreach (var proxy in selected)
             {
-                if (proxy.Id == ClientService.Options.EnabledProxyId)
+                if (proxy.Id == Settings.EnabledProxyId)
                 {
-                    SetType(SettingsProxyType.Disabled, false);
+                    SetType(0, false);
                 }
 
-                var response = await ClientService.SendAsync(new RemoveProxy(proxy.Id));
-                if (response is Ok)
-                {
-                    Items.Remove(proxy);
-                }
+                _proxyService.RemoveProxy(proxy.Id);
+                Items.Remove(proxy);
             }
 
-            Handle(ClientService.ConnectionState, ClientService.Options.EnabledProxyId, _networkService.UseSystemProxy);
+            Handle(ClientService.ConnectionState);
         }
 
         public async void Share(ProxyViewModel proxy)
         {
             SelectedItems.Clear();
 
-            var response = await ClientService.SendAsync(new GetProxyLink(proxy.Id));
+            var response = await ClientService.SendAsync(new GetInternalLink(new InternalLinkTypeProxy(proxy.Proxy), true));
             if (response is HttpUrl httpUrl)
             {
                 await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(httpUrl));
@@ -420,7 +346,7 @@ namespace Telegram.ViewModels.Settings
         {
             SelectedItems.Clear();
 
-            var response = await ClientService.SendAsync(new GetProxyLink(proxy.Id));
+            var response = await ClientService.SendAsync(new GetInternalLink(new InternalLinkTypeProxy(proxy.Proxy), true));
             if (response is HttpUrl httpUrl)
             {
                 MessageHelper.CopyLink(XamlRoot, httpUrl.Url);
@@ -436,7 +362,7 @@ namespace Telegram.ViewModels.Settings
 
             foreach (var proxy in selected)
             {
-                var response = await ClientService.SendAsync(new GetProxyLink(proxy.Id));
+                var response = await ClientService.SendAsync(new GetInternalLink(new InternalLinkTypeProxy(proxy.Proxy), true));
                 if (response is HttpUrl httpUrl)
                 {
                     builder.AppendLine(httpUrl.Url);
@@ -492,15 +418,16 @@ namespace Telegram.ViewModels.Settings
 
     public partial class ProxyViewModel : BindableBase
     {
-        private readonly Proxy _proxy;
+        private readonly AddedProxy _proxy;
 
-        public ProxyViewModel(Proxy proxy)
+        public ProxyViewModel(AddedProxy proxy)
         {
             _proxy = proxy;
             _enabled = proxy.IsEnabled;
         }
 
-        public ProxyType Type => _proxy.Type;
+        public Proxy Proxy => _proxy.Proxy;
+        public ProxyType Type => _proxy.Proxy.Type;
 
         private bool _enabled;
         public bool IsEnabled
@@ -510,8 +437,8 @@ namespace Telegram.ViewModels.Settings
         }
 
         public int LastUsedDate => _proxy.LastUsedDate;
-        public int Port => _proxy.Port;
-        public string Server => _proxy.Server;
+        public int Port => _proxy.Proxy.Port;
+        public string Server => _proxy.Proxy.Server;
         public int Id => _proxy.Id;
 
         public string DisplayName => $"{Server}:{Port}";

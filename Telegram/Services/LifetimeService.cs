@@ -31,6 +31,9 @@ namespace Telegram.Services
         IList<ISession> Items { get; }
         ISession ActiveItem { get; set; }
         ISession PreviousItem { get; set; }
+
+        IEnumerable<T> ResolveAll<T>();
+        bool TryResolve<T>(int session, out T result);
     }
 
     public partial class LifetimeService : ILifetimeService
@@ -42,12 +45,14 @@ namespace Telegram.Services
         private readonly ILocaleService _locale;
         private readonly IPlaybackService _playback;
         private readonly IShortcutsService _shortcuts;
+        private readonly IProxyService _proxy;
         private readonly VoipCoordinator _voip;
 
         public IPasscodeService Passcode => _passcode;
         public ILocaleService Locale => _locale;
         public IPlaybackService Playback => _playback;
         public IShortcutsService Shortcuts => _shortcuts;
+        public IProxyService Proxy => _proxy;
         public VoipCoordinator Voip => _voip;
 
         public LifetimeService()
@@ -55,6 +60,7 @@ namespace Telegram.Services
             _passcode = new PasscodeService(SettingsService.Current.PasscodeLock);
             _playback = new PlaybackService(SettingsService.Current);
             _shortcuts = new ShortcutsService();
+            _proxy = new ProxyService(this);
             _voip = new VoipCoordinator();
             _locale = LocaleService.Current;
 
@@ -72,6 +78,7 @@ namespace Telegram.Services
             }
 
             _activeItem ??= Build(nextId, true);
+            _proxy.Migrate(_activeItem.Id);
         }
 
         public static void Initialize()
@@ -85,7 +92,7 @@ namespace Telegram.Services
 
         private ISession Build(int id, bool active)
         {
-            var session = new SessionImpl(this, _locale, _passcode, _shortcuts, id, active);
+            var session = new SessionImpl(this, _locale, _passcode, _shortcuts, _proxy, id, active);
             _sessions[id] = session;
             return session;
         }

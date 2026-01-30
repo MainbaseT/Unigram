@@ -15,6 +15,7 @@ namespace Telegram.Services
         private readonly Telegram.Services.ILocaleService _localeService;
         private readonly Telegram.Services.IPasscodeService _passcodeService;
         private readonly Telegram.Services.IShortcutsService _shortcutsService;
+        private readonly Telegram.Services.IProxyService _proxyService;
 
         private readonly Telegram.Services.IDeviceInfoService _deviceInfoService;
         private readonly Telegram.Services.ISettingsService _settingsService;
@@ -37,7 +38,7 @@ namespace Telegram.Services
         private Telegram.Services.IProfilePhotoService _profilePhotoService;
         private Telegram.Services.ITextRecognitionService _textRecognitionService;
 
-        public SessionImpl(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, Telegram.Services.IShortcutsService shortcutsService, int session, bool active)
+        public SessionImpl(Telegram.Services.ILifetimeService lifetimeService, Telegram.Services.ILocaleService localeService, Telegram.Services.IPasscodeService passcodeService, Telegram.Services.IShortcutsService shortcutsService, Telegram.Services.IProxyService proxyService, int session, bool active)
         {
             _id = session;
             _sessionService = this;
@@ -46,6 +47,7 @@ namespace Telegram.Services
             _localeService = localeService;
             _passcodeService = passcodeService;
             _shortcutsService = shortcutsService;
+            _proxyService = proxyService;
 
             _deviceInfoService = new Telegram.Services.DeviceInfoService();
             _settingsService = new Telegram.Services.SettingsService(_id);
@@ -534,7 +536,7 @@ namespace Telegram.Services
                         _clientService,
                         _settingsService,
                         _eventAggregator,
-                        _networkService);
+                        _proxyService);
                 case "Telegram.ViewModels.Settings.SettingsPrivacyAndSecurityViewModel":
                     return (T)(object)new Telegram.ViewModels.Settings.SettingsPrivacyAndSecurityViewModel(
                         _clientService,

@@ -94,6 +94,33 @@ namespace Telegram.Views.Settings
             args.IsContainerPrepared = true;
         }
 
+        private void OnContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.InRecycleQueue)
+            {
+                return;
+            }
+            else if (args.ItemContainer.ContentTemplateRoot is RadioButton content && args.Item is ProxyViewModel proxy)
+            {
+                content.Checked -= RadioButton_Checked;
+
+                // Justified because Checked
+                content.Tag = proxy;
+                content.IsChecked = proxy.IsEnabled;
+
+                content.Checked += RadioButton_Checked;
+            }
+
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton { Tag: ProxyViewModel proxy })
+            {
+                ViewModel.Enable(proxy);
+            }
+        }
+
         #endregion
 
     }

@@ -22,10 +22,9 @@
     <Grid Background="{ThemeResource SettingsPageBackground}">
         <controls:TableListView x:Name="ScrollingHost"
                                 ItemsSource="{x:Bind ViewModel.Items}"
-                                ItemClick="List_ItemClick"
-                                IsItemClickEnabled="True"
                                 SelectionMode="None"
                                 ChoosingItemContainer="OnChoosingItemContainer"
+                                ContainerContentChanging="OnContainerContentChanging"
                                 VerticalContentAlignment="Top">
             <common:SelectedItemsBinder.Attached>
                 <common:SelectedItemsBinder SelectedItems="{x:Bind ViewModel.SelectedItems}"
@@ -42,10 +41,6 @@
                                      Content="{CustomResource UseSystemProxySettings}"
                                      Style="{StaticResource SettingsRadioButtonStyle}"
                                      GroupName="ProxyType" />
-                        <RadioButton IsChecked="{x:Bind ViewModel.IsCustom, Mode=TwoWay}"
-                                     Content="{CustomResource UseCustomProxy}"
-                                     Style="{StaticResource SettingsRadioButtonStyle}"
-                                     GroupName="ProxyType" />
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl>
@@ -60,13 +55,25 @@
                                Margin="24,16,24,6" />
                 </controls:SettingsPanel>
             </ListView.Header>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="controls:TableListViewItem">
+                    <Setter Property="Background"
+                            Value="Transparent" />
+                    <Setter Property="BorderBrush"
+                            Value="Transparent" />
+                    <Setter Property="BorderThickness"
+                            Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:ProxyViewModel">
-                    <cells:ProxyCell DisplayName="{x:Bind DisplayName}"
-                                     IsEnabled="{x:Bind IsEnabled, Mode=OneWay}"
-                                     Status="{x:Bind Status, Mode=OneWay}"
-                                     Padding="12,11,12,12"
-                                     MinHeight="62"/>
+                    <RadioButton Style="{StaticResource SettingsRadioButtonStyle}"
+                                 GroupName="ProxyType"
+                                 CornerRadius="4"
+                                 BorderThickness="1">
+                        <cells:ProxyCell DisplayName="{x:Bind DisplayName}"
+                                         Status="{x:Bind Status, Mode=OneWay}" />
+                    </RadioButton>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>
