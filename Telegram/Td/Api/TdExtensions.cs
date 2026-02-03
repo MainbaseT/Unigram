@@ -306,12 +306,12 @@ namespace Telegram.Td.Api
                 {
                     new List<InlineKeyboardButton>
                     {
-                        new(Strings.PostSuggestionsInlineDecline, new InlineKeyboardButtonTypeSuggestionDecline(suggestedPostInfo.CanBeDeclined)),
-                        new(Strings.PostSuggestionsInlineAccept, new InlineKeyboardButtonTypeSuggestionApprove(suggestedPostInfo.CanBeDeclined))
+                        new(Strings.PostSuggestionsInlineDecline, 0, new ButtonStyleDefault(), new InlineKeyboardButtonTypeSuggestionDecline(suggestedPostInfo.CanBeDeclined)),
+                        new(Strings.PostSuggestionsInlineAccept, 0, new ButtonStyleDefault(), new InlineKeyboardButtonTypeSuggestionApprove(suggestedPostInfo.CanBeDeclined))
                     },
                     new List<InlineKeyboardButton>
                     {
-                        new(Strings.PostSuggestionsInlineEdit, new InlineKeyboardButtonTypeSuggestionEdit())
+                        new(Strings.PostSuggestionsInlineEdit, 0, new ButtonStyleDefault(), new InlineKeyboardButtonTypeSuggestionEdit())
                     }
                 });
             }
