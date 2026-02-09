@@ -9,13 +9,16 @@ using System.Collections.Generic;
 using System.Numerics;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Messages
 {
@@ -81,6 +84,11 @@ namespace Telegram.Controls.Messages
                     button.Text = item.Text.Replace('\n', ' ');
                     button.Click += Button_Click;
 
+                    if (item.IconCustomEmojiId != 0)
+                    {
+                        button.Source = new CustomEmojiFileSource(message.ClientService, item.IconCustomEmojiId);
+                    }
+
                     switch (item.Type)
                     {
                         case InlineKeyboardButtonTypeUrl typeUrl:
@@ -120,6 +128,19 @@ namespace Telegram.Controls.Messages
                             break;
                         case InlineKeyboardButtonTypeSuggestionEdit:
                             button.Icon = Icons.EditFilled;
+                            break;
+                    }
+
+                    switch (item.Style)
+                    {
+                        case ButtonStylePrimary:
+                            button.Background = new SolidColorBrush(Color.FromArgb(0xB2, 0x22, 0x9a, 0xf0));
+                            break;
+                        case ButtonStyleDanger:
+                            button.Background = new SolidColorBrush(Color.FromArgb(0xB2, 0xdb, 0x46, 0x46));
+                            break;
+                        case ButtonStyleSuccess:
+                            button.Background = new SolidColorBrush(Color.FromArgb(0xB2, 0x40, 0xb1, 0x35));
                             break;
                     }
 

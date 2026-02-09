@@ -9,6 +9,8 @@ using System;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
+using Telegram.Navigation;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
@@ -164,9 +166,27 @@ namespace Telegram.Controls
 
                     button.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
 
+                    if (item.IconCustomEmojiId != 0)
+                    {
+                        button.Source = new CustomEmojiFileSource(message.ClientService, item.IconCustomEmojiId);
+                    }
+
                     if (item.Type is KeyboardButtonTypeWebApp)
                     {
                         button.Glyph = Icons.Window16;
+                    }
+
+                    switch (item.Style)
+                    {
+                        case ButtonStylePrimary:
+                            button.Style = BootStrapper.Current.Resources["AccentReplyMarkupButtonStyle"] as Style;
+                            break;
+                        case ButtonStyleDanger:
+                            button.Style = BootStrapper.Current.Resources["DangerReplyMarkupButtonStyle"] as Style;
+                            break;
+                        case ButtonStyleSuccess:
+                            button.Style = BootStrapper.Current.Resources["SuccessReplyMarkupButtonStyle"] as Style;
+                            break;
                     }
 
                     panel.Children.Add(button);
@@ -254,6 +274,26 @@ namespace Telegram.Controls
 
         public KeyboardButton Button { get; }
 
+        private UIElement IconPresenter;
+        private UIElement EmojiPresenter;
+
+        protected override void OnApplyTemplate()
+        {
+            if (!string.IsNullOrEmpty(Icon))
+            {
+                IconPresenter = GetTemplateChild(nameof(IconPresenter)) as UIElement;
+                IconPresenter.Visibility = Visibility.Visible;
+            }
+
+            if (Source != null)
+            {
+                EmojiPresenter = GetTemplateChild(nameof(EmojiPresenter)) as UIElement;
+                EmojiPresenter.Visibility = Visibility.Visible;
+            }
+
+            base.OnApplyTemplate();
+        }
+
         #region Text
 
         public string Text
@@ -264,6 +304,56 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(ReplyMarkupButton), new PropertyMetadata(string.Empty));
+
+        #endregion
+
+        #region Icon
+
+        public string Icon
+        {
+            get { return (string)GetValue(IconProperty); }
+            set { SetValue(IconProperty, value); }
+        }
+
+        public static readonly DependencyProperty IconProperty =
+            DependencyProperty.Register("Icon", typeof(string), typeof(ReplyMarkupButton), new PropertyMetadata(string.Empty, OnIconChanged));
+
+        private static void OnIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = d as ReplyMarkupButton;
+            if (sender?.IconPresenter != null || !string.IsNullOrEmpty((string)e.NewValue))
+            {
+                sender.IconPresenter ??= sender.GetTemplateChild(nameof(sender.IconPresenter)) as UIElement;
+                sender.IconPresenter?.Visibility = string.IsNullOrEmpty((string)e.NewValue)
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
+        }
+
+        #endregion
+
+        #region Source
+
+        public AnimatedImageSource Source
+        {
+            get { return (AnimatedImageSource)GetValue(SourceProperty); }
+            set { SetValue(SourceProperty, value); }
+        }
+
+        public static readonly DependencyProperty SourceProperty =
+            DependencyProperty.Register(nameof(Source), typeof(AnimatedImageSource), typeof(ReplyMarkupButton), new PropertyMetadata(null, OnSourceChanged));
+
+        private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = d as ReplyMarkupButton;
+            if (sender?.EmojiPresenter != null || e.NewValue != null)
+            {
+                sender.EmojiPresenter ??= sender.GetTemplateChild(nameof(sender.EmojiPresenter)) as UIElement;
+                sender.EmojiPresenter?.Visibility = e.NewValue == null
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
+        }
 
         #endregion
     }
@@ -309,6 +399,7 @@ namespace Telegram.Controls
         public InlineKeyboardButton Button { get; }
 
         private UIElement IconPresenter;
+        private UIElement EmojiPresenter;
 
         protected override void OnApplyTemplate()
         {
@@ -316,6 +407,12 @@ namespace Telegram.Controls
             {
                 IconPresenter = GetTemplateChild(nameof(IconPresenter)) as UIElement;
                 IconPresenter.Visibility = Visibility.Visible;
+            }
+
+            if (Source != null)
+            {
+                EmojiPresenter = GetTemplateChild(nameof(EmojiPresenter)) as UIElement;
+                EmojiPresenter.Visibility = Visibility.Visible;
             }
 
             base.OnApplyTemplate();
@@ -351,8 +448,32 @@ namespace Telegram.Controls
             if (sender?.IconPresenter != null || !string.IsNullOrEmpty((string)e.NewValue))
             {
                 sender.IconPresenter ??= sender.GetTemplateChild(nameof(sender.IconPresenter)) as UIElement;
-
                 sender.IconPresenter?.Visibility = string.IsNullOrEmpty((string)e.NewValue)
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            }
+        }
+
+        #endregion
+
+        #region Source
+
+        public AnimatedImageSource Source
+        {
+            get { return (AnimatedImageSource)GetValue(SourceProperty); }
+            set { SetValue(SourceProperty, value); }
+        }
+
+        public static readonly DependencyProperty SourceProperty =
+            DependencyProperty.Register(nameof(Source), typeof(AnimatedImageSource), typeof(ReplyMarkupInlineButton), new PropertyMetadata(null, OnSourceChanged));
+
+        private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = d as ReplyMarkupInlineButton;
+            if (sender?.EmojiPresenter != null || e.NewValue != null)
+            {
+                sender.EmojiPresenter ??= sender.GetTemplateChild(nameof(sender.EmojiPresenter)) as UIElement;
+                sender.EmojiPresenter?.Visibility = e.NewValue == null
                     ? Visibility.Collapsed
                     : Visibility.Visible;
             }
