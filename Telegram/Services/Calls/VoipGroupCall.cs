@@ -121,6 +121,7 @@ namespace Telegram.Services.Calls
             IsVideoChat = groupCall.IsVideoChat;
             InviteLink = groupCall.InviteLink;
             PaidMessageStarCount = groupCall.PaidMessageStarCount;
+            UniqueId = groupCall.UniqueId;
             Id = groupCall.Id;
 
             _chat = chat;
@@ -1018,7 +1019,7 @@ namespace Telegram.Services.Calls
         {
             if (ScheduledStartDate > 0)
             {
-                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, Title, InviteLink, PaidMessageStarCount, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsLiveStory, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, MessageSenderId, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, CanSendMessages, AreMessagesAllowed, CanToggleAreMessagesAllowed, CanDeleteMessages, RecordDuration, IsVideoRecorded, Duration))));
+                ThreadPool.QueueUserWorkItem(state => Aggregator.Publish(new UpdateGroupCall(new GroupCall(Id, UniqueId, Title, InviteLink, PaidMessageStarCount, ScheduledStartDate, EnabledStartNotification, IsActive, IsVideoChat, IsLiveStory, IsRtmpStream, false, false, IsOwned, CanBeManaged, ParticipantCount, HasHiddenListeners, LoadedAllParticipants, MessageSenderId, RecentSpeakers, IsMyVideoEnabled, IsMyVideoPaused, CanEnableVideo2, MuteNewParticipants, CanToggleMuteNewParticipants, CanSendMessages, AreMessagesAllowed, CanToggleAreMessagesAllowed, CanDeleteMessages, RecordDuration, IsVideoRecorded, Duration))));
             }
             else if (end)
             {
@@ -1315,6 +1316,7 @@ namespace Telegram.Services.Calls
             MessageSenderId = call.MessageSenderId;
             PaidMessageStarCount = call.PaidMessageStarCount;
             Title = call.Title;
+            UniqueId = call.UniqueId;
             Id = call.Id;
 
             if (call.IsJoined || call.NeedRejoin || _isScheduled != (call.ScheduledStartDate > 0))
@@ -1769,6 +1771,8 @@ namespace Telegram.Services.Calls
         /// Group call identifier.
         /// </summary>
         public int Id { get; private set; }
+
+        public long UniqueId { get; private set; }
 
         public InputGroupCall InputId => _inputGroupCall;
 
