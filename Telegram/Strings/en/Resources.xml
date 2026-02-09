@@ -13273,4 +13273,5 @@
     <string name="GiftCraftButtonEmpty">Tap + to add your first gift</string>
     <string name="GiftCraftButtonFailed">Craft New Gift</string>
     <string name="GiftCraftSuccessChance">**{0}** Success Chance</string>
+
 </resources>
