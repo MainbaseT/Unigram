@@ -20,18 +20,19 @@ using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.ViewModels.Settings;
 using Telegram.ViewModels.Stories;
 using Telegram.ViewModels.Supergroups;
 using Telegram.Views;
+using Telegram.Views.Business;
 using Telegram.Views.Chats.Popups;
+using Telegram.Views.Create;
 using Telegram.Views.Folders;
 using Telegram.Views.Folders.Popups;
 using Telegram.Views.Host;
 using Telegram.Views.Popups;
 using Telegram.Views.Premium.Popups;
 using Telegram.Views.Settings;
-using Telegram.Views.Settings.Privacy;
-using Telegram.Views.Stars;
 using Telegram.Views.Stars.Popups;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.DataTransfer;
@@ -459,9 +460,6 @@ namespace Telegram.Common
         {
             switch (internalLink)
             {
-                case InternalLinkTypeActiveSessions:
-                    navigation.Navigate(typeof(SettingsSessionsPage));
-                    break;
                 case InternalLinkTypeAuthenticationCode authenticationCode:
                     if (clientService.AuthorizationState is AuthorizationStateWaitCode)
                     {
@@ -484,12 +482,6 @@ namespace Telegram.Common
                 case InternalLinkTypeBusinessChat businessChat:
                     NavigateToBusinessChat(clientService, navigation, businessChat.LinkName);
                     break;
-                case InternalLinkTypeChangePhoneNumber:
-                    navigation.Navigate(typeof(SettingsProfilePage));
-                    break;
-                case InternalLinkTypeLanguageSettings:
-                    navigation.Navigate(typeof(SettingsLanguagePage));
-                    break;
                 case InternalLinkTypeChatBoost chatBoost:
                     NavigateToChatBoost(clientService, navigation, chatBoost.Url);
                     break;
@@ -498,9 +490,6 @@ namespace Telegram.Common
                     break;
                 case InternalLinkTypeChatFolderInvite chatFolderInvite:
                     NavigateToChatFolderInviteLink(clientService, navigation, chatFolderInvite.InviteLink);
-                    break;
-                case InternalLinkTypeChatFolderSettings:
-                    navigation.Navigate(typeof(FoldersPage));
                     break;
                 case InternalLinkTypeGame game:
                     NavigateToUsername(clientService, navigation, game.BotUsername, null, game.GameShortName);
@@ -522,14 +511,11 @@ namespace Telegram.Common
                     break;
                 case InternalLinkTypePassportDataRequest:
                     break;
-                case InternalLinkTypePremiumFeatures premiumFeatures:
+                case InternalLinkTypePremiumFeaturesPage premiumFeatures:
                     navigation.ShowPromo(new PremiumSourceLink(premiumFeatures.Referrer));
                     break;
                 case InternalLinkTypePremiumGiftCode premiumGiftCode:
                     NavigateToPremiumGiftCode(clientService, navigation, premiumGiftCode.Code, source);
-                    break;
-                case InternalLinkTypePrivacyAndSecuritySettings:
-                    navigation.Navigate(typeof(SettingsPrivacyAndSecurityPage));
                     break;
                 case InternalLinkTypePhoneNumberConfirmation phoneNumberConfirmation:
                     NavigateToConfirmPhone(clientService, phoneNumberConfirmation.PhoneNumber, phoneNumberConfirmation.Hash);
@@ -542,7 +528,26 @@ namespace Telegram.Common
                     break;
                 case InternalLinkTypeQrCodeAuthentication:
                     break;
-                case InternalLinkTypeSettings:
+                case InternalLinkTypeCallsPage calls:
+                    NavigateToCalls(clientService, navigation, calls.Section);
+                    break;
+                case InternalLinkTypeMyProfilePage myProfile:
+                    NavigateToMyProfile(clientService, navigation, myProfile.Section);
+                    break;
+                case InternalLinkTypeNewChannelChat:
+                    navigation.ShowPopup(new NewChannelPopup());
+                    break;
+                case InternalLinkTypeNewGroupChat:
+                    navigation.ShowPopup(new NewGroupPopup());
+                    break;
+                case InternalLinkTypeNewPrivateChat:
+                    navigation.ShowPopup(new ContactsPopup());
+                    break;
+                case InternalLinkTypeSavedMessages:
+                    navigation.NavigateToChat(clientService.Options.MyId, force: false);
+                    break;
+                case InternalLinkTypeSettings settings:
+                    NavigateToSettings(clientService, navigation, settings.Section);
                     break;
                 case InternalLinkTypeStickerSet stickerSet:
                     NavigateToStickerSet(navigation, stickerSet.StickerSetName);
@@ -555,9 +560,6 @@ namespace Telegram.Common
                     break;
                 case InternalLinkTypeTheme theme:
                     NavigateToTheme(clientService, navigation, theme.ThemeName);
-                    break;
-                case InternalLinkTypeThemeSettings:
-                    navigation.Navigate(typeof(SettingsAppearancePage));
                     break;
                 case InternalLinkTypeUnknownDeepLink unknownDeepLink:
                     NavigateToUnknownDeepLink(clientService, navigation, unknownDeepLink.Link);
@@ -586,9 +588,6 @@ namespace Telegram.Common
                 case InternalLinkTypeGroupCall groupCall:
                     NavigateToGroupCall(clientService, navigation, new InputGroupCallLink(groupCall.InviteLink));
                     break;
-                case InternalLinkTypeMyStars:
-                    navigation.Navigate(typeof(StarsPage));
-                    break;
                 case InternalLinkTypeBotAddToChannel botAddToChannel:
                     NavigateToBotAddToChannel(clientService, navigation, botAddToChannel.BotUsername, botAddToChannel.AdministratorRights);
                     break;
@@ -601,14 +600,457 @@ namespace Telegram.Common
                 case InternalLinkTypeGiftCollection giftCollection:
                     NavigateToUsername(clientService, navigation, giftCollection.GiftOwnerUsername);
                     break;
-                case InternalLinkTypeLoginEmailSettings:
+            }
+        }
+
+        private static void NavigateToCalls(IClientService clientService, INavigationService navigation, string section)
+        {
+            switch (section)
+            {
+                case "start-call":
+                    CallsViewModel.NewCall(clientService, navigation);
                     break;
-                case InternalLinkTypePasswordSettings:
-                    navigation.NavigateToPassword();
+                case "all": break;
+                case "missed": break;
+                case "edit": break;
+                case "show-tab": break;
+                default:
+                    navigation.ShowPopup(new CallsPopup());
                     break;
-                case InternalLinkTypePhoneNumberPrivacySettings:
-                    navigation.Navigate(typeof(SettingsPrivacyPhonePage));
+            }
+        }
+
+        private static void NavigateToMyProfile(IClientService clientService, INavigationService navigation, string section)
+        {
+            switch (section)
+            {
+                case "posts": break;
+                case "posts/all-stories": break;
+                case "posts/add-album": break;
+                case "gifts": break;
+                case "archived-posts": break;
+                default:
+                    navigation.Navigate(typeof(ProfilePage), clientService.Options.MyId);
                     break;
+            }
+        }
+
+        private static void NavigateToSettings(IClientService clientService, INavigationService navigation, SettingsSection section)
+        {
+            switch (section)
+            {
+                case SettingsSectionAppearance appearance:
+                    switch (appearance.Subsection)
+                    {
+                        case "themes": goto default;
+                        case "themes/edit":
+                        case "themes/create":
+                            navigation.Navigate(typeof(SettingsThemesPage));
+                            break;
+                        case "wallpapers": goto default;
+                        case "wallpapers/edit":
+                        case "wallpapers/set":
+                        case "wallpapers/choose-photo":
+                            navigation.Navigate(typeof(SettingsBackgroundsPage));
+                            break;
+                        case "your-color/profile": goto default;
+                        case "your-color/profile/add-icons":
+                        case "your-color/profile/use-gift":
+                        case "your-color/profile/reset":
+                        case "your-color/name":
+                        case "your-color/name/add-icons":
+                        case "your-color/name/use-gift":
+                            navigation.Navigate(typeof(SettingsProfileColorPage));
+                            break;
+                        case "stickers-and-emoji": goto default;
+                        case "stickers-and-emoji/edit":
+                        case "stickers-and-emoji/trending":
+                        case "stickers-and-emoji/archived":
+                        case "stickers-and-emoji/emoji":
+                        case "stickers-and-emoji/suggest-by-emoji":
+                        case "stickers-and-emoji/large-emoji":
+                        case "stickers-and-emoji/dynamic-order":
+                            navigation.Navigate(typeof(SettingsStickersPage));
+                            break;
+                        case "stickers-and-emoji/archived/edit":
+                            navigation.Navigate(typeof(SettingsStickersPage), StickersType.Archived);
+                            break;
+                        case "stickers-and-emoji/emoji/edit":
+                        case "stickers-and-emoji/emoji/archived":
+                        case "stickers-and-emoji/emoji/suggest":
+                        case "stickers-and-emoji/emoji/show-more":
+                            navigation.Navigate(typeof(SettingsStickersPage), StickersType.Emoji);
+                            break;
+                        case "stickers-and-emoji/emoji/archived/edit":
+                            navigation.Navigate(typeof(SettingsStickersPage), StickersType.EmojiArchived);
+                            break;
+                        case "stickers-and-emoji/emoji/quick-reaction":
+                        case "stickers-and-emoji/emoji/quick-reaction/choose":
+                        case "night-mode":
+                        case "auto-night-mode":
+                        case "text-size":
+                        case "text-size/use-system":
+                        case "message-corners":
+                        case "animations":
+                        case "app-icon":
+                        case "tap-for-next-media":
+                        default:
+                            navigation.Navigate(typeof(SettingsAppearancePage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionAskQuestion:
+                    break;
+                case SettingsSectionBusiness business:
+                    switch (business.Subsection)
+                    {
+                        case "do-not-hide-ads":
+                        default:
+                            navigation.Navigate(typeof(BusinessPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionChatFolders chatFolders:
+                    switch (chatFolders.Subsection)
+                    {
+                        case "edit":
+                        case "create":
+                        case "add-recommended":
+                        case "show-tags":
+                        case "tab-view":
+                        default:
+                            navigation.Navigate(typeof(FoldersPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionDataAndStorage dataAndStorage:
+                    switch (dataAndStorage.Subsection)
+                    {
+                        case "storage":
+                        case "storage/edit":
+                        case "storage/auto-remove":
+                        case "storage/clear-cache":
+                        case "storage/max-cache":
+                            navigation.Navigate(typeof(SettingsStoragePage));
+                            break;
+                        case "usage":
+                        case "usage/mobile":
+                        case "usage/wifi":
+                        case "usage/roaming":
+                        case "usage/reset":
+                            navigation.Navigate(typeof(SettingsNetworkPage));
+                            break;
+                        //case "usage/mobile/auto-download": break;
+                        //case "usage/mobile/auto-download/enable": break;
+                        //case "usage/mobile/auto-download/usage": break;
+                        //case "usage/mobile/auto-download/photos": break;
+                        //case "usage/mobile/auto-download/stories": break;
+                        //case "usage/mobile/auto-download/videos": break;
+                        //case "usage/mobile/auto-download/files": break;
+                        //case "usage/wifi/auto-download": break;
+                        //case "usage/wifi/auto-download/enable": break;
+                        //case "usage/wifi/auto-download/usage": break;
+                        //case "usage/wifi/auto-download/photos": break;
+                        //case "usage/wifi/auto-download/stories": break;
+                        //case "usage/wifi/auto-download/videos": break;
+                        //case "usage/wifi/auto-download/files": break;
+                        //case "usage/roaming/auto-download": break;
+                        //case "usage/roaming/auto-download/enable": break;
+                        //case "usage/roaming/auto-download/usage": break;
+                        //case "usage/roaming/auto-download/photos": break;
+                        //case "usage/roaming/auto-download/stories": break;
+                        //case "usage/roaming/auto-download/videos": break;
+                        //case "usage/roaming/auto-download/files": break;
+                        case "auto-download/data":
+                        case "auto-download/data/enable":
+                        case "auto-download/data/usage":
+                        case "auto-download/data/photos":
+                        case "auto-download/data/stories":
+                        case "auto-download/data/videos":
+                        case "auto-download/data/files":
+                        case "auto-download/wifi":
+                        case "auto-download/wifi/enable":
+                        case "auto-download/wifi/usage":
+                        case "auto-download/wifi/photos":
+                        case "auto-download/wifi/stories":
+                        case "auto-download/wifi/videos":
+                        case "auto-download/wifi/files":
+                        case "auto-download/roaming":
+                        case "auto-download/roaming/enable":
+                        case "auto-download/roaming/usage":
+                        case "auto-download/roaming/photos":
+                        case "auto-download/roaming/stories":
+                        case "auto-download/roaming/videos":
+                        case "auto-download/roaming/files":
+                        case "auto-download/reset":
+                        case "save-to-photos/chats":
+                        case "save-to-photos/chats/max-video-size":
+                        case "save-to-photos/chats/add-exception":
+                        case "save-to-photos/chats/delete-all":
+                        case "save-to-photos/groups":
+                        case "save-to-photos/groups/max-video-size":
+                        case "save-to-photos/groups/add-exception":
+                        case "save-to-photos/groups/delete-all":
+                        case "save-to-photos/channels":
+                        case "save-to-photos/channels/max-video-size":
+                        case "save-to-photos/channels/add-exception":
+                        case "save-to-photos/channels/delete-all":
+                        case "less-data-calls":
+                        case "open-links":
+                        case "share-sheet":
+                        case "share-sheet/suggested-chats":
+                        case "share-sheet/suggest-by":
+                        case "share-sheet/reset":
+                        case "saved-edited-photos":
+                        case "pause-music":
+                        case "raise-to-listen":
+                        case "raise-to-speak":
+                        case "show-18-content":
+                        default:
+                            navigation.Navigate(typeof(SettingsDataAndStoragePage));
+                            break;
+                        case "proxy":
+                        case "proxy/edit":
+                        case "proxy/use-proxy":
+                        case "proxy/add-proxy":
+                        case "proxy/share-list":
+                        case "proxy/use-for-calls":
+                            navigation.Navigate(typeof(SettingsProxyPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionDevices devices:
+                    switch (devices.Subsection)
+                    {
+                        case "edit":
+                        case "link-desktop":
+                        case "terminate-sessions":
+                        case "auto-terminate":
+                        default:
+                            navigation.Navigate(typeof(SettingsSessionsPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionEditProfile editProfile:
+                    switch (editProfile.Subsection)
+                    {
+                        case "set-photo":
+                        case "first-name":
+                        case "last-name":
+                        case "emoji-status":
+                        case "bio":
+                        case "birthday":
+                        case "change-number":
+                        case "username":
+                        case "your-color":
+                        case "channel":
+                        case "add-account":
+                        case "log-out":
+                        case "profile-photo/use-emoji":
+                        default:
+                            navigation.Navigate(typeof(SettingsProfilePage));
+                            break;
+                        case "profile-color/profile":
+                        case "profile-color/profile/add-icons":
+                        case "profile-color/profile/use-gift":
+                        case "profile-color/name":
+                        case "profile-color/name/add-icons":
+                        case "profile-color/name/use-gift":
+                            navigation.Navigate(typeof(SettingsProfileColorPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionFaq:
+                    break;
+                case SettingsSectionFeatures:
+                    break;
+                case SettingsSectionInAppBrowser inAppBrowser:
+                    switch (inAppBrowser.Subsection)
+                    {
+                        case "enable-browser": break;
+                        case "clear-cookies": break;
+                        case "clear-cache": break;
+                        case "history": break;
+                        case "clear-history": break;
+                        case "never-open": break;
+                        case "clear-list": break;
+                        case "search": break;
+                        default: break;
+                    }
+                    break;
+                case SettingsSectionLanguage language:
+                    switch (language.Subsection)
+                    {
+                        case "show-button":
+                        case "translate-chats":
+                        case "do-not-translate":
+                        default:
+                            navigation.Navigate(typeof(SettingsLanguagePage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionMyStars myStars:
+                    switch (myStars.Subsection)
+                    {
+                        case "top-up": break;
+                        case "stats": break;
+                        case "gift": break;
+                        case "earn": break;
+                        default: break;
+                    }
+                    break;
+                case SettingsSectionMyToncoins myToncoins:
+                    break;
+                case SettingsSectionPowerSaving powerSaving:
+                    switch (powerSaving.Subsection)
+                    {
+                        case "videos":
+                        case "gifs":
+                        case "stickers":
+                        case "emoji":
+                        case "effects":
+                        case "preload":
+                        case "background":
+                        case "call-animations":
+                        case "particles":
+                        case "transitions":
+                        default:
+                            navigation.Navigate(typeof(SettingsPowerSavingPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionPremium premium:
+                    break;
+                case SettingsSectionPrivacyAndSecurity privacyAndSecurity:
+                    switch (privacyAndSecurity.Subsection)
+                    {
+                        case "blocked": goto default;
+                        case "blocked/edit":
+                        case "blocked/block-user":
+                        case "blocked/block-user/chats":
+                        case "blocked/block-user/contacts":
+                            navigation.Navigate(typeof(SettingsBlockedChatsPage));
+                            break;
+                        case "active-websites": goto default;
+                        case "active-websites/edit":
+                        case "active-websites/disconnect-all":
+                            navigation.Navigate(typeof(SettingsWebSessionsPage));
+                            break;
+                        case "passcode": goto default;
+                        case "passcode/disable":
+                        case "passcode/change":
+                        case "passcode/auto-lock":
+                        case "passcode/face-id":
+                        case "passcode/fingerprint":
+                            break;
+                        case "2sv": goto default;
+                        case "2sv/change":
+                        case "2sv/disable":
+                        case "2sv/change-email":
+                            break;
+                        case "passkey": goto default;
+                        case "passkey/create":
+                            break;
+                        case "auto-delete": goto default;
+                        case "auto-delete/set-custom":
+                            break;
+                        case "login-email": goto default;
+                        case "phone-number": goto default;
+                        case "phone-number/never":
+                        case "phone-number/always":
+                            break;
+                        case "last-seen": goto default;
+                        case "last-seen/never":
+                        case "last-seen/always":
+                        case "last-seen/hide-read-time":
+                            break;
+                        case "profile-photos": goto default;
+                        case "profile-photos/never":
+                        case "profile-photos/always":
+                        case "profile-photos/set-public":
+                        case "profile-photos/update-public":
+                        case "profile-photos/remove-public":
+                            break;
+                        case "bio": goto default;
+                        case "bio/never":
+                        case "bio/always":
+                            break;
+                        case "gifts": goto default;
+                        case "gifts/show-icon":
+                        case "gifts/never":
+                        case "gifts/always":
+                        case "gifts/accepted-types":
+                            break;
+                        case "birthday": goto default;
+                        case "birthday/add":
+                        case "birthday/never":
+                        case "birthday/always":
+                            break;
+                        case "saved-music": goto default;
+                        case "saved-music/never":
+                        case "saved-music/always":
+                            break;
+                        case "forwards": goto default;
+                        case "forwards/never":
+                        case "forwards/always":
+                            break;
+                        case "calls": goto default;
+                        case "calls/never":
+                        case "calls/always":
+                        case "calls/p2p":
+                            break;
+                        case "calls/p2p/never":
+                        case "calls/p2p/always":
+                            break;
+                        case "calls/ios-integration": break;
+                        case "voice": goto default;
+                        case "voice/never":
+                        case "voice/always":
+                            break;
+                        case "messages": goto default;
+                        case "messages/set-price":
+                        case "messages/exceptions":
+                            break;
+                        case "invites": goto default;
+                        case "invites/never":
+                        case "invites/always":
+                            break;
+                        case "self-destruct":
+                        case "data-settings":
+                        case "data-settings/sync-contacts":
+                        case "data-settings/delete-synced":
+                        case "data-settings/suggest-contacts":
+                        case "data-settings/delete-cloud-drafts":
+                        case "data-settings/clear-payment-info":
+                        case "data-settings/link-previews":
+                        case "data-settings/bot-settings":
+                        case "data-settings/map-provider":
+                        case "archive-and-mute":
+                        default:
+                            navigation.Navigate(typeof(SettingsPrivacyAndSecurityPage));
+                            break;
+                    }
+                    break;
+                case SettingsSectionPrivacyPolicy:
+                    break;
+                case SettingsSectionQrCode qrCode:
+                    switch (qrCode.Subsection)
+                    {
+                        case "share": break;
+                        case "scan": break;
+                        default: break;
+                    }
+                    break;
+                case SettingsSectionSearch:
+                    break;
+                case SettingsSectionSendGift sendGift:
+                    switch (sendGift.Subsection)
+                    {
+                        case "self": break;
+                        default: break;
+                    }
+                    break;
+
             }
         }
 
