@@ -114,21 +114,7 @@ namespace Telegram.Views.Popups
             SecondaryButtonText = Strings.Cancel;
         }
 
-        public bool HasAccepted
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public bool AllowWriteAccess
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool AllowWriteAccess => AllowMessages.IsChecked is true;
 
         public bool AllowPhoneNumberAccess { get; private set; }
 
@@ -148,7 +134,7 @@ namespace Telegram.Views.Popups
                     AllowPhoneNumberAccess = true;
                 }
 
-                Hide();
+                Hide(ContentDialogResult.Primary);
             }
         }
 

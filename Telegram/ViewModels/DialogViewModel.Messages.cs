@@ -1444,7 +1444,7 @@ namespace Telegram.ViewModels
                 {
                     var dialog = new LoginUrlInfoPopup(ClientService, NavigationService, requestConfirmation);
                     var confirm = await ShowPopupAsync(dialog);
-                    if (confirm != ContentDialogResult.Primary || !dialog.HasAccepted)
+                    if (confirm != ContentDialogResult.Primary)
                     {
                         return;
                     }
