@@ -1755,7 +1755,6 @@
                 <Grid x:Name="InlinePanel"
                       SizeChanged="InlinePanel_SizeChanged"
                       VerticalAlignment="Bottom"
-                      Visibility="{x:Bind ViewModel.Search, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=invert}"
                       Margin="12,0,12,-12">
                     <!-- TODO: the nesting is terrible but it's due to XAML bug with Shadow and Translation -->
                     <Border x:Name="InlineCaster" />

@@ -313,7 +313,7 @@
                             Grid.ColumnSpan="3">
                         <controls:TextListView x:Name="ListAutocomplete"
                                                ItemsSource="{x:Bind ViewModel.Autocomplete, Mode=OneWay}"
-                                               Visibility="{x:Bind ViewModel.Autocomplete, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"
+                                               Visibility="{x:Bind ConvertAutocompleteVisibility(ViewModel.Autocomplete), Mode=OneWay}"
                                                ItemTemplateSelector="{StaticResource AutocompleteTemplate}"
                                                ItemContainerStyle="{StaticResource DefaultListViewItemStyle}"
                                                Background="{ThemeResource PageSubHeaderBackgroundBrush2}"

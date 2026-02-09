@@ -454,7 +454,8 @@ namespace Telegram.Controls.Chats
 
         private void Autocomplete_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var visible = e.NewSize.Width > 0 && e.NewSize.Height > 0;
+            var visible = e.NewSize.Width > 0 && e.NewSize.Height >= 2;
+            visible &= ListAutocomplete.Visibility == Visibility.Visible;
             Field.CornerRadius = new CornerRadius(4, 4, visible ? 0 : 4, visible ? 0 : 4);
         }
 
@@ -466,6 +467,17 @@ namespace Telegram.Controls.Chats
         private void OnLostFocus(object sender, RoutedEventArgs e)
         {
             RootAutocomplete.Visibility = Visibility.Collapsed;
+        }
+
+        private Visibility ConvertAutocompleteVisibility(object autocomplete)
+        {
+            var visible = ListAutocomplete.ActualWidth > 0 && ListAutocomplete.ActualHeight >= 2;
+            visible &= autocomplete != null;
+            Field.CornerRadius = new CornerRadius(4, 4, visible ? 0 : 4, visible ? 0 : 4);
+
+            return autocomplete != null
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
     }
 }
