@@ -662,7 +662,7 @@ namespace Telegram.Common
             if (response is UpgradedGift gift)
             {
                 var text = gift.OriginalDetails?.Text ?? string.Empty.AsFormattedText();
-                var receivedGift = new ReceivedGift(string.Empty, null, text, 0, true, false, false, false, false, false, 0, new SentGiftUpgraded(gift), Array.Empty<int>(), 0, 0, false, 0, 0, 0, 0, 0, string.Empty);
+                var receivedGift = new ReceivedGift(string.Empty, null, text, 0, true, false, false, false, false, false, 0, new SentGiftUpgraded(gift), Array.Empty<int>(), 0, 0, false, 0, 0, 0, 0, 0, string.Empty, 0);
 
                 navigation.ShowPopup(new ReceivedGiftPopup(clientService, navigation, receivedGift, null, null));
             }
@@ -1225,7 +1225,7 @@ namespace Telegram.Common
             var confirm = await navigation.ShowPopupAsync(new AddProxyPopup(clientService, navigation, proxy));
             if (confirm == ContentDialogResult.Primary)
             {
-                clientService.Send(new AddProxy(server ?? string.Empty, port, Constants.RELEASE, type));
+                LifetimeService.Current.Proxy.AddProxy(proxy, Constants.RELEASE);
             }
         }
 
