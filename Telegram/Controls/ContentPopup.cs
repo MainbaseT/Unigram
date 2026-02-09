@@ -781,5 +781,34 @@ namespace Telegram.Controls
         {
             args.Cancel = sender.Tag != null;
         }
+
+        [ThreadStatic]
+        private static TaskCompletionSource<ContentDialog> _currentDialogShowRequest;
+
+        public async Task<ContentDialogResult> ShowQueuedAsync(XamlRoot xamlRoot)
+        {
+            while (_currentDialogShowRequest != null)
+            {
+                await _currentDialogShowRequest.Task;
+            }
+
+            var dialog = this;
+            Logger.Info(dialog.GetType().Name);
+
+            if (dialog is ContentPopup popup)
+            {
+                popup.OnCreate();
+            }
+
+            dialog.XamlRoot = xamlRoot;
+
+            var request = _currentDialogShowRequest = new TaskCompletionSource<ContentDialog>();
+            var result = await dialog.ShowAsync();
+            _currentDialogShowRequest = null;
+            request.SetResult(dialog);
+
+            Logger.Info(dialog.GetType().Name + ", closed");
+            return result;
+        }
     }
 }
