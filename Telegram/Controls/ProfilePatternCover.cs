@@ -55,12 +55,15 @@ namespace Telegram.Controls
         protected override void OnApplyTemplate()
         {
             // TODO: Names
-            var animated = GetTemplateChild("Animated") as AnimatedImage;
+            var pattern = GetTemplateChild("Animated") as UIElement;
             var layoutRoot = GetTemplateChild("LayoutRoot") as Border;
 
-            animated.Ready += OnReady;
+            if (pattern is AnimatedImage animated)
+            {
+                animated.Ready += OnReady;
+            }
 
-            var visual = ElementComposition.GetElementVisual(animated);
+            var visual = ElementComposition.GetElementVisual(pattern);
             var compositor = visual.Compositor;
 
             // Create a VisualSurface positioned at the same location as this control and feed that

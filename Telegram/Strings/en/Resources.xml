@@ -13251,4 +13251,26 @@
     <string name="BotAuthSiteSubtitle">This site will receive your **name**,\n**username** and **profile photo**.</string>
     <string name="BotAuthTitle">Log in to **{0}**</string>
 
+    <string name="GiftRarityEpic">epic</string>
+    <string name="GiftRarityLegendary">legendary</string>
+    <string name="GiftRarityRare">rare</string>
+    <string name="GiftRarityUncommon">uncommon</string>
+    <string name="GiftCrafted">crafted</string>
+    <string name="GiftCraft">Craft</string>
+    <string name="GiftCraftText1">Add up to **4** gifts to craft new</string>
+    <string name="GiftCraftText2">**{0} #{1}**.\n\nIf crafting fails, all selected gifts\nwill be **lost**.</string>
+    <string name="GiftCraftTextEmpty1">Add up to **4** gifts to craft new</string>
+    <string name="GiftCraftTextEmpty2">**{0}** gift.\n\nIf crafting fails, all selected gifts\nwill be **lost**.</string>
+    <string name="GiftCraftTitle">Craft Gift</string>
+    <string name="GiftCraftViewAllVariants">View all craftable variants &gt;</string>
+    <string name="GiftCraftProgressSuccessChance">{0} success chance</string>
+    <string name="GiftCraftProgressText">If crafting fails, all selected gifts\nwill be consumed.</string>
+    <string name="GiftCraftProgressTitle">Crafting</string>
+    <string name="GiftCraftFailedText_one">The crafting attempt was unsuccessful.\n**{0}** gift was lost.</string>
+    <string name="GiftCraftFailedText_other">The crafting attempt was unsuccessful.\n**{0}** gifts were lost.</string>
+    <string name="GiftCraftFailedTitle">Crafting Failed</string>
+    <string name="GiftCraftButton">Craft Gift</string>
+    <string name="GiftCraftButtonEmpty">Tap + to add your first gift</string>
+    <string name="GiftCraftButtonFailed">Craft New Gift</string>
+    <string name="GiftCraftSuccessChance">**{0}** Success Chance</string>
 </resources>

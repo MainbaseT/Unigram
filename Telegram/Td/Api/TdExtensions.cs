@@ -24,6 +24,7 @@ using Telegram.ViewModels;
 using Telegram.ViewModels.Settings;
 using Windows.UI;
 using Windows.UI.Composition;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Td.Api
@@ -48,13 +49,42 @@ namespace Telegram.Td.Api
         {
             return rarity switch
             {
-                UpgradedGiftAttributeRarityPerMille perMille => (perMille.PerMille / 10d).ToString("0.##") + "%",
-                UpgradedGiftAttributeRarityRare => "rare",
-                UpgradedGiftAttributeRarityLegendary => "legendary",
-                UpgradedGiftAttributeRarityUncommon => "uncommon",
-                UpgradedGiftAttributeRarityEpic => "epic",
+                UpgradedGiftAttributeRarityPerMille perMille => perMille.PerMille > 0 ? (perMille.PerMille / 10d).ToString("0.##") + "%" : "<0.1%",
+                UpgradedGiftAttributeRarityRare => Strings.GiftRarityRare,
+                UpgradedGiftAttributeRarityLegendary => Strings.GiftRarityLegendary,
+                UpgradedGiftAttributeRarityUncommon => Strings.GiftRarityUncommon,
+                UpgradedGiftAttributeRarityEpic => Strings.GiftRarityEpic,
                 _ => rarity.ToString()
             };
+        }
+
+        public static void ToColor(this UpgradedGiftAttributeRarity rarity, Button button)
+        {
+            if (rarity is UpgradedGiftAttributeRarityRare)
+            {
+                button.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0x11, 0xAA, 0xBE));
+                button.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x11, 0xAA, 0xBE));
+            }
+            else if (rarity is UpgradedGiftAttributeRarityLegendary)
+            {
+                button.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0xBF, 0x76, 0x00));
+                button.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xBF, 0x76, 0x00));
+            }
+            else if (rarity is UpgradedGiftAttributeRarityEpic)
+            {
+                button.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0x95, 0x5C, 0xDB));
+                button.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x95, 0x5C, 0xDB));
+            }
+            else if (rarity is UpgradedGiftAttributeRarityUncommon)
+            {
+                button.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0x40, 0xA9, 0x20));
+                button.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x40, 0xA9, 0x20));
+            }
+            else
+            {
+                button.ClearValue(Button.ForegroundProperty);
+                button.ClearValue(Button.BackgroundProperty);
+            }
         }
 
         public static CallProtocol ToTd(this VoipCallProtocol protocol)
@@ -2489,7 +2519,7 @@ namespace Telegram.Td.Api
 
         public static string ToName(this UpgradedGift gift)
         {
-            return string.Format("{0} #{1}", gift.Title, gift.Number);
+            return string.Format("{0} #{1}", gift.Title, gift.Number.ToString("N0"));
         }
 
         public static bool IsFalse(this VerificationStatus status)

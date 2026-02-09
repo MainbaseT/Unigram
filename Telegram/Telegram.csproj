@@ -279,6 +279,9 @@
     <Compile Include="Controls\Cells\GiftVariantCell.xaml.cs">
       <DependentUpon>GiftVariantCell.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Cells\BurnedGiftCell.xaml.cs">
+      <DependentUpon>BurnedGiftCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Cells\ReceivedGiftCell.xaml.cs">
       <DependentUpon>ReceivedGiftCell.xaml</DependentUpon>
     </Compile>
@@ -352,6 +355,9 @@
     </Compile>
     <Compile Include="Controls\Gallery\GalleryCompactOverlay.xaml.cs">
       <DependentUpon>GalleryCompactOverlay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Gifts\GiftAttributeGauge.xaml.cs">
+      <DependentUpon>GiftAttributeGauge.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\GlassToggleButton.cs" />
     <Compile Include="Controls\ImageTextSelection.cs" />
@@ -1267,8 +1273,14 @@
       <DependentUpon>ShareFolderPopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Collections\MultiValueDictionary.cs" />
+    <Compile Include="Views\Gifts\Popups\GiftCraftPopup.xaml.cs">
+      <DependentUpon>GiftCraftPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Gifts\Popups\GiftVariantsPopup.xaml.cs">
       <DependentUpon>GiftVariantsPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Gifts\Popups\GiftCraftChoosePopup.xaml.cs">
+      <DependentUpon>GiftCraftChoosePopup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HostedPage.cs" />
     <Compile Include="Views\Host\SharePage.xaml.cs">
@@ -2304,6 +2316,8 @@
     <Content Include="Assets\Animations\ProfileColor.tgs" />
     <Content Include="Assets\Animations\Passkey.tgs" />
     <Content Include="Assets\Animations\Cocoon.webp" />
+    <Content Include="Assets\Animations\GiftCraftingFailed.tgs" />
+    <Content Include="Assets\Animations\GiftCrafting.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -2633,6 +2647,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\Cells\BurnedGiftCell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\Cells\ReceivedGiftCell.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2888,6 +2906,10 @@
     <Page Include="Controls\Gallery\GalleryWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Gifts\GiftAttributeGauge.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\GroupCallActiveHeader.xaml">
       <SubType>Designer</SubType>
@@ -3385,7 +3407,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Gifts\Popups\GiftCraftPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Gifts\Popups\GiftVariantsPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Gifts\Popups\GiftCraftChoosePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

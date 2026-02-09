@@ -289,6 +289,12 @@ namespace Telegram.Views.Stars.Popups
             UpgradedAnimatedPhoto.Source = DelayedFileSource.FromSticker(clientService, gift.Model.Sticker);
             UpgradedTitle.Text = gift.Title;
 
+            if (gift.IsCrafted)
+            {
+                RibbonRoot.Visibility = Visibility.Visible;
+                Ribbon.Text = Strings.GiftCrafted;
+            }
+
             if (clientService.TryGetChat(gift.PublisherChatId, out Chat publisherChat)
                 && clientService.TryGetSupergroup(publisherChat, out Supergroup publisher)
                 && publisher.HasActiveUsername(out string username))
@@ -327,10 +333,13 @@ namespace Telegram.Views.Stars.Popups
 
             UpgradedModel.Text = gift.Model.Name;
             UpgradedModelRarity.Glyph = gift.Model.Rarity.ToText();
+            gift.Model.Rarity.ToColor(UpgradedModelRarity);
             UpgradedBackdrop.Text = gift.Backdrop.Name;
             UpgradedBackdropRarity.Glyph = gift.Backdrop.Rarity.ToText();
+            gift.Backdrop.Rarity.ToColor(UpgradedBackdropRarity);
             UpgradedSymbol.Text = gift.Symbol.Name;
             UpgradedSymbolRarity.Glyph = gift.Symbol.Rarity.ToText();
+            gift.Symbol.Rarity.ToColor(UpgradedSymbolRarity);
 
             if (gift.ValueAmount != 0)
             {
@@ -692,7 +701,7 @@ namespace Telegram.Views.Stars.Popups
         {
             if (_gift.Gift is SentGiftUpgraded upgraded)
             {
-                var response = await _clientService.SendAsync(new GetUpgradedGiftVariants(upgraded.Gift.RegularGiftId, true, false));
+                var response = await _clientService.SendAsync(new GetUpgradedGiftVariants(upgraded.Gift.RegularGiftId, !upgraded.Gift.IsCrafted, upgraded.Gift.IsCrafted));
                 if (response is GiftUpgradeVariants variants)
                 {
                     Hide();
@@ -850,6 +859,12 @@ namespace Telegram.Views.Stars.Popups
 
             if (_gift.Gift is SentGiftUpgraded upgraded && upgraded.Gift.OwnerId.AreTheSame(_clientService.MyId))
             {
+                if (upgraded.Gift.CraftProbabilityPerMille != 0)
+                {
+                    // TODO: Icon
+                    flyout.CreateFlyoutItem(Craft, Strings.GiftCraft, Icons.Hamburger);
+                }
+
                 if (upgraded.Gift.ResaleParameters != null)
                 {
                     flyout.CreateFlyoutItem(ChangePrice, Strings.Gift2ChangePrice, Icons.Tag);
@@ -867,6 +882,15 @@ namespace Telegram.Views.Stars.Popups
             }
 
             flyout.ShowAt(sender as UIElement, FlyoutPlacementMode.BottomEdgeAlignedRight);
+        }
+
+        private void Craft()
+        {
+            if (_gift.Gift is SentGiftUpgraded upgraded)
+            {
+                Hide();
+                _navigationService.ShowPopup(new GiftCraftPopup(_clientService, _navigationService, _gift));
+            }
         }
 
         private void SetTheme()

@@ -7447,6 +7447,69 @@ This action cannot be undone. This will permanently destroy the gift.</value>
   <data name="GiftAddedToCollectionX" xml:space="preserve">
     <value>This gift has been added to **{0}** collection.</value>
   </data>
+  <data name="GiftCraft" xml:space="preserve">
+    <value>Craft</value>
+  </data>
+  <data name="GiftCraftButton" xml:space="preserve">
+    <value>Craft Gift</value>
+  </data>
+  <data name="GiftCraftButtonEmpty" xml:space="preserve">
+    <value>Tap + to add your first gift</value>
+  </data>
+  <data name="GiftCraftButtonFailed" xml:space="preserve">
+    <value>Craft New Gift</value>
+  </data>
+  <data name="GiftCrafted" xml:space="preserve">
+    <value>crafted</value>
+  </data>
+  <data name="GiftCraftFailedText_one" xml:space="preserve">
+    <value>The crafting attempt was unsuccessful.
+**{0}** gift was lost.</value>
+  </data>
+  <data name="GiftCraftFailedText_other" xml:space="preserve">
+    <value>The crafting attempt was unsuccessful.
+**{0}** gifts were lost.</value>
+  </data>
+  <data name="GiftCraftFailedTitle" xml:space="preserve">
+    <value>Crafting Failed</value>
+  </data>
+  <data name="GiftCraftProgressSuccessChance" xml:space="preserve">
+    <value>{0} success chance</value>
+  </data>
+  <data name="GiftCraftProgressText" xml:space="preserve">
+    <value>If crafting fails, all selected gifts
+will be consumed.</value>
+  </data>
+  <data name="GiftCraftProgressTitle" xml:space="preserve">
+    <value>Crafting</value>
+  </data>
+  <data name="GiftCraftSuccessChance" xml:space="preserve">
+    <value>**{0}** Success Chance</value>
+  </data>
+  <data name="GiftCraftText1" xml:space="preserve">
+    <value>Add up to **4** gifts to craft new</value>
+  </data>
+  <data name="GiftCraftText2" xml:space="preserve">
+    <value>**{0} #{1}**.
+
+If crafting fails, all selected gifts
+will be **lost**.</value>
+  </data>
+  <data name="GiftCraftTextEmpty1" xml:space="preserve">
+    <value>Add up to **4** gifts to craft new</value>
+  </data>
+  <data name="GiftCraftTextEmpty2" xml:space="preserve">
+    <value>**{0}** gift.
+
+If crafting fails, all selected gifts
+will be **lost**.</value>
+  </data>
+  <data name="GiftCraftTitle" xml:space="preserve">
+    <value>Craft Gift</value>
+  </data>
+  <data name="GiftCraftViewAllVariants" xml:space="preserve">
+    <value>View all craftable variants &gt;</value>
+  </data>
   <data name="GiftLocked" xml:space="preserve">
     <value>Gift Locked</value>
   </data>
@@ -7689,6 +7752,18 @@ You will receive **{3} TON** after fees.</value>
   </data>
   <data name="GiftPreviewSymbols" xml:space="preserve">
     <value>Symbols</value>
+  </data>
+  <data name="GiftRarityEpic" xml:space="preserve">
+    <value>epic</value>
+  </data>
+  <data name="GiftRarityLegendary" xml:space="preserve">
+    <value>legendary</value>
+  </data>
+  <data name="GiftRarityRare" xml:space="preserve">
+    <value>rare</value>
+  </data>
+  <data name="GiftRarityUncommon" xml:space="preserve">
+    <value>uncommon</value>
   </data>
   <data name="GiftRemovedFromCollectionTitle_one" xml:space="preserve">
     <value>{0} gift removed from **{1}**</value>

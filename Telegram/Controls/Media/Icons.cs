@@ -98,6 +98,7 @@ namespace Telegram.Controls.Media
         public const string CheckmarkSquareFilled = "\uEABF";
 
         public const string AddCircle = "\uF164";
+        public const string AddCircleFilled = "\uEA9C";
         public const string SubtractCircle = "\uF166";
 
         public const string ArrowDownloadFilled24 = "\uEA5C";
