@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Controls.Gallery;
 using Telegram.Services;

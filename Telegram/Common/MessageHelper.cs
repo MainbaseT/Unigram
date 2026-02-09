@@ -436,7 +436,7 @@ namespace Telegram.Common
             }
             else if (info is LoginUrlInfoRequestConfirmation requestConfirmation)
             {
-                var popup = new LoginUrlInfoPopup(clientService,  navigation, requestConfirmation);
+                var popup = new LoginUrlInfoPopup(clientService, navigation, requestConfirmation);
 
                 var confirm = await navigation.ShowPopupAsync(popup);
                 if (confirm != ContentDialogResult.Primary)

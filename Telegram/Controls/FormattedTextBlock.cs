@@ -2021,7 +2021,7 @@ namespace Telegram.Controls
         #endregion
 
         public bool HasOverflowContent => TextBlock?.HasOverflowContent ?? false;
-        
+
         private bool _skeletonCollapsed = true;
         private ContainerVisual _skeleton;
         private SpriteVisual _foreground;
