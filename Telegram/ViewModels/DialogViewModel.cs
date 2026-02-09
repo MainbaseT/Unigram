@@ -1327,7 +1327,7 @@ namespace Telegram.ViewModels
                         messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, string.Empty, new MessageHeaderDate(previous.Date), null)));
                         messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, string.Empty, new MessageCustomServiceAction(Strings.SavedMessagesProfileHint), null)));
                     }
-                    else if (IsForum && ForumTopic == null && chat.Type is ChatTypePrivate privata)
+                    else if (IsForum && ForumTopic == null && chat.Type is ChatTypePrivate privata && ClientService.TryGetUser(chat, out User user) && user.Type is UserTypeBot { AllowsUsersToCreateTopics: true })
                     {
                         messages.Add(CreateMessage(new Message(long.MaxValue, new MessageSenderUser(privata.UserId), previous.ChatId, null, null, false, false, false, false, false, false, false, false, false, int.MaxValue, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, string.Empty, new MessageHeaderNewThread(), null)));
                         fromMessageId = long.MaxValue;
@@ -3167,7 +3167,7 @@ namespace Telegram.ViewModels
                 return new AddQuickReplyShortcutMessageAlbum(QuickReplyShortcut.Name, 0, inputMessageContent);
             }
 
-            if (IsForum && ForumTopic == null && Chat.Type is ChatTypePrivate)
+            if (IsForum && ForumTopic == null && ClientService.TryGetUser(Chat, out User user) && user.Type is UserTypeBot { AllowsUsersToCreateTopics: true })
             {
                 var response = ClientService.SendAsync(new CreateForumTopic(chatId, Strings.BotForumNewTopic, true, new ForumTopicIcon(0x6FB9F0, 0))).Result;
                 if (response is ForumTopicInfo info)
