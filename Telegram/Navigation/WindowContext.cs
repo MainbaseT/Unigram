@@ -111,7 +111,10 @@ namespace Telegram.Navigation
             _window = window;
             _current = this;
 
-            GarbageCollectionMonitor.StartMonitoring(window.CoreWindow);
+            if (SettingsService.Current.Diagnostics.DisableXamlGcCollect)
+            {
+                GarbageCollectionMonitor.StartMonitoring(window.CoreWindow);
+            }
 
             //Current = this;
             Dispatcher = new DispatcherContext(window.CoreWindow.DispatcherQueue);

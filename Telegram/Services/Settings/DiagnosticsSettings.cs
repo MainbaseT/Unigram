@@ -138,7 +138,7 @@ namespace Telegram.Services.Settings
         private bool? _disableXamlGcCollect;
         public bool DisableXamlGcCollect
         {
-            get => _disableXamlGcCollect ??= GetValueOrDefault("DisableXamlGcCollect", true);
+            get => _disableXamlGcCollect ??= GetValueOrDefault("DisableXamlGcCollect", false);
             set => AddOrUpdateValue(ref _disableXamlGcCollect, "DisableXamlGcCollect", value);
         }
 
