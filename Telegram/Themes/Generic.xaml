@@ -295,10 +295,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:ReplyMarkupInlineButton">
-                    <Grid x:Name="RootGrid"
-                          Background="{TemplateBinding Background}"
-                          CornerRadius="{TemplateBinding CornerRadius}"
-                          Padding="{TemplateBinding Padding}">
+                    <Border Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
@@ -323,45 +320,56 @@
                                 <VisualState x:Name="Disabled" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
 
-                        <Grid VerticalAlignment="Center"
-                              Grid.Column="1">
+                        <Grid x:Name="RootGrid"
+                              CornerRadius="{TemplateBinding CornerRadius}"
+                              Padding="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="IconPresenter"
-                                       x:Load="False"
-                                       Text="{TemplateBinding Icon}"
-                                       TextWrapping="NoWrap"
-                                       TextTrimming="CharacterEllipsis"
-                                       FontSize="20"
-                                       Margin="0,0,2,0"
-                                       AutomationProperties.AccessibilityView="Raw" />
-                            <TextBlock x:Name="ContentPresenter"
-                                       Text="{TemplateBinding Text}"
-                                       TextWrapping="NoWrap"
-                                       TextTrimming="CharacterEllipsis"
-                                       Padding="{TemplateBinding Padding}"
-                                       VerticalAlignment="Center"
-                                       AutomationProperties.AccessibilityView="Raw"
-                                       Grid.Column="1" />
-                        </Grid>
 
-                        <TextBlock Margin="4"
-                                   FontSize="12"
-                                   FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Top"
-                                   AutomationProperties.AccessibilityView="Raw"
-                                   Text="{TemplateBinding Glyph}"
-                                   Grid.ColumnSpan="3" />
-                    </Grid>
+                            <Grid VerticalAlignment="Center"
+                                  Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="IconPresenter"
+                                           x:Load="False"
+                                           Text="{TemplateBinding Icon}"
+                                           TextWrapping="NoWrap"
+                                           TextTrimming="CharacterEllipsis"
+                                           FontSize="20"
+                                           Margin="0,0,2,0"
+                                           AutomationProperties.AccessibilityView="Raw" />
+                                <local:CustomEmojiIcon x:Name="EmojiPresenter"
+                                                       x:Load="False"
+                                                       Source="{TemplateBinding Source}"
+                                                       ReplacementColor="#FFFFFFFF"
+                                                       Margin="0,0,2,0"
+                                                       AutomationProperties.AccessibilityView="Raw" />
+                                <TextBlock x:Name="ContentPresenter"
+                                           Text="{TemplateBinding Text}"
+                                           TextWrapping="NoWrap"
+                                           TextTrimming="CharacterEllipsis"
+                                           Padding="{TemplateBinding Padding}"
+                                           VerticalAlignment="Center"
+                                           AutomationProperties.AccessibilityView="Raw"
+                                           Grid.Column="1" />
+                            </Grid>
+
+                            <TextBlock Margin="4"
+                                       FontSize="12"
+                                       FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Top"
+                                       AutomationProperties.AccessibilityView="Raw"
+                                       Text="{TemplateBinding Glyph}"
+                                       Grid.ColumnSpan="3" />
+                        </Grid>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -482,13 +490,41 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <TextBlock x:Name="ContentPresenter"
-                                   Text="{TemplateBinding Text}"
-                                   TextWrapping="NoWrap"
-                                   TextTrimming="CharacterEllipsis"
-                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                   AutomationProperties.AccessibilityView="Raw" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid VerticalAlignment="Center"
+                              Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="IconPresenter"
+                                       x:Load="False"
+                                       Text="{TemplateBinding Icon}"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       FontSize="20"
+                                       Margin="0,0,2,0"
+                                       AutomationProperties.AccessibilityView="Raw" />
+                            <local:CustomEmojiIcon x:Name="EmojiPresenter"
+                                                   x:Load="False"
+                                                   Source="{TemplateBinding Source}"
+                                                   ReplacementColor="{TemplateBinding Foreground}"
+                                                   Margin="0,0,2,0"
+                                                   AutomationProperties.AccessibilityView="Raw" />
+                            <TextBlock x:Name="ContentPresenter"
+                                       Text="{TemplateBinding Text}"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       Padding="{TemplateBinding Padding}"
+                                       VerticalAlignment="Center"
+                                       AutomationProperties.AccessibilityView="Raw"
+                                       Grid.Column="1" />
+                        </Grid>
 
                         <TextBlock Margin="4"
                                    FontSize="12"
@@ -496,7 +532,8 @@
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top"
                                    AutomationProperties.AccessibilityView="Raw"
-                                   Text="{TemplateBinding Glyph}" />
+                                   Text="{TemplateBinding Glyph}"
+                                   Grid.ColumnSpan="3" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -2101,6 +2138,8 @@
                 Value="Auto" />
         <Setter Property="MinHeight"
                 Value="0" />
+        <Setter Property="common:TextBlockHelper.IsLink"
+                Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:PopupInfo">
@@ -2137,7 +2176,7 @@
                         <TextBlock x:Name="BadgePresenter"
                                    FontSize="{ThemeResource ControlContentThemeFontSize}"
                                    FontFamily="{ThemeResource ContentControlThemeFontFamily}"
-                                   common:TextBlockHelper.IsLink="True"
+                                   common:TextBlockHelper.IsLink="{TemplateBinding common:TextBlockHelper.IsLink}"
                                    common:TextBlockHelper.Markdown="{TemplateBinding Subtitle}"
                                    common:TextBlockHelper.FormattedText="{TemplateBinding common:TextBlockHelper.FormattedText}"
                                    Style="{StaticResource InfoCaptionTextBlockStyle}"
@@ -4160,6 +4199,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Border x:Name="BackgroundElement"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
                                     Background="{TemplateBinding Background}"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     MaxWidth="{TemplateBinding ContentMaxWidth}"
@@ -4194,7 +4234,7 @@
                                     <ScaleTransform x:Name="ScaleTransform" />
                                 </Border.RenderTransform>
                                 <Grid x:Name="DialogSpace"
-                                      Background="{TemplateBinding SecondaryBackground}">
+                                      CornerRadius="7">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="Auto" />
