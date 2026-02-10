@@ -3851,6 +3851,24 @@
         </Setter>
     </Style>
 
+    <Style TargetType="local:ZoomBox">
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:ZoomBox">
+                    <ContentPresenter x:Name="ContentPresenter"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Margin="{TemplateBinding Padding}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="local:ContentPopup">
         <Setter Property="Foreground"
                 Value="{ThemeResource ContentDialogForeground}" />

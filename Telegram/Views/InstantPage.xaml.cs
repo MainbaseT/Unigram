@@ -25,6 +25,7 @@ using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Text;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -76,11 +77,16 @@ namespace Telegram.Views
             if (scroll != null)
             {
                 scroll.ViewChanged += OnViewChanged;
+                scroll.PointerWheelChanged += OnPointerWheelChanged;
             }
+
+            Dispatcher.AcceleratorKeyActivated += OnAcceleratorKeyActivated;
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
+            Dispatcher.AcceleratorKeyActivated -= OnAcceleratorKeyActivated;
+
             foreach (var animation in _animations)
             {
                 try
@@ -88,6 +94,16 @@ namespace Telegram.Views
                     animation?.ViewportChanged(false);
                 }
                 catch { }
+            }
+        }
+
+        private void OnAcceleratorKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Number0 && VirtualKeyModifiers.Control == WindowContext.KeyModifiers())
+            {
+                _zoomFactor = 7;
+                ZoomingHost.ZoomFactor = 1.0;
+                args.Handled = true;
             }
         }
 
@@ -1946,6 +1962,48 @@ namespace Telegram.Views
             }
 
             MessageHelper.CopyLink(XamlRoot, link.ToString());
+        }
+
+        private int _zoomFactor = 7;
+        private readonly double[] _zoomFactors = new double[]
+        {
+            100d / 25,
+            100d / 33,
+            100d / 50,
+            100d / 67,
+            100d / 75,
+            100d / 80,
+            100d / 90,
+            100d / 100,
+            100d / 110,
+            100d / 125,
+            100d / 150,
+            100d / 175,
+            100d / 200,
+            100d / 250,
+            100d / 300,
+            100d / 400,
+            100d / 500
+        };
+
+        private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+            var modifiers = WindowContext.KeyModifiers();
+            if (modifiers == VirtualKeyModifiers.Control)
+            {
+                var pointer = e.GetCurrentPoint(this);
+                var zoom = ZoomingHost.ZoomFactor;
+                var delta = pointer.Properties.MouseWheelDelta > 0 ? 1 : -1;
+
+                var index = _zoomFactor + delta;
+                if (index >= 0 && index < _zoomFactors.Length)
+                {
+                    _zoomFactor = index;
+                    ZoomingHost.ZoomFactor = _zoomFactors[index];
+                }
+
+                e.Handled = true;
+            }
         }
     }
 }

@@ -421,6 +421,7 @@
     <Compile Include="Controls\Views\RecentChatsView.xaml.cs">
       <DependentUpon>RecentChatsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ZoomBox.cs" />
     <Compile Include="Services\Calls\VoipGroupCallEventArgs.cs" />
     <Compile Include="Services\ProxyService.cs" />
     <Compile Include="Services\Settings\ToolTipSettings.cs" />
