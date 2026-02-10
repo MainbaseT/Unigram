@@ -1079,6 +1079,10 @@ namespace Telegram.Views
                 {
                     GalleryWindow.ShowAsync(ViewModel, ViewModel.StorageService, savedMessagesTopicChat, Photo);
                 }
+                else if (ViewModel.ClientService.TryGetChat(ViewModel.DirectMessagesChatTopic?.ChatId ?? 0, out Chat directMessagesChat))
+                {
+                    GalleryWindow.ShowAsync(ViewModel, ViewModel.StorageService, directMessagesChat, Photo);
+                }
                 else
                 {
                     GalleryWindow.ShowAsync(ViewModel, ViewModel.StorageService, chat, Photo);
