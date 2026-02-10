@@ -728,6 +728,20 @@ namespace Telegram.Services
             set => AddOrUpdateValue(ref _useLessData, "UseLessData", (int)value);
         }
 
+        private static int? _reportsCount;
+        public int ReportsCount
+        {
+            get => _reportsCount ??= GetValueOrDefault("ReportsCount", 100);
+            set => AddOrUpdateValue(ref _reportsCount, "ReportsCount", value);
+        }
+
+        private static long? _reportsDate;
+        public DateTime ReportsDate
+        {
+            get => DateTime.FromFileTimeUtc(_reportsDate ??= GetValueOrDefault("ReportsDate", DateTime.Now.ToFileTimeUtc()));
+            set => AddOrUpdateValue(ref _reportsDate, "ReportsDate", value.ToFileTimeUtc());
+        }
+
         private static string _anonymousUserId;
         public string AnonymousUserId
         {

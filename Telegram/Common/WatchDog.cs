@@ -90,6 +90,8 @@ namespace Telegram
         private static readonly string _userId;
         private static readonly long _launchTime;
 
+        private static readonly PersistentTokenBucketLimiter _limiter = new();
+
         static WatchDog()
         {
             _channel = Channel.CreateUnbounded<string>();
@@ -157,28 +159,34 @@ namespace Telegram
 
         private static void ProcessException(Exception ex, bool captureAllThreads)
         {
-            var reportId = Guid.NewGuid().ToString();
-            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, captureAllThreads, BuildReport(ex.HResult));
+            if (_limiter.TryConsume())
+            {
+                var reportId = Guid.NewGuid().ToString();
+                var report = ExceptionSerializer.Serialize(ex, reportId, _userId, captureAllThreads, BuildReport(ex.HResult));
 
-            var reportPath = GetErrorReportPath(reportId);
+                var reportPath = GetErrorReportPath(reportId);
 
-            File.WriteAllText(_crashLog, reportId);
-            File.WriteAllText(reportPath, report);
+                File.WriteAllText(_crashLog, reportId);
+                File.WriteAllText(reportPath, report);
 
-            _channel.Writer.TryWrite(reportPath);
+                _channel.Writer.TryWrite(reportPath);
+            }
         }
 
         private static void ProcessException(FatalError ex, bool captureAllThreads)
         {
-            var reportId = Guid.NewGuid().ToString();
-            var report = ExceptionSerializer.Serialize(ex, reportId, _userId, captureAllThreads, BuildReport(0));
+            if (_limiter.TryConsume())
+            {
+                var reportId = Guid.NewGuid().ToString();
+                var report = ExceptionSerializer.Serialize(ex, reportId, _userId, captureAllThreads, BuildReport(0));
 
-            var reportPath = GetErrorReportPath(reportId);
+                var reportPath = GetErrorReportPath(reportId);
 
-            File.WriteAllText(_crashLog, reportId);
-            File.WriteAllText(reportPath, report);
+                File.WriteAllText(_crashLog, reportId);
+                File.WriteAllText(reportPath, report);
 
-            _channel.Writer.TryWrite(reportPath);
+                _channel.Writer.TryWrite(reportPath);
+            }
         }
 
         public static void TrackError(Exception ex)
@@ -215,44 +223,59 @@ namespace Telegram
 
         private static async Task HandleReportAsync(string reportPath)
         {
-            var report = File.ReadAllText(reportPath);
-            var reportId = Path.GetFileNameWithoutExtension(reportPath);
-
-            if (reportId == _lastSessionErrorReportId)
+            try
             {
-                var model = JsonSerializer.Deserialize(report, ErrorJsonContext.Default.ErrorReport);
-                model.Flags = 1 << 0;
-                report = JsonSerializer.Serialize(model, ErrorJsonContext.Default.ErrorReport);
+                if (Constants.DEBUG)
+                {
+                    return;
+                }
+
+                var report = File.ReadAllText(reportPath);
+                var reportId = Path.GetFileNameWithoutExtension(reportPath);
+
+                if (reportId == _lastSessionErrorReportId)
+                {
+                    var model = JsonSerializer.Deserialize(report, ErrorJsonContext.Default.ErrorReport);
+                    model.Flags = 1 << 0;
+                    report = JsonSerializer.Serialize(model, ErrorJsonContext.Default.ErrorReport);
+                }
+
+                using var client = new HttpClient();
+                using var request = new HttpRequestMessage(HttpMethod.Post, "https://integrations.telegram.org/ugram_crash_logs/storeCrashLog");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Constants.AppReportsId);
+                request.Content = new StringContent(report);
+
+                using var response = await client.SendAsync(request);
+
+                var statusCode = (int)response.StatusCode;
+                if (statusCode is 200 or 403 or 429)
+                {
+                    Cleanup(reportPath);
+                }
+                else
+                {
+                    // Otherwise we retry to send the report
+                    _channel.Writer.TryWrite(reportPath);
+                }
+            }
+            catch
+            {
+                Cleanup(reportPath);
             }
 
-            using var client = new HttpClient();
-            using var request = new HttpRequestMessage(HttpMethod.Post, "https://integrations.telegram.org/ugram_crash_logs/storeCrashLog");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Constants.AppReportsId);
-            request.Content = new StringContent(report);
-
-            using var response = await client.SendAsync(request);
-
-            var statusCode = (int)response.StatusCode;
-            if (statusCode is 200 or 403 or 429)
+            static void Cleanup(string path)
             {
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (File.Exists(reportPath))
+                if (File.Exists(path))
                 {
                     try
                     {
-                        File.Delete(reportPath);
+                        File.Delete(path);
                     }
                     catch
                     {
                         // You never know...
                     }
                 }
-            }
-            else
-            {
-                // Otherwise we retry to send the report
-                _channel.Writer.TryWrite(reportPath);
             }
         }
 
@@ -461,6 +484,67 @@ namespace Telegram
             if (File.Exists(_crashLog))
             {
                 File.Delete(_crashLog);
+            }
+        }
+
+        public class PersistentTokenBucketLimiter
+        {
+            private const double ONE_HOUR = 3.6e+6;
+
+            private readonly int _maxTokens = 100;
+            private readonly double _refillRate;
+            private readonly object _lock = new();
+
+            private int _currentTokens;
+            private DateTime _lastRefill;
+
+            public PersistentTokenBucketLimiter()
+            {
+                _refillRate = _maxTokens / ONE_HOUR;
+                LoadState();
+            }
+
+            public bool TryConsume()
+            {
+                lock (_lock)
+                {
+                    Refill();
+
+                    if (_currentTokens > 0)
+                    {
+                        _currentTokens--;
+                        SaveState();
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+
+            private void Refill()
+            {
+                var now = DateTime.UtcNow;
+                var elapsed = (now - _lastRefill).TotalMilliseconds;
+                var tokensToAdd = (int)(elapsed * _refillRate);
+
+                if (tokensToAdd > 0)
+                {
+                    _currentTokens = Math.Min(_maxTokens, _currentTokens + tokensToAdd);
+                    _lastRefill = now;
+                }
+            }
+
+            private void LoadState()
+            {
+                _currentTokens = SettingsService.Current.ReportsCount;
+                _lastRefill = SettingsService.Current.ReportsDate;
+                Refill();
+            }
+
+            private void SaveState()
+            {
+                SettingsService.Current.ReportsCount = _currentTokens;
+                SettingsService.Current.ReportsDate = _lastRefill;
             }
         }
     }
