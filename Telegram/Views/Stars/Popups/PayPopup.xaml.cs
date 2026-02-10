@@ -136,33 +136,15 @@ namespace Telegram.Views.Stars.Popups
             //await Task.Delay(2000);
 
             var result = await ViewModel.SubmitAsync();
-            if (result != PayResult.Failed)
+
+            Hide(result == PayResult.Succeeded
+                ? ContentDialogResult.Primary
+                : ContentDialogResult.Secondary);
+
+            if (result == PayResult.StarsNeeded && ViewModel.PaymentForm?.Type is PaymentFormTypeStars stars)
             {
-                Hide(result == PayResult.Succeeded
-                    ? ContentDialogResult.Primary
-                    : ContentDialogResult.Secondary);
-
-                if (result == PayResult.StarsNeeded && ViewModel.PaymentForm?.Type is PaymentFormTypeStars stars)
-                {
-                    await ViewModel.NavigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForSellerBotUser(stars.StarCount, ViewModel.PaymentForm.SellerBotUserId));
-                }
-
-                return;
+                await ViewModel.NavigationService.ShowPopupAsync(new BuyPopup(), BuyStarsArgs.ForSellerBotUser(stars.StarCount, ViewModel.PaymentForm.SellerBotUserId));
             }
-
-            _submitted = false;
-
-            translate1.InsertKeyFrame(0, 32);
-            translate1.InsertKeyFrame(1, 0);
-
-            translate2.InsertKeyFrame(0, 0);
-            translate2.InsertKeyFrame(1, -32);
-
-            visual1.StartAnimation("Translation.Y", translate1);
-            visual2.StartAnimation("Translation.Y", translate2);
-
-            //Hide();
-            //ViewModel.Submit();
         }
 
         private void UpdateMedia(PaidMedia media, ImageBrush brush, ref ThumbnailController controller)
