@@ -121,7 +121,7 @@ namespace Telegram.Controls.Messages.Content
             Option = option;
             IsThreeState = results;
 
-            if (results || !recycled)
+            if (results || !recycled || poll.Type is PollTypeRegular { AllowMultipleAnswers: false })
             {
                 IsChecked = results ? null : new bool?(false);
             }
