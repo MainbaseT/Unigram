@@ -10,11 +10,13 @@ using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Navigation;
 using Telegram.Services;
+using Telegram.Td.Api;
 using Windows.ApplicationModel;
 using Windows.Security.Credentials;
 using Windows.Security.Cryptography;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views
@@ -201,6 +203,18 @@ namespace Telegram.Views
             catch
             {
                 Field.Focus(FocusState.Keyboard);
+            }
+        }
+
+        private async void LogOut_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = await MessagePopup.ShowAsync(XamlRoot, Strings.AreYouSureLogout, Strings.AppName, Strings.LogOut, Strings.Cancel, destructive: true);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                foreach (var client in LifetimeService.Current.ResolveAll<IClientService>())
+                {
+                    client.Send(new LogOut());
+                }
             }
         }
     }

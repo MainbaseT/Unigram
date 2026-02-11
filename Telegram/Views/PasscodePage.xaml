@@ -102,6 +102,12 @@
                                           Padding="0" />
                 </Border>
             </Grid>
+
+            <Button Click="LogOut_Click"
+                    Content="{CustomResource LogOut}"
+                    Style="{StaticResource AccentTextButtonStyle}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,-40" />
         </StackPanel>
 
         <Border Width="296"

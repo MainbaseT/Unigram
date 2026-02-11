@@ -243,6 +243,13 @@ namespace Telegram.Services
         {
             Logger.Info(item.Id);
 
+            bool unlock = false;
+            if (Count == 1)
+            {
+                _passcode.Reset();
+                unlock = true;
+            }
+
             ISession? replace = null;
             if (item.IsActive)
             {
@@ -255,17 +262,21 @@ namespace Telegram.Services
             _sessions.Remove(item.Id);
 
             item.Aggregator.Unsubscribe(item);
-            //WindowContext.Unsubscribe(item);
 
             await WindowContext.ForEachAsync(window =>
             {
-                if (window.Content is RootPage root && replace != null)
-                {
-                    root.Switch(replace);
-                }
-
                 if (window.IsInMainView)
                 {
+                    if (unlock)
+                    {
+                        window.Unlock();
+                    }
+
+                    if (window.Content is RootPage root && replace != null)
+                    {
+                        root.Switch(replace);
+                    }
+
                     window.NavigationServices.RemoveByFrameId($"{item.Id}");
                     window.NavigationServices.RemoveByFrameId($"Main{item.Id}");
 
