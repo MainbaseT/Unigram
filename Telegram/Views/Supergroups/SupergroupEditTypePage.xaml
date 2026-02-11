@@ -40,15 +40,13 @@
                     <controls:HeaderedControl x:Name="Subheader"
                                               Header="{CustomResource ChannelTypeHeader}"
                                               Footer="{x:Bind ConvertFooter(ViewModel.IsPublic), Mode=OneWay}">
-                        <RadioButton x:Name="Public"
-                                     Content="{CustomResource ChannelPublic}"
-                                     IsChecked="{x:Bind ViewModel.IsPublic, Mode=TwoWay}"
-                                     Style="{StaticResource SettingsRadioButtonStyle}" />
+                        <controls:SettingsRadioButton x:Name="Public"
+                                                      Content="{CustomResource ChannelPublic}"
+                                                      IsChecked="{x:Bind ViewModel.IsPublic, Mode=TwoWay}" />
 
-                        <RadioButton x:Name="Private"
-                                     Content="{CustomResource ChannelPrivate}"
-                                     IsChecked="{x:Bind ViewModel.IsPublic, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}"
-                                     Style="{StaticResource SettingsRadioButtonStyle}" />
+                        <controls:SettingsRadioButton x:Name="Private"
+                                                      Content="{CustomResource ChannelPrivate}"
+                                                      IsChecked="{x:Bind ViewModel.IsPublic, Mode=OneWay, Converter={StaticResource BooleanNegationConverter}}" />
                     </controls:HeaderedControl>
 
                     <Grid Visibility="{x:Bind ViewModel.IsPublic, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"

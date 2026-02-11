@@ -59,14 +59,12 @@
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl Header="{CustomResource BusinessRecipients}">
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsExclude, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessChatsAllPrivateExcept}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessRecipients" />
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsInclude, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessChatsOnlySelected}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessRecipients" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsExclude, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessChatsAllPrivateExcept}"
+                                                      GroupName="BusinessRecipients" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsInclude, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessChatsOnlySelected}"
+                                                      GroupName="BusinessRecipients" />
                     </controls:HeaderedControl>
 
                     <StackPanel Visibility="{x:Bind ViewModel.IsExclude, Mode=OneWay}">

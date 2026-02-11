@@ -33,14 +33,12 @@
             <ListView.Header>
                 <controls:SettingsPanel IsHeader="True">
                     <controls:HeaderedControl>
-                        <RadioButton IsChecked="{x:Bind ViewModel.IsDisabled, Mode=TwoWay}"
-                                     Content="{CustomResource DisableProxy}"
-                                     Style="{StaticResource SettingsRadioButtonStyle}"
-                                     GroupName="ProxyType" />
-                        <RadioButton IsChecked="{x:Bind ViewModel.IsSystem, Mode=TwoWay}"
-                                     Content="{CustomResource UseSystemProxySettings}"
-                                     Style="{StaticResource SettingsRadioButtonStyle}"
-                                     GroupName="ProxyType" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsDisabled, Mode=TwoWay}"
+                                                      Content="{CustomResource DisableProxy}"
+                                                      GroupName="ProxyType" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsSystem, Mode=TwoWay}"
+                                                      Content="{CustomResource UseSystemProxySettings}"
+                                                      GroupName="ProxyType" />
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl>
@@ -67,13 +65,12 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:ProxyViewModel">
-                    <RadioButton Style="{StaticResource SettingsRadioButtonStyle}"
-                                 GroupName="ProxyType"
-                                 CornerRadius="4"
-                                 BorderThickness="1">
+                    <controls:SettingsRadioButton GroupName="ProxyType"
+                                                  CornerRadius="4"
+                                                  BorderThickness="1">
                         <cells:ProxyCell DisplayName="{x:Bind DisplayName}"
                                          Status="{x:Bind Status, Mode=OneWay}" />
-                    </RadioButton>
+                    </controls:SettingsRadioButton>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.Footer>

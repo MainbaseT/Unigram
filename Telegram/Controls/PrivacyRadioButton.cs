@@ -10,7 +10,7 @@ using Windows.UI.Xaml;
 
 namespace Telegram.Controls
 {
-    public partial class PrivacyRadioButton : FauxRadioButton
+    public partial class PrivacyRadioButton : SettingsRadioButton
     {
         #region Type
 

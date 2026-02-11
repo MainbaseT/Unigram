@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls
 {
-    public partial class PivotRadioButton : RadioButton
+    public partial class PivotRadioButton : SettingsRadioButton
     {
         public PivotRadioButton()
         {

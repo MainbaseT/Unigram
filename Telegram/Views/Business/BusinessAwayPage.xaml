@@ -59,18 +59,15 @@
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl Header="{CustomResource BusinessAwaySchedule}">
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsAlwaysSend, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessAwayScheduleAlways}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessAwaySchedule" />
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsOutsideBusinessHours, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessAwayScheduleOutsideHours}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessAwaySchedule" />
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsCustom, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessAwayScheduleCustom}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessAwaySchedule" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsAlwaysSend, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessAwayScheduleAlways}"
+                                                      GroupName="BusinessAwaySchedule" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsOutsideBusinessHours, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessAwayScheduleOutsideHours}"
+                                                      GroupName="BusinessAwaySchedule" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsCustom, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessAwayScheduleCustom}"
+                                                      GroupName="BusinessAwaySchedule" />
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl Header="{CustomResource BusinessAwaySchedule}"
@@ -91,14 +88,12 @@
                     </controls:HeaderedControl>
 
                     <controls:HeaderedControl Header="{CustomResource BusinessRecipients}">
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsExclude, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessChatsAllPrivateExcept}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessRecipients" />
-                        <controls:FauxRadioButton IsChecked="{x:Bind ViewModel.IsInclude, Mode=TwoWay}"
-                                                  Content="{CustomResource BusinessChatsOnlySelected}"
-                                                  Style="{StaticResource SettingsRadioButtonStyle}"
-                                                  GroupName="BusinessRecipients" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsExclude, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessChatsAllPrivateExcept}"
+                                                      GroupName="BusinessRecipients" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.IsInclude, Mode=TwoWay}"
+                                                      Content="{CustomResource BusinessChatsOnlySelected}"
+                                                      GroupName="BusinessRecipients" />
                     </controls:HeaderedControl>
 
                     <StackPanel Visibility="{x:Bind ViewModel.IsExclude, Mode=OneWay}">

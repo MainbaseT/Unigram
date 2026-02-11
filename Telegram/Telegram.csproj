@@ -407,6 +407,7 @@
     <Compile Include="Controls\PopupInfo.cs" />
     <Compile Include="Controls\PremiumProgressBar.cs" />
     <Compile Include="Controls\ProgressRingIndeterminate.cs" />
+    <Compile Include="Controls\SettingsRadioButton.cs" />
     <Compile Include="Controls\SlidePanel.cs" />
     <Compile Include="Controls\Stories\Popups\StoryReactPopup.xaml.cs">
       <DependentUpon>StoryReactPopup.xaml</DependentUpon>

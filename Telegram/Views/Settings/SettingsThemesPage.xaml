@@ -210,13 +210,12 @@
                                           Visibility="{x:Bind ViewModel.AreCustomThemesAvailable, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="services:ThemeInfoBase">
-                            <RadioButton Style="{StaticResource SettingsRadioButtonStyle}"
-                                         Click="Switch_Click"
-                                         Content="{x:Bind Name}"
-                                         Tag="{x:Bind}"
-                                         GroupName="Theme"
-                                         ContextRequested="Theme_ContextRequested"
-                                         DataContextChanged="Theme_DataContextChanged" />
+                            <controls:SettingsRadioButton Click="Switch_Click"
+                                                          Content="{x:Bind Name}"
+                                                          Tag="{x:Bind}"
+                                                          GroupName="Theme"
+                                                          ContextRequested="Theme_ContextRequested"
+                                                          DataContextChanged="Theme_DataContextChanged" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </controls:HeaderedControl>

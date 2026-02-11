@@ -112,10 +112,9 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <RadioButton Style="{StaticResource SettingsRadioButtonStyle}"
-                                 GroupName="Languages"
-                                 CornerRadius="4"
-                                 BorderThickness="1">
+                    <controls:SettingsRadioButton GroupName="Languages"
+                                                  CornerRadius="4"
+                                                  BorderThickness="1">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -131,7 +130,7 @@
                                        TextTrimming="CharacterEllipsis"
                                        Grid.Row="1" />
                         </Grid>
-                    </RadioButton>
+                    </controls:SettingsRadioButton>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <!--<ListView.Header>

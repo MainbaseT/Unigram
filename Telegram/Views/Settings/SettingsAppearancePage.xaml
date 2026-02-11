@@ -238,17 +238,15 @@
 
                 <controls:HeaderedControl Header="{CustomResource ChatDoubleClickAction}"
                                           Footer="{x:Bind ConvertQuickAction(ViewModel.DoubleClickToReply), Mode=OneWay}">
-                    <RadioButton IsChecked="{x:Bind ViewModel.DoubleClickToReply, Mode=TwoWay}"
-                                 Content="{CustomResource DoubleClickReply}"
-                                 Style="{StaticResource SettingsRadioButtonStyle}"
-                                 GroupName="DoubleClick" />
+                    <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.DoubleClickToReply, Mode=TwoWay}"
+                                                  Content="{CustomResource DoubleClickReply}"
+                                                  GroupName="DoubleClick" />
                     <Grid BorderBrush="{ThemeResource SettingsItemBorderBrush}">
-                        <RadioButton IsChecked="{x:Bind ViewModel.DoubleClickToReact, Mode=TwoWay}"
-                                     Content="{CustomResource DoubleClickReact}"
-                                     Style="{StaticResource SettingsRadioButtonStyle}"
-                                     MinHeight="46"
-                                     GroupName="DoubleClick"
-                                     CornerRadius="4" />
+                        <controls:SettingsRadioButton IsChecked="{x:Bind ViewModel.DoubleClickToReact, Mode=TwoWay}"
+                                                      Content="{CustomResource DoubleClickReact}"
+                                                      MinHeight="46"
+                                                      GroupName="DoubleClick"
+                                                      CornerRadius="4" />
                         <messages:ReactionButton x:Name="Reaction"
                                                  Click="Reaction_Click"
                                                  HorizontalAlignment="Right"

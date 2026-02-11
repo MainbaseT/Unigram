@@ -27,11 +27,11 @@
                         <controls:SettingsExpander.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="44" />
+                                    <ColumnDefinition Width="42" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <CheckBox IsChecked="{x:Bind ViewModel.AutoPlayStickersAll, Mode=TwoWay}"
-                                          Margin="8,-11,0,-12" />
+                                          Margin="2,-11,0,-12" />
 
                                 <TextBlock Grid.Column="1">
                                     <Run Text="{CustomResource LiteOptionsStickers}" />
@@ -60,12 +60,12 @@
                         <controls:SettingsExpander.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="44" />
+                                    <ColumnDefinition Width="42" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
 
                                 <CheckBox IsChecked="{x:Bind ViewModel.AutoPlayEmojiAll, Mode=TwoWay}"
-                                          Margin="8,-11,0,-12" />
+                                          Margin="2,-11,0,-12" />
 
                                 <TextBlock Grid.Column="1">
                                     <Run Text="{CustomResource LiteOptionsEmoji}" />
