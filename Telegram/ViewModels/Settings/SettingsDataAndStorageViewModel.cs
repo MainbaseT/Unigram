@@ -61,7 +61,10 @@ namespace Telegram.ViewModels.Settings
                 }
             });
 
-            DownloadFolder = await _storageService.GetDownloadFolderAsync();
+            if (IsDownloadFolderEnabled)
+            {
+                DownloadFolder = await _storageService.GetDownloadFolderAsync();
+            }
         }
 
         public int UseLessData
@@ -136,8 +139,25 @@ namespace Telegram.ViewModels.Settings
             get => SettingsService.Current.IsDownloadFolderEnabled;
             set
             {
-                SettingsService.Current.IsDownloadFolderEnabled = value;
-                RaisePropertyChanged();
+                if (SettingsService.Current.IsDownloadFolderEnabled != value)
+                {
+                    SettingsService.Current.IsDownloadFolderEnabled = value;
+                    RaisePropertyChanged();
+
+                    UpdateDownloadFolder(value);
+                }
+            }
+        }
+
+        private async void UpdateDownloadFolder(bool value)
+        {
+            if (value)
+            {
+                DownloadFolder = await _storageService.GetDownloadFolderAsync();
+            }
+            else
+            {
+                DownloadFolder = null;
             }
         }
 
