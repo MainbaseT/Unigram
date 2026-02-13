@@ -5205,6 +5205,39 @@ You can always switch back to the default Telegram theme here.</value>
   <data name="DisableReactionsInfo" xml:space="preserve">
     <value>Members of the group can’t add any reactions to messages.</value>
   </data>
+  <data name="DisableSharing" xml:space="preserve">
+    <value>Disable Sharing</value>
+  </data>
+  <data name="DisableSharingInfoButton" xml:space="preserve">
+    <value>Disable Sharing</value>
+  </data>
+  <data name="DisableSharingInfoHeader" xml:space="preserve">
+    <value>Disable Sharing</value>
+  </data>
+  <data name="DisableSharingInfoHeader1" xml:space="preserve">
+    <value>No Screenshots</value>
+  </data>
+  <data name="DisableSharingInfoHeader2" xml:space="preserve">
+    <value>No Forwarding</value>
+  </data>
+  <data name="DisableSharingInfoHeader3" xml:space="preserve">
+    <value>No Saving</value>
+  </data>
+  <data name="DisableSharingInfoText1" xml:space="preserve">
+    <value>Disable screenshots and screen recordings in this chat.</value>
+  </data>
+  <data name="DisableSharingInfoText2" xml:space="preserve">
+    <value>Disable message forwarding to other chats.</value>
+  </data>
+  <data name="DisableSharingInfoText3" xml:space="preserve">
+    <value>Disable copying texts and saving photos and videos to gallery.</value>
+  </data>
+  <data name="DisableSharingToastDisabled" xml:space="preserve">
+    <value>Sharing disabled for this chat</value>
+  </data>
+  <data name="DisableSharingToastEnabled" xml:space="preserve">
+    <value>Sharing enabled for this chat</value>
+  </data>
   <data name="Discard" xml:space="preserve">
     <value>Discard</value>
   </data>
@@ -5651,6 +5684,9 @@ You&apos;ll need the password you set up here to log in to your Telegram account
   </data>
   <data name="EnableReactionsChannelInfo" xml:space="preserve">
     <value>Allow subscribers to react to channel posts.</value>
+  </data>
+  <data name="EnableSharing" xml:space="preserve">
+    <value>Enable Sharing</value>
   </data>
   <data name="EnableSomeReactionsInfo" xml:space="preserve">
     <value>Members of the group can use only certain approved emoji as reactions to messages.</value>
@@ -11525,6 +11561,9 @@ seamlessly and efficiently.</value>
   </data>
   <data name="PrivateChats" xml:space="preserve">
     <value>Private Chats</value>
+  </data>
+  <data name="PrivateMessagesChargePremiumLocked" xml:space="preserve">
+    <value>Unlock with Telegram Premium</value>
   </data>
   <data name="PrivateMessagesChargePrice" xml:space="preserve">
     <value>Charge for Messages</value>

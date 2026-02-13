@@ -13274,4 +13274,18 @@
     <string name="GiftCraftButtonFailed">Craft New Gift</string>
     <string name="GiftCraftSuccessChance">**{0}** Success Chance</string>
 
+    <string name="DisableSharing">Disable Sharing</string>
+    <string name="DisableSharingInfoButton">Disable Sharing</string>
+    <string name="DisableSharingInfoHeader">Disable Sharing</string>
+    <string name="DisableSharingInfoHeader1">No Screenshots</string>
+    <string name="DisableSharingInfoHeader2">No Forwarding</string>
+    <string name="DisableSharingInfoHeader3">No Saving</string>
+    <string name="DisableSharingInfoText1">Disable screenshots and screen recordings in this chat.</string>
+    <string name="DisableSharingInfoText2">Disable message forwarding to other chats.</string>
+    <string name="DisableSharingInfoText3">Disable copying texts and saving photos and videos to gallery.</string>
+    <string name="DisableSharingToastDisabled">Sharing disabled for this chat</string>
+    <string name="DisableSharingToastEnabled">Sharing enabled for this chat</string>
+    <string name="EnableSharing">Enable Sharing</string>
+    <string name="PrivateMessagesChargePremiumLocked">Unlock with Telegram Premium</string>
+
 </resources>

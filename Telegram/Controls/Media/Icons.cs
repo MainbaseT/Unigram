@@ -289,6 +289,7 @@ namespace Telegram.Controls.Media
         public const string DeleteFilled24 = "\uEAA0";
         public const string Delete = "\uE74D";
         public const string Share = "\uE72D";
+        public const string ShareOff = "\uEAFC";
         public const string ShareFilled = "\uE914";
         public const string CheckmarkCircle = "\uE97E";
         public const string Multiselect = "\uE762";

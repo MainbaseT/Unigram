@@ -897,6 +897,37 @@ namespace Telegram.ViewModels
             }
         }
 
+        public async void ToggleProtectedContent()
+        {
+            var chat = _chat;
+            if (chat == null || !ClientService.TryGetUserFull(chat, out UserFullInfo fullInfo))
+            {
+                return;
+            }
+
+            var protectedContent = fullInfo.MyHasProtectedContent;
+
+            if (!protectedContent && (!IsPremium || Settings.ToolTip.Required("DisableSharing")))
+            {
+                var confirm = await ShowPopupAsync(new DisableSharingPopup(ClientService));
+                if (confirm != ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
+                Settings.ToolTip.Increment("DisableSharing");
+
+                if (!IsPremium)
+                {
+                    NavigationService.ShowPromo();
+                    return;
+                }
+            }
+
+            ClientService.Send(new ToggleChatHasProtectedContent(chat.Id, !protectedContent));
+            ShowToast(protectedContent ? Strings.DisableSharingToastEnabled : Strings.DisableSharingToastDisabled, protectedContent ? ToastPopupIcon.Success : ToastPopupIcon.Ban);
+        }
+
         public void ShowIdenticon()
         {
             var chat = _chat;

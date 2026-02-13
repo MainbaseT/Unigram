@@ -1318,6 +1318,9 @@
     <Compile Include="Views\Popups\AddProxyPopup.xaml.cs">
       <DependentUpon>AddProxyPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\DisableSharingPopup.xaml.cs">
+      <DependentUpon>DisableSharingPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\StakeDicePopup.xaml.cs">
       <DependentUpon>StakeDicePopup.xaml</DependentUpon>
     </Compile>
@@ -2319,6 +2322,7 @@
     <Content Include="Assets\Animations\Cocoon.webp" />
     <Content Include="Assets\Animations\GiftCraftingFailed.tgs" />
     <Content Include="Assets\Animations\GiftCrafting.tgs" />
+    <Content Include="Assets\Animations\DisableSharing.tgs" />
     <None Include="Assets\i420.hlsl" />
     <Content Include="Assets\Images\Reply.scale-100.png" />
     <Content Include="Assets\Images\Reply.scale-125.png" />
@@ -3461,6 +3465,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\AddProxyPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\DisableSharingPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
