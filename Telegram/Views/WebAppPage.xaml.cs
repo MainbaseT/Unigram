@@ -19,12 +19,14 @@ using Telegram.Controls.Media;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
+using Telegram.Streams;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.Views.Host;
 using Telegram.Views.Popups;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Json;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -35,6 +37,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
@@ -1464,8 +1467,12 @@ namespace Telegram.Views
             var text = eventData.GetNamedString("text", string.Empty); // text on the button(trim(text) should be non-empty, if empty, the button can be hidden);
             var color = eventData.GetNamedString("color", string.Empty); // background color of the button(by default button_colorfrom the theme);
             var text_color = eventData.GetNamedString("text_color", string.Empty); // text color on the button(by default button_text_colorfrom the theme).
+            var icon_custom_emoji_id = eventData.GetNamedString("icon_custom_emoji_id", string.Empty);
 
-            if (is_visible && !string.IsNullOrEmpty(text.Trim()))
+            var hasIcon = long.TryParse(icon_custom_emoji_id, out long customEmojiId);
+            var hasText = !string.IsNullOrEmpty(text.Trim());
+
+            if (is_visible && (hasIcon || hasText))
             {
                 void SetColor(DependencyObject element, string value, DependencyProperty property)
                 {
@@ -1484,7 +1491,44 @@ namespace Telegram.Views
                 SetColor(MainButton, text_color, ForegroundProperty);
                 SetColor(MainProgress, text_color, Microsoft.UI.Xaml.Controls.ProgressRing.ForegroundProperty);
 
-                MainButton.Content = text;
+                if (hasIcon)
+                {
+                    var player = new CustomEmojiIcon();
+                    player.Width = 20;
+                    player.Height = 20;
+                    player.FrameSize = new Size(20, 20);
+                    player.Source = new CustomEmojiFileSource(_clientService, customEmojiId);
+                    player.HorizontalAlignment = HorizontalAlignment.Left;
+                    player.FlowDirection = FlowDirection.LeftToRight;
+                    player.IsHitTestVisible = false;
+                    player.Margin = new Thickness(0, -2, 0, -6);
+
+                    var inline = new InlineUIContainer();
+                    inline.Child = player;
+
+                    // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
+                    var paragraph = new Paragraph();
+                    paragraph.Inlines.Add(Icons.ZWNJ);
+                    paragraph.Inlines.Add(inline);
+                    paragraph.Inlines.Add(Icons.ZWNJ);
+
+                    if (hasText)
+                    {
+                        paragraph.Inlines.Add(Icons.Space);
+                        paragraph.Inlines.Add(text);
+                    }
+
+                    var textBlock = new RichTextBlock();
+                    textBlock.IsTextSelectionEnabled = false;
+                    textBlock.Blocks.Add(paragraph);
+
+                    MainButton.Content = textBlock;
+                }
+                else
+                {
+                    MainButton.Content = text;
+                }
+
                 MainButton.IsEnabled = is_active || is_progress_visible;
 
                 ShowHideProgress(is_progress_visible, MainButton, MainProgress, ref _mainProgressCollapsed);
@@ -1507,8 +1551,12 @@ namespace Telegram.Views
             var color = eventData.GetNamedString("color", string.Empty); // background color of the button(by default button_colorfrom the theme);
             var text_color = eventData.GetNamedString("text_color", string.Empty); // text color on the button(by default button_text_colorfrom the theme).
             var position = eventData.GetNamedString("position", "left");
+            var icon_custom_emoji_id = eventData.GetNamedString("icon_custom_emoji_id", string.Empty);
 
-            if (is_visible && !string.IsNullOrEmpty(text.Trim()))
+            var hasIcon = long.TryParse(icon_custom_emoji_id, out long customEmojiId);
+            var hasText = !string.IsNullOrEmpty(text.Trim());
+
+            if (is_visible && (hasIcon || hasText))
             {
                 void SetColor(DependencyObject element, string value, DependencyProperty property)
                 {
@@ -1527,7 +1575,44 @@ namespace Telegram.Views
                 SetColor(SecondaryButton, text_color, ForegroundProperty);
                 SetColor(SecondaryProgress, text_color, Microsoft.UI.Xaml.Controls.ProgressRing.ForegroundProperty);
 
-                SecondaryButton.Content = text;
+                if (hasIcon)
+                {
+                    var player = new CustomEmojiIcon();
+                    player.Width = 20;
+                    player.Height = 20;
+                    player.FrameSize = new Size(20, 20);
+                    player.Source = new CustomEmojiFileSource(_clientService, customEmojiId);
+                    player.HorizontalAlignment = HorizontalAlignment.Left;
+                    player.FlowDirection = FlowDirection.LeftToRight;
+                    player.IsHitTestVisible = false;
+                    player.Margin = new Thickness(0, -2, 0, -6);
+
+                    var inline = new InlineUIContainer();
+                    inline.Child = player;
+
+                    // If the Span starts with a InlineUIContainer the RichTextBlock bugs and shows ellipsis
+                    var paragraph = new Paragraph();
+                    paragraph.Inlines.Add(Icons.ZWNJ);
+                    paragraph.Inlines.Add(inline);
+                    paragraph.Inlines.Add(Icons.ZWNJ);
+
+                    if (hasText)
+                    {
+                        paragraph.Inlines.Add(Icons.Space);
+                        paragraph.Inlines.Add(text);
+                    }
+
+                    var textBlock = new RichTextBlock();
+                    textBlock.IsTextSelectionEnabled = false;
+                    textBlock.Blocks.Add(paragraph);
+
+                    SecondaryButton.Content = textBlock;
+                }
+                else
+                {
+                    SecondaryButton.Content = text;
+                }
+
                 SecondaryButton.IsEnabled = is_active || is_progress_visible;
 
                 ShowHideProgress(is_progress_visible, SecondaryButton, SecondaryProgress, ref _secondaryProgressCollapsed);
