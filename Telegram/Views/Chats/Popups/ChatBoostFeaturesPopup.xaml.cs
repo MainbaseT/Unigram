@@ -95,7 +95,7 @@ namespace Telegram.Views.Chats.Popups
 
                 if (feature == ChatBoostFeature.None)
                 {
-                    description = string.Format(description, chat.Title, status.NextLevelBoostCount - status.BoostCount);
+                    description = string.Format(description, chat.Title, Locale.Declension(Strings.R.MoreBoosts, status.NextLevelBoostCount - status.BoostCount));
 
                     if (supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator && requiredLevel != 0)
                     {
