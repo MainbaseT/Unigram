@@ -301,17 +301,8 @@ namespace winrt::Telegram::Native::implementation
             info->pixelHeight = info->video_dec_ctx->height;
             info->rotation = get_stream_rotation(info->video_stream);
 
-            double framerate = 0.0;
-            if (info->video_stream->avg_frame_rate.num &&
-                info->video_stream->avg_frame_rate.den)
-            {
-                framerate = av_q2d(info->video_stream->avg_frame_rate);
-            }
-            else if (info->video_stream->r_frame_rate.num &&
-                info->video_stream->r_frame_rate.den)
-            {
-                framerate = av_q2d(info->video_stream->r_frame_rate);
-            }
+            auto guess = av_guess_frame_rate(info->fmt_ctx, info->video_stream, NULL);
+            auto framerate = av_q2d(guess);
 
             info->dropper = FrameDropper(framerate, limitFps ? 30.0 : 60.0);
             info->framerate = info->dropper.frame_rate();

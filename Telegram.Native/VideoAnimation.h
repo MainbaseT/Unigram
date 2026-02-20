@@ -93,18 +93,20 @@ namespace winrt::Telegram::Native::implementation
 
         bool should_display_frame()
         {
+            if (source_fps <= target_fps)
+            {
+                return true;
+            }
+
+            frame_count++;
+
             if (use_clean_division)
             {
-                // Clean modulo-based dropping
-                frame_count++;
                 return (frame_count % preferred_divisor) == 0;
             }
             else
             {
-                // Fractional dropping for better frame rate
-                frame_count++;
                 int64_t expected = (frame_count * target_fps) / source_fps;
-
                 if (frames_displayed < expected)
                 {
                     frames_displayed++;
