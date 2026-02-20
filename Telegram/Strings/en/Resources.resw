@@ -12063,6 +12063,9 @@ seamlessly and efficiently.</value>
   <data name="ReportAdLearnMore" xml:space="preserve">
     <value>Learn more about our [Ad Policies and Guidelines](https://ads.telegram.org/guidelines).</value>
   </data>
+  <data name="ReportAlertReaction" xml:space="preserve">
+    <value>Are you sure you want to report reaction from this user?</value>
+  </data>
   <data name="ReportChat" xml:space="preserve">
     <value>Report</value>
   </data>
@@ -12084,6 +12087,9 @@ seamlessly and efficiently.</value>
   <data name="ReportChatPornography" xml:space="preserve">
     <value>Pornography</value>
   </data>
+  <data name="ReportChatSent" xml:space="preserve">
+    <value>Report sent</value>
+  </data>
   <data name="ReportChatSpam" xml:space="preserve">
     <value>Spam</value>
   </data>
@@ -12101,6 +12107,12 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ReportMessagesCount" xml:space="preserve">
     <value>Report {0}</value>
+  </data>
+  <data name="ReportReaction" xml:space="preserve">
+    <value>Report reaction</value>
+  </data>
+  <data name="ReportReactionAndBan" xml:space="preserve">
+    <value>Ban and Report</value>
   </data>
   <data name="ReportSelectedMessages" xml:space="preserve">
     <value>Report Selected</value>

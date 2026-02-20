@@ -13288,4 +13288,9 @@
     <string name="EnableSharing">Enable Sharing</string>
     <string name="PrivateMessagesChargePremiumLocked">Unlock with Telegram Premium</string>
 
+    <string name="ReportReactionAndBan">Ban and Report</string>
+    <string name="ReportReaction">Report reaction</string>
+    <string name="ReportAlertReaction">Are you sure you want to report reaction from this user?</string>
+    <string name="ReportChatSent">Report sent</string>
+
 </resources>
