@@ -444,7 +444,8 @@ namespace Telegram.Common
                     return;
                 }
 
-                var response = await clientService.SendAsync(new GetExternalLink(url, popup.AllowWriteAccess, popup.AllowPhoneNumberAccess));
+                // TODO: emoji
+                var response = await clientService.SendAsync(new GetExternalLink(url, string.Empty, popup.AllowWriteAccess, popup.AllowPhoneNumberAccess));
                 if (response is HttpUrl httpUrl)
                 {
                     OpenUrl(null, null, httpUrl.Url);
