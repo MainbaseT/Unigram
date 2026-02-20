@@ -337,7 +337,11 @@ namespace Telegram.Services
             else
             {
                 _settings.EnabledProxyId = -1;
-                DisableProxy();
+
+                foreach (var client in _lifetime.ResolveAll<IClientService>())
+                {
+                    client.Send(new DisableProxy());
+                }
             }
         }
 
@@ -375,10 +379,10 @@ namespace Telegram.Services
                     new object[] { currentTimestamp },
                     "Id",
                     _settings.EnabledProxyId);
-
-                // Clear the enabled proxy ID from settings
-                _settings.EnabledProxyId = 0;
             }
+
+            // Clear the enabled proxy ID from settings
+            _settings.EnabledProxyId = 0;
 
             foreach (var client in _lifetime.ResolveAll<IClientService>())
             {
