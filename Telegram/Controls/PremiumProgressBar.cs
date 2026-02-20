@@ -273,6 +273,8 @@ namespace Telegram.Controls
                 _arrow.Properties.InsertVector3("Translation", new Vector3());
             }
 
+            Arrow.Fill = GetArrowFill(value);
+
             Vector2 CalculateRadius(float diff)
             {
                 diff = center + diff - Arrow.ActualSize.X / 2;
@@ -309,6 +311,16 @@ namespace Telegram.Controls
                 _arrowCentered = true;
                 CreatePathGeometry(0, 0);
             }
+        }
+
+        private SolidColorBrush GetArrowFill(double amount)
+        {
+            return Background switch
+            {
+                SolidColorBrush solid => solid,
+                LinearGradientBrush linear => new SolidColorBrush(ColorsHelper.Mix(linear.GradientStops[0].Color, linear.GradientStops[^1].Color, amount)),
+                _ => null
+            };
         }
 
         private bool _arrowCentered = true;
