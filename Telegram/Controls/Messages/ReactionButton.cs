@@ -15,6 +15,7 @@ using Telegram.Controls.Views;
 using Telegram.Converters;
 using Telegram.Native.Controls;
 using Telegram.Navigation;
+using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Streams;
 using Telegram.Td.Api;
@@ -279,7 +280,7 @@ namespace Telegram.Controls.Messages
 
                     if (e.ClickedItem is AddedReaction addedReaction)
                     {
-                        message.Delegate.NavigationService.NavigateToSender(addedReaction.SenderId);
+                        message.Delegate.NavigationService.NavigateToSender(addedReaction.SenderId, state: new NavigationState { { "report_reactions", new ReportMessageReactions(message.ChatId, message.Id, addedReaction.SenderId) } });
                     }
                     else if (e.ClickedItem is MessageViewer messageViewer)
                     {

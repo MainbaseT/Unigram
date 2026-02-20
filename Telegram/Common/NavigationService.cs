@@ -92,19 +92,19 @@ namespace Telegram.Common
             }
         }
 
-        public static void NavigateToSender(this INavigationService service, MessageSender sender, NavigationTransitionInfo infoOverride = null)
+        public static void NavigateToSender(this INavigationService service, MessageSender sender, NavigationState state = null, NavigationTransitionInfo infoOverride = null)
         {
             if (service is TLNavigationService serviceEx)
             {
-                serviceEx.NavigateToSender(sender, infoOverride);
+                serviceEx.NavigateToSender(sender, state, infoOverride);
             }
         }
 
-        public static void NavigateToUser(this INavigationService service, long userId, bool toChat = false)
+        public static void NavigateToUser(this INavigationService service, long userId, bool toChat = false, NavigationState state = null)
         {
             if (service is TLNavigationService serviceEx)
             {
-                serviceEx.NavigateToUser(userId, toChat);
+                serviceEx.NavigateToUser(userId, toChat, state);
             }
         }
 

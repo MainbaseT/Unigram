@@ -14,6 +14,7 @@ using Telegram.Collections;
 using Telegram.Common;
 using Telegram.Controls;
 using Telegram.Converters;
+using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
@@ -29,6 +30,7 @@ using Telegram.Views.Stars.Popups;
 using Telegram.Views.Supergroups;
 using Telegram.Views.Supergroups.Popups;
 using Telegram.Views.Users;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -84,6 +86,13 @@ namespace Telegram.ViewModels
 
         public long LinkedChatId { get; private set; }
 
+        private ReportMessageReactions _reportReactions;
+        public ReportMessageReactions ReportReactions
+        {
+            get => _reportReactions;
+            set => Set(ref _reportReactions, value);
+        }
+
         protected override Task OnNavigatedToAsync(object parameter, NavigationMode mode, NavigationState state)
         {
             if (parameter is ChatMessageTopic chatMessageTopic)
@@ -106,6 +115,11 @@ namespace Telegram.ViewModels
                         Topic = new MessageTopicForum(topic.Info.ForumTopicId);
                     }
                 }
+            }
+
+            if (state != null && state.TryGet("report_reactions", out ReportMessageReactions reportReactions))
+            {
+                ReportReactions = reportReactions;
             }
 
             var chatId = (long)parameter;
@@ -1499,6 +1513,42 @@ namespace Telegram.ViewModels
             }
 
             MessageHelper.NavigateToMainWebApp(ClientService, NavigationService, user, string.Empty, new WebAppOpenModeFullSize());
+        }
+
+        public async void BanAndReport()
+        {
+            var reportReactions = ReportReactions;
+            if (reportReactions == null)
+            {
+                return;
+            }
+
+            var popup = new MessagePopup
+            {
+                Message = Strings.ReportAlertReaction,
+                Title = Strings.ReportReaction,
+                PrimaryButtonText = Strings.ReportChat,
+                SecondaryButtonText = Strings.Cancel,
+                CheckBoxLabel = Strings.BanUser,
+                IsChecked = true,
+                PrimaryButtonStyle = BootStrapper.Current.Resources["DangerButtonStyle"] as Style
+            };
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                ReportReactions = null;
+                Delegate?.UpdateChat(Chat);
+
+                ClientService.Send(reportReactions);
+
+                if (popup.IsChecked is true)
+                {
+                    ClientService.Send(new BanChatMember(reportReactions.ChatId, reportReactions.SenderId, 0, false));
+                }
+
+                ShowToast(Strings.ReportChatSent, ToastPopupIcon.Info);
+            }
         }
 
         #region Supergroup

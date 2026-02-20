@@ -553,6 +553,13 @@
                     </controls:SettingsButton.ContentTemplate>
                 </controls:SettingsButton>
 
+                <controls:SettingsButton x:Name="BanAndReport"
+                                         Click="{x:Bind ViewModel.BanAndReport}"
+                                         Visibility="{x:Bind ViewModel.ReportReactions, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"
+                                         Content="{CustomResource ReportReactionAndBan}"
+                                         Foreground="{ThemeResource DangerButtonBackground}"
+                                         Glyph="&#xE98B;" />
+
                 <Border x:Name="BotMainApp"
                         Visibility="Collapsed"
                         Background="{ThemeResource SettingsItemBackground}">

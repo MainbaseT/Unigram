@@ -3646,7 +3646,7 @@ namespace Telegram.Views
 
                     if (e.ClickedItem is AddedReaction addedReaction)
                     {
-                        ViewModel.NavigationService.NavigateToSender(addedReaction.SenderId);
+                        ViewModel.NavigationService.NavigateToSender(addedReaction.SenderId, state: new NavigationState { { "report_reactions", new ReportMessageReactions(message.ChatId, message.Id, addedReaction.SenderId) } });
                     }
                     else if (e.ClickedItem is MessageViewer messageViewer)
                     {
