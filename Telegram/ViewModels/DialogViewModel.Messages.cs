@@ -1442,14 +1442,15 @@ namespace Telegram.ViewModels
                 }
                 else if (response is LoginUrlInfoRequestConfirmation requestConfirmation)
                 {
-                    var dialog = new LoginUrlInfoPopup(ClientService, NavigationService, requestConfirmation);
-                    var confirm = await ShowPopupAsync(dialog);
+                    var popup = new LoginUrlInfoPopup(ClientService, requestConfirmation);
+
+                    var confirm = await ShowPopupAsync(popup);
                     if (confirm != ContentDialogResult.Primary)
                     {
                         return;
                     }
 
-                    response = await ClientService.SendAsync(new GetLoginUrl(chat.Id, message.Id, loginUrl.Id, dialog.AllowWriteAccess));
+                    response = await ClientService.SendAsync(new GetLoginUrl(chat.Id, message.Id, loginUrl.Id, popup.AllowWriteAccess));
                     if (response is HttpUrl httpUrl)
                     {
                         if (MessageHelper.TryCreateUri(httpUrl.Url, out Uri uri))

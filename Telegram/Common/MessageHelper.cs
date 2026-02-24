@@ -436,7 +436,7 @@ namespace Telegram.Common
             }
             else if (info is LoginUrlInfoRequestConfirmation requestConfirmation)
             {
-                var popup = new LoginUrlInfoPopup(clientService, navigation, requestConfirmation);
+                var popup = new LoginUrlInfoPopup(clientService, requestConfirmation);
 
                 var confirm = await navigation.ShowPopupAsync(popup);
                 if (confirm != ContentDialogResult.Primary)
@@ -444,8 +444,7 @@ namespace Telegram.Common
                     return;
                 }
 
-                // TODO: emoji
-                var response = await clientService.SendAsync(new GetExternalLink(url, string.Empty, popup.AllowWriteAccess, popup.AllowPhoneNumberAccess));
+                var response = await clientService.SendAsync(new GetExternalLink(url, popup.AllowWriteAccess));
                 if (response is HttpUrl httpUrl)
                 {
                     OpenUrl(null, null, httpUrl.Url);
@@ -601,6 +600,38 @@ namespace Telegram.Common
                 case InternalLinkTypeGiftCollection giftCollection:
                     NavigateToUsername(clientService, navigation, giftCollection.GiftOwnerUsername);
                     break;
+                case InternalLinkTypeOauth oauth:
+                    NavigateToOauth(clientService, navigation, oauth.Url);
+                    break;
+            }
+        }
+
+        private static async void NavigateToOauth(IClientService clientService, INavigationService navigation, string url)
+        {
+            // TODO: origin
+            var response = await clientService.SendAsync(new GetOauthLinkInfo(url, string.Empty));
+            if (response is OauthLinkInfo info)
+            {
+                var popup = new OAuthPopup(clientService, navigation, info);
+
+                var confirm = await navigation.ShowPopupAsync(popup);
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    // TODO: match code
+                    var accept = await clientService.SendAsync(new AcceptOauthRequest(url, string.Empty, popup.AllowWriteAccess, popup.AllowPhoneNumberAccess));
+                    if (accept is HttpUrl httpUrl)
+                    {
+                        OpenUrl(null, null, httpUrl.Url);
+                    }
+                    else if (response is Error)
+                    {
+                        OpenUrl(null, null, url);
+                    }
+                }
+                else
+                {
+                    clientService.Send(new DeclineOauthRequest(url));
+                }
             }
         }
 

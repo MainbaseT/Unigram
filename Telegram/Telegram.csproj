@@ -1321,6 +1321,9 @@
     <Compile Include="Views\Popups\DisableSharingPopup.xaml.cs">
       <DependentUpon>DisableSharingPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\OAuthPopup.xaml.cs">
+      <DependentUpon>OAuthPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\StakeDicePopup.xaml.cs">
       <DependentUpon>StakeDicePopup.xaml</DependentUpon>
     </Compile>
@@ -3469,6 +3472,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\DisableSharingPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\OAuthPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
