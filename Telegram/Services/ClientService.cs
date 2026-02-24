@@ -2375,7 +2375,7 @@ namespace Telegram.Services
                 }
                 else if (supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator)
                 {
-                    return new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+                    return new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
                 }
             }
             else if (TryGetBasicGroup(chat, out var basicGroup))
@@ -2387,7 +2387,7 @@ namespace Telegram.Services
                 }
                 else if (basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator)
                 {
-                    return new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+                    return new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
                 }
             }
 

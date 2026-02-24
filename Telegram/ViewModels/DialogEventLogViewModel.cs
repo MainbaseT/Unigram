@@ -231,7 +231,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            return new Message(chatEvent.Id, sender, chatId, null, null, false, false, false, false, false, false, false, false, false, chatEvent.Date, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, string.Empty, 0, 0, null, string.Empty, null, null);
+            return new Message(chatEvent.Id, sender, chatId, null, null, false, false, false, false, false, false, false, false, false, chatEvent.Date, 0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, 0, 0, null, string.Empty, null, null);
         }
 
         private MessageViewModel GetMessage(long chatId, bool isChannel, ChatEvent chatEvent, bool child = false)
@@ -494,11 +494,11 @@ namespace Telegram.ViewModels
                     }
                     else if (memberRestricted.OldStatus is ChatMemberStatusBanned oldBanned)
                     {
-                        o = new ChatMemberStatusRestricted(false, oldBanned.BannedUntilDate, new ChatPermissions(false, false, false, false, false, false, false, false, false, false, false, false, false, false));
+                        o = new ChatMemberStatusRestricted(false, oldBanned.BannedUntilDate, new ChatPermissions(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false));
                     }
                     else if (memberRestricted.OldStatus is ChatMemberStatusMember)
                     {
-                        o = new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true));
+                        o = new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true));
                     }
 
                     if (memberRestricted.NewStatus is ChatMemberStatusRestricted newRestricted)
@@ -507,11 +507,11 @@ namespace Telegram.ViewModels
                     }
                     else if (memberRestricted.NewStatus is ChatMemberStatusBanned newBanned)
                     {
-                        n = new ChatMemberStatusRestricted(false, newBanned.BannedUntilDate, new ChatPermissions(false, false, false, false, false, false, false, false, false, false, false, false, false, false));
+                        n = new ChatMemberStatusRestricted(false, newBanned.BannedUntilDate, new ChatPermissions(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false));
                     }
                     else if (memberRestricted.NewStatus is ChatMemberStatusMember)
                     {
-                        n = new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true));
+                        n = new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true));
                     }
 
                     if (!channel && (n != null && o != null /*&& n.RestrictedUntilDate != o.RestrictedUntilDate*/))
@@ -577,8 +577,8 @@ namespace Telegram.ViewModels
                         var str = Strings.EventLogRestrictedUntil;
                         rights = new StringBuilder(string.Format(str, GetUserName(whoUser, entities, str.IndexOf("{0}")), bannedDuration));
                         var added = false;
-                        o ??= new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true));
-                        n ??= new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true));
+                        o ??= new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true));
+                        n ??= new ChatMemberStatusRestricted(true, 0, new ChatPermissions(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true));
 
                         void AppendChange(bool value, string label)
                         {
@@ -698,12 +698,12 @@ namespace Telegram.ViewModels
                 if (memberPromoted.OldStatus is ChatMemberStatusAdministrator oldAdmin)
                 {
                     o = oldAdmin.Rights;
-                    oldTitle = oldAdmin.CustomTitle;
+                    //oldTitle = oldAdmin.CustomTitle;
                 }
                 if (memberPromoted.NewStatus is ChatMemberStatusAdministrator newAdmin)
                 {
                     n = newAdmin.Rights;
-                    newTitle = newAdmin.CustomTitle;
+                    //newTitle = newAdmin.CustomTitle;
                 }
 
                 o ??= new ChatAdministratorRights();
@@ -898,7 +898,7 @@ namespace Telegram.ViewModels
             {
                 IsMember = true,
                 RestrictedUntilDate = 0,
-                Permissions = new ChatPermissions(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
+                Permissions = new ChatPermissions(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
             }));
 
             if (ClientService.TryGetUser(memberId, out User user))

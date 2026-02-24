@@ -13315,4 +13315,17 @@
     <string name="DisableSharingToastDisabledPending">Sharing will disabled if **{0}** approves it</string>
     <string name="DisableSharingToastEnabledPending">Sharing will enabled if **{0}** approves it</string>
 
+    <string name="EditAdminTag">Edit Admin Tag</string>
+    <string name="EditMemberTag">Edit Member Tag</string>
+    <string name="TagInfoAdminText">This green tag un1 is **{0}’s** admin tag.\n**{0}** is an administrator of **{1}**.</string>
+    <string name="TagInfoAdminTitle">Admin Tag</string>
+    <string name="TagInfoButtonAddMyTag">Add My Tag</string>
+    <string name="TagInfoButtonAddTag">Add Tag</string>
+    <string name="TagInfoButtonEditMyTag">Edit My Tag</string>
+    <string name="TagInfoButtonEditTag">Edit Tag</string>
+    <string name="TagInfoMemberText">This grey tag un1 is **{0}’s** member tag.\n**{0}** is a member of **{1}**.</string>
+    <string name="TagInfoMemberTitle">Member Tag</string>
+    <string name="TagInfoOwnerText">This purple tag un1 is **{0}’s** owner tag.\n**{0}** is the owner of **{1}**.</string>
+    <string name="TagInfoOwnerTitle">Owner Tag</string>
+
 </resources>

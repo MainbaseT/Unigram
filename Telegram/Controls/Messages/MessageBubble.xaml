@@ -254,6 +254,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Grid x:Name="HeaderPanel"
                                       Visibility="Collapsed"
@@ -280,32 +281,48 @@
                                                            Grid.Column="1" />
                                 </Grid>
 
-                                <TextBlock x:Name="AdminLabel"
+                                <controls:BadgeControl x:Name="MemberTag"
+                                                       x:Load="False"
+                                                       FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
+                                                       HorizontalAlignment="Right"
+                                                       Margin="4,0,0,2"
+                                                       Grid.Column="1">
+                                    <controls:BadgeControl.Style>
+                                        <Style TargetType="controls:BadgeControl">
+                                            <Setter Property="Foreground"
+                                                    Value="{ThemeResource MessageSubtleLabelBrush}" />
+                                            <Setter Property="Background"
+                                                    Value="Transparent" />
+                                        </Style>
+                                    </controls:BadgeControl.Style>
+                                </controls:BadgeControl>
+
+                                <TextBlock x:Name="BoostCount"
                                            x:Load="False"
-                                           Text="{CustomResource ChatAdmin}"
                                            Foreground="{ThemeResource MessageSubtleLabelBrush}"
                                            FontFamily="{ThemeResource EmojiThemeFontFamilyWithSymbols}"
                                            Style="{StaticResource CaptionTextBlockStyle}"
                                            HorizontalAlignment="Right"
                                            Margin="4,0,0,2"
-                                           Grid.Column="1" />
+                                           Grid.Column="2" />
 
                                 <local:MessageForwardHeader x:Name="ForwardHeader"
                                                             x:Load="False"
                                                             Margin="0,0,0,2"
                                                             Grid.Row="1"
-                                                            Grid.ColumnSpan="2" />
+                                                            Grid.ColumnSpan="3" />
 
                                 <controls:GlyphButton x:Name="PsaInfo"
                                                       x:Load="False"
                                                       Glyph="&#xE9CE;"
                                                       Margin="0,-6,-10,-8"
                                                       Grid.Column="1"
+                                                      Grid.ColumnSpan="2"
                                                       Grid.RowSpan="2" />
 
                                 <local:MessageReply x:Name="Reply"
                                                     x:Load="False"
-                                                    Grid.ColumnSpan="2"
+                                                    Grid.ColumnSpan="3"
                                                     Grid.Row="3" />
                             </Grid>
 

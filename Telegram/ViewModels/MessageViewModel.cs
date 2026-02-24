@@ -191,6 +191,7 @@ namespace Telegram.ViewModels
             TopicId = message.TopicId;
             SenderId = message.SenderId;
             SenderBoostCount = message.SenderBoostCount;
+            SenderTag = message.SenderTag;
             SenderBusinessBotUserId = message.SenderBusinessBotUserId;
             Id = message.Id;
             EffectId = message.EffectId;
@@ -233,6 +234,7 @@ namespace Telegram.ViewModels
             TopicId = message.TopicId;
             SenderId = message.SenderId;
             SenderBoostCount = message.SenderBoostCount;
+            SenderTag = message.SenderTag;
             SenderBusinessBotUserId = message.SenderBusinessBotUserId;
             Id = message.Id;
             EffectId = message.EffectId;
@@ -387,6 +389,7 @@ namespace Telegram.ViewModels
             HasTimestampedMedia = message.HasTimestampedMedia;
             SchedulingState = message.SchedulingState;
             SenderBoostCount = message.SenderBoostCount;
+            SenderTag = message.SenderTag;
             SenderBusinessBotUserId = message.SenderBusinessBotUserId;
             EffectId = message.EffectId;
             PaidMessageStarCount = message.PaidMessageStarCount;
@@ -480,6 +483,7 @@ namespace Telegram.ViewModels
             TopicId = message.TopicId;
             SenderId = message.SenderId;
             SenderBoostCount = message.SenderBoostCount;
+            SenderTag = message.SenderTag;
             SenderBusinessBotUserId = message.SenderBusinessBotUserId;
             Id = message.Id;
             EffectId = message.EffectId;
@@ -559,6 +563,7 @@ namespace Telegram.ViewModels
         public MessageTopic TopicId { get; protected set; }
         public MessageSender SenderId { get; set; }
         public int SenderBoostCount { get; protected set; }
+        public string SenderTag { get; set; }
         public long SenderBusinessBotUserId { get; protected set; }
         public long Id { get; protected set; }
         public long EffectId { get; protected set; }
@@ -622,7 +627,7 @@ namespace Telegram.ViewModels
         // TODO: Get rid of this
         public Message Get()
         {
-            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, RestrictionInfo, SummaryLanguageCode, Content, ReplyMarkup);
+            return new Message(Id, SenderId, ChatId, SendingState, SchedulingState, IsOutgoing, IsPinned, IsFromOffline, CanBeSaved, HasTimestampedMedia, IsChannelPost, IsPaidStarSuggestedPost, IsPaidTonSuggestedPost, ContainsUnreadMention, Date, EditDate, ForwardInfo, ImportInfo, InteractionInfo, UnreadReactions, FactCheck, SuggestedPostInfo, ReplyTo, TopicId, SelfDestructType, SelfDestructIn, AutoDeleteIn, ViaBotUserId, SenderBusinessBotUserId, SenderBoostCount, SenderTag, PaidMessageStarCount, AuthorSignature, MediaAlbumId, EffectId, RestrictionInfo, SummaryLanguageCode, Content, ReplyMarkup);
         }
 
         public virtual bool CanBeAddedToDownloads

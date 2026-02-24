@@ -8339,6 +8339,11 @@ namespace Telegram
         public static string EditAdminSendAnonymously => Resource.GetString("EditAdminSendAnonymously");
         
         /// <summary>
+        /// Localized resource similar to "Edit Admin Tag"
+        /// </summary>
+        public static string EditAdminTag => Resource.GetString("EditAdminTag");
+        
+        /// <summary>
         /// Localized resource similar to "You can transfer this group to **{0}** only if you:"
         /// </summary>
         public static string EditAdminTransferAlertText => Resource.GetString("EditAdminTransferAlertText");
@@ -8407,6 +8412,11 @@ namespace Telegram
         /// Localized resource similar to "Edit Link"
         /// </summary>
         public static string EditLink => Resource.GetString("EditLink");
+        
+        /// <summary>
+        /// Localized resource similar to "Edit Member Tag"
+        /// </summary>
+        public static string EditMemberTag => Resource.GetString("EditMemberTag");
         
         /// <summary>
         /// Localized resource similar to "Sorry, you can't edit this message."
@@ -21360,6 +21370,59 @@ namespace Telegram
         /// Localized resource similar to "Tabs at the top"
         /// </summary>
         public static string TabsViewOnTop => Resource.GetString("TabsViewOnTop");
+        
+        /// <summary>
+        /// Localized resource similar to "This green tag un1 is **{0}’s** admin tag.
+        ///**{0}** is an administrator of **{1}**."
+        /// </summary>
+        public static string TagInfoAdminText => Resource.GetString("TagInfoAdminText");
+        
+        /// <summary>
+        /// Localized resource similar to "Admin Tag"
+        /// </summary>
+        public static string TagInfoAdminTitle => Resource.GetString("TagInfoAdminTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Add My Tag"
+        /// </summary>
+        public static string TagInfoButtonAddMyTag => Resource.GetString("TagInfoButtonAddMyTag");
+        
+        /// <summary>
+        /// Localized resource similar to "Add Tag"
+        /// </summary>
+        public static string TagInfoButtonAddTag => Resource.GetString("TagInfoButtonAddTag");
+        
+        /// <summary>
+        /// Localized resource similar to "Edit My Tag"
+        /// </summary>
+        public static string TagInfoButtonEditMyTag => Resource.GetString("TagInfoButtonEditMyTag");
+        
+        /// <summary>
+        /// Localized resource similar to "Edit Tag"
+        /// </summary>
+        public static string TagInfoButtonEditTag => Resource.GetString("TagInfoButtonEditTag");
+        
+        /// <summary>
+        /// Localized resource similar to "This grey tag un1 is **{0}’s** member tag.
+        ///**{0}** is a member of **{1}**."
+        /// </summary>
+        public static string TagInfoMemberText => Resource.GetString("TagInfoMemberText");
+        
+        /// <summary>
+        /// Localized resource similar to "Member Tag"
+        /// </summary>
+        public static string TagInfoMemberTitle => Resource.GetString("TagInfoMemberTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "This purple tag un1 is **{0}’s** owner tag.
+        ///**{0}** is the owner of **{1}**."
+        /// </summary>
+        public static string TagInfoOwnerText => Resource.GetString("TagInfoOwnerText");
+        
+        /// <summary>
+        /// Localized resource similar to "Owner Tag"
+        /// </summary>
+        public static string TagInfoOwnerTitle => Resource.GetString("TagInfoOwnerTitle");
         
         /// <summary>
         /// Localized resource similar to "Telegram Business"

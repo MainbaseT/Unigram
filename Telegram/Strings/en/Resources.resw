@@ -5479,6 +5479,9 @@ Anyone from the channel will be able to see messages in this group.</value>
   <data name="EditAdminSendAnonymously" xml:space="preserve">
     <value>Remain Anonymous</value>
   </data>
+  <data name="EditAdminTag" xml:space="preserve">
+    <value>Edit Admin Tag</value>
+  </data>
   <data name="EditAdminTransferAlertText" xml:space="preserve">
     <value>You can transfer this group to **{0}** only if you:</value>
   </data>
@@ -5520,6 +5523,9 @@ Anyone from the channel will be able to see messages in this group.</value>
   </data>
   <data name="EditLink" xml:space="preserve">
     <value>Edit Link</value>
+  </data>
+  <data name="EditMemberTag" xml:space="preserve">
+    <value>Edit Member Tag</value>
   </data>
   <data name="EditMessageError" xml:space="preserve">
     <value>Sorry, you can&apos;t edit this message.</value>
@@ -14400,6 +14406,39 @@ list of viewers.</value>
   </data>
   <data name="TabsViewOnTop" xml:space="preserve">
     <value>Tabs at the top</value>
+  </data>
+  <data name="TagInfoAdminText" xml:space="preserve">
+    <value>This green tag un1 is **{0}’s** admin tag.
+**{0}** is an administrator of **{1}**.</value>
+  </data>
+  <data name="TagInfoAdminTitle" xml:space="preserve">
+    <value>Admin Tag</value>
+  </data>
+  <data name="TagInfoButtonAddMyTag" xml:space="preserve">
+    <value>Add My Tag</value>
+  </data>
+  <data name="TagInfoButtonAddTag" xml:space="preserve">
+    <value>Add Tag</value>
+  </data>
+  <data name="TagInfoButtonEditMyTag" xml:space="preserve">
+    <value>Edit My Tag</value>
+  </data>
+  <data name="TagInfoButtonEditTag" xml:space="preserve">
+    <value>Edit Tag</value>
+  </data>
+  <data name="TagInfoMemberText" xml:space="preserve">
+    <value>This grey tag un1 is **{0}’s** member tag.
+**{0}** is a member of **{1}**.</value>
+  </data>
+  <data name="TagInfoMemberTitle" xml:space="preserve">
+    <value>Member Tag</value>
+  </data>
+  <data name="TagInfoOwnerText" xml:space="preserve">
+    <value>This purple tag un1 is **{0}’s** owner tag.
+**{0}** is the owner of **{1}**.</value>
+  </data>
+  <data name="TagInfoOwnerTitle" xml:space="preserve">
+    <value>Owner Tag</value>
   </data>
   <data name="TelegramBusiness" xml:space="preserve">
     <value>Telegram Business</value>

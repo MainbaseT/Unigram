@@ -27,6 +27,7 @@ using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Stories;
+using Telegram.Views.Popups;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
@@ -37,6 +38,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Core.Direct;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Markup;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -190,7 +192,8 @@ namespace Telegram.Controls.Messages
         private TextBlock HeaderLabel;
         private Hyperlink HeaderLink;
         private Run HeaderLinkRun;
-        private TextBlock AdminLabel;
+        private BadgeControl MemberTag;
+        private TextBlock BoostCount;
         private MessageForwardHeader ForwardHeader;
         private IdentityIcon Identity;
         private GlyphButton PsaInfo;
@@ -371,7 +374,7 @@ namespace Telegram.Controls.Messages
                     builder.Append($" {Strings.ViaBot} @{viaBotUsername}");
                 }
 
-                var admin = message.Delegate?.GetAdminTitle(message);
+                var admin = message.Delegate?.GetMemberTag(message, out _);
                 if (admin?.Length > 0)
                 {
                     builder.AppendLine($", {admin}. ");
@@ -1257,7 +1260,9 @@ namespace Telegram.Controls.Messages
 
             if (shown)
             {
-                var title = message.Delegate?.GetAdminTitle(message);
+                ChatMemberRank rank = ChatMemberRank.Other;
+                var title = message.Delegate?.GetMemberTag(message, out rank);
+                var boosts = string.Empty;
 
                 if (message.SenderBoostCount > 0 && !outgoing)
                 {
@@ -1268,27 +1273,78 @@ namespace Telegram.Controls.Messages
 
                     if (message.SenderBoostCount > 1)
                     {
-                        title += $"{Icons.Boosters212} {message.SenderBoostCount}";
+                        boosts = $"{Icons.Boosters212} {message.SenderBoostCount}";
                     }
                     else
                     {
-                        title += Icons.Boosters12;
+                        boosts = Icons.Boosters12;
                     }
                 }
 
-                if (shown && !outgoing && !string.IsNullOrEmpty(title))
+                if (shown && !outgoing && title.Length > 0)
                 {
-                    LoadTemplateChild(ref AdminLabel);
-                    AdminLabel.Text = title;
+                    if (MemberTag == null)
+                    {
+                        LoadTemplateChild(ref MemberTag);
+                        MemberTag.Tapped += MemberTag_Tapped;
+                    }
+
+                    MemberTag.Text = title;
+
+                    if (rank != ChatMemberRank.Other)
+                    {
+                        var color = rank == ChatMemberRank.Owner
+                            ? Color.FromArgb(0xFF, 0x65, 0x60, 0xF6)
+                            : Color.FromArgb(0xFF, 0x75, 0xC8, 0x73);
+
+                        MemberTag.Background = new SolidColorBrush(color) { Opacity = 0.2 };
+                        MemberTag.Foreground = new SolidColorBrush(color.Darken());
+                    }
+                    else
+                    {
+                        MemberTag.ClearValue(BackgroundProperty);
+                        MemberTag.ClearValue(ForegroundProperty);
+                    }
+
+                    if (boosts.Length > 0)
+                    {
+                        if (BoostCount == null)
+                        {
+                            LoadTemplateChild(ref BoostCount);
+                            BoostCount.Tapped += MemberTag_Tapped;
+                        }
+
+                        BoostCount.Text = boosts;
+                    }
+                    else
+                    {
+                        BoostCount?.Tapped -= MemberTag_Tapped;
+                        UnloadTemplateChild(ref BoostCount);
+                    }
                 }
                 else if (shown && !message.IsChannelPost && message.SenderId is MessageSenderChat && message.ForwardInfo != null)
                 {
-                    LoadTemplateChild(ref AdminLabel);
-                    AdminLabel.Text = Strings.DiscussChannel;
+                    if (MemberTag == null)
+                    {
+                        LoadTemplateChild(ref MemberTag);
+                        MemberTag.Tapped += MemberTag_Tapped;
+                    }
+
+                    MemberTag.Text = Strings.DiscussChannel;
+
+                    MemberTag.ClearValue(BackgroundProperty);
+                    MemberTag.ClearValue(ForegroundProperty);
+
+                    BoostCount?.Tapped -= MemberTag_Tapped;
+                    UnloadTemplateChild(ref BoostCount);
                 }
-                else if (AdminLabel != null)
+                else
                 {
-                    UnloadTemplateChild(ref AdminLabel);
+                    MemberTag?.Tapped -= MemberTag_Tapped;
+                    BoostCount?.Tapped -= MemberTag_Tapped;
+
+                    UnloadTemplateChild(ref MemberTag);
+                    UnloadTemplateChild(ref BoostCount);
                 }
 
                 if (header is false)
@@ -1303,7 +1359,11 @@ namespace Telegram.Controls.Messages
             }
             else
             {
-                UnloadTemplateChild(ref AdminLabel);
+                MemberTag?.Tapped -= MemberTag_Tapped;
+                BoostCount?.Tapped -= MemberTag_Tapped;
+
+                UnloadTemplateChild(ref MemberTag);
+                UnloadTemplateChild(ref BoostCount);
 
                 //if (HeaderPanel != null)
                 //{
@@ -1323,6 +1383,11 @@ namespace Telegram.Controls.Messages
 
                 ForwardHeader?.Margin = new Thickness(0, 0, 0, 2);
             }
+        }
+
+        private void MemberTag_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            _message?.Delegate?.NavigationService?.ShowPopup(new MemberTagInfoPopup(_message.ClientService, _message.Delegate.NavigationService, _message));
         }
 
         private TextBlock LoadHeaderLabel()
@@ -3363,7 +3428,94 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        public void UpdateMockup(bool outgoing, bool first, bool last)
+        public void UpdateMockup(IClientService clientService, string tag, ChatMemberRank rank)
+        {
+            if (!_templateApplied)
+            {
+                void loaded(object o, RoutedEventArgs e)
+                {
+                    Loaded -= loaded;
+                    UpdateMockup(clientService, tag, rank);
+                }
+
+                Loaded += loaded;
+                return;
+            }
+
+            if (MemberTag == null)
+            {
+                LoadTemplateChild(ref MemberTag);
+                MemberTag.Tapped += MemberTag_Tapped;
+            }
+
+            MemberTag.Text = tag;
+
+            if (rank != ChatMemberRank.Other)
+            {
+                var color = rank == ChatMemberRank.Owner
+                    ? Color.FromArgb(0xFF, 0x65, 0x60, 0xF6)
+                    : Color.FromArgb(0xFF, 0x75, 0xC8, 0x73);
+
+                MemberTag.Background = new SolidColorBrush(color) { Opacity = 0.2 };
+                MemberTag.Foreground = new SolidColorBrush(color.Darken());
+            }
+            else
+            {
+                MemberTag.ClearValue(BackgroundProperty);
+                MemberTag.ClearValue(ForegroundProperty);
+            }
+
+            Message.Visibility = Visibility.Collapsed;
+
+            Footer.Mockup(false, DateTime.Now);
+            Panel.ForceNewLine = false;
+
+            var placeholder = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                //Width = 480,
+                //Height = 48
+            };
+
+            var backgroundColor = Color.FromArgb(0x0F, 0xFF, 0xFF, 0xFF);
+
+            var lookup = ThemeService.GetLookup(ActualTheme);
+            if (lookup.TryGet("MenuFlyoutItemBackgroundPointerOver", out backgroundColor))
+            {
+            }
+
+            var bar1 = new Border
+            {
+                CornerRadius = new CornerRadius(4),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Height = 8,
+                Background = new SolidColorBrush(backgroundColor),
+                Margin = new Thickness(0, 0, 4, 0)
+            };
+
+            var bar2 = new Border
+            {
+                CornerRadius = new CornerRadius(4),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Height = 8,
+                Background = new SolidColorBrush(backgroundColor),
+                Margin = new Thickness(0, 12, 36, 16)
+            };
+
+            placeholder.Children.Add(bar1);
+            placeholder.Children.Add(bar2);
+
+            Media.Child = placeholder;
+            Media.Margin = new Thickness(10, 4, 10, 8);
+            FooterToNormal();
+            Grid.SetRow(Footer, 3);
+            Grid.SetRow(Message, 2);
+            Panel.Placeholder = false;
+
+            UpdateMockup(false, true, true, false);
+        }
+
+        public void UpdateMockup(bool outgoing, bool first, bool last, bool margin = true)
         {
             var radius = SettingsService.Current.Appearance.BubbleRadius;
             var small = radius < 4 ? radius : 4;
@@ -3416,7 +3568,11 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            Margin = new Thickness(outgoing ? 50 : 12, first ? 2 : 1, outgoing ? 12 : 50, last ? 2 : 1);
+            if (margin)
+            {
+                Margin = new Thickness(outgoing ? 50 : 12, first ? 2 : 1, outgoing ? 12 : 50, last ? 2 : 1);
+            }
+
             Message.SetFontSize(Theme.Current.MessageFontSize);
             SetCorners(topLeft, topRight, bottomRight, bottomLeft);
         }

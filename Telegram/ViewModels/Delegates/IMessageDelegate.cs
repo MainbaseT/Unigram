@@ -79,8 +79,8 @@ namespace Telegram.ViewModels.Delegates
 
         void HideSponsoredMessage(MessageViewModel message);
 
-        string GetAdminTitle(MessageViewModel message);
+        string GetMemberTag(MessageViewModel message, out ChatMemberRank rank);
         bool IsAdministrator(MessageSender memberId);
-        void UpdateAdministrators(long chatId);
+        void UpdateAdministrators(Chat chat);
     }
 }
