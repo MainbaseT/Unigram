@@ -29,6 +29,7 @@ namespace Telegram.Controls.Chats
         ServiceGiftCode,
         ServiceUpgradedGift,
         ServiceUpgradedGiftPurchaseOffer,
+        ServiceChatHasProtectedContentDisableRequested,
         ServiceAccountInfo,
         ServiceNewThread,
     }

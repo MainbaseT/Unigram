@@ -152,6 +152,7 @@ namespace Telegram.Views
             AddStrategy(ChatHistoryViewItemType.ServiceGift, ServiceMessageGiftTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceUpgradedGift, ServiceMessageUpgradedGiftTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceUpgradedGiftPurchaseOffer, ServiceMessageUpgradedGiftPurchaseOfferTemplate);
+            AddStrategy(ChatHistoryViewItemType.ServiceChatHasProtectedContentDisableRequested, ServiceMessageChatHasProtectedContentDisableRequestedTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceAccountInfo, ServiceMessageAccountInfoTemplate);
             AddStrategy(ChatHistoryViewItemType.ServiceNewThread, ServiceMessageNewThreadTemplate);
 

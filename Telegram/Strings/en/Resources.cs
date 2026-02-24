@@ -7890,6 +7890,26 @@ namespace Telegram
         public static string DisableSharing => Resource.GetString("DisableSharing");
         
         /// <summary>
+        /// Localized resource similar to "{0} disabled sharing in this chat"
+        /// </summary>
+        public static string DisableSharingActionOther => Resource.GetString("DisableSharingActionOther");
+        
+        /// <summary>
+        /// Localized resource similar to "Sharing in this chat is still disabled"
+        /// </summary>
+        public static string DisableSharingActionStillDisabled => Resource.GetString("DisableSharingActionStillDisabled");
+        
+        /// <summary>
+        /// Localized resource similar to "Sharing in this chat is still enabled"
+        /// </summary>
+        public static string DisableSharingActionStillEnabled => Resource.GetString("DisableSharingActionStillEnabled");
+        
+        /// <summary>
+        /// Localized resource similar to "You disabled sharing in this chat"
+        /// </summary>
+        public static string DisableSharingActionYou => Resource.GetString("DisableSharingActionYou");
+        
+        /// <summary>
         /// Localized resource similar to "Disable Sharing"
         /// </summary>
         public static string DisableSharingInfoButton => Resource.GetString("DisableSharingInfoButton");
@@ -7930,14 +7950,34 @@ namespace Telegram
         public static string DisableSharingInfoText3 => Resource.GetString("DisableSharingInfoText3");
         
         /// <summary>
+        /// Localized resource similar to "Accept"
+        /// </summary>
+        public static string DisableSharingOfferAccept => Resource.GetString("DisableSharingOfferAccept");
+        
+        /// <summary>
+        /// Localized resource similar to "Reject"
+        /// </summary>
+        public static string DisableSharingOfferDecline => Resource.GetString("DisableSharingOfferDecline");
+        
+        /// <summary>
         /// Localized resource similar to "Sharing disabled for this chat"
         /// </summary>
         public static string DisableSharingToastDisabled => Resource.GetString("DisableSharingToastDisabled");
         
         /// <summary>
+        /// Localized resource similar to "Sharing will disabled if **{0}** approves it"
+        /// </summary>
+        public static string DisableSharingToastDisabledPending => Resource.GetString("DisableSharingToastDisabledPending");
+        
+        /// <summary>
         /// Localized resource similar to "Sharing enabled for this chat"
         /// </summary>
         public static string DisableSharingToastEnabled => Resource.GetString("DisableSharingToastEnabled");
+        
+        /// <summary>
+        /// Localized resource similar to "Sharing will enabled if **{0}** approves it"
+        /// </summary>
+        public static string DisableSharingToastEnabledPending => Resource.GetString("DisableSharingToastEnabledPending");
         
         /// <summary>
         /// Localized resource similar to "Discard"
@@ -8672,6 +8712,16 @@ namespace Telegram
         /// Localized resource similar to "Enable Sharing"
         /// </summary>
         public static string EnableSharing => Resource.GetString("EnableSharing");
+        
+        /// <summary>
+        /// Localized resource similar to "{0} enabled sharing in this chat"
+        /// </summary>
+        public static string EnableSharingActionOther => Resource.GetString("EnableSharingActionOther");
+        
+        /// <summary>
+        /// Localized resource similar to "You enabled sharing in this chat"
+        /// </summary>
+        public static string EnableSharingActionYou => Resource.GetString("EnableSharingActionYou");
         
         /// <summary>
         /// Localized resource similar to "Members of the group can use only certain approved emoji as reactions to messages."
@@ -19490,6 +19540,61 @@ namespace Telegram
         /// Localized resource similar to "Share your phone number?"
         /// </summary>
         public static string ShareYouPhoneNumberTitle => Resource.GetString("ShareYouPhoneNumberTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Yes"
+        /// </summary>
+        public static string SharingOfferCancelYes => Resource.GetString("SharingOfferCancelYes");
+        
+        /// <summary>
+        /// Localized resource similar to "Are you sure you want to keep sharing disabled?"
+        /// </summary>
+        public static string SharingOfferDisableCancelText => Resource.GetString("SharingOfferDisableCancelText");
+        
+        /// <summary>
+        /// Localized resource similar to "Disable Sharing"
+        /// </summary>
+        public static string SharingOfferDisableCancelTitle => Resource.GetString("SharingOfferDisableCancelTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "> forwarding messages"
+        /// </summary>
+        public static string SharingOfferEnable1 => Resource.GetString("SharingOfferEnable1");
+        
+        /// <summary>
+        /// Localized resource similar to "> saving photos and videos"
+        /// </summary>
+        public static string SharingOfferEnable2 => Resource.GetString("SharingOfferEnable2");
+        
+        /// <summary>
+        /// Localized resource similar to "> copying messages"
+        /// </summary>
+        public static string SharingOfferEnable3 => Resource.GetString("SharingOfferEnable3");
+        
+        /// <summary>
+        /// Localized resource similar to "> taking screenshots"
+        /// </summary>
+        public static string SharingOfferEnable4 => Resource.GetString("SharingOfferEnable4");
+        
+        /// <summary>
+        /// Localized resource similar to "Enable Sharing"
+        /// </summary>
+        public static string SharingOfferEnableCancelTitle => Resource.GetString("SharingOfferEnableCancelTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Are you sure you want to enable sharing?"
+        /// </summary>
+        public static string SharingOfferEnableConfirmText => Resource.GetString("SharingOfferEnableConfirmText");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** would like to enable sharing in this chat, which includes:"
+        /// </summary>
+        public static string SharingOfferEnableHeaderOther => Resource.GetString("SharingOfferEnableHeaderOther");
+        
+        /// <summary>
+        /// Localized resource similar to "You suggest to enable sharing in this chat, which includes:"
+        /// </summary>
+        public static string SharingOfferEnableHeaderYou => Resource.GetString("SharingOfferEnableHeaderYou");
         
         /// <summary>
         /// Localized resource similar to "Off"

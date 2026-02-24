@@ -588,6 +588,10 @@
             <service:MessageUpgradedGiftPurchaseOfferContent />
         </DataTemplate>
 
+        <DataTemplate x:Name="ServiceMessageChatHasProtectedContentDisableRequestedTemplate">
+            <service:MessageChatHasProtectedContentDisableRequestedContent />
+        </DataTemplate>
+
         <DataTemplate x:Name="ServiceMessageUpgradedGiftTemplate">
             <messages:MessageService Click="ServiceMessage_Click">
                 <Button.Template>

@@ -652,6 +652,8 @@ namespace Telegram.Controls.Messages
                 MessageChatSetTheme chatSetTheme => UpdateChatSetTheme(message, chatSetTheme, history),
                 MessageChatDeleteMember chatDeleteMember => UpdateChatDeleteMember(message, chatDeleteMember, history),
                 MessageChatDeletePhoto chatDeletePhoto => UpdateChatDeletePhoto(message, chatDeletePhoto, history),
+                MessageChatHasProtectedContentToggled chatHasProtectedContentToggled => UpdateChatHasProtectedContentToggled(message, chatHasProtectedContentToggled, history),
+                MessageChatHasProtectedContentDisableRequested chatHasProtectedContentDisableRequested => UpdateChatHasProtectedContentDisableRequested(message, chatHasProtectedContentDisableRequested, history),
                 MessageChatJoinByLink chatJoinByLink => UpdateChatJoinByLink(message, chatJoinByLink, history),
                 MessageChatJoinByRequest chatJoinByRequest => UpdateChatJoinByRequest(message, chatJoinByRequest, history),
                 MessageChatSetBackground chatSetBackground => UpdateChatSetBackground(message, chatSetBackground, history),
@@ -1621,6 +1623,33 @@ namespace Telegram.Controls.Messages
             {
                 return ReplaceWithLink(Strings.ActionRemovedPhoto, message.GetSender());
             }
+        }
+
+
+        private static FormattedText UpdateChatHasProtectedContentToggled(MessageWithOwner message, MessageChatHasProtectedContentToggled chatHasProtectedContentToggled, bool history)
+        {
+            if (chatHasProtectedContentToggled.NewHasProtectedContent == chatHasProtectedContentToggled.OldHasProtectedContent)
+            {
+                return chatHasProtectedContentToggled.NewHasProtectedContent
+                    ? Strings.DisableSharingActionStillDisabled.AsFormattedText()
+                    : Strings.DisableSharingActionStillEnabled.AsFormattedText();
+            }
+
+            if (message.IsOutgoing)
+            {
+                return chatHasProtectedContentToggled.NewHasProtectedContent
+                    ? Strings.DisableSharingActionYou.AsFormattedText()
+                    : Strings.EnableSharingActionYou.AsFormattedText();
+            }
+
+            return ReplaceWithName(chatHasProtectedContentToggled.NewHasProtectedContent ? Strings.DisableSharingActionOther : Strings.EnableSharingActionOther, message.GetSender());
+        }
+
+        private static FormattedText UpdateChatHasProtectedContentDisableRequested(MessageWithOwner message, MessageChatHasProtectedContentDisableRequested chatHasProtectedContentDisableRequested, bool history)
+        {
+            return message.IsOutgoing
+                ? Strings.SharingOfferEnableHeaderYou.AsFormattedText()
+                : ClientEx.ParseMarkdown(ReplaceWithName(Strings.SharingOfferEnableHeaderOther, message.GetSender()));
         }
 
         private static FormattedText UpdateChatJoinByLink(MessageWithOwner message, MessageChatJoinByLink chatJoinByLink, bool history)
@@ -2985,6 +3014,48 @@ namespace Telegram.Controls.Messages
             }
 
             return source;
+        }
+
+        public static FormattedText ReplaceWithName(string source, params object[] args)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                var obj = args[i];
+                if (obj is User user)
+                {
+                    args[i] = user.FullName();
+                }
+                else if (obj is Chat chat)
+                {
+                    args[i] = chat.Title;
+                }
+                else if (obj is Game game)
+                {
+                    args[i] = game.Title;
+                }
+                else if (obj is MessageGift gift)
+                {
+                    args[i] = Locale.Declension(Strings.R.StarsCount, gift.Gift.StarCount + gift.PrepaidUpgradeStarCount);
+                }
+                else if (obj is MessageGiftedPremium giftedPremium)
+                {
+                    args[i] = Locale.FormatCurrency(giftedPremium.Amount, giftedPremium.Currency);
+                }
+                else if (obj is MessagePremiumGiftCode premiumGiftCode)
+                {
+                    args[i] = Locale.FormatCurrency(premiumGiftCode.Amount, premiumGiftCode.Currency);
+                }
+                else if (obj is MessageGiftedStars giftedStars)
+                {
+                    args[i] = Locale.FormatCurrency(giftedStars.Amount, giftedStars.Currency);
+                }
+                else if (obj is ForumTopicInfo forumTopicInfo)
+                {
+                    args[i] = $"\U0001F4C3 {forumTopicInfo.Name}";
+                }
+            }
+
+            return string.Format(source, args).AsFormattedText();
         }
 
         private static FormattedText ReplaceWithLinks(string source, string param, IEnumerable<long> uids, IClientService clientService)

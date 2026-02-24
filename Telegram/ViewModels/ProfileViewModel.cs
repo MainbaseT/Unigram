@@ -914,12 +914,12 @@ namespace Telegram.ViewModels
         public async void ToggleProtectedContent()
         {
             var chat = _chat;
-            if (chat == null || !ClientService.TryGetUserFull(chat, out UserFullInfo fullInfo))
+            if (chat == null)
             {
                 return;
             }
 
-            var protectedContent = fullInfo.MyHasProtectedContent;
+            var protectedContent = chat.HasProtectedContent;
 
             if (!protectedContent && (!IsPremium || Settings.ToolTip.Required("DisableSharing")))
             {

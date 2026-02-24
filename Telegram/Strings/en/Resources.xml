@@ -13293,4 +13293,26 @@
     <string name="ReportAlertReaction">Are you sure you want to report reaction from this user?</string>
     <string name="ReportChatSent">Report sent</string>
 
+    <string name="DisableSharingActionOther">{0} disabled sharing in this chat</string>
+    <string name="DisableSharingActionStillDisabled">Sharing in this chat is still disabled</string>
+    <string name="DisableSharingActionStillEnabled">Sharing in this chat is still enabled</string>
+    <string name="DisableSharingActionYou">You disabled sharing in this chat</string>
+    <string name="EnableSharingActionOther">{0} enabled sharing in this chat</string>
+    <string name="EnableSharingActionYou">You enabled sharing in this chat</string>
+    <string name="SharingOfferCancelYes">Yes</string>
+    <string name="SharingOfferDisableCancelText">Are you sure you want to keep sharing disabled?</string>
+    <string name="SharingOfferDisableCancelTitle">Disable Sharing</string>
+    <string name="SharingOfferEnable1">&gt; forwarding messages</string>
+    <string name="SharingOfferEnable2">&gt; saving photos and videos</string>
+    <string name="SharingOfferEnable3">&gt; copying messages</string>
+    <string name="SharingOfferEnable4">&gt; taking screenshots</string>
+    <string name="SharingOfferEnableCancelTitle">Enable Sharing</string>
+    <string name="SharingOfferEnableConfirmText">Are you sure you want to enable sharing?</string>
+    <string name="SharingOfferEnableHeaderOther">**{0}** would like to enable sharing in this chat, which includes:</string>
+    <string name="SharingOfferEnableHeaderYou">You suggest to enable sharing in this chat, which includes:</string>
+    <string name="DisableSharingOfferAccept">Accept</string>
+    <string name="DisableSharingOfferDecline">Reject</string>
+    <string name="DisableSharingToastDisabledPending">Sharing will disabled if **{0}** approves it</string>
+    <string name="DisableSharingToastEnabledPending">Sharing will enabled if **{0}** approves it</string>
+
 </resources>

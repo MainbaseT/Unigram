@@ -1581,7 +1581,7 @@ namespace Telegram.Controls
                     if (user.Type is UserTypeRegular && !user.IsSupport)
                     {
                         flyout.CreateFlyoutItem(ViewModel.CreateSecretChat, Strings.StartEncryptedChat, Icons.LockClosed);
-                        flyout.CreateFlyoutItem(ViewModel.ToggleProtectedContent, fullInfo.MyHasProtectedContent ? Strings.EnableSharing : Strings.DisableSharing, fullInfo.MyHasProtectedContent ? Icons.Share : Icons.ShareOff);
+                        flyout.CreateFlyoutItem(ViewModel.ToggleProtectedContent, chat.HasProtectedContent ? Strings.EnableSharing : Strings.DisableSharing, chat.HasProtectedContent ? Icons.Share : Icons.ShareOff);
                     }
                 }
                 else
