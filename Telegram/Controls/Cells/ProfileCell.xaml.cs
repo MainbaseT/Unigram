@@ -819,20 +819,36 @@ namespace Telegram.Controls.Cells
             {
                 SubtitleLabel.Text = LastSeenConverter.GetLabel(user, false);
 
-                if (member.Status is ChatMemberStatusAdministrator administrator)
+                var infoLabel = Content as BadgeControl;
+
+                if (string.IsNullOrEmpty(member.Tag))
                 {
-                    var infoLabel = Content as TextBlock;
-                    infoLabel?.Text = string.IsNullOrEmpty(administrator.CustomTitle) ? Strings.ChannelAdmin : administrator.CustomTitle;
-                }
-                else if (member.Status is ChatMemberStatusCreator creator)
-                {
-                    var infoLabel = Content as TextBlock;
-                    infoLabel?.Text = string.IsNullOrEmpty(creator.CustomTitle) ? Strings.ChannelCreator : creator.CustomTitle;
+                    infoLabel?.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    var infoLabel = Content as TextBlock;
-                    infoLabel?.Text = string.Empty;
+                    infoLabel?.Visibility = Visibility.Visible;
+                    infoLabel?.Text = member.Tag;
+                }
+
+                if (member.Status is ChatMemberStatusAdministrator)
+                {
+                    var color = Color.FromArgb(0xFF, 0x75, 0xC8, 0x73);
+
+                    infoLabel?.Background = new SolidColorBrush(color) { Opacity = 0.2 };
+                    infoLabel?.Foreground = new SolidColorBrush(color.Darken());
+                }
+                else if (member.Status is ChatMemberStatusCreator)
+                {
+                    var color = Color.FromArgb(0xFF, 0x65, 0x60, 0xF6);
+
+                    infoLabel?.Background = new SolidColorBrush(color) { Opacity = 0.2 };
+                    infoLabel?.Foreground = new SolidColorBrush(color.Darken());
+                }
+                else
+                {
+                    infoLabel?.ClearValue(BackgroundProperty);
+                    infoLabel?.ClearValue(ForegroundProperty);
                 }
             }
             else if (args.Phase == 2)

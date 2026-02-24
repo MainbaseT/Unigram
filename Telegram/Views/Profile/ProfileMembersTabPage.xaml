@@ -70,11 +70,16 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <cells:ProfileCell>
-                        <TextBlock Style="{StaticResource InfoCaptionTextBlockStyle}"
-                                   VerticalAlignment="Center"
-                                   TextTrimming="CharacterEllipsis"
-                                   TextWrapping="NoWrap"
-                                   MaxLines="1" />
+                        <controls:BadgeControl VerticalAlignment="Center">
+                            <controls:BadgeControl.Style>
+                                <Style TargetType="controls:BadgeControl">
+                                    <Setter Property="Foreground"
+                                            Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+                                    <Setter Property="Background"
+                                            Value="Transparent" />
+                                </Style>
+                            </controls:BadgeControl.Style>
+                        </controls:BadgeControl>
                     </cells:ProfileCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
