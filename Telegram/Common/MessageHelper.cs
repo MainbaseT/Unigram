@@ -208,6 +208,35 @@ namespace Telegram.Common
                                     writer.WriteByte(12);
                                     writer.WriteInt64(mentionName.UserId);
                                     break;
+                                case TextEntityTypeDate date:
+                                    writer.WriteByte(13);
+                                    writer.WriteInt32(date.Date);
+                                    if (date.FormattingType is DateFormattingTypeAbsolute absolute)
+                                    {
+                                        writer.WriteByte(1);
+                                        writer.WriteByte(absolute.DayPrecision switch
+                                        {
+                                            DatePartPrecisionLong => 1,
+                                            DatePartPrecisionShort => 2,
+                                            _ => 0
+                                        });
+                                        writer.WriteByte(absolute.TimePrecision switch
+                                        {
+                                            DatePartPrecisionLong => 1,
+                                            DatePartPrecisionShort => 2,
+                                            _ => 0
+                                        });
+                                        writer.WriteBoolean(absolute.ShowDayOfWeek);
+                                    }
+                                    else if (date.FormattingType is DateFormattingTypeRelative)
+                                    {
+                                        writer.WriteByte(2);
+                                    }
+                                    else
+                                    {
+                                        writer.WriteByte(0);
+                                    }
+                                    break;
                             }
                         }
 
@@ -338,6 +367,24 @@ namespace Telegram.Common
                                 break;
                             case 12:
                                 entity.Type = new TextEntityTypeMentionName(reader.ReadInt64());
+                                break;
+                            case 13:
+                                entity.Type = new TextEntityTypeDate(reader.ReadInt32(), reader.ReadByte() switch
+                                {
+                                    1 => new DateFormattingTypeAbsolute(reader.ReadByte() switch
+                                    {
+                                        1 => new DatePartPrecisionLong(),
+                                        2 => new DatePartPrecisionShort(),
+                                        _ => new DatePartPrecisionNone()
+                                    }, reader.ReadByte() switch
+                                    {
+                                        1 => new DatePartPrecisionLong(),
+                                        2 => new DatePartPrecisionShort(),
+                                        _ => new DatePartPrecisionNone()
+                                    }, reader.ReadBoolean()),
+                                    2 => new DateFormattingTypeRelative(),
+                                    _ => null
+                                });
                                 break;
                         }
 
