@@ -2321,14 +2321,14 @@ namespace Telegram.ViewModels
                 return;
             }
 
+            Chat = chat;
+            IsForum = Type == DialogType.History && ClientService.IsForum(chat);
+            IsDirectMessagesGroup = Type == DialogType.History && ClientService.IsDirectMessagesGroup(chat);
+
             if (HasProtectedContent)
             {
                 Delegate?.DisableScreenCapture();
             }
-
-            Chat = chat;
-            IsForum = Type == DialogType.History && ClientService.IsForum(chat);
-            IsDirectMessagesGroup = Type == DialogType.History && ClientService.IsDirectMessagesGroup(chat);
 
             SetScrollMode(ItemsUpdatingScrollMode.KeepLastItemInView, true);
             SetTranslating();
