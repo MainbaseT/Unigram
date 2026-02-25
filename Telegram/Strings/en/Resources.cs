@@ -19617,6 +19617,16 @@ namespace Telegram
         public static string ShortTimeNow => Resource.GetString("ShortTimeNow");
         
         /// <summary>
+        /// Localized resource similar to "today"
+        /// </summary>
+        public static string ShortToday => Resource.GetString("ShortToday");
+        
+        /// <summary>
+        /// Localized resource similar to "yesterday"
+        /// </summary>
+        public static string ShortYesterday => Resource.GetString("ShortYesterday");
+        
+        /// <summary>
         /// Localized resource similar to "Show"
         /// </summary>
         public static string Show => Resource.GetString("Show");

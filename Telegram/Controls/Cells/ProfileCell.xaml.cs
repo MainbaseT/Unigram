@@ -87,12 +87,12 @@ namespace Telegram.Controls.Cells
                 _clientService = null;
                 _chat = null;
             }
-            else if (_member != null)
+            else if (_pollVoter != null)
             {
-                UpdateMessageSender(_clientService, _member);
+                UpdatePollVoter(_clientService, _pollVoter);
 
                 _clientService = null;
-                _member = null;
+                _pollVoter = null;
             }
             else if (_element != null)
             {
@@ -1100,20 +1100,20 @@ namespace Telegram.Controls.Cells
             args.Handled = true;
         }
 
-        private MessageSender _member;
+        private PollVoter _pollVoter;
 
-        public void UpdateMessageSender(IClientService clientService, MessageSender member)
+        public void UpdatePollVoter(IClientService clientService, PollVoter pollVoter)
         {
             if (!_templateApplied)
             {
                 _clientService = clientService;
-                _member = member;
+                _pollVoter = pollVoter;
                 return;
             }
 
             UpdateStyleNoSubtitle();
 
-            var messageSender = clientService.GetMessageSender(member);
+            var messageSender = clientService.GetMessageSender(pollVoter.VoterId);
             if (messageSender == null)
             {
                 return;
@@ -1132,6 +1132,28 @@ namespace Telegram.Controls.Cells
 
                 Photo.Source = ProfilePictureSource.Chat(clientService, chat);
                 Identity.SetStatus(clientService, chat, BotVerified);
+            }
+
+            if (Content is StackPanel panel)
+            {
+                var date = panel.Children[0] as TextBlock;
+                var time = panel.Children[1] as TextBlock;
+
+                var dateTime = Formatter.ToLocalTime(pollVoter.Date);
+                if (dateTime.Date == DateTime.Today)
+                {
+                    date.Text = Strings.ShortToday;
+                }
+                else if (dateTime.Date == DateTime.Today.AddDays(-1))
+                {
+                    date.Text = Strings.ShortYesterday;
+                }
+                else
+                {
+                    date.Text = Formatter.DateExtended(pollVoter.Date);
+                }
+
+                time.Text = Formatter.Time(dateTime);
             }
         }
 

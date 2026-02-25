@@ -13328,4 +13328,7 @@
     <string name="TagInfoOwnerText">This purple tag un1 is **{0}’s** owner tag.\n**{0}** is the owner of **{1}**.</string>
     <string name="TagInfoOwnerTitle">Owner Tag</string>
 
+    <string name="ShortToday">today</string>
+    <string name="ShortYesterday">yesterday</string>
+
 </resources>

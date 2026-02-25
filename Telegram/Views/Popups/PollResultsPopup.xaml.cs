@@ -49,19 +49,19 @@ namespace Telegram.Views.Popups
         private void OnElementPrepared(Microsoft.UI.Xaml.Controls.ItemsRepeater sender, Microsoft.UI.Xaml.Controls.ItemsRepeaterElementPreparedEventArgs args)
         {
             var item = sender.ItemsSourceView.GetAt(args.Index);
-            if (item is MessageSender messageSender)
+            if (item is PollVoter pollVoter)
             {
                 var button = args.Element as Button;
                 var content = button.Content as ProfileCell;
 
-                content.UpdateMessageSender(_clientService, messageSender);
+                content.UpdatePollVoter(_clientService, pollVoter);
                 button.Click += User_Click;
 
-                if (_clientService.TryGetUser(messageSender, out User user))
+                if (_clientService.TryGetUser(pollVoter.VoterId, out User user))
                 {
                     AutomationProperties.SetName(button, user.FullName());
                 }
-                else if (_clientService.TryGetChat(messageSender, out Chat chat))
+                else if (_clientService.TryGetChat(pollVoter.VoterId, out Chat chat))
                 {
                     AutomationProperties.SetName(button, chat.Title);
                 }
@@ -121,7 +121,7 @@ namespace Telegram.Views.Popups
             _poll = poll;
             _option = option;
 
-            Items = new MvxObservableCollection<MessageSender>();
+            Items = new MvxObservableCollection<PollVoter>();
             LoadMoreCommand = new RelayCommand(LoadMoreExecute);
 
             LoadMoreExecute();
@@ -133,7 +133,7 @@ namespace Telegram.Views.Popups
 
         public PollType Type => _poll.Type;
 
-        public MvxObservableCollection<MessageSender> Items { get; private set; }
+        public MvxObservableCollection<PollVoter> Items { get; private set; }
 
         public RelayCommand LoadMoreCommand { get; }
         private async void LoadMoreExecute()
@@ -142,14 +142,14 @@ namespace Telegram.Views.Popups
             limit = _offset > 0 ? 50 : limit;
 
             var response = await ClientService.SendAsync(new GetPollVoters(_chatId, _messageId, _poll.Options.IndexOf(_option), _offset, limit));
-            if (response is MessageSenders senders)
+            if (response is PollVoters senders)
             {
-                foreach (var sender in senders.Senders)
+                foreach (var sender in senders.Voters)
                 {
                     Items.Add(sender);
                 }
 
-                _offset += senders.Senders.Count;
+                _offset += senders.Voters.Count;
                 _remaining = senders.TotalCount - _offset;
 
                 RaisePropertyChanged(nameof(LoadMoreLabel));

@@ -13145,6 +13145,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   <data name="ShortTimeNow" xml:space="preserve">
     <value>now</value>
   </data>
+  <data name="ShortToday" xml:space="preserve">
+    <value>today</value>
+  </data>
+  <data name="ShortYesterday" xml:space="preserve">
+    <value>yesterday</value>
+  </data>
   <data name="Show" xml:space="preserve">
     <value>Show</value>
   </data>
