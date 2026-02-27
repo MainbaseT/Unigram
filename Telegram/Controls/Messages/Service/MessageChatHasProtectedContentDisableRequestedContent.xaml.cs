@@ -6,7 +6,6 @@
 //
 
 using System;
-using Telegram.Common;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI.Xaml;
@@ -30,8 +29,7 @@ namespace Telegram.Controls.Messages.Service
                 return;
             }
 
-            var now = DateTime.Now.ToTimestamp();
-            if (now < message.Date + message.ClientService.Options.HasProtectedContentDisableRequestDuration && !chatHasProtectedContentDisableRequested.IsExpired && !message.IsOutgoing)
+            if (!chatHasProtectedContentDisableRequested.IsExpired && !message.IsOutgoing)
             {
                 Accept.Visibility = Visibility.Visible;
                 Reject.Visibility = Visibility.Visible;
