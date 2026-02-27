@@ -13288,6 +13288,8 @@
     <string name="EnableSharing">Enable Sharing</string>
     <string name="PrivateMessagesChargePremiumLocked">Unlock with Telegram Premium</string>
 
+    <string name="RelativeDateAddDate">Add Date</string>
+    <string name="RelativeDateCopied">Date copied to clipboard</string>
     <string name="RelativeDateMenuAddToACalendar">Add to Calendar</string>
     <string name="RelativeDateMenuCopy">Copy Date</string>
     <string name="RelativeDateMenuSetAReminder">Set a Reminder</string>
@@ -13354,6 +13356,19 @@
     <string name="UserRestrictionsEditTags">Edit Own Tags</string>
     <string name="UserRestrictionsTagInfo">Add short tag next to {0}’s name.</string>
     <string name="EditAdminEditTags">Edit Member Tags</string>
+    <string name="ChannelMemberTags">Allow Member Tags</string>
+    <string name="ChannelMemberTagsInfo">Turn this on to let members of the group to add short tags next to their names.</string>
+    <string name="EventLogRankAdd">un1 set un2’s tag to {0}</string>
+    <string name="EventLogRankEdit">un1 changed un2’s tag from {0} to {1}</string>
+    <string name="EventLogRankRemove">un1 removed un2’s {0} tag</string>
+    <string name="EventLogRankSelfAdd">un1 set their tag to {0}</string>
+    <string name="EventLogRankSelfEdit">un1 changed their tag from {0} to {1}</string>
+    <string name="EventLogRankSelfRemove">un1 removed their {0} tag</string>
+    <string name="EventLogRestrictedEditRank">Edit tags</string>
+    <string name="EventLogRestrictedCreateTopics">Create topics</string>
+    <string name="EventLogPromotedEditRank">Manage tags</string>
+    <string name="EventLogPromotedManageTopics">Manage topics</string>
+    <string name="EventLogFilterMembersRank">Members Tag Updates</string>
 
     <string name="MemberTagButtonAdd">Add Tag</string>
     <string name="MemberTagButtonEdit">Edit Tag</string>

@@ -4002,6 +4002,12 @@ revenue per user</value>
   <data name="ChannelMembersInfo" xml:space="preserve">
     <value>Only channel admins can see this list.</value>
   </data>
+  <data name="ChannelMemberTags" xml:space="preserve">
+    <value>Allow Member Tags</value>
+  </data>
+  <data name="ChannelMemberTagsInfo" xml:space="preserve">
+    <value>Turn this on to let members of the group to add short tags next to their names.</value>
+  </data>
   <data name="ChannelMute" xml:space="preserve">
     <value>MUTE</value>
   </data>
@@ -5965,6 +5971,9 @@ Learn more at telegram.org</value>
   <data name="EventLogFilterLeavingSubscribers2" xml:space="preserve">
     <value>Subscribers Left the Channel</value>
   </data>
+  <data name="EventLogFilterMembersRank" xml:space="preserve">
+    <value>Members Tag Updates</value>
+  </data>
   <data name="EventLogFilterNewAdmins" xml:space="preserve">
     <value>Admin rights</value>
   </data>
@@ -6052,11 +6061,17 @@ Learn more at telegram.org</value>
   <data name="EventLogPromotedEditMessages" xml:space="preserve">
     <value>Edit messages</value>
   </data>
+  <data name="EventLogPromotedEditRank" xml:space="preserve">
+    <value>Manage tags</value>
+  </data>
   <data name="EventLogPromotedEditStories" xml:space="preserve">
     <value>Edit stories of others</value>
   </data>
   <data name="EventLogPromotedManageCall" xml:space="preserve">
     <value>Manage video chats</value>
+  </data>
+  <data name="EventLogPromotedManageTopics" xml:space="preserve">
+    <value>Manage topics</value>
   </data>
   <data name="EventLogPromotedPinMessages" xml:space="preserve">
     <value>Pin messages</value>
@@ -6075,6 +6090,24 @@ Learn more at telegram.org</value>
   </data>
   <data name="EventLogPromotedTitle" xml:space="preserve">
     <value>Title: {0}</value>
+  </data>
+  <data name="EventLogRankAdd" xml:space="preserve">
+    <value>un1 set un2’s tag to {0}</value>
+  </data>
+  <data name="EventLogRankEdit" xml:space="preserve">
+    <value>un1 changed un2’s tag from {0} to {1}</value>
+  </data>
+  <data name="EventLogRankRemove" xml:space="preserve">
+    <value>un1 removed un2’s {0} tag</value>
+  </data>
+  <data name="EventLogRankSelfAdd" xml:space="preserve">
+    <value>un1 set their tag to {0}</value>
+  </data>
+  <data name="EventLogRankSelfEdit" xml:space="preserve">
+    <value>un1 changed their tag from {0} to {1}</value>
+  </data>
+  <data name="EventLogRankSelfRemove" xml:space="preserve">
+    <value>un1 removed their {0} tag</value>
   </data>
   <data name="EventLogRemovedEmojiPack" xml:space="preserve">
     <value>un1 removed the group emoji pack</value>
@@ -6099,6 +6132,12 @@ Learn more at telegram.org</value>
   </data>
   <data name="EventLogRestrictedChangeInfo" xml:space="preserve">
     <value>Change info</value>
+  </data>
+  <data name="EventLogRestrictedCreateTopics" xml:space="preserve">
+    <value>Create topics</value>
+  </data>
+  <data name="EventLogRestrictedEditRank" xml:space="preserve">
+    <value>Edit tags</value>
   </data>
   <data name="EventLogRestrictedPinMessages" xml:space="preserve">
     <value>Pin messages</value>
@@ -12041,6 +12080,12 @@ seamlessly and efficiently.</value>
   </data>
   <data name="Regular" xml:space="preserve">
     <value>Regular</value>
+  </data>
+  <data name="RelativeDateAddDate" xml:space="preserve">
+    <value>Add Date</value>
+  </data>
+  <data name="RelativeDateCopied" xml:space="preserve">
+    <value>Date copied to clipboard</value>
   </data>
   <data name="RelativeDateMenuAddToACalendar" xml:space="preserve">
     <value>Add to Calendar</value>
