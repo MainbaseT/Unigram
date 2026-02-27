@@ -5,7 +5,6 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Telegram.Common;
@@ -116,7 +115,7 @@ namespace Telegram.Td
 
         public static FormattedText CustomEmoji(string emoji, long customEmojiId)
         {
-            return new FormattedText(emoji, new[] { new TextEntity(0, 2, new TextEntityTypeCustomEmoji(customEmojiId)) });
+            return new FormattedText(emoji, new[] { new TextEntity(0, emoji.Length, new TextEntityTypeCustomEmoji(customEmojiId)) });
         }
 
         public static FormattedText CustomEmoji(long customEmojiId)
