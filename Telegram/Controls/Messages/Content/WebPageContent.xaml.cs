@@ -395,6 +395,54 @@ namespace Telegram.Controls.Messages.Content
                     Media.Child = new PhotoContent(message);
                 }
             }
+            else if (linkPreview.Type is LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer)
+            {
+                if (embeddedAudioPlayer.Audio != null)
+                {
+                    Media.Child = new AudioContent(message);
+                }
+                else
+                {
+                    Media.Child = new PhotoContent(message)
+                    {
+                        MaxWidth = maxWidth,
+                    };
+                }
+            }
+            else if (linkPreview.Type is LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer)
+            {
+                if (embeddedAnimationPlayer.Animation != null)
+                {
+                    Media.Child = new AnimationContent(message)
+                    {
+                        MaxWidth = maxWidth,
+                    };
+                }
+                else
+                {
+                    Media.Child = new PhotoContent(message)
+                    {
+                        MaxWidth = maxWidth,
+                    };
+                }
+            }
+            else if (linkPreview.Type is LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer)
+            {
+                if (embeddedVideoPlayer.Video != null)
+                {
+                    Media.Child = new VideoContent(message)
+                    {
+                        MaxWidth = maxWidth
+                    };
+                }
+                else
+                {
+                    Media.Child = new PhotoContent(message)
+                    {
+                        MaxWidth = maxWidth,
+                    };
+                }
+            }
             else if (linkPreview.Type is LinkPreviewTypePhoto or
                                          LinkPreviewTypeEmbeddedAudioPlayer or
                                          LinkPreviewTypeEmbeddedAnimationPlayer or

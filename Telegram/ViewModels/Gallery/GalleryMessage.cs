@@ -159,7 +159,7 @@ namespace Telegram.ViewModels.Gallery
                 }
                 else if (_message.Content is MessageText text)
                 {
-                    return text.LinkPreview?.Type is LinkPreviewTypeVideo or LinkPreviewTypeAnimation or LinkPreviewTypeVideoNote;
+                    return text.LinkPreview?.Type is LinkPreviewTypeVideo or LinkPreviewTypeAnimation or LinkPreviewTypeVideoNote or LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null } or LinkPreviewTypeEmbeddedVideoPlayer { Video: not null };
                 }
                 else if (_message.Content is MessageSponsored sponsored)
                 {
@@ -184,8 +184,7 @@ namespace Telegram.ViewModels.Gallery
                 }
                 else if (_message.Content is MessageText text)
                 {
-                    return text.LinkPreview?.Type is LinkPreviewTypeAnimation
-                        || text.LinkPreview?.Type is LinkPreviewTypeVideoNote;
+                    return text.LinkPreview?.Type is LinkPreviewTypeAnimation or LinkPreviewTypeVideoNote or LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null };
                 }
 
                 return false;
@@ -277,6 +276,8 @@ namespace Telegram.ViewModels.Gallery
                         LinkPreviewTypeVideo previewVideo => previewVideo.Video.Duration,
                         LinkPreviewTypeAnimation previewAnimation => previewAnimation.Animation.Duration,
                         LinkPreviewTypeVideoNote previewVideoNote => previewVideoNote.VideoNote.Duration,
+                        LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Animation?.Duration ?? 0,
+                        LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Video?.Duration ?? 0,
                         _ => 0
                     };
                 }

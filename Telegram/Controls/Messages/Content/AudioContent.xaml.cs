@@ -411,7 +411,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (content is MessageText text && text.LinkPreview != null && !primary)
             {
-                return text.LinkPreview.Type is LinkPreviewTypeAudio;
+                return text.LinkPreview.Type is LinkPreviewTypeAudio or LinkPreviewTypeEmbeddedAudioPlayer { Audio: not null };
             }
 
             return false;
@@ -429,9 +429,16 @@ namespace Telegram.Controls.Messages.Content
             {
                 return audio.Audio;
             }
-            else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeAudio previewAudio)
+            else if (content is MessageText text)
             {
-                return previewAudio.Audio;
+                if (text.LinkPreview?.Type is LinkPreviewTypeAudio previewAudio)
+                {
+                    return previewAudio.Audio;
+                }
+                else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer)
+                {
+                    return embeddedAudioPlayer.Audio;
+                }
             }
 
             return null;

@@ -1749,9 +1749,9 @@ namespace Telegram.Td.Api
                         LinkPreviewTypeBackground background => background.Document?.DocumentValue,
                         LinkPreviewTypeDirectMessagesChat directMessagesChat => directMessagesChat.Photo?.GetFile(),
                         LinkPreviewTypeDocument document => document.Document.DocumentValue,
-                        LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Thumbnail?.GetFile(),
-                        LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Thumbnail?.GetFile(),
-                        LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Thumbnail?.GetFile(),
+                        LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer => embeddedAudioPlayer.Audio?.AudioValue ?? embeddedAudioPlayer.Thumbnail?.GetFile(),
+                        LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer => embeddedAnimationPlayer.Animation?.AnimationValue ?? embeddedAnimationPlayer.Thumbnail?.GetFile(),
+                        LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer => embeddedVideoPlayer.Video?.VideoValue ?? embeddedVideoPlayer.Thumbnail?.GetFile(),
                         LinkPreviewTypeSticker sticker => sticker.Sticker.StickerValue,
                         LinkPreviewTypeVideo video => video.Video.VideoValue,
                         LinkPreviewTypeVideoNote videoNote => videoNote.VideoNote.Video,
@@ -1823,6 +1823,11 @@ namespace Telegram.Td.Api
                     else if (text.LinkPreview?.Type is LinkPreviewTypeVideoNote previewVideoNote)
                     {
                         return previewVideoNote.VideoNote.Video.Local.IsDownloadingCompleted;
+                    }
+                    else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAnimationPlayer previewTypeEmbeddedAnimationPlayer)
+                    {
+                        return previewTypeEmbeddedAnimationPlayer.Animation != null &&
+                            previewTypeEmbeddedAnimationPlayer.Animation.AnimationValue.Local.IsDownloadingCompleted;
                     }
                     else if (text.LinkPreview?.Type is LinkPreviewTypeVideo)
                     {
@@ -2209,6 +2214,9 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeVideo or
                 LinkPreviewTypeVideoNote or
                 LinkPreviewTypeVoiceNote or
+                LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null } or
+                LinkPreviewTypeEmbeddedAudioPlayer { Audio: not null } or
+                LinkPreviewTypeEmbeddedVideoPlayer { Video: not null } or
                 LinkPreviewTypeStoryAlbum { VideoIcon: not null } || linkPreview.HasPhoto();
         }
 

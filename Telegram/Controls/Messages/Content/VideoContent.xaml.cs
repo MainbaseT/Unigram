@@ -519,7 +519,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (content is MessageText text && text.LinkPreview != null && !primary)
             {
-                if (text.LinkPreview.Type is LinkPreviewTypeVideo || text.LinkPreview.Type is LinkPreviewTypeAlbum album && album.Media[0] is LinkPreviewAlbumMediaVideo)
+                if (text.LinkPreview.Type is LinkPreviewTypeVideo or LinkPreviewTypeEmbeddedVideoPlayer { Video: not null } || text.LinkPreview.Type is LinkPreviewTypeAlbum album && album.Media[0] is LinkPreviewAlbumMediaVideo)
                 {
                     return true;
                 }
@@ -577,6 +577,10 @@ namespace Telegram.Controls.Messages.Content
                 {
                     cover = previewVideo.Cover;
                     return previewVideo.Video;
+                }
+                else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer)
+                {
+                    return embeddedVideoPlayer.Video;
                 }
                 else if (text.LinkPreview?.Type is LinkPreviewTypeAlbum previewAlbum && previewAlbum.Media[0] is LinkPreviewAlbumMediaVideo albumVideo)
                 {

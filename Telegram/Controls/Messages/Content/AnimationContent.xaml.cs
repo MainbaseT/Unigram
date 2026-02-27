@@ -263,7 +263,7 @@ namespace Telegram.Controls.Messages.Content
             }
             else if (content is MessageText text && text.LinkPreview != null && !primary)
             {
-                return text.LinkPreview.Type is LinkPreviewTypeAnimation;
+                return text.LinkPreview.Type is LinkPreviewTypeAnimation or LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null };
             }
             else if (content is MessageSponsored { Content: MessageAnimation } && !primary)
             {
@@ -294,9 +294,16 @@ namespace Telegram.Controls.Messages.Content
                 isGame = true;
                 return game.Game.Animation;
             }
-            else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeAnimation previewAnimation)
+            else if (content is MessageText text)
             {
-                return previewAnimation.Animation;
+                if (text.LinkPreview?.Type is LinkPreviewTypeAnimation previewAnimation)
+                {
+                    return previewAnimation.Animation;
+                }
+                else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer)
+                {
+                    return embeddedAnimationPlayer.Animation;
+                }
             }
             else if (content is MessageSponsored { Content: MessageAnimation sponsored })
             {
