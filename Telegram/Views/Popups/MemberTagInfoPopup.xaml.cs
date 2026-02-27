@@ -7,39 +7,30 @@
 
 using Microsoft.Graphics.Canvas.Effects;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Controls.Media;
 using Telegram.Native.Composition;
 using Telegram.Navigation;
-using Telegram.Navigation.Services;
-using Telegram.Services;
 using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.Views.Popups
 {
     public sealed partial class MemberTagInfoPopup : ContentPopup
     {
-        public MemberTagInfoPopup(IClientService clientService, INavigationService navigationService, MessageViewModel message)
+        public MemberTagInfoPopup(MessageViewModel message)
         {
             InitializeComponent();
 
@@ -52,7 +43,8 @@ namespace Telegram.Views.Popups
 
             if (rank == ChatMemberRank.Owner)
             {
-                Title = Strings.TagInfoOwnerTitle;
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.PersonTagFilled24, 2);
+                TitleText.Text = Strings.TagInfoOwnerTitle;
                 text = Strings.TagInfoOwnerText;
 
                 var color = Color.FromArgb(0xFF, 0x65, 0x60, 0xF6);
@@ -67,7 +59,8 @@ namespace Telegram.Views.Popups
             }
             else if (rank == ChatMemberRank.Admin)
             {
-                Title = Strings.TagInfoAdminTitle;
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.PersonTagFilled24, 3);
+                TitleText.Text = Strings.TagInfoAdminTitle;
                 text = Strings.TagInfoAdminText;
 
                 var color = Color.FromArgb(0xFF, 0x75, 0xC8, 0x73);
@@ -82,7 +75,8 @@ namespace Telegram.Views.Popups
             }
             else
             {
-                Title = Strings.TagInfoMemberTitle;
+                Photo.Source = ProfilePictureSourceText.GetGlyph(Icons.PersonTagFilled24, long.MinValue);
+                TitleText.Text = Strings.TagInfoMemberTitle;
                 text = Strings.TagInfoMemberText;
 
                 inline.Child = new TextBlock
@@ -140,25 +134,61 @@ namespace Telegram.Views.Popups
 
             Message.Blocks.Add(paragraph);
 
-            UpdateMessage(clientService, rank);
+            UpdateMessage(message, rank);
+            UpdateCanEdit(message);
+
+            PrimaryButtonText = Strings.StarRatingButtonUnderstood;
+            ButtonsLayout = ContentPopupButtonsLayout.Vertical;
         }
 
-        private void UpdateMessage(IClientService clientService, ChatMemberRank rank)
+        private void UpdateCanEdit(MessageViewModel message)
         {
-            BackgroundControl1.Update(clientService, null);
-            Message1.UpdateMockup(clientService, Strings.TagInfoMemberTitle, ChatMemberRank.Other);
+            var visible = true;
+
+            if (message.ClientService.TryGetSupergroup(message.Chat, out Supergroup supergroup))
+            {
+                if (supergroup.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                {
+                    visible = false;
+                }
+                else if (message.Chat.Permissions.CanEditTag)
+                {
+                    visible = false;
+                }
+            }
+            else if (message.ClientService.TryGetBasicGroup(message.Chat, out BasicGroup basicGroup))
+            {
+                if (basicGroup.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator)
+                {
+                    visible = false;
+                }
+                else if (message.Chat.Permissions.CanEditTag)
+                {
+                    visible = false;
+                }
+            }
+
+            CanEdit.Visibility = visible
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void UpdateMessage(MessageViewModel message, ChatMemberRank rank)
+        {
+            BackgroundControl1.Update(message.ClientService, null);
+            Message1.UpdateMockup(message.ClientService, message.Chat, null, Strings.TagInfoMemberTitle, ChatMemberRank.Other);
             Message1.Margin = new Thickness(0);
 
             if (rank == ChatMemberRank.Owner)
             {
-                BackgroundControl2.Update(clientService, null);
-                Message2.UpdateMockup(clientService, Strings.TagInfoOwnerTitle, ChatMemberRank.Owner);
+                BackgroundControl2.Update(message.ClientService, null);
+                Message2.UpdateMockup(message.ClientService, message.Chat, null, Strings.TagInfoOwnerTitle, ChatMemberRank.Owner);
                 Message2.Margin = new Thickness(0);
             }
             else
             {
-                BackgroundControl2.Update(clientService, null);
-                Message2.UpdateMockup(clientService, Strings.TagInfoAdminTitle, ChatMemberRank.Admin);
+                BackgroundControl2.Update(message.ClientService, null);
+                Message2.UpdateMockup(message.ClientService, message.Chat, null, Strings.TagInfoAdminTitle, ChatMemberRank.Admin);
                 Message2.Margin = new Thickness(0);
             }
         }

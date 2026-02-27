@@ -87,12 +87,15 @@ namespace Telegram.Controls.Messages
             ToolTip.Opened += ToolTip_Opened;
 
             _templateApplied = true;
+            TemplateApplied?.Invoke(this, EventArgs.Empty);
 
             if (_message != null)
             {
                 UpdateMessageImpl(_message, true);
             }
         }
+
+        public event EventHandler TemplateApplied;
 
         #endregion
 
@@ -334,6 +337,18 @@ namespace Telegram.Controls.Messages
 
         public void Mockup(bool outgoing, DateTime date)
         {
+            if (!_templateApplied)
+            {
+                void loaded(object o, EventArgs e)
+                {
+                    TemplateApplied -= loaded;
+                    Mockup(outgoing, date);
+                }
+
+                TemplateApplied += loaded;
+                return;
+            }
+
             _dateLabel = Formatter.Time(date);
             UpdateLabel();
             UpdateTicks(outgoing, outgoing ? MessageTicksState.Read : MessageTicksState.None);

@@ -310,6 +310,8 @@ namespace Telegram.Controls.Media
         public const string ShareScreenStop = "\uE92E";
 
         public const string Person = "\uE77B";
+        public const string PersonTag = "\uEAFE";
+        public const string PersonTagFilled24 = "\uEAFD";
         public const string PersonAdd = "\uE8FA";
         public const string PersonCircleOnline = "\uE982";
 

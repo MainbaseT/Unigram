@@ -256,12 +256,15 @@ namespace Telegram.Controls.Messages
             ElementCompositionPreview.SetIsTranslationEnabled(Media, true);
 
             _templateApplied = true;
+            TemplateApplied?.Invoke(this, EventArgs.Empty);
 
             if (_message != null)
             {
                 UpdateMessage(_message);
             }
         }
+
+        public event EventHandler TemplateApplied;
 
         #endregion
 
@@ -1311,14 +1314,14 @@ namespace Telegram.Controls.Messages
                         if (BoostCount == null)
                         {
                             LoadTemplateChild(ref BoostCount);
-                            BoostCount.Tapped += MemberTag_Tapped;
+                            BoostCount.Tapped += BoostCount_Tapped;
                         }
 
                         BoostCount.Text = boosts;
                     }
                     else
                     {
-                        BoostCount?.Tapped -= MemberTag_Tapped;
+                        BoostCount?.Tapped -= BoostCount_Tapped;
                         UnloadTemplateChild(ref BoostCount);
                     }
                 }
@@ -1335,13 +1338,13 @@ namespace Telegram.Controls.Messages
                     MemberTag.ClearValue(BackgroundProperty);
                     MemberTag.ClearValue(ForegroundProperty);
 
-                    BoostCount?.Tapped -= MemberTag_Tapped;
+                    BoostCount?.Tapped -= BoostCount_Tapped;
                     UnloadTemplateChild(ref BoostCount);
                 }
                 else
                 {
                     MemberTag?.Tapped -= MemberTag_Tapped;
-                    BoostCount?.Tapped -= MemberTag_Tapped;
+                    BoostCount?.Tapped -= BoostCount_Tapped;
 
                     UnloadTemplateChild(ref MemberTag);
                     UnloadTemplateChild(ref BoostCount);
@@ -1360,7 +1363,7 @@ namespace Telegram.Controls.Messages
             else
             {
                 MemberTag?.Tapped -= MemberTag_Tapped;
-                BoostCount?.Tapped -= MemberTag_Tapped;
+                BoostCount?.Tapped -= BoostCount_Tapped;
 
                 UnloadTemplateChild(ref MemberTag);
                 UnloadTemplateChild(ref BoostCount);
@@ -1387,7 +1390,12 @@ namespace Telegram.Controls.Messages
 
         private void MemberTag_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            _message?.Delegate?.NavigationService?.ShowPopup(new MemberTagInfoPopup(_message.ClientService, _message.Delegate.NavigationService, _message));
+            _message?.Delegate?.NavigationService?.ShowPopup(new MemberTagInfoPopup(_message));
+        }
+
+        private void BoostCount_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // TODO: boost chat info
         }
 
         private TextBlock LoadHeaderLabel()
@@ -3022,13 +3030,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     Mockup(message, outgoing, date, first, last);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3052,13 +3060,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     Mockup(message, sender, reply, outgoing, date, first, last);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3101,13 +3109,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     Mockup(clientService, message, sender, reply, outgoing, date, first, last);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3175,13 +3183,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     Mockup(clientService, message, sender, reply, linkPreview, outgoing, date, first, last);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3296,13 +3304,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     Mockup(content, outgoing, date, first, last);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3354,13 +3362,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     Mockup(content, caption, outgoing, date, first, last);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3398,13 +3406,13 @@ namespace Telegram.Controls.Messages
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
+                    TemplateApplied -= loaded;
                     UpdateMockup(clientService, customEmojiId, color, upgradedGift);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
             }
 
@@ -3428,18 +3436,29 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        public void UpdateMockup(IClientService clientService, string tag, ChatMemberRank rank)
+        public void UpdateMockup(IClientService clientService, Chat chat, MessageSender sender, string tag, ChatMemberRank rank)
         {
             if (!_templateApplied)
             {
-                void loaded(object o, RoutedEventArgs e)
+                void loaded(object o, EventArgs e)
                 {
-                    Loaded -= loaded;
-                    UpdateMockup(clientService, tag, rank);
+                    TemplateApplied -= loaded;
+                    UpdateMockup(clientService, chat, sender, tag, rank);
                 }
 
-                Loaded += loaded;
+                TemplateApplied += loaded;
                 return;
+            }
+
+            if (sender != null)
+            {
+                var message = new Message(chat.Id, sender, 0, null, null, false, false, false, false, false, false, false, false, false, 0, 0, null, null, null, Array.Empty<UnreadReaction>(), null, null, null, null, null, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, 0, 0, null, string.Empty, null, null);
+                var settings = clientService.Session.Resolve<ISettingsService>();
+
+                var delegato = new ChatMessageDelegate(clientService, settings, chat);
+                var viewModel = new MessageViewModel(clientService, delegato, chat, null, null, message, true);
+
+                UpdateMessageHeader(viewModel);
             }
 
             if (MemberTag == null)
@@ -3511,6 +3530,25 @@ namespace Telegram.Controls.Messages
             Grid.SetRow(Footer, 3);
             Grid.SetRow(Message, 2);
             Panel.Placeholder = false;
+
+            if (sender != null)
+            {
+                if (PhotoRoot == null)
+                {
+                    PhotoRoot = GetTemplateChild(nameof(PhotoRoot)) as HyperlinkButton;
+                    PhotoRoot.Click += Photo_Click;
+
+                    Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
+                }
+
+                PhotoRoot.Visibility = Visibility.Visible;
+                Photo.Source = ProfilePictureSource.MessageSender(clientService, clientService.MyId);
+
+                if (PhotoColumn.Width.IsAuto)
+                {
+                    PhotoColumn.Width = new GridLength(38, GridUnitType.Pixel);
+                }
+            }
 
             UpdateMockup(false, true, true, false);
         }

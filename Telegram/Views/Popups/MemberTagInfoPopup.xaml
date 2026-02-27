@@ -1,10 +1,9 @@
 ﻿<controls:ContentPopup x:Class="Telegram.Views.Popups.MemberTagInfoPopup"
                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                       xmlns:local="using:Telegram.Views.Popups"
-                       xmlns:controls="using:Telegram.Controls"
                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:controls="using:Telegram.Controls"
                        xmlns:chats="using:Telegram.Controls.Chats"
                        xmlns:messages="using:Telegram.Controls.Messages"
                        mc:Ignorable="d">
@@ -13,11 +12,28 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <RichTextBlock x:Name="Message"
-                       IsTextSelectionEnabled="False" />
+        <controls:ProfilePicture x:Name="Photo"
+                                 Size="72" />
 
-        <Grid Grid.Row="1">
+        <TextBlock x:Name="TitleText"
+                   Style="{StaticResource PopupTextBlockStyle}"
+                   TextAlignment="Center"
+                   Margin="0,8,0,0"
+                   Grid.Row="1" />
+
+        <RichTextBlock x:Name="Message"
+                       TextAlignment="Center"
+                       IsTextSelectionEnabled="False"
+                       Margin="-8,4,-8,12"
+                       Grid.Row="2" />
+
+        <Grid ColumnSpacing="8"
+              Margin="-4,0"
+              Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -41,5 +57,12 @@
                 </Border>
             </Grid>
         </Grid>
+
+        <TextBlock x:Name="CanEdit"
+                   Text="{CustomResource CantEditTagAdmins}"
+                   TextAlignment="Center"
+                   Style="{StaticResource InfoCaptionTextBlockStyle}"
+                   Margin="0,8,0,0"
+                   Grid.Row="4" />
     </Grid>
 </controls:ContentPopup>
