@@ -14,5 +14,7 @@
         <TimePicker x:Name="Time"
                     BorderBrush="{ThemeResource ButtonBorderBrush}"
                     HorizontalAlignment="Stretch" />
+
+        <Border x:Name="FooterRoot" />
     </StackPanel>
 </controls:TeachingTipEx>

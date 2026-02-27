@@ -31,6 +31,94 @@ namespace Telegram.Td.Api
 {
     public static class TdExtensions
     {
+        public static string ToUrl(this TextEntityTypeDateTime dateTime)
+        {
+            var url = $"tg-date://{dateTime.UnixTime}";
+
+            if (dateTime.FormattingType is DateTimeFormattingTypeRelative)
+            {
+                url += "?relative";
+            }
+            else if (dateTime.FormattingType is DateTimeFormattingTypeAbsolute absolute)
+            {
+                url += "?absolute";
+
+                if (absolute.TimePrecision is DateTimePartPrecisionShort)
+                {
+                    url += "&time=short";
+                }
+                else if (absolute.TimePrecision is DateTimePartPrecisionLong)
+                {
+                    url += "&time=long";
+                }
+
+                if (absolute.DatePrecision is DateTimePartPrecisionShort)
+                {
+                    url += "&date=short";
+                }
+                else if (absolute.DatePrecision is DateTimePartPrecisionLong)
+                {
+                    url += "&date=long";
+                }
+
+                if (absolute.ShowDayOfWeek)
+                {
+                    url += "&day_of_week";
+                }
+            }
+
+            return url;
+        }
+
+        public static bool TryParseDateTime(string url, out TextEntityTypeDateTime dateTime)
+        {
+            dateTime = null;
+
+            var split = url.Split('?');
+
+            var link = split[0];
+            if (link.StartsWith("tg-date://") && int.TryParse(link.Substring("tg-date://".Length), out int unixTime))
+            {
+                dateTime = new TextEntityTypeDateTime(unixTime, null);
+            }
+
+            if (dateTime != null && split.Length > 0)
+            {
+                var query = split[^1].ParseQueryString();
+                if (query.ContainsKey("relative"))
+                {
+                    dateTime.FormattingType = new DateTimeFormattingTypeRelative();
+                }
+                else if (query.ContainsKey("absolute"))
+                {
+                    var absolute = new DateTimeFormattingTypeAbsolute();
+
+                    query.TryGetValue("time", out string time);
+                    query.TryGetValue("date", out string date);
+
+                    absolute.TimePrecision = time.ToLowerInvariant() switch
+                    {
+                        "short" => new DateTimePartPrecisionShort(),
+                        "long" => new DateTimePartPrecisionLong(),
+                        _ => new DateTimePartPrecisionNone()
+                    };
+
+                    absolute.DatePrecision = date.ToLowerInvariant() switch
+                    {
+                        "short" => new DateTimePartPrecisionShort(),
+                        "long" => new DateTimePartPrecisionLong(),
+                        _ => new DateTimePartPrecisionNone()
+                    };
+
+                    absolute.ShowDayOfWeek = query.ContainsKey("day_of_week");
+
+                    dateTime.FormattingType = absolute;
+                }
+            }
+
+            return dateTime != null;
+        }
+
         public static bool ShowCaptionAboveMedia(this MessageViewModel message)
         {
             return message.Content switch
@@ -1456,6 +1544,7 @@ namespace Telegram.Td.Api
                 case TextEntityTypePreCode:
                 case TextEntityTypeTextUrl:
                 case TextEntityTypeMentionName:
+                case TextEntityTypeDateTime:
                     return true;
                 default:
                     return false;

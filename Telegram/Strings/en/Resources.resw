@@ -6663,6 +6663,9 @@ Duration: {1}</value>
   <data name="formatDateAtTime" xml:space="preserve">
     <value>{0} at {1}</value>
   </data>
+  <data name="FormattedDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
   <data name="formatterBannedUntil12H" xml:space="preserve">
     <value>MMM dd yyyy, h:mm a</value>
   </data>

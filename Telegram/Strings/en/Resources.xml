@@ -13288,6 +13288,7 @@
     <string name="EnableSharing">Enable Sharing</string>
     <string name="PrivateMessagesChargePremiumLocked">Unlock with Telegram Premium</string>
 
+    <string name="FormattedDate">Date</string>
     <string name="RelativeDateAddDate">Add Date</string>
     <string name="RelativeDateCopied">Date copied to clipboard</string>
     <string name="RelativeDateMenuAddToACalendar">Add to Calendar</string>

@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -47,7 +48,8 @@ namespace Telegram.Controls
         TextUrl = 128,
         CustomEmoji = 256,
         Mention = 512,
-        All = Bold | Italic | Underline | Strikethrough | Mono | Spoiler | Quote | TextUrl | CustomEmoji | Mention,
+        Date = 1024,
+        All = Bold | Italic | Underline | Strikethrough | Mono | Spoiler | Quote | TextUrl | CustomEmoji | Mention | Date,
         Checklist = Bold | Italic | Underline | Strikethrough | Spoiler | CustomEmoji
     }
 
@@ -547,7 +549,8 @@ namespace Telegram.Controls
 
             var clone = Document.Selection.GetClone();
             clone.StartOf(TextRangeUnit.Link, true);
-            var mention = TryGetUserId(clone, out long userId);
+            var mention = TryGetUserId(clone, out _);
+            var date = TryGetDate(clone, out _);
 
             flyout.CreateFlyoutItem(Document.CanUndo(), ContextUndo_Click, Strings.TextUndo, Icons.ArrowUndo, VirtualKey.Z);
             flyout.CreateFlyoutItem(Document.CanRedo(), ContextRedo_Click, Strings.Redo, Icons.ArrowRedo, VirtualKey.Y);
@@ -596,11 +599,16 @@ namespace Telegram.Controls
                     _formattingFlyout.CreateFlyoutItem(length, ToggleSpoiler, Strings.Spoiler, Icons.Spoiler, VirtualKey.P, VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift);
                 }
 
+                if ((entities & FormattedTextEntity.Date) != 0)
+                {
+                    _formattingFlyout.CreateFlyoutItem(length, CreateDate, Strings.FormattedDate, Icons.Calendar);
+                }
+
                 _formattingFlyout.CreateFlyoutSeparator();
 
                 if ((entities & FormattedTextEntity.TextUrl) != 0)
                 {
-                    _formattingFlyout.CreateFlyoutItem(!mention, CreateLink, clone.Link.Length > 0 ? Strings.EditLink : Strings.CreateLink, Icons.Link, VirtualKey.K);
+                    _formattingFlyout.CreateFlyoutItem(!mention && !date, CreateLink, clone.Link.Length > 0 ? Strings.EditLink : Strings.CreateLink, Icons.Link, VirtualKey.K);
                 }
 
                 _formattingFlyout.CreateFlyoutSeparator();
@@ -715,6 +723,147 @@ namespace Telegram.Controls
 
         public FrameworkElement CreateLinkTarget { get; set; }
 
+        public async void CreateDate()
+        {
+            var range = Document.Selection.GetClone();
+            var clone = Document.Selection.GetClone();
+            clone.StartOf(TextRangeUnit.Link, true);
+
+            if (clone.Link.Length > 0)
+            {
+                range.Expand(TextRangeUnit.Link);
+            }
+
+            range.GetText(TextGetOptions.NoHidden, out string text);
+
+            var popup = new ChooseDateTimeToast
+            {
+                Title = Strings.RelativeDateAddDate,
+                ActionButtonContent = Strings.OK,
+                ActionButtonStyle = BootStrapper.Current.Resources["AccentButtonStyle"] as Style,
+                CloseButtonContent = Strings.Cancel,
+                PreferredPlacement = TeachingTipPlacementMode.Center,
+                IsLightDismissEnabled = true,
+                ShouldConstrainToRootBounds = true,
+            };
+
+            CheckBox relative = null;
+            CheckBox short_time = null;
+            CheckBox long_time = null;
+            CheckBox short_date = null;
+            CheckBox long_date = null;
+            CheckBox day_of_week = null;
+
+            if (ApiInfo.IsPackagedRelease)
+            {
+                relative = new CheckBox
+                {
+                    Content = "relative"
+                };
+
+                short_time = new CheckBox
+                {
+                    Content = "short_time"
+                };
+
+                long_time = new CheckBox
+                {
+                    Content = "long_time"
+                };
+
+                short_date = new CheckBox
+                {
+                    Content = "short_date"
+                };
+
+                long_date = new CheckBox
+                {
+                    Content = "long_date"
+                };
+
+                day_of_week = new CheckBox
+                {
+                    Content = "day_of_week"
+                };
+
+                var panel = new StackPanel();
+                panel.Children.Add(relative);
+                panel.Children.Add(short_time);
+                panel.Children.Add(long_time);
+                panel.Children.Add(short_date);
+                panel.Children.Add(long_date);
+                panel.Children.Add(day_of_week);
+
+                popup.Footer = panel;
+            }
+
+            if (CreateLinkTarget != null)
+            {
+                popup.Target = CreateLinkTarget;
+                popup.PreferredPlacement = TeachingTipPlacementMode.TopRight;
+            }
+            else
+            {
+                popup.Target = this;
+                popup.PreferredPlacement = TeachingTipPlacementMode.Top;
+            }
+
+            popup.Width = popup.MinWidth = popup.MaxWidth = 314;
+            popup.IsLightDismissEnabled = true;
+
+            var confirm = await popup.ShowAsync(XamlRoot);
+            if (confirm != ContentDialogResult.Primary /*|| !IsSafe(popup.Text)*/)
+            {
+                return;
+            }
+
+            Document.BatchDisplayUpdates();
+
+            var url = $"tg-date://{popup.Value.ToTimestamp()}";
+
+            if (ApiInfo.IsPackagedRelease)
+            {
+                if (relative.IsChecked is true)
+                {
+                    url += "?relative";
+                }
+                else if (short_time.IsChecked is true || long_time.IsChecked is true || short_date.IsChecked is true || long_date.IsChecked is true || day_of_week.IsChecked is true)
+                {
+                    url += "?absolute";
+
+                    if (short_time.IsChecked is true)
+                    {
+                        url += "&time=short";
+                    }
+                    else if (long_time.IsChecked is true)
+                    {
+                        url += "&time=long";
+                    }
+
+                    if (short_date.IsChecked is true)
+                    {
+                        url += "&date=short";
+                    }
+                    else if (long_date.IsChecked is true)
+                    {
+                        url += "&date=long";
+                    }
+
+                    if (day_of_week.IsChecked is true)
+                    {
+                        url += "&day_of_week";
+                    }
+                }
+            }
+
+            range.SetText(TextSetOptions.Unlink, text);
+            range.CharacterFormat = Document.GetDefaultCharacterFormat();
+            range.Link = "\"" + url + "\"";
+
+            Document.Selection.SetRange(range.EndPosition, range.EndPosition);
+            Document.ApplyDisplayUpdates();
+        }
+
         public async void CreateLink()
         {
             var range = Document.Selection.GetClone();
@@ -751,12 +900,12 @@ namespace Telegram.Controls
             if (CreateLinkTarget != null)
             {
                 popup.Target = CreateLinkTarget;
-                popup.PreferredPlacement = Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.TopRight;
+                popup.PreferredPlacement = TeachingTipPlacementMode.TopRight;
             }
             else
             {
                 popup.Target = this;
-                popup.PreferredPlacement = Microsoft.UI.Xaml.Controls.TeachingTipPlacementMode.Top;
+                popup.PreferredPlacement = TeachingTipPlacementMode.Top;
             }
 
             popup.Width = popup.MinWidth = popup.MaxWidth = 314;
@@ -861,6 +1010,19 @@ namespace Telegram.Controls
             return false;
         }
 
+        protected bool TryGetDate(ITextRange range, out int date)
+        {
+            var link = range.Link.Trim('"');
+            if (link.StartsWith("tg-date://") && TdExtensions.TryParseDateTime(link, out TextEntityTypeDateTime dateTime))
+            {
+                date = dateTime.UnixTime;
+                return true;
+            }
+
+            date = 0;
+            return false;
+        }
+
         protected bool TryGetEntityType(string link, out TextEntityType type)
         {
             link = link.Trim('"');
@@ -873,6 +1035,11 @@ namespace Telegram.Controls
             else if (link.StartsWith("tg-user://") && long.TryParse(link.Substring("tg-user://".Length), out long userId))
             {
                 type = new TextEntityTypeMentionName(userId);
+                return true;
+            }
+            else if (link.StartsWith("tg-date://") && TdExtensions.TryParseDateTime(link, out TextEntityTypeDateTime dateTime))
+            {
+                type = dateTime;
                 return true;
             }
 
@@ -1406,7 +1573,7 @@ namespace Telegram.Controls
 
                     foreach (var entity in entities.Reverse())
                     {
-                        if (entity.Type is TextEntityTypeMentionName or TextEntityTypeTextUrl or TextEntityTypeCustomEmoji)
+                        if (entity.Type is TextEntityTypeDateTime or TextEntityTypeMentionName or TextEntityTypeTextUrl or TextEntityTypeCustomEmoji)
                         {
                             affecting ??= new();
                             affecting.Add(entity);
@@ -1459,6 +1626,10 @@ namespace Telegram.Controls
                             else if (entity.Type is TextEntityTypeMentionName mentionName && (allowedEntities & FormattedTextEntity.Mention) != 0 && IsSafe(text, entity))
                             {
                                 range.Link = $"\"tg-user://{mentionName.UserId}\"";
+                            }
+                            else if (entity.Type is TextEntityTypeDateTime date && (allowedEntities & FormattedTextEntity.Date) != 0 && IsSafe(text, entity))
+                            {
+                                range.Link = $"\"{date.ToUrl()}\"";
                             }
                             else if (entity.Type is TextEntityTypeCustomEmoji customEmoji && (allowedEntities & FormattedTextEntity.CustomEmoji) != 0)
                             {

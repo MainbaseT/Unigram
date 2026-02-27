@@ -208,27 +208,27 @@ namespace Telegram.Common
                                     writer.WriteByte(12);
                                     writer.WriteInt64(mentionName.UserId);
                                     break;
-                                case TextEntityTypeDate date:
+                                case TextEntityTypeDateTime date:
                                     writer.WriteByte(13);
-                                    writer.WriteInt32(date.Date);
-                                    if (date.FormattingType is DateFormattingTypeAbsolute absolute)
+                                    writer.WriteInt32(date.UnixTime);
+                                    if (date.FormattingType is DateTimeFormattingTypeAbsolute absolute)
                                     {
                                         writer.WriteByte(1);
-                                        writer.WriteByte(absolute.DayPrecision switch
+                                        writer.WriteByte(absolute.DatePrecision switch
                                         {
-                                            DatePartPrecisionLong => 1,
-                                            DatePartPrecisionShort => 2,
+                                            DateTimePartPrecisionLong => 1,
+                                            DateTimePartPrecisionShort => 2,
                                             _ => 0
                                         });
                                         writer.WriteByte(absolute.TimePrecision switch
                                         {
-                                            DatePartPrecisionLong => 1,
-                                            DatePartPrecisionShort => 2,
+                                            DateTimePartPrecisionLong => 1,
+                                            DateTimePartPrecisionShort => 2,
                                             _ => 0
                                         });
                                         writer.WriteBoolean(absolute.ShowDayOfWeek);
                                     }
-                                    else if (date.FormattingType is DateFormattingTypeRelative)
+                                    else if (date.FormattingType is DateTimeFormattingTypeRelative)
                                     {
                                         writer.WriteByte(2);
                                     }
@@ -369,20 +369,20 @@ namespace Telegram.Common
                                 entity.Type = new TextEntityTypeMentionName(reader.ReadInt64());
                                 break;
                             case 13:
-                                entity.Type = new TextEntityTypeDate(reader.ReadInt32(), reader.ReadByte() switch
+                                entity.Type = new TextEntityTypeDateTime(reader.ReadInt32(), reader.ReadByte() switch
                                 {
-                                    1 => new DateFormattingTypeAbsolute(reader.ReadByte() switch
+                                    1 => new DateTimeFormattingTypeAbsolute(reader.ReadByte() switch
                                     {
-                                        1 => new DatePartPrecisionLong(),
-                                        2 => new DatePartPrecisionShort(),
-                                        _ => new DatePartPrecisionNone()
+                                        1 => new DateTimePartPrecisionLong(),
+                                        2 => new DateTimePartPrecisionShort(),
+                                        _ => new DateTimePartPrecisionNone()
                                     }, reader.ReadByte() switch
                                     {
-                                        1 => new DatePartPrecisionLong(),
-                                        2 => new DatePartPrecisionShort(),
-                                        _ => new DatePartPrecisionNone()
+                                        1 => new DateTimePartPrecisionLong(),
+                                        2 => new DateTimePartPrecisionShort(),
+                                        _ => new DateTimePartPrecisionNone()
                                     }, reader.ReadBoolean()),
-                                    2 => new DateFormattingTypeRelative(),
+                                    2 => new DateTimeFormattingTypeRelative(),
                                     _ => null
                                 });
                                 break;

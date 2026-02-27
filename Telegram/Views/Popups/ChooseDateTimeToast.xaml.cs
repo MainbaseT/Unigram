@@ -49,6 +49,12 @@ namespace Telegram.Views.Popups
             IsOpen = false;
         }
 
+        public UIElement Footer
+        {
+            get => FooterRoot.Child;
+            set => FooterRoot.Child = value;
+        }
+
         public DateTime Value
         {
             get
