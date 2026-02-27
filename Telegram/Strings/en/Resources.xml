@@ -36,7 +36,7 @@
     <string name="SentAppCode">We\'ve sent the code to the **Telegram** app on your other device.</string>
 
 
-    <string name="SentFragmentCode">Get the code for {0} in the Anonymous Numbers section on Fragment.</string>
+    <string name="SentFragmentCode">Get the code for {0} in the Numbers section on Fragment.</string>
 
     <string name="OpenFragment">Open Fragment</string>
 
@@ -3330,7 +3330,7 @@
     <string name="PrivacyLastSeen">Last Seen &amp; Online</string>
     <string name="PrivacyMessagesContactsAndPremium">My Contacts and Premium users</string>
     <string name="PrivacyMessages">Messages</string>
-    <string name="PrivacyMessagesInfo">You can restrict messages from users who are not in your contacts and don\'t have Premium.\n\n**What is Telegram Premium?**</string>
+    <string name="PrivacyMessagesInfo">You can restrict messages from users who are not in your contacts and whom you haven\'t messaged first.\n\n**What is Telegram Premium?**</string>
     <string name="PrivacyVoiceMessages">Voice Messages</string>
     <string name="PrivacyMessagesTitle">Who can send me messages?</string>
     <string name="PrivacyVoiceMessagesTitle">Who can send me voice or video messages?</string>
@@ -3706,7 +3706,7 @@
 
 
     <string name="ShareYouPhoneNumberTitle">Share your phone number?</string>
-    <string name="AreYouSureShareMyContactInfoBot">The bot will know your phone number. This can be useful for integration with other services.</string>
+    <string name="AreYouSureShareMyContactInfoBot">The bot will know your phone number. This can be useful for integration with other services.\n\n&#9888;&#65039; Warning! Never enter your Telegram login codes in mini apps.</string>
     <string name="AreYouSureShareMyContactInfoWebapp">**{0}** will know your phone number. This can be useful for integration with other services.</string>
 
     <string name="AreYouSureShareMyContactInfoUser">Do you want to share your phone number {0} with **{1}**?</string>
@@ -5189,7 +5189,7 @@
     <string name="PremiumPreviewTagsDescription2">Organize your Saved Messages with tags for quicker access.</string>
 
     <string name="PremiumPreviewStickers">Premium Stickers</string>
-    <string name="PremiumPreviewStickersDescription">Exclusive enlarged stickers featuring additional effects, updated monthly.</string>
+    <string name="PremiumPreviewStickersDescription">Exclusive enlarged stickers featuring additional effects, updated regularly.</string>
     <string name="PremiumPreviewEmoji">Animated Emoji</string>
     <string name="PremiumPreviewEmojiDescription">Include animated emoji from different packs in any message you send.</string>
     <string name="PremiumPreviewProfileBadge">Profile Badge</string>
@@ -7461,12 +7461,12 @@
     <string name="EditProfileBioHint">Write about yourself...</string>
     <string name="EditProfileBioInfo">You can add a few lines about yourself. Choose who can see your bio in **Settings**.</string>
     <string name="EditProfileBirthday">Your birthday</string>
-    <string name="EditProfileBirthdayText">Date of Birth</string>
-    <string name="EditProfileBirthdayRemove">Remove Date of Birth</string>
+    <string name="EditProfileBirthdayText">Birthday</string>
+    <string name="EditProfileBirthdayRemove">Remove Birthday</string>
     <string name="EditProfileBirthdayAdd">Add</string>
     <string name="EditProfileBirthdayInfoContacts">Only your contacts can see your birthday. **Change &gt;**</string>
     <string name="EditProfileBirthdayInfo">Choose who can see your birthday in **Settings**.</string>
-    <string name="EditProfileBirthdayTitle">Date of Birth</string>
+    <string name="EditProfileBirthdayTitle">Birthday</string>
     <string name="EditProfileBirthdayButton">Save</string>
 
 
@@ -7475,14 +7475,14 @@
     <string name="ProfileBirthdayValueYear_other">{1} ({0} years old)</string>
     <string name="ProfileBirthdayTodayValue">{0}</string>
     <string name="ProfileBirthdayTodayValueYear_other">{1} ({0} years old)</string>
-    <string name="ProfileBirthday">Date of Birth</string>
+    <string name="ProfileBirthday">Birthday</string>
     <string name="ProfileBirthdayToday">Birthday today</string>
-    <string name="PrivacyBirthday">Date of Birth</string>
-    <string name="PrivacyBirthdayTitle">Who can see my date of birth?</string>
-    <string name="PrivacyBirthdayInfo">You can restrict who can see your date of birth with granular precision.</string>
+    <string name="PrivacyBirthday">Birthday</string>
+    <string name="PrivacyBirthdayTitle">Who can see my birthday?</string>
+    <string name="PrivacyBirthdayInfo">You can restrict who can see your birthday with granular precision.</string>
     <string name="PrivacyBirthdayInfo3">You can add users or entire groups as exception that will override the settings above.</string>
-    <string name="PrivacyBirthdaySet">You haven’t entered your date of birth yet.\n**Add my birthday &gt;**</string>
-    <string name="PrivacyBirthdaySetDone">Date of birth added.</string>
+    <string name="PrivacyBirthdaySet">You haven’t added your birthday yet.\n**Add my birthday &gt;**</string>
+    <string name="PrivacyBirthdaySetDone">Birthday added.</string>
 
 
 
@@ -8066,7 +8066,7 @@
     <string name="Gift2Premium">Gift Premium</string>
     <string name="Gift2PremiumInfo">Give **{0}** access to exclusive features with Telegram Premium.</string>
     <string name="Gift2PremiumInfoLink">See Features &gt;</string>
-    <string name="Gift2Stars">Gift Stars</string>
+    <string name="Gift2Stars">Send a Gift</string>
     <string name="Gift2StarsInfo">Give **{0}** gifts that can be kept on the profile or converted to Stars.</string>
     <string name="Gift2StarsInfoLink">What are Stars &gt;</string>
     <string name="Gift2Title">Send a Gift</string>
@@ -9215,7 +9215,7 @@
 
 
 
-    <string name="EditProfileBirthdayInfoRemove">**Remove date of birth**.</string>
+    <string name="EditProfileBirthdayInfoRemove">**Remove birthday**.</string>
 
 
     <string name="EmailPasswordConfirmText3">To complete reсoverу email setup, check {0} (don\'t forget the spam folder) and enter the code we just sent you.</string>
@@ -11065,7 +11065,7 @@
     <string name="LinkName">Link Name</string>
     <string name="LiteOptionsTransparencyEffects">Transparency Effects</string>
     <string name="LoginWithQrCode">Quick log in using QR code</string>
-    <string name="LoginWithQrCodeSkip">Log in by phone number</string>
+    <string name="LoginWithQrCodeSkip">Log in with phone number</string>
     <string name="LoginWithQrCodeStep1">Open Telegram on your phone</string>
     <string name="LoginWithQrCodeStep2">Go to Settings &gt; Devices &gt; Link Desktop Device</string>
     <string name="LoginWithQrCodeStep3">Scan this image to Log In</string>
@@ -11684,7 +11684,7 @@
     <string name="SendGiftTo">Send Gift to {0}</string>
 
     <string name="Gift2ActionUpgrade">Tap \"Unpack\" to turn this gift into a unique collectible.</string>
-    <string name="Gift2ActionUpgradeOut">{0} can turn this gift to a unique collectible.</string>
+    <string name="Gift2ActionUpgradeOut">{0} can turn this gift into a unique collectible.</string>
     <string name="Gift2Unpack">Unpack</string>
     <string name="Gift2Status">Status</string>
     <string name="Gift2StatusNonUnique">Non-Unique</string>
@@ -11766,8 +11766,8 @@
     <string name="Gift2UpgradeTitle">Upgrade Gift</string>
     <string name="Gift2UpgradeText">Turn your gift into a unique collectible that you can transfer or auction.</string>
     <string name="Gift2UpgradeFeature1Title">Unique</string>
-    <string name="Gift2UpgradeFeature1Text">Get a unique number, model, backdrop and a symbol for your gift.</string>
-    <string name="Gift2UpgradeFeature1TextLearn">The recipient will get a unique number, model, backdrop, and symbol for the gift.</string>
+    <string name="Gift2UpgradeFeature1Text">Get a unique number, model, backdrop and symbol for your gift.</string>
+    <string name="Gift2UpgradeFeature1TextLearn">The recipient will get a unique number, model, backdrop and symbol for the gift.</string>
     <string name="Gift2UpgradeFeature2Title">Transferable</string>
     <string name="Gift2UpgradeFeature2Text">Send your upgraded gift to any of your friends on Telegram.</string>
     <string name="Gift2UpgradeFeature2TextLearn">The recipient will be able to send the gift to anyone on Telegram.</string>
@@ -11869,8 +11869,8 @@
     <string name="MessageLockedStarsRemoveFee">{0} must pay &#11088;&#65039; {1} for each message to you.\n**Remove Fee**</string>
 
     <string name="RemoveMessageFeeMessage">Are you sure you want to allow **{0}** to message you for free?</string>
-    <string name="RemoveMessageFeeRefund_one">Refund the already paid {0} Star</string>
-    <string name="RemoveMessageFeeRefund_other">Refund the already paid {0} Stars</string>
+    <string name="RemoveMessageFeeRefund_one">"Refund the {0} Star already paid "</string>
+    <string name="RemoveMessageFeeRefund_other">"Refund the {0} Stars already paid "</string>
     <string name="RemoveMessageFeeTitle">Remove Fee</string>
     <string name="Confirm">Confirm</string>
 
@@ -11984,21 +11984,21 @@
     <string name="MonthsAgo_two">{0} months ago</string>
     <string name="MonthsAgo_few">{0} months ago</string>
     <string name="MonthsAgo_many">{0} months ago</string>
-    <string name="RemoveMessageFeeRefund_zero">Refund the already paid {0} Stars</string>
-    <string name="RemoveMessageFeeRefund_two">Refund the already paid {0} Stars</string>
-    <string name="RemoveMessageFeeRefund_few">Refund the already paid {0} Stars</string>
-    <string name="RemoveMessageFeeRefund_many">Refund the already paid {0} Stars</string>
+    <string name="RemoveMessageFeeRefund_zero">"Refund the {0} Stars already paid "</string>
+    <string name="RemoveMessageFeeRefund_two">"Refund the {0} Stars already paid "</string>
+    <string name="RemoveMessageFeeRefund_few">"Refund the {0} Stars already paid "</string>
+    <string name="RemoveMessageFeeRefund_many">"Refund the {0} Stars already paid "</string>
     <string name="YearsAgo_zero">{0} years ago</string>
     <string name="YearsAgo_two">{0} years ago</string>
     <string name="YearsAgo_few">{0} years ago</string>
     <string name="YearsAgo_many">{0} years ago</string>
     <string name="GiftsPinLimit_one">You can\'t pin more than {0} gift.</string>
     <string name="GiftsPinLimit_other">You can\'t pin more than {0} gifts.</string>
-    <string name="AccountFrozen1Text">Your account was frozen for breaking Telegram’s Terms and Conditions.</string>
+    <string name="AccountFrozen1Text">Your account was frozen for violating Telegram’s Terms of Service.</string>
     <string name="AccountFrozen1Title">Violation of Terms</string>
     <string name="AccountFrozen2Text">You can access your account but can’t send messages or take actions.</string>
     <string name="AccountFrozen2Title">Read-Only Mode</string>
-    <string name="AccountFrozen3Text">Appeal via **@SpamBot** before {0}, or your account will be deleted</string>
+    <string name="AccountFrozen3Text">Appeal via **@SpamBot** before {0}, or your account will be deleted.</string>
     <string name="AccountFrozen3Title">Appeal Before Deactivation</string>
     <string name="AccountFrozenAlertSubtitle">Tap to view details and submit an appeal.</string>
     <string name="AccountFrozenAlertTitle">Your account is frozen!</string>
@@ -12320,14 +12320,14 @@
     <string name="TodoAddedTaskOutUnknown">You added a new task **\"{0}\"** to a checklist</string>
     <string name="TodoAddedTasksOutUnknown_one">You added **{0} task** to a checklist</string>
     <string name="TodoAddedTasksOutUnknown_other">You added **{0} tasks** to a checklist</string>
-    <string name="TodoTaskCompleted">un1 marked **\"{0}\"** as done</string>
-    <string name="TodoTaskCompletedOut">You marked **\"{0}\"** as done</string>
+    <string name="TodoTaskCompleted">un1 marked \"{0}\" as done</string>
+    <string name="TodoTaskCompletedOut">You marked \"{0}\" as done</string>
     <string name="TodoTasksCompletedOut_one">You marked **{0} task** as done</string>
     <string name="TodoTasksCompletedOut_other">You marked **{0} tasks** as done</string>
     <string name="TodoTasksCompleted_one">un1 marked **{0} task** as done</string>
     <string name="TodoTasksCompleted_other">un1 marked **{0} tasks** as done</string>
-    <string name="TodoTaskNotCompleted">un1 marked **\"{0}\"** as not done</string>
-    <string name="TodoTaskNotCompletedOut">You marked **\"{0}\"** as not done</string>
+    <string name="TodoTaskNotCompleted">un1 marked \"{0}\" as not done</string>
+    <string name="TodoTaskNotCompletedOut">You marked \"{0}\" as not done</string>
     <string name="TodoTasksNotCompletedOut_one">You marked **{0} tasks** as not done</string>
     <string name="TodoTasksNotCompletedOut_other">You marked **{0} tasks** as not done</string>
     <string name="TodoTasksNotCompleted_one">un1 marked **{0} task** as not done</string>
@@ -12358,11 +12358,11 @@
     <string name="ChecklistTasks_other">{0} tasks</string>
     <string name="CopyAsPath">Copy as Path</string>
     <string name="InviteLinkPrivate">This topic link will only work for group members</string>
-    <string name="GiftTelegramPremiumOrStarsTitle">Gift Premium or Stars</string>
+    <string name="GiftTelegramPremiumOrStarsTitle">Send a Gift</string>
     <string name="Gift2Myself">buy yourself a gift</string>
     <string name="Gift2StarsSelf">Buy a gift</string>
-    <string name="Gift2StarsSelfInfo1">Buy yourself a gift to display on your page or reserve for later.</string>
-    <string name="Gift2StarsSelfInfo2">Limited-edition gifts upgraded to collectibles can be gifted to others later.</string>
+    <string name="Gift2StarsSelfInfo1">Buy yourself a gift to add to your profile or reserve for later.</string>
+    <string name="Gift2StarsSelfInfo2">Limited-edition gifts upgraded to collectibles can be gifted to others.</string>
     <string name="SavedMessagesTab2">Saved</string>
     <string name="SavedMessagesProfileHint">Messages you sent to Saved Messages</string>
     <string name="SavedMessagesCount_one">{0} saved message</string>
@@ -12491,7 +12491,7 @@
     <string name="UnlockPremiumEmojiHint">Subscribe to **Telegram Premium** to unlock this emoji.</string>
     <string name="UnlockPremiumEmojiReaction">Subscribe to **Telegram Premium** to unlock this reaction.</string>
     <string name="Gift2ActionSelfTitle">Saved Gift</string>
-    <string name="HideSendersName">Hide sender’s name</string>
+    <string name="HideSendersName">Hide Sender Name</string>
     <string name="VirtualKeyModifiersControl">Ctrl</string>
     <string name="VirtualKeyModifiersShift">Shift</string>
     <string name="VirtualKeyModifiersMenu">Alt</string>
@@ -12509,7 +12509,7 @@
     <string name="CopyNumber">Copy Number</string>
     <string name="ViewProfile">View Profile &gt;</string>
     <string name="NumberNotOnTelegram">This number is not on Telegram</string>
-    <string name="AutoDownloadPreloadVideo">Preload larger videos</string>
+    <string name="AutoDownloadPreloadVideo">Preload Larger Videos</string>
     <string name="AutoDownloadPreloadVideoInfo">Preload the first few seconds (1-2 MB) of videos larger than {0} for instant playback.</string>
     <string name="TodoItemQuote">Reply to Item</string>
 
@@ -12703,8 +12703,8 @@
     <string name="StarRatingTitle">Rating</string>
     <string name="StarRatingAdded">ADDED</string>
     <string name="StarRatingDeduces">DEDUCTED</string>
-    <string name="StarRatingFuture_one">The rating will update in {0} day after purchases.</string>
-    <string name="StarRatingFuture_other">The rating will update in {0} days after purchases.</string>
+    <string name="StarRatingFuture_one">This rating will update in {0} day.</string>
+    <string name="StarRatingFuture_other">This rating will update in {0} days.</string>
     <string name="StarRatingFuturePreview1_one">This will be your rating in {0} day, after</string>
     <string name="StarRatingFuturePreview1_other">This will be your rating in {0} days, after</string>
     <string name="StarRatingFuturePreview2_one">{0} point are added.</string>
@@ -12791,10 +12791,10 @@
     <string name="Gift2FilterUpgradable">Upgradable</string>
     <string name="Gift2GiftAnUpgrade">Gift an Upgrade</string>
     <string name="Gift2PrepayUpgradeButton">Pay &#11088;&#65039;{0} for Upgrade</string>
-    <string name="Gift2PrepayUpgradeFeature1Text">{0} will get a unique number, model, backdrop, and symbol for the gift.</string>
+    <string name="Gift2PrepayUpgradeFeature1Text">{0} will get a unique number, model, backdrop and symbol for the gift.</string>
     <string name="Gift2PrepayUpgradeFeature2Text">{0} will be able to send the gift to anyone on Telegram.</string>
     <string name="Gift2PrepayUpgradeFeature3Text">{0} will be able to auction the gift on third-party NFT marketplaces.</string>
-    <string name="Gift2PrepayUpgradeText">Let {0} turn your gift into a unique collectible.</string>
+    <string name="Gift2PrepayUpgradeText">Let {0} turn this gift into a unique collectible.</string>
     <string name="Gift2PrepayUpgradeTitle">Make Unique</string>
     <string name="StarsGiftUpgradeCompleted">Gift Upgrade sent!</string>
     <string name="StarsGiftUpgradeCompletedText">{0} can now upgrade this gift for free.</string>
@@ -12804,7 +12804,7 @@
     <string name="GiftValue2">Value</string>
     <string name="GiftValue2LearnMore">learn more</string>
 
-    <string name="GiftValueAverage">This is average sale price of **{0}** on Telegram and Fragment over the past month.</string>
+    <string name="GiftValueAverage">The average sale price of **{0}** gifts on Telegram and Fragment over the past month.</string>
     <string name="GiftValueAveragePrice">Average Price</string>
     <string name="GiftValueAveragePriceInfo">**{0}** is the average sale price of **{1}** gifts over the past month.</string>
     <string name="GiftValueInitialPrice">Initial Price</string>
@@ -12876,10 +12876,10 @@
   <string name="SearchPostsLimitReachedText_two">You can make up to {0} search queries per day.</string>
   <string name="SearchPostsLimitReachedText_few">You can make up to {0} search queries per day.</string>
   <string name="SearchPostsLimitReachedText_many">You can make up to {0} search queries per day.</string>
-  <string name="StarRatingFuture_zero">The rating will update in {0} days after purchases.</string>
-  <string name="StarRatingFuture_two">The rating will update in {0} days after purchases.</string>
-  <string name="StarRatingFuture_few">The rating will update in {0} days after purchases.</string>
-  <string name="StarRatingFuture_many">The rating will update in {0} days after purchases.</string>
+  <string name="StarRatingFuture_zero">This rating will update in {0} days.</string>
+  <string name="StarRatingFuture_two">This rating will update in {0} days.</string>
+  <string name="StarRatingFuture_few">This rating will update in {0} days.</string>
+  <string name="StarRatingFuture_many">This rating will update in {0} days.</string>
   <string name="StarRatingFuturePendingPoints_zero">{0} points are pending.</string>
   <string name="StarRatingFuturePendingPoints_two">{0} points are pending.</string>
   <string name="StarRatingFuturePendingPoints_few">{0} points are pending.</string>
@@ -12925,7 +12925,7 @@
     <string name="GroupJoinLinkText2Unknown_other">**{0}** people already joined this group.</string>
 
     <string name="CallForbiddenInviteLinkButton">Send Invite Link</string>
-    <string name="CallForbiddenInviteLinkText">**{0}** restricts calling them. You can send them an invite link to call instead.</string>
+    <string name="CallForbiddenInviteLinkText">**{0}** restricts who can call them. Send them an invite link to a call instead.</string>
     <string name="CallForbiddenInviteLinkTitle">Invite via Link</string>
 
     <string name="GiftThemesSetInReuseConfirm">Yes</string>
@@ -12974,10 +12974,10 @@
 
     <string name="UserSuggestBirthday">Suggest Date of Birth</string>
     <string name="UserSuggestBirthdayButton">Suggest Date of Birth</string>
-    <string name="UserSuggestBirthdayTitle">{0}\'s Date Of Birth</string>
+    <string name="UserSuggestBirthdayTitle">{0}\'s Birthday</string>
 
-    <string name="ActionSuggestBirthday">**un1** suggests you to add your date of birth</string>
-    <string name="ActionYouSuggestBirthday">You suggest to add date of birth</string>
+    <string name="ActionSuggestBirthday">**un1** suggested you add your birthday</string>
+    <string name="ActionYouSuggestBirthday">You suggested to add a birthday</string>
     <string name="SuggestedDateOfBirthView">View</string>
     <string name="DateDay">Day</string>
     <string name="DateMonth">Month</string>
@@ -12985,14 +12985,14 @@
     <string name="DateOfBirthAddToProfile">Add to My Profile</string>
     <string name="DateOfBirthHideYear">Hide Year</string>
     <string name="DateYear">Year</string>
-    <string name="PrivacyBirthdaySetDone">Date of birth added.</string>
-    <string name="PrivacyBirthdaySetDoneInfo">You can change your birth of date in settings.</string>
+    <string name="PrivacyBirthdaySetDone">Birthday added.</string>
+    <string name="PrivacyBirthdaySetDoneInfo">You can change your birthday in Settings.</string>
 
     <string name="UserColorApply">Apply Style</string>
     <string name="UserColorApplyCollectible">Wear Collectible</string>
     <string name="Gift2PeerColorEmptyButton">Browse gifts available for purchase &gt;</string>
-    <string name="Gift2PeerColorProfileEmptyTitle">You don\'t have any gifts you can use as profile covers.</string>
-    <string name="Gift2PeerColorReplyEmptyTitle">You don\'t have any gifts you can use as reply color.</string>
+    <string name="Gift2PeerColorProfileEmptyTitle">You don\'t have any gifts you can use as a profile cover.</string>
+    <string name="Gift2PeerColorReplyEmptyTitle">You don\'t have any gifts you can use as a reply color.</string>
 
     <string name="VoipChannelEnableComments">Enable Messages</string>
     <string name="VoipChannelDisableComments">Disable Messages</string>
@@ -13066,9 +13066,9 @@
     <string name="MessageScheduledRepeatPremium">Subscribe to **Telegram Premium** to schedule repeating messages.</string>
 
     <string name="PrivacyMusic">Saved Music</string>
-    <string name="PrivacyMusicTitle">Who can see my saved music in profile?</string>
-    <string name="PrivacyMusicInfo">You can restrict who can see you music with granular precision.</string>
-    <string name="PrivacyMusicInfo3">You can add users or entire groups that will not see your music.</string>
+    <string name="PrivacyMusicTitle">Who can see the saved music on my profile?</string>
+    <string name="PrivacyMusicInfo">You can restrict who can see your saved music with granular precision.</string>
+    <string name="PrivacyMusicInfo3">You can add users or entire groups that will not see your saved music.</string>
     <string name="PrivacyGiftsTypeFromChannels">From Channels</string>
 
     <string name="Passkey">Passkeys</string>
@@ -13111,18 +13111,18 @@
     <string name="UseSystemAccentColor">Use System Accent Color</string>
     <string name="AccountSettings">Account</string>
 
-    <string name="LoginWithPasskey">Log in by passkey</string>
+    <string name="LoginWithPasskey">Log in with passkey</string>
     <string name="SoundOnHint">You will receive notifications with sound.</string>
     <string name="SoundOffHint">You will receive silent notifications.</string>
 
     <string name="GiftOfferToBuyMenu">Offer to buy</string>
     <string name="GiftOfferToBuyTitle">Offer to Buy</string>
     <string name="GiftOfferStarsToOffer">Stars to offer</string>
-    <string name="GiftOfferStarsToOfferInfo">Enter the amount of Stars you’d like to offer for **{0}**.</string>
+    <string name="GiftOfferStarsToOfferInfo">Enter the amount of Stars you\'d like to offer for **{0}**.</string>
     <string name="GiftOfferStarsToOfferInfoIsLow">This offer is too low. The minimum offer for **{1}** is **{0} Stars**.</string>
     <string name="GiftOfferStarsToOfferInfoIsHigh">This offer is too high. The maximum offer for **{1}** is **{0} Stars**.</string>
     <string name="GiftOfferTONToOffer">TON to offer</string>
-    <string name="GiftOfferTONToOfferInfo">Enter the amount of TON you’d like to offer for **{0}**.</string>
+    <string name="GiftOfferTONToOfferInfo">Enter the amount of TON you\'d like to offer for **{0}**.</string>
     <string name="GiftOfferTONToOfferInfoIsLow">This offer is too low. The minimum offer for **{1}** is **{0} TON**.</string>
     <string name="GiftOfferTONToOfferInfoIsHigh">This offer is too high. The maximum offer for **{1}** is **{0} TON**.</string>
     <string name="GiftOfferDuration">Offer Duration</string>
@@ -13183,12 +13183,12 @@
     <string name="ShortMinutesAgo_few">{0}m</string>
     <string name="ShortMinutesAgo_many">{0}m</string>
 
-    <string name="CocoonFeature1Text">No third party can access any data, such as translations, inside **@cocoon**</string>
+    <string name="CocoonFeature1Text">No third party can access any data, such as translations, inside **@cocoon**.</string>
     <string name="CocoonFeature1TextLink">https://t.me/cocoon</string>
     <string name="CocoonFeature1Title">Private</string>
     <string name="CocoonFeature2Text">Cocoon has allowed Telegram to reduce translation cost by 6x.</string>
     <string name="CocoonFeature2Title">Efficient</string>
-    <string name="CocoonFeature3Text">Any developer can use Cocoon for AI features. Learn more at **cocoon.org**</string>
+    <string name="CocoonFeature3Text">Any developer can use Cocoon for AI features. Learn more at **cocoon.org**.</string>
     <string name="CocoonFeature3TextLink">https://cocoon.org/</string>
     <string name="CocoonFeature3Title">For Everyone</string>
     <string name="CocoonFooter">Want to integrate Cocoon into your projects?\nReach out at **t.me/cocoon?direct**</string>
@@ -13216,12 +13216,12 @@
 
     <string name="GiftPreviewBackdrop">backdrop</string>
     <string name="GiftPreviewBackdrops">Backdrops</string>
-    <string name="GiftPreviewCountBackdrops_one">This collectible features **{0}** unique backdrop</string>
-    <string name="GiftPreviewCountBackdrops_other">This collectible features **{0}** unique backdrops</string>
-    <string name="GiftPreviewCountModels_one">This collectible features **{0}** unique models</string>
-    <string name="GiftPreviewCountModels_other">This collectible features **{0}** unique models</string>
-    <string name="GiftPreviewCountSymbols_one">This collectible features **{0}** unique symbol</string>
-    <string name="GiftPreviewCountSymbols_other">This collectible features **{0}** unique symbols</string>
+    <string name="GiftPreviewCountBackdrops_one">This collection features **{0}** unique backdrop</string>
+    <string name="GiftPreviewCountBackdrops_other">This collection features **{0}** unique backdrops</string>
+    <string name="GiftPreviewCountModels_one">This collection features **{0}** unique model</string>
+    <string name="GiftPreviewCountModels_other">This collection features **{0}** unique models</string>
+    <string name="GiftPreviewCountSymbols_one">This collection features **{0}** unique symbol</string>
+    <string name="GiftPreviewCountSymbols_other">This collection features **{0}** unique symbols</string>
     <string name="GiftPreviewModel">model</string>
     <string name="GiftPreviewModels">Models</string>
     <string name="GiftPreviewSymbol">symbol</string>
@@ -13257,14 +13257,14 @@
     <string name="GiftRarityUncommon">uncommon</string>
     <string name="GiftCrafted">crafted</string>
     <string name="GiftCraft">Craft</string>
-    <string name="GiftCraftText1">Add up to **4** gifts to craft new</string>
-    <string name="GiftCraftText2">**{0} #{1}**.\n\nIf crafting fails, all selected gifts\nwill be **lost**.</string>
-    <string name="GiftCraftTextEmpty1">Add up to **4** gifts to craft new</string>
-    <string name="GiftCraftTextEmpty2">**{0}** gift.\n\nIf crafting fails, all selected gifts\nwill be **lost**.</string>
+    <string name="GiftCraftText1">Add up to **4** gifts to craft a new</string>
+    <string name="GiftCraftText2">**{0} #{1}**.\n\nIf crafting fails, these gifts\nwill be **lost**.</string>
+    <string name="GiftCraftTextEmpty1">Add up to **4** gifts to craft a new</string>
+    <string name="GiftCraftTextEmpty2">**{0}** gift.\n\nIf crafting fails, these gifts\nwill be **lost**.</string>
     <string name="GiftCraftTitle">Craft Gift</string>
-    <string name="GiftCraftViewAllVariants">View all craftable variants &gt;</string>
+    <string name="GiftCraftViewAllVariants">View all craftable models  &gt;</string>
     <string name="GiftCraftProgressSuccessChance">{0} success chance</string>
-    <string name="GiftCraftProgressText">If crafting fails, all selected gifts\nwill be consumed.</string>
+    <string name="GiftCraftProgressText">If crafting fails, these gifts\nwill be lost.</string>
     <string name="GiftCraftProgressTitle">Crafting</string>
     <string name="GiftCraftFailedText_one">The crafting attempt was unsuccessful.\n**{0}** gift was lost.</string>
     <string name="GiftCraftFailedText_other">The crafting attempt was unsuccessful.\n**{0}** gifts were lost.</string>
@@ -13389,4 +13389,87 @@
     <string name="ForwardsRestrictedInfoUserBecauseUser">**{0}** disabled copying and forwarding in this chat.</string>
     <string name="ForwardsRestrictedInfoUserBecauseYou">You disabled copying and forwarding in this chat.</string>
 
+
+  <!-- new from translations.telegram.org -->
+
+  <string name="GiftCraftFailedText_zero">The crafting attempt was unsuccessful.\n**{0}** gifts were lost.</string>
+  <string name="GiftCraftFailedText_two">The crafting attempt was unsuccessful.\n**{0}** gifts were lost.</string>
+  <string name="GiftCraftFailedText_few">The crafting attempt was unsuccessful.\n**{0}** gifts were lost.</string>
+  <string name="GiftCraftFailedText_many">The crafting attempt was unsuccessful.\n**{0}** gifts were lost.</string>
+  <string name="GiftOfferHours_zero">{0} hours</string>
+  <string name="GiftOfferHours_two">{0} hours</string>
+  <string name="GiftOfferHours_few">{0} hours</string>
+  <string name="GiftOfferHours_many">{0} hours</string>
+  <string name="GiftPreviewCountBackdrops_zero">This collection features **{0}** unique backdrops</string>
+  <string name="GiftPreviewCountBackdrops_two">This collection features **{0}** unique backdrops</string>
+  <string name="GiftPreviewCountBackdrops_few">This collection features **{0}** unique backdrops</string>
+  <string name="GiftPreviewCountBackdrops_many">This collection features **{0}** unique backdrops</string>
+  <string name="GiftPreviewCountModels_zero">This collection features **{0}** unique models</string>
+  <string name="GiftPreviewCountModels_two">This collection features **{0}** unique models</string>
+  <string name="GiftPreviewCountModels_few">This collection features **{0}** unique models</string>
+  <string name="GiftPreviewCountModels_many">This collection features **{0}** unique models</string>
+  <string name="GiftPreviewCountSymbols_zero">This collection features **{0}** unique symbols</string>
+  <string name="GiftPreviewCountSymbols_two">This collection features **{0}** unique symbols</string>
+  <string name="GiftPreviewCountSymbols_few">This collection features **{0}** unique symbols</string>
+  <string name="GiftPreviewCountSymbols_many">This collection features **{0}** unique symbols</string>
+  <string name="GroupCallLinkText2Unknown_zero">**{0}** people already joined this call.</string>
+  <string name="GroupCallLinkText2Unknown_two">**{0}** people already joined this call.</string>
+  <string name="GroupCallLinkText2Unknown_few">**{0}** people already joined this call.</string>
+  <string name="GroupCallLinkText2Unknown_many">**{0}** people already joined this call.</string>
+  <string name="GroupJoinLinkText2Many_zero">**{1}**, **{2}** and **{0}** more people already joined this group.</string>
+  <string name="GroupJoinLinkText2Many_two">**{1}**, **{2}** and **{0}** more people already joined this group.</string>
+  <string name="GroupJoinLinkText2Many_few">**{1}**, **{2}** and **{0}** more people already joined this group.</string>
+  <string name="GroupJoinLinkText2Many_many">**{1}**, **{2}** and **{0}** more people already joined this group.</string>
+  <string name="GroupJoinLinkText2Unknown_zero">**{0}** people already joined this group.</string>
+  <string name="GroupJoinLinkText2Unknown_two">**{0}** people already joined this group.</string>
+  <string name="GroupJoinLinkText2Unknown_few">**{0}** people already joined this group.</string>
+  <string name="GroupJoinLinkText2Unknown_many">**{0}** people already joined this group.</string>
+  <string name="InDays_zero">in {0} days</string>
+  <string name="InDays_two">in {0} days</string>
+  <string name="InDays_few">in {0} days</string>
+  <string name="InDays_many">in {0} days</string>
+  <string name="InHours_zero">in {0} hours</string>
+  <string name="InHours_two">in {0} hours</string>
+  <string name="InHours_few">in {0} hours</string>
+  <string name="InHours_many">in {0} hours</string>
+  <string name="InMinutes_zero">in {0} minutes</string>
+  <string name="InMinutes_two">in {0} minutes</string>
+  <string name="InMinutes_few">in {0} minutes</string>
+  <string name="InMinutes_many">in {0} minutes</string>
+  <string name="InMonths_zero">in {0} months</string>
+  <string name="InMonths_two">in {0} months</string>
+  <string name="InMonths_few">in {0} months</string>
+  <string name="InMonths_many">in {0} months</string>
+  <string name="InSeconds_zero">in {0} seconds</string>
+  <string name="InSeconds_two">in {0} seconds</string>
+  <string name="InSeconds_few">in {0} seconds</string>
+  <string name="InSeconds_many">in {0} seconds</string>
+  <string name="InYears_zero">in {0} years</string>
+  <string name="InYears_two">in {0} years</string>
+  <string name="InYears_few">in {0} years</string>
+  <string name="InYears_many">in {0} years</string>
+  <string name="InviteRestrictedUsers_zero">**{0} users** restrict adding them to groups. You can send them an invite link instead.</string>
+  <string name="InviteRestrictedUsers_two">**{0} users** restrict adding them to groups. You can send them an invite link instead.</string>
+  <string name="InviteRestrictedUsers_few">**{0} users** restrict adding them to groups. You can send them an invite link instead.</string>
+  <string name="InviteRestrictedUsers_many">**{0} users** restrict adding them to groups. You can send them an invite link instead.</string>
+  <string name="InviteRestrictedUsers2_zero">**{0} users** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+  <string name="InviteRestrictedUsers2_two">**{0} users** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+  <string name="InviteRestrictedUsers2_few">**{0} users** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+  <string name="InviteRestrictedUsers2_many">**{0} users** can only be invited via link, but you don\'t have permission to share invite links to this group.</string>
+  <string name="LeaveCommunities_zero">Leave {0} communities</string>
+  <string name="LeaveCommunities_two">Leave {0} communities</string>
+  <string name="LeaveCommunities_few">Leave {0} communities</string>
+  <string name="LeaveCommunities_many">Leave {0} communities</string>
+  <string name="LiveStoryWatching_zero">{0} watching</string>
+  <string name="LiveStoryWatching_two">{0} watching</string>
+  <string name="LiveStoryWatching_few">{0} watching</string>
+  <string name="LiveStoryWatching_many">{0} watching</string>
+  <string name="MessageScheduledRepeatMonthlyMany_zero">{0}-monthly</string>
+  <string name="MessageScheduledRepeatMonthlyMany_two">{0}-monthly</string>
+  <string name="MessageScheduledRepeatMonthlyMany_few">{0}-monthly</string>
+  <string name="MessageScheduledRepeatMonthlyMany_many">{0}-monthly</string>
+  <string name="SecondsAgo_zero">{0} seconds ago</string>
+  <string name="SecondsAgo_two">{0} seconds ago</string>
+  <string name="SecondsAgo_few">{0} seconds ago</string>
+  <string name="SecondsAgo_many">{0} seconds ago</string>
 </resources>
