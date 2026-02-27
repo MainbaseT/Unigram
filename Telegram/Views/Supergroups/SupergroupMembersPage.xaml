@@ -73,6 +73,14 @@
                                   Style="{StaticResource SettingsCheckBoxStyle}" />
                     </controls:HeaderedControl>
 
+                    <controls:HeaderedControl x:Name="EditTags"
+                                              Footer="{CustomResource ChannelMemberTagsInfo}"
+                                              Visibility="Collapsed">
+                        <CheckBox Content="{CustomResource ChannelMemberTags}"
+                                  IsChecked="{x:Bind ViewModel.CanEditTags, Mode=TwoWay}"
+                                  Style="{StaticResource SettingsCheckBoxStyle}" />
+                    </controls:HeaderedControl>
+
                     <controls:HeaderedControl x:Name="AddNewPanel"
                                               Visibility="Collapsed"
                                               Margin="0,0,0,2">

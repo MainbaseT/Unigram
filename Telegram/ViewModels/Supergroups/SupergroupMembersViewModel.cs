@@ -83,6 +83,47 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _canEditTags;
+        public bool CanEditTags
+        {
+            get => _canEditTags;
+            set => SetEditTags(value);
+        }
+
+        public void UpdateEditTags(bool value)
+        {
+            Set(ref _canEditTags, value, nameof(CanEditTags));
+        }
+
+        private void SetEditTags(bool value)
+        {
+            if (_canEditTags == value)
+            {
+                return;
+            }
+
+            var permissions = new ChatPermissions
+            {
+                CanChangeInfo = Chat.Permissions.CanChangeInfo,
+                CanPinMessages = Chat.Permissions.CanPinMessages,
+                CanInviteUsers = Chat.Permissions.CanInviteUsers,
+                CanSendPhotos = Chat.Permissions.CanSendPhotos,
+                CanSendVideos = Chat.Permissions.CanSendVideos,
+                CanSendOtherMessages = Chat.Permissions.CanSendOtherMessages,
+                CanSendAudios = Chat.Permissions.CanSendAudios,
+                CanSendDocuments = Chat.Permissions.CanSendDocuments,
+                CanSendVoiceNotes = Chat.Permissions.CanSendVoiceNotes,
+                CanSendVideoNotes = Chat.Permissions.CanSendVideoNotes,
+                CanSendPolls = Chat.Permissions.CanSendPolls,
+                CanAddLinkPreviews = Chat.Permissions.CanAddLinkPreviews,
+                CanSendBasicMessages = Chat.Permissions.CanSendBasicMessages,
+                CanEditTag = value,
+            };
+
+            Set(ref _canEditTags, value, nameof(CanEditTags));
+            ClientService.Send(new SetChatPermissions(Chat.Id, permissions));
+        }
+
         public void Add()
         {
             var chat = _chat;

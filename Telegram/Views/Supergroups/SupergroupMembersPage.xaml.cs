@@ -189,10 +189,14 @@ namespace Telegram.Views.Supergroups
                 HideMembers.Visibility = Visibility.Collapsed;
             }
 
+            ViewModel.UpdateEditTags(chat.Permissions.CanEditTag);
+
             Title = group.IsChannel ? Strings.ChannelSubscribers : Strings.ChannelMembers;
 
             AddNew.Content = group.IsChannel ? Strings.AddSubscriber : Strings.AddMember;
             AddNewPanel.Visibility = group.CanInviteUsers(chat) ? Visibility.Visible : Visibility.Collapsed;
+
+            EditTags.Visibility = group.CanRestrictMembers() && !group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
 
             Footer.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -209,8 +213,12 @@ namespace Telegram.Views.Supergroups
                 HideMembers.Visibility = Visibility.Collapsed;
             }
 
+            ViewModel.UpdateEditTags(chat.Permissions.CanEditTag);
+
             AddNew.Content = Strings.AddMember;
             AddNewPanel.Visibility = group.CanInviteUsers(chat) ? Visibility.Visible : Visibility.Collapsed;
+
+            EditTags.Visibility = group.CanRestrictMembers() ? Visibility.Visible : Visibility.Collapsed;
 
             Footer.Visibility = Visibility.Collapsed;
         }
