@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Td.Api;
 
@@ -37,6 +38,23 @@ namespace Telegram.Common
             End = run.End;
             Type = run.Type;
         }
+
+        #region DateTime
+
+        public string FormattedText { get; set; } = string.Empty;
+
+        public string Update(StyledParagraph paragraph)
+        {
+            if (string.IsNullOrEmpty(FormattedText) || Type is TextEntityTypeDateTime { FormattingType: DateTimeFormattingTypeRelative })
+            {
+                FormattedText = Formatter.Relative(Type as TextEntityTypeDateTime);
+                paragraph.IsDirty = true;
+            }
+
+            return FormattedText;
+        }
+
+        #endregion
 
         public bool HasFlag(TextStyle flag)
         {
@@ -578,6 +596,9 @@ namespace Telegram.Common
 
     public partial class StyledParagraph
     {
+        private readonly bool _hasDates;
+        private readonly bool _hasRelativeDates;
+
         public StyledParagraph(string text, IList<TextEntity> entities)
             : this(text, 0, text.Length, entities)
         {
@@ -586,6 +607,7 @@ namespace Telegram.Common
 
         public StyledParagraph(string text, int offset, int length, IList<TextEntity> entities, TextDirectionality? direction = null, int padding = 0)
         {
+            Text = text;
             Offset = offset;
             Length = length;
             Entities = entities ?? Array.Empty<TextEntity>();
@@ -596,6 +618,9 @@ namespace Telegram.Common
 
             if (entities?.Count > 0)
             {
+                _hasRelativeDates = entities.Any(x => x.Type is TextEntityTypeDateTime { FormattingType: DateTimeFormattingTypeRelative });
+                _hasDates = _hasRelativeDates || entities.Any(x => x.Type is TextEntityTypeDateTime { FormattingType: DateTimeFormattingTypeAbsolute });
+
                 Type = entities[0].Type switch
                 {
                     TextEntityTypePreCode preCode => new TextParagraphTypeMonospace(preCode.Language),
@@ -606,6 +631,8 @@ namespace Telegram.Common
                 };
             }
         }
+
+        public string Text { get; }
 
         public int Offset { get; }
 
@@ -622,6 +649,50 @@ namespace Telegram.Common
         public int Padding { get; }
 
         public TextParagraphType Type { get; }
+
+        public bool IsDirty { get; set; } = true;
+
+        private string _dynamicText;
+        private IList<TextStylePart> _dynamicParts;
+
+        public IList<TextStylePart> GetParts(out string text)
+        {
+            text = _dynamicText ?? Text;
+
+            if (_hasDates && IsDirty)
+            {
+                text = Text;
+
+                var parts = new List<TextStylePart>();
+                var offset = 0;
+
+                foreach (var entity in Runs)
+                {
+                    if (entity.Type is TextEntityTypeDateTime && entity.FormattedText != null)
+                    {
+                        text = text.Remove(entity.Offset + offset, entity.Length);
+                        text = text.Insert(entity.Offset + offset, entity.FormattedText);
+
+                        offset += entity.FormattedText.Length - entity.Length;
+                    }
+                    else if (entity.Flags != TextStyle.None)
+                    {
+                        parts.Add(new TextStylePart
+                        {
+                            Offset = entity.Offset + offset,
+                            Length = entity.Length,
+                            Type = entity.Flags
+                        });
+                    }
+                }
+
+                _dynamicText = text;
+                _dynamicParts = parts;
+                IsDirty = false;
+            }
+
+            return _dynamicParts ?? Parts;
+        }
     }
 
     public interface TextParagraphType

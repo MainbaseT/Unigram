@@ -270,7 +270,7 @@ namespace Telegram.Controls.Messages
             var paragraph = textBlock.Text.Paragraphs[^1];
 
             var text = textBlock.Text.Text.Substring(paragraph.Offset, paragraph.Length);
-            var entities = paragraph.Parts;
+            var entities = paragraph.GetParts(out text);
 
             var block = Children[0] is FormattedTextBlock formatted ? formatted : Children[1] as FormattedTextBlock;
             var width = textBlock.LastAvailableWidth;

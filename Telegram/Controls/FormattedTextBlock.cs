@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) Fela Ameghino 2015-2026
 //
 // Distributed under the GNU General Public License v3.0. (See accompanying
@@ -13,6 +13,7 @@ using System.Numerics;
 using System.Threading;
 using Telegram.Common;
 using Telegram.Controls.Media;
+using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Native.Controls;
 using Telegram.Native.Highlight;
@@ -81,12 +82,15 @@ namespace Telegram.Controls
 
         private readonly List<int> _codeBlocks = new();
         private readonly List<Hyperlink> _links = new();
+        private readonly List<IXamlDirectObject> _dates = new();
         private readonly List<TextStyleSpoiler> _spoilers = new();
 
         readonly struct TextStyleSpoiler
         {
             public readonly int Offset;
             public readonly int Length;
+            public readonly int OriginalOffset;
+            public readonly int OriginalLength;
             public readonly int ParagraphIndex;
 
             public TextStyleSpoiler(int offset, int length, int paragraphIndex)
@@ -94,6 +98,18 @@ namespace Telegram.Controls
                 Offset = offset;
                 Length = length;
                 ParagraphIndex = paragraphIndex;
+                OriginalOffset = offset;
+                OriginalLength = length;
+            }
+
+            public TextStyleSpoiler(int offset, int length, TextStyleSpoiler original)
+            {
+                Offset = offset;
+                Length = length;
+
+                OriginalOffset = original.OriginalOffset;
+                OriginalLength = original.OriginalLength;
+                ParagraphIndex = original.ParagraphIndex;
             }
         }
 
@@ -303,7 +319,13 @@ namespace Telegram.Controls
                 ToolTipService.SetToolTip(link, null);
             }
 
+            foreach (var date in _dates)
+            {
+                RelativeDateService.Unsubscribe(date);
+            }
+
             _links.Clear();
+            _dates.Clear();
             _spoilers.Clear();
             _codeBlocks.Clear();
 
@@ -746,6 +768,7 @@ namespace Telegram.Controls
         protected override void OnUnloaded()
         {
             _templateExecuted = 0;
+            ClearEntities();
 
             if (_pools == null || (_fastRun != null && _text?.IsPlain is true))
             {
@@ -768,7 +791,6 @@ namespace Telegram.Controls
 
             _fastRun = null;
             Recycle(direct);
-            ClearEntities();
         }
 
         public void SetText(IClientService clientService, StyledText styled, double fontSize = 0)
@@ -872,6 +894,7 @@ namespace Telegram.Controls
                 var partFontSize = fontSize;
 
                 var previous = 0;
+                var dates = 0;
 
                 IXamlDirectObject paragraph;
                 IXamlDirectObject inlines;
@@ -1001,7 +1024,7 @@ namespace Telegram.Controls
                                 direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_Foreground, null);
                                 direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_FontFamily, BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily);
 
-                                _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
+                                _spoilers.Add(new TextStyleSpoiler(entity.Offset + dates, entity.Length, new TextStyleSpoiler(entity.Offset, entity.Length, i)));
 
                                 spoiler ??= new TextHighlighter();
                                 spoiler.Ranges.Add(new TextRange { StartIndex = offset, Length = entity.Length });
@@ -1018,10 +1041,9 @@ namespace Telegram.Controls
                                     {
                                         MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(entity.Type, textUrl.Url));
 
-                                        _links.Add(hyperlink);
-
                                         if (textUrl.Url.StartsWith("http"))
                                         {
+                                            _links.Add(hyperlink);
                                             ToolTipService.SetToolTip(hyperlink, textUrl.Url);
                                         }
                                     }
@@ -1062,6 +1084,12 @@ namespace Telegram.Controls
                                         Source = this
                                     });
 
+                                    if (entity.Type is TextEntityTypeDateTime dateTime)
+                                    {
+                                        _links.Add(hyperlink);
+                                        ToolTipService.SetToolTip(hyperlink, Formatter.LongDateAt(dateTime.UnixTime));
+                                    }
+
                                     MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(entity.Type, data));
 
                                     parent = direct.GetXamlDirectObject(hyperlink);
@@ -1075,7 +1103,7 @@ namespace Telegram.Controls
                             direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_Foreground, null);
                             direct.SetObjectProperty(hyperlink, XamlPropertyIndex.TextElement_FontFamily, BootStrapper.Current.Resources["SpoilerFontFamily"] as FontFamily);
 
-                            _spoilers.Add(new TextStyleSpoiler(entity.Offset, entity.Length, i));
+                            _spoilers.Add(new TextStyleSpoiler(entity.Offset + dates, entity.Length, i));
 
                             if (textOffset == -1)
                             {
@@ -1206,6 +1234,20 @@ namespace Telegram.Controls
                             GetOrCreateRun(direct, inlines, Icons.ZWNJ, direction, Native.TextStyle.None, null, partFontSize, true);
                             offset++;
                         }
+                        else if (entity.Type is TextEntityTypeDateTime date && date.FormattingType != null)
+                        {
+                            entity.Update(part);
+
+                            var run = GetOrCreateRun(direct, parentInlines, entity.FormattedText, direction, entity.Flags, null, partFontSize, false);
+                            offset += entity.FormattedText.Length;
+                            dates += entity.FormattedText.Length - entity.Length;
+
+                            if (date.FormattingType is DateTimeFormattingTypeRelative)
+                            {
+                                _dates.Add(run);
+                                RelativeDateService.Subscribe(run, this, part, entity, date);
+                            }
+                        }
                         else
                         {
                             GetOrCreateRun(direct, parentInlines, text, entity.Offset, entity.Length, direction, entity.Flags, null, partFontSize, false);
@@ -1266,6 +1308,8 @@ namespace Telegram.Controls
                 _invalidateSpoilers = _spoiler != null;
                 _spoiler = null;
             }
+
+            // TODO: get rid of _spoiler
 
             var topPadding = 0d;
             var bottomPadding = false;
@@ -1366,7 +1410,7 @@ namespace Telegram.Controls
                 }
 
                 var partial = _text.Text.Substring(styled.Offset, styled.Length);
-                var entities = styled.Parts ?? Array.Empty<TextStylePart>();
+                var entities = styled.GetParts(out partial) ?? Array.Empty<TextStylePart>();
 
                 var size = styled.Type is TextParagraphTypeQuote
                     ? quoteSize
@@ -1463,7 +1507,7 @@ namespace Telegram.Controls
                     int xlength = hyperlink.Length;
 
                     var partial = _text.Text.Substring(styled.Offset, styled.Length);
-                    var entities = styled.Parts ?? Array.Empty<TextStylePart>();
+                    var entities = styled.GetParts(out partial) ?? Array.Empty<TextStylePart>();
 
                     var size = styled.Type is TextParagraphTypeQuote
                         ? quoteSize
@@ -2187,6 +2231,217 @@ namespace Telegram.Controls
             _skeleton.Offset = new Vector3(-0, -0, 0);
             //_skeleton.Size = new Vector2(TextBlock.ActualSize.X + 8, TextBlock.ActualSize.Y + 4);
             //_skeleton.Offset = new Vector3(-4, -2, 0);
+        }
+
+        public class RelativeDateService
+        {
+            record TextDate(IXamlDirectObject Element, FormattedTextBlock TextBlock, StyledParagraph Paragraph, TextStyleRun Entity, TextEntityTypeDateTime EntityType, DateTime Date)
+            {
+                public TextDate(IXamlDirectObject Element, FormattedTextBlock TextBlock, StyledParagraph Paragraph, TextStyleRun Entity, TextEntityTypeDateTime EntityType)
+                    : this(Element, TextBlock, Paragraph, Entity, EntityType, Formatter.ToLocalTime(EntityType.UnixTime))
+                {
+
+                }
+
+                public ulong NextUpdateAt { get; set; }
+
+                public string Update()
+                {
+                    var text = Entity.Update(Paragraph);
+
+                    for (int i = 0; i < TextBlock._spoilers.Count; i++)
+                    {
+                        var spoiler = TextBlock._spoilers[i];
+                        if (spoiler.OriginalOffset > Entity.Offset + Entity.Length)
+                        {
+                            TextBlock._spoilers[i] = new TextStyleSpoiler(spoiler.OriginalOffset + (Entity.FormattedText.Length - Entity.Length), spoiler.OriginalLength, spoiler);
+                        }
+                        else if (spoiler.OriginalOffset <= Entity.Offset && spoiler.Offset + spoiler.OriginalLength >= Entity.Offset + Entity.Length)
+                        {
+                            TextBlock._spoilers[i] = new TextStyleSpoiler(spoiler.OriginalOffset, spoiler.OriginalLength + (Entity.FormattedText.Length - Entity.Length), spoiler);
+                        }
+                    }
+
+                    //for (int i = 0; i < TextBlock._spoiler.Ranges.Count; i++)
+                    //{
+                    //    var spoiler = TextBlock._spoilers[i];
+                    //    if (spoiler.Offset > Yolo.Offset + Yolo.Length)
+                    //    {
+                    //        TextBlock._spoiler.Ranges[i] = new TextRange { StartIndex = spoiler.Offset + (Entity.FormattedText.Length - Yolo.Length), Length = spoiler.Length };
+                    //    }
+                    //    else if (spoiler.Offset <= Yolo.Offset && spoiler.Offset + spoiler.Length >= Yolo.Offset + Yolo.Length)
+                    //    {
+                    //        TextBlock._spoiler.Ranges[i] = new TextRange { StartIndex = spoiler.Offset, Length = spoiler.Length + (Entity.FormattedText.Length - Yolo.Length) };
+                    //    }
+                    //}
+
+                    TextBlock.RegisterLayoutChanged();
+
+                    return text;
+                }
+            }
+
+            private readonly DispatcherTimer _timer = new();
+            private readonly Dictionary<IXamlDirectObject, TextDate> _dates = new();
+
+            [ThreadStatic]
+            private static RelativeDateService _current;
+
+            private RelativeDateService()
+            {
+                _timer.Tick += OnTick;
+            }
+
+            private void OnTick(object sender, object e)
+            {
+                _timer.Stop();
+
+                _timer.Interval = GetNextUpdateInterval(_dates.Values, true);
+                _timer.Start();
+            }
+
+            public static void Subscribe(IXamlDirectObject element, FormattedTextBlock textBlock, StyledParagraph paragraph, TextStyleRun Yolo, TextEntityTypeDateTime entity)
+            {
+                _current ??= new();
+                _current.SubscribeImpl(element, textBlock, paragraph, Yolo, entity);
+            }
+
+            private void SubscribeImpl(IXamlDirectObject element, FormattedTextBlock textBlock, StyledParagraph paragraph, TextStyleRun Yolo, TextEntityTypeDateTime entity)
+            {
+                if (_dates.ContainsKey(element))
+                {
+                    return;
+                }
+
+                _dates.Add(element, new TextDate(element, textBlock, paragraph, Yolo, entity));
+                _timer.Stop();
+
+                _timer.Interval = GetNextUpdateInterval(_dates.Values, false);
+                _timer.Start();
+            }
+
+            public static void Unsubscribe(IXamlDirectObject element)
+            {
+                _current ??= new();
+                _current.UnsubscribeImpl(element);
+            }
+
+            private void UnsubscribeImpl(IXamlDirectObject element)
+            {
+                if (_dates.ContainsKey(element))
+                {
+                    _dates.Remove(element);
+                    _timer.Stop();
+
+                    if (_dates.Count > 0)
+                    {
+                        _timer.Interval = GetNextUpdateInterval(_dates.Values, false);
+                        _timer.Start();
+                    }
+                }
+            }
+
+            private static TimeSpan GetNextUpdateInterval(IEnumerable<TextDate> dates, bool invalidate)
+            {
+                var minSeconds = int.MaxValue;
+
+                var tickCount = Logger.TickCount;
+                var currentTime = DateTime.Now;
+
+                XamlDirect direct = null;
+
+                foreach (var item in dates)
+                {
+                    var shouldReschedule = !invalidate;
+
+                    if (invalidate || item.NextUpdateAt == 0)
+                    {
+                        if (item.NextUpdateAt <= tickCount)
+                        {
+                            shouldReschedule = true;
+
+                            direct ??= XamlDirect.GetDefault();
+                            direct.SetStringProperty(item.Element, XamlPropertyIndex.Run_Text, item.Update());
+                        }
+                    }
+
+                    if (shouldReschedule)
+                    {
+                        var nextForThisItem = GetNextUpdateIntervalSeconds(currentTime, item.Date);
+
+                        // Each item gets its own update time
+                        item.NextUpdateAt = tickCount + (ulong)(nextForThisItem * 1000);
+
+                        // Track the global minimum for timer interval
+                        if (nextForThisItem < minSeconds)
+                        {
+                            minSeconds = nextForThisItem;
+                        }
+                    }
+                    else
+                    {
+                        // Item doesn't need rescheduling, but still consider its existing schedule
+                        var remainingSeconds = (long)(item.NextUpdateAt - tickCount) / 1000;
+                        if (remainingSeconds > 0 && remainingSeconds < minSeconds)
+                        {
+                            minSeconds = (int)remainingSeconds;
+                        }
+                    }
+                }
+
+                return TimeSpan.FromSeconds(minSeconds);
+            }
+
+            private static int GetNextUpdateIntervalSeconds(DateTime currentTime, DateTime relativeTime)
+            {
+                TimeSpan difference = currentTime - relativeTime;
+                bool isPast = difference.TotalSeconds > 0;
+                double absDifference = Math.Abs(difference.TotalSeconds);
+
+                if (absDifference < 60)
+                {
+                    return 1;
+                }
+                else if (absDifference < 3600)
+                {
+                    double secondsPastMinute = absDifference % 60;
+
+                    if (isPast)
+                    {
+                        return (int)Math.Ceiling(60 - secondsPastMinute);
+                    }
+                    else
+                    {
+                        return (int)Math.Ceiling(secondsPastMinute);
+                    }
+                }
+                else if (absDifference < 86400)
+                {
+                    double secondsPastHour = absDifference % 3600;
+
+                    if (isPast)
+                    {
+                        return (int)Math.Ceiling(3600 - secondsPastHour);
+                    }
+                    else
+                    {
+                        return (int)Math.Ceiling(secondsPastHour);
+                    }
+                }
+                else
+                {
+                    double secondsPastDay = absDifference % 86400;
+
+                    if (isPast)
+                    {
+                        return (int)Math.Ceiling(86400 - secondsPastDay);
+                    }
+                    else
+                    {
+                        return (int)Math.Ceiling(secondsPastDay);
+                    }
+                }
+            }
         }
     }
 }

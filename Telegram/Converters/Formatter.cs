@@ -411,6 +411,11 @@ namespace Telegram.Converters
             return dtDateTime;
         }
 
+        public static string LongDateAt(int value)
+        {
+            return string.Format(Strings.formatDateAtTime, Date(value, "DATE_LONGDATE"), Time(value));
+        }
+
         public static string DateAt(int value)
         {
             return string.Format(Strings.formatDateAtTime, Date(value), Time(value));
@@ -419,6 +424,69 @@ namespace Telegram.Converters
         public static string DateAt(DateTime value)
         {
             return string.Format(Strings.formatDateAtTime, Date(value), Time(value));
+        }
+
+        public static string InAgo(long value)
+        {
+            var now = DateTime.Now.ToTimestamp();
+            if (now > value)
+            {
+                return RelativeDateAgo(now - value);
+            }
+
+            return RelativeDateIn(value - now);
+        }
+
+        public static string Relative(TextEntityTypeDateTime dateTime)
+        {
+            if (dateTime.FormattingType is DateTimeFormattingTypeAbsolute absolute)
+            {
+                var time = absolute.TimePrecision switch
+                {
+                    DateTimePartPrecisionLong => "HH:mm:ss",
+                    DateTimePartPrecisionShort => "HH:mm",
+                    _ => null
+                };
+
+                var date = absolute.DatePrecision switch
+                {
+                    DateTimePartPrecisionLong => "dd MMMM yyyy",
+                    DateTimePartPrecisionShort => "dd.MM.yyyy",
+                    _ => null
+                };
+
+                if (date != null)
+                {
+                    date = absolute.ShowDayOfWeek
+                        ? NativeUtils.FormatDate(dateTime.UnixTime, "dddd") + ", " + NativeUtils.FormatDate(dateTime.UnixTime, date)
+                        : NativeUtils.FormatDate(dateTime.UnixTime, date);
+                }
+
+                if (time != null && date != null)
+                {
+                    return string.Format(Strings.formatDateAtTime, date, NativeUtils.FormatTime(dateTime.UnixTime));
+                }
+                else if (time != null)
+                {
+                    return NativeUtils.FormatTime(dateTime.UnixTime);
+                }
+                else if (date != null)
+                {
+                    return date;
+                }
+                else if (absolute.ShowDayOfWeek)
+                {
+                    return NativeUtils.FormatDate(dateTime.UnixTime, "dddd");
+                }
+
+                return string.Empty;
+            }
+            else if (dateTime.FormattingType is DateTimeFormattingTypeRelative)
+            {
+                return InAgo(dateTime.UnixTime);
+            }
+
+            return string.Empty;
         }
 
         public static string RelativeDate(long value)
@@ -449,6 +517,66 @@ namespace Telegram.Converters
                 ? Strings.MinuteAgo
                 : Locale.Declension(Strings.R.MinutesAgo, (int)j2)
                 : Strings.LessMinuteAgo;
+        }
+
+        public static string RelativeDateAgo(long value)
+        {
+            long j2 = value / 60;
+            long j3 = j2 / 60;
+            long j4 = j3 / 24;
+            long j5 = j4 / 30;
+            long j6 = j4 / 365;
+            return j6 >= 1
+                ? j6 == 1
+                ? Strings.YearAgo
+                : Locale.Declension(Strings.R.YearsAgo, (int)j6)
+                : j5 >= 1
+                ? j5 == 1
+                ? Strings.MonthAgo
+                : Locale.Declension(Strings.R.MonthsAgo, (int)j5)
+                : j4 >= 1
+                ? j4 == 1
+                ? Strings.DayAgo
+                : Locale.Declension(Strings.R.DaysAgo, (int)j4)
+                : j3 >= 1
+                ? j3 == 1
+                ? Strings.HourAgo
+                : Locale.Declension(Strings.R.HoursAgo, (int)j3)
+                : j2 >= 1
+                ? j2 == 1
+                ? Strings.MinuteAgo
+                : Locale.Declension(Strings.R.MinutesAgo, (int)j2)
+                : Locale.Declension(Strings.R.SecondsAgo, value);
+        }
+
+        public static string RelativeDateIn(long value)
+        {
+            long j2 = value / 60;
+            long j3 = j2 / 60;
+            long j4 = j3 / 24;
+            long j5 = j4 / 30;
+            long j6 = j4 / 365;
+            return j6 >= 1
+                ? j6 == 1
+                ? Strings.InYear
+                : Locale.Declension(Strings.R.InYears, (int)j6)
+                : j5 >= 1
+                ? j5 == 1
+                ? Strings.InMonth
+                : Locale.Declension(Strings.R.InMonths, (int)j5)
+                : j4 >= 1
+                ? j4 == 1
+                ? Strings.InDay
+                : Locale.Declension(Strings.R.InDays, (int)j4)
+                : j3 >= 1
+                ? j3 == 1
+                ? Strings.InHour
+                : Locale.Declension(Strings.R.InHours, (int)j3)
+                : j2 >= 1
+                ? j2 == 1
+                ? Strings.InMinute
+                : Locale.Declension(Strings.R.InMinutes, (int)j2)
+                : Locale.Declension(Strings.R.InSeconds, value);
         }
 
         public static string ShortRating(double size, bool forceDecimal)
