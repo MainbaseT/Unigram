@@ -11,6 +11,7 @@ using Telegram.Controls;
 using Telegram.Converters;
 using Telegram.Navigation;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Supergroups;
 using Telegram.Views.Popups;
@@ -102,7 +103,15 @@ namespace Telegram.Views.Supergroups.Popups
             CanAddLinkPreviews.IsEnabled = chat.Permissions.CanAddLinkPreviews;
             CanInviteUsers.IsEnabled = chat.Permissions.CanInviteUsers;
             CanPinMessages.IsEnabled = chat.Permissions.CanPinMessages;
+            CanEditTag.IsEnabled = chat.Permissions.CanEditTag;
             CanChangeInfo.IsEnabled = chat.Permissions.CanChangeInfo;
+
+            EditRankFooter.Text = string.Format(Strings.UserRestrictionsTagInfo, user.FullName(true));
+
+            UpdatePreview(chat, member);
+
+            BackgroundControl.Update(ViewModel.ClientService, null);
+            Message.Margin = new Thickness(8, 12, 12, 12);
 
             //ChangeInfo.Header = group.IsChannel ? Strings.EditAdminChangeChannelInfo : Strings.EditAdminChangeGroupInfo;
             //PostMessages.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
@@ -177,6 +186,33 @@ namespace Telegram.Views.Supergroups.Popups
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Hide(ContentDialogResult.Secondary);
+        }
+
+        private void EditRankField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ViewModel.Member == null)
+            {
+                return;
+            }
+
+            UpdatePreview(ViewModel.Chat, ViewModel.Member);
+        }
+
+        private void UpdatePreview(Chat chat, ChatMember member)
+        {
+            var tag = member.Status switch
+            {
+                ChatMemberStatusCreator => string.IsNullOrEmpty(EditRankField.Text) ? Strings.ChatTagOwner : EditRankField.Text,
+                ChatMemberStatusAdministrator => string.IsNullOrEmpty(EditRankField.Text) ? Strings.ChatTagAdmin : EditRankField.Text,
+                _ => EditRankField.Text,
+            };
+
+            Message.UpdateMockup(ViewModel.ClientService, chat, member.MemberId, tag, member.Status switch
+            {
+                ChatMemberStatusCreator => ChatMemberRank.Owner,
+                ChatMemberStatusAdministrator => ChatMemberRank.Admin,
+                _ => ChatMemberRank.Other
+            });
         }
     }
 }

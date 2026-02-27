@@ -5,6 +5,8 @@
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        xmlns:controls="using:Telegram.Controls"
                        xmlns:cells="using:Telegram.Controls.Cells"
+                       xmlns:chats="using:Telegram.Controls.Chats"
+                       xmlns:messages="using:Telegram.Controls.Messages"
                        mc:Ignorable="d"
                        PrimaryButtonClick="{x:Bind ViewModel.Continue}"
                        CloseButtonClick="{x:Bind ViewModel.Dismiss}"
@@ -32,7 +34,7 @@
                         <controls:SettingsExpander.Header>
                             <CheckBox x:Name="CanSendMediaMessages"
                                       IsChecked="{x:Bind ViewModel.CanSendMediaMessages, Mode=TwoWay}"
-                                      Margin="-12,-11,0,-12">
+                                      Margin="-16,-11,0,-12">
                                 <TextBlock>
                                         <Run Text="{CustomResource UserRestrictionsSendMedia}" />
                                         <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanSendCount), Mode=OneWay}"
@@ -88,6 +90,10 @@
                               IsChecked="{x:Bind ViewModel.CanPinMessages, Mode=TwoWay}"
                               Content="{CustomResource UserRestrictionsPinMessages}" />
 
+                    <CheckBox x:Name="CanEditTag"
+                              IsChecked="{x:Bind ViewModel.CanEditTag, Mode=TwoWay}"
+                              Content="{CustomResource UserRestrictionsEditTags}" />
+
                     <CheckBox x:Name="CanChangeInfo"
                               IsChecked="{x:Bind ViewModel.CanChangeInfo, Mode=TwoWay}"
                               Content="{CustomResource UserRestrictionsChangeInfo}" />
@@ -100,6 +106,27 @@
                           SelectedItem="{x:Bind ViewModel.SelectedDuration, Mode=TwoWay}"
                           SelectionChanged="Duration_SelectionChanged"
                           HorizontalAlignment="Stretch" />
+
+                <Grid CornerRadius="4"
+                      Margin="0,16,0,8">
+                    <chats:ChatBackgroundControl x:Name="BackgroundControl" />
+                    <messages:MessageBubble x:Name="Message"
+                                            Margin="8,12,12,12" />
+                </Grid>
+
+                <TextBox x:Name="EditRankField"
+                         Text="{x:Bind ViewModel.CustomTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         TextChanged="EditRankField_TextChanged"
+                         FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                         MaxLength="16"
+                         PlaceholderText="{CustomResource MemberTagHintEdit}"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         Margin="0,0,0,8" />
+
+                <TextBlock x:Name="EditRankFooter"
+                           Text="{CustomResource EditAdminRankInfo}"
+                           Style="{StaticResource InfoCaptionTextBlockStyle}" />
             </StackPanel>
         </ScrollViewer>
 

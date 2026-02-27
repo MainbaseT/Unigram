@@ -104,6 +104,7 @@ namespace Telegram.ViewModels.Supergroups
                 }
 
                 Member = member;
+                CustomTitle = member.Tag;
 
                 if (member.Status is ChatMemberStatusRestricted restricted)
                 {
@@ -120,6 +121,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanSendPolls = restricted.Permissions.CanSendPolls && chat.Permissions.CanSendPolls;
                     CanAddLinkPreviews = restricted.Permissions.CanAddLinkPreviews && chat.Permissions.CanAddLinkPreviews;
                     CanSendBasicMessages = restricted.Permissions.CanSendBasicMessages && chat.Permissions.CanSendBasicMessages;
+                    CanEditTag = restricted.Permissions.CanEditTag && chat.Permissions.CanEditTag;
                 }
                 else if (member.Status is ChatMemberStatusBanned banned)
                 {
@@ -128,6 +130,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanInviteUsers = false;
                     CanSendMediaMessages = false;
                     CanSendBasicMessages = false;
+                    CanEditTag = false;
                 }
                 else
                 {
@@ -144,6 +147,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanSendPolls = chat.Permissions.CanSendPolls;
                     CanAddLinkPreviews = chat.Permissions.CanAddLinkPreviews;
                     CanSendBasicMessages = chat.Permissions.CanSendBasicMessages;
+                    CanEditTag = chat.Permissions.CanEditTag;
                 }
 
                 UpdateCanSendMediaMessages();
@@ -386,6 +390,13 @@ namespace Telegram.ViewModels.Supergroups
             set => Set(ref _canPinMessages, value);
         }
 
+        private bool _canEditTag;
+        public bool CanEditTag
+        {
+            get => _canEditTag;
+            set => Set(ref _canEditTag, value);
+        }
+
         private bool _canChangeInfo;
         public bool CanChangeInfo
         {
@@ -394,6 +405,13 @@ namespace Telegram.ViewModels.Supergroups
         }
 
         #endregion
+
+        private string _customTitle;
+        public string CustomTitle
+        {
+            get => _customTitle;
+            set => Set(ref _customTitle, value);
+        }
 
         public void OpenProfile()
         {
@@ -446,13 +464,24 @@ namespace Telegram.ViewModels.Supergroups
                     CanSendPolls = _canSendPolls,
                     CanAddLinkPreviews = _canAddLinkPreviews,
                     CanSendBasicMessages = _canSendBasicMessages,
+                    CanEditTag = _canEditTag,
                 }
             };
 
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, status));
             if (response is Ok)
             {
-                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, member.Tag, ClientService.Options.MyId, member.JoinedChatDate, status)));
+                if (member.MemberId is MessageSenderUser user && !string.Equals(_customTitle, member.Tag))
+                {
+                    var tag = await ClientService.SendAsync(new SetChatMemberTag(chat.Id, user.UserId, _customTitle ?? string.Empty));
+                    if (tag is Error error)
+                    {
+                        ShowToast(error);
+                        return;
+                    }
+                }
+
+                Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, _customTitle ?? string.Empty, ClientService.Options.MyId, member.JoinedChatDate, status)));
                 Delegate?.Hide();
             }
             else if (response is Error error)
@@ -480,6 +509,7 @@ namespace Telegram.ViewModels.Supergroups
                 CanSendPolls = _canSendPolls,
                 CanAddLinkPreviews = _canAddLinkPreviews,
                 CanSendBasicMessages = _canSendBasicMessages,
+                CanEditTag = _canEditTag,
             }
         };
 
