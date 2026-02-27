@@ -3397,14 +3397,34 @@ namespace Telegram.Views
 
                 if (message.CanBeSaved is false && message.Chat.HasProtectedContent && flyout.Items.Count > 0)
                 {
+                    string hasProtectedContent;
+                    if (message.IsChannelPost)
+                    {
+                        hasProtectedContent = Strings.ForwardsRestrictedInfoChannel;
+                    }
+                    else if (properties.HasProtectedContentByCurrentUser)
+                    {
+                        hasProtectedContent = Strings.ForwardsRestrictedInfoUserBecauseYou;
+                    }
+                    else if (properties.HasProtectedContentByOtherUser)
+                    {
+                        hasProtectedContent = string.Format(Strings.ForwardsRestrictedInfoUserBecauseUser, message.Chat.Title);
+                    }
+                    else if (message.Chat.Type is ChatTypePrivate)
+                    {
+                        hasProtectedContent = Strings.ForwardsRestrictedInfoBot;
+                    }
+                    else
+                    {
+                        hasProtectedContent = Strings.ForwardsRestrictedInfoGroup;
+                    }
+
                     flyout.CreateFlyoutSeparator();
                     flyout.Items.Add(new MenuFlyoutLabel
                     {
                         Padding = new Thickness(12, 4, 12, 4),
                         MaxWidth = 178,
-                        Text = message.IsChannelPost
-                            ? Strings.ForwardsRestrictedInfoChannel
-                            : Strings.ForwardsRestrictedInfoGroup
+                        Text = hasProtectedContent
                     });
                 }
                 else if (message.SchedulingState is MessageSchedulingStateSendWhenVideoProcessed && flyout.Items.Count > 0)
