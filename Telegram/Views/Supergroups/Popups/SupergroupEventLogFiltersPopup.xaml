@@ -54,6 +54,7 @@
                             <CheckBox x:Name="MemberRestrictions" />
                             <CheckBox x:Name="MemberJoins" />
                             <CheckBox x:Name="MemberLeaves" />
+                            <CheckBox x:Name="MemberTagChanges" />
                         </StackPanel>
                     </controls:SettingsExpander>
 

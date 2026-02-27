@@ -41,6 +41,7 @@ namespace Telegram.Views.Supergroups.Popups
                 MemberRestrictions.Visibility = Visibility.Collapsed;
                 MemberJoins.Content = Strings.EventLogFilterNewSubscribers;
                 MemberLeaves.Content = Strings.EventLogFilterLeavingSubscribers2;
+                MemberTagChanges.Visibility = Visibility.Collapsed;
 
                 InfoChanges.Content = Strings.EventLogFilterChannelInfo;
             }
@@ -52,6 +53,7 @@ namespace Telegram.Views.Supergroups.Popups
                 MemberRestrictions.Content = Strings.EventLogFilterNewRestrictions;
                 MemberJoins.Content = Strings.EventLogFilterNewMembers;
                 MemberLeaves.Content = Strings.EventLogFilterLeavingMembers2;
+                MemberTagChanges.Content = Strings.EventLogFilterMembersRank;
 
                 InfoChanges.Content = Strings.EventLogFilterGroupInfo;
             }
@@ -60,6 +62,7 @@ namespace Telegram.Views.Supergroups.Popups
             MemberRestrictions.IsChecked = filters.MemberRestrictions;
             MemberJoins.IsChecked = filters.MemberJoins;
             MemberLeaves.IsChecked = filters.MemberLeaves;
+            MemberTagChanges.IsChecked = filters.MemberTagChanges;
 
             InfoChanges.IsChecked = filters.InfoChanges;
             InviteLinkChanges.IsChecked = filters.InviteLinkChanges;
@@ -79,6 +82,8 @@ namespace Telegram.Views.Supergroups.Popups
             MemberJoins.Unchecked += MembersAndAdmins_Checked;
             MemberLeaves.Checked += MembersAndAdmins_Checked;
             MemberLeaves.Unchecked += MembersAndAdmins_Checked;
+            MemberTagChanges.Checked += MembersAndAdmins_Checked;
+            MemberTagChanges.Unchecked += MembersAndAdmins_Checked;
 
             InfoChanges.Checked += ChatSettings_Checked;
             InfoChanges.Unchecked += ChatSettings_Checked;
@@ -278,13 +283,15 @@ namespace Telegram.Views.Supergroups.Popups
                 MessageEdits = MessageEdits.IsChecked == true,
                 MessagePins = MessagePins.IsChecked == true,
                 MemberLeaves = MemberLeaves.IsChecked == true,
+                MemberTagChanges = MemberTagChanges.IsChecked == true,
                 VideoChatChanges = VideoChatChanges.IsChecked == true
             };
 
             if (Filters.MemberRestrictions && Filters.MemberPromotions && Filters.MemberJoins
                 && Filters.MemberInvites && Filters.InfoChanges && Filters.InviteLinkChanges
                 && Filters.SettingChanges && Filters.MessageDeletions && Filters.MessageEdits
-                && Filters.MessagePins && Filters.MemberLeaves && Filters.VideoChatChanges)
+                && Filters.MessagePins && Filters.MemberLeaves && Filters.MemberTagChanges
+                && Filters.VideoChatChanges)
             {
                 Filters.ForumChanges = true;
                 Filters.SubscriptionExtensions = true;
