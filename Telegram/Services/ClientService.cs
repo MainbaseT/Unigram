@@ -2932,17 +2932,17 @@ namespace Telegram.Services
             var id = reader.GetInt32();
             if (_files.TryGetValue(id, out File obj))
             {
-                if (!updateFile)
-                {
-                    var depth = reader.CurrentDepth;
+                //if (!updateFile)
+                //{
+                //    var depth = reader.CurrentDepth;
 
-                    do
-                    {
-                        reader.Read();
-                    }
-                    while (depth <= reader.CurrentDepth);
-                    return obj;
-                }
+                //    do
+                //    {
+                //        reader.Read();
+                //    }
+                //    while (depth <= reader.CurrentDepth);
+                //    return obj;
+                //}
             }
             else
             {
