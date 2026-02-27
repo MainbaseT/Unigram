@@ -1324,6 +1324,9 @@
     <Compile Include="Views\Popups\DisableSharingPopup.xaml.cs">
       <DependentUpon>DisableSharingPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\MemberTagEditPopup.xaml.cs">
+      <DependentUpon>MemberTagEditPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\MemberTagInfoPopup.xaml.cs">
       <DependentUpon>MemberTagInfoPopup.xaml</DependentUpon>
     </Compile>
@@ -3484,6 +3487,10 @@
     <Page Include="Views\Popups\DisableSharingPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\MemberTagEditPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Popups\MemberTagInfoPopup.xaml">
       <SubType>Designer</SubType>

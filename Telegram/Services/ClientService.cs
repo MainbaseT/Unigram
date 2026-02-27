@@ -182,6 +182,7 @@ namespace Telegram.Services
         bool CanPostMessages(Chat chat);
         bool CanInviteUsers(Chat chat);
         bool CanPromoteMembers(Chat chat);
+        bool CanEditTag(Chat chat, MessageSender sender);
 
         Object GetMessageSender(MessageSender sender);
         bool TryGetMessageSender(MessageSender sender, out Object value);
@@ -2074,6 +2075,20 @@ namespace Telegram.Services
             // TODO: secret chats maybe?
 
             return true;
+        }
+
+        public bool CanEditTag(Chat chat, MessageSender sender)
+        {
+            if (TryGetSupergroup(chat, out Supergroup supergroup))
+            {
+                return supergroup.CanEditTag(chat, sender, Options.MyId);
+            }
+            else if (TryGetBasicGroup(chat, out BasicGroup basicGroup))
+            {
+                return basicGroup.CanEditTag(chat, sender, Options.MyId);
+            }
+
+            return false;
         }
 
         public Object GetMessageSender(MessageSender sender)

@@ -137,6 +137,11 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        public void EditTag(ChatMember member)
+        {
+            ShowPopup(new MemberTagEditPopup(ClientService, Aggregator, Chat, member));
+        }
+
         #endregion
     }
 }

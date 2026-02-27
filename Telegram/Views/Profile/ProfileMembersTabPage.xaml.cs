@@ -79,9 +79,14 @@ namespace Telegram.Views.Profile
                 return;
             }
 
+            if (ViewModel.ClientService.CanEditTag(chat, member.MemberId))
+            {
+                flyout.CreateFlyoutItem(ViewModel.MembersTab.EditTag, member, member.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator ? Strings.EditAdminTag : Strings.EditMemberTag, Icons.PersonTag);
+            }
+
             if (chat.Type is ChatTypeSupergroup)
             {
-                flyout.CreateFlyoutItem(MemberPromote_Loaded, ViewModel.MembersTab.PromoteMember, chat, status, member, member.Status is ChatMemberStatusAdministrator ? Strings.EditAdminRights : Strings.SetAsAdmin, Icons.Star);
+                flyout.CreateFlyoutItem(MemberPromote_Loaded, ViewModel.MembersTab.PromoteMember, chat, status, member, member.Status is ChatMemberStatusAdministrator ? Strings.EditAdminRights : Strings.SetAsAdmin, Icons.ShieldStar);
                 flyout.CreateFlyoutItem(MemberRestrict_Loaded, ViewModel.MembersTab.RestrictMember, chat, status, member, member.Status is ChatMemberStatusRestricted ? Strings.ChangePermissions : Strings.KickFromSupergroup, Icons.LockClosed);
             }
 
