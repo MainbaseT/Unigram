@@ -97,6 +97,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanInviteUsers = administrator.Rights.CanInviteUsers;
                     CanManageDirectMessages = administrator.Rights.CanManageDirectMessages;
                     CanPinMessages = administrator.Rights.CanPinMessages;
+                    CanManageTags = administrator.Rights.CanManageTags;
                     CanPostMessages = administrator.Rights.CanPostMessages;
                     CanPostStories = administrator.Rights.CanPostStories;
                     CanEditStories = administrator.Rights.CanEditStories;
@@ -115,6 +116,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanInviteUsers = true;
                     CanManageDirectMessages = true;
                     CanPinMessages = true;
+                    CanManageTags = true;
                     CanPostMessages = true;
                     CanPostStories = true;
                     CanEditStories = true;
@@ -180,6 +182,7 @@ namespace Telegram.ViewModels.Supergroups
                     _canPromoteMembers &&
                     (!supergroup.IsChannel || _canEditMessages) &&
                     (supergroup.IsChannel || _canPinMessages) &&
+                    (supergroup.IsChannel || _canManageTags) &&
                     (!supergroup.IsChannel || _canPostMessages) &&
                     (!supergroup.IsChannel || _canManageDirectMessages) &&
                     _canPostStories &&
@@ -455,6 +458,19 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _canManageTags;
+        public bool CanManageTags
+        {
+            get => _canManageTags;
+            set
+            {
+                if (Set(ref _canManageTags, value))
+                {
+                    RaisePropertyChanged(nameof(CanTransferOwnership));
+                }
+            }
+        }
+
         private bool _canManageVideoChats;
         public bool CanManageVideoChats
         {
@@ -556,6 +572,7 @@ namespace Telegram.ViewModels.Supergroups
                         CanInviteUsers = _canInviteUsers,
                         CanManageDirectMessages = channel && _canManageDirectMessages,
                         CanPinMessages = !channel && _canPinMessages,
+                        CanManageTags = !channel && _canManageTags,
                         CanPostMessages = channel && _canPostMessages,
                         CanPostStories = _canPostStories,
                         CanEditStories = _canEditStories,
@@ -593,6 +610,7 @@ namespace Telegram.ViewModels.Supergroups
                         && !administrator.Rights.CanDeleteMessages
                         && !administrator.Rights.CanInviteUsers
                         && !administrator.Rights.CanPinMessages
+                        && !administrator.Rights.CanManageTags
                         && !administrator.Rights.CanPostStories
                         && !administrator.Rights.CanEditStories
                         && !administrator.Rights.CanDeleteStories
@@ -611,6 +629,16 @@ namespace Telegram.ViewModels.Supergroups
             var response = await ClientService.SendAsync(new SetChatMemberStatus(chat.Id, member.MemberId, status));
             if (response is Ok)
             {
+                if (member.MemberId is MessageSenderUser user && !string.Equals(_customTitle, member.Tag))
+                {
+                    var tag = await ClientService.SendAsync(new SetChatMemberTag(chat.Id, user.UserId, _customTitle ?? string.Empty));
+                    if (tag is Error error)
+                    {
+                        ShowToast(error);
+                        return;
+                    }
+                }
+
                 Aggregator.Publish(new UpdateChatMember(chat.Id, 0, 0, null, false, false, Member, new ChatMember(member.MemberId, _customTitle ?? string.Empty, ClientService.Options.MyId, member.JoinedChatDate, status)));
                 Delegate?.Hide();
             }

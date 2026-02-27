@@ -5,15 +5,17 @@
                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                        xmlns:controls="using:Telegram.Controls"
                        xmlns:cells="using:Telegram.Controls.Cells"
+                       xmlns:chats="using:Telegram.Controls.Chats"
+                       xmlns:messages="using:Telegram.Controls.Messages"
                        mc:Ignorable="d"
-                       Padding="0,24"
+                       Padding="0,24,0,0"
                        PrimaryButtonClick="{x:Bind ViewModel.Continue}">
 
     <Grid>
         <ScrollViewer x:Name="ScrollingHost"
                       VerticalScrollBarVisibility="Auto"
                       VerticalScrollMode="Auto">
-            <StackPanel Margin="24,0">
+            <StackPanel Margin="24,0,24,24">
                 <cells:ProfileCell x:Name="Cell"
                                    Click="{x:Bind ViewModel.OpenProfile}"
                                    Padding="0,0,0,12" />
@@ -30,7 +32,7 @@
                         <controls:SettingsExpander.Header>
                             <CheckBox x:Name="CanManageMessages"
                                       IsChecked="{x:Bind ViewModel.CanManageMessages, Mode=TwoWay}"
-                                      Margin="-12,-11,0,-12">
+                                      Margin="-16,-11,0,-12">
                                 <TextBlock>
                                         <Run Text="{CustomResource ChannelManageMessages}" />
                                         <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanManageMessagesCount), Mode=OneWay}"
@@ -60,7 +62,7 @@
                         <controls:SettingsExpander.Header>
                             <CheckBox x:Name="CanManageStories"
                                       IsChecked="{x:Bind ViewModel.CanManageStories, Mode=TwoWay}"
-                                      Margin="-12,-11,0,-12">
+                                      Margin="-16,-11,0,-12">
                                 <TextBlock>
                                         <Run Text="{CustomResource ChannelManageStories}" />
                                         <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanManageStoriesCount), Mode=OneWay}"
@@ -104,6 +106,10 @@
                               IsChecked="{x:Bind ViewModel.CanPinMessages, Mode=TwoWay}"
                               Content="{CustomResource EditAdminPinMessages}" />
 
+                    <CheckBox x:Name="ManageTags"
+                              IsChecked="{x:Bind ViewModel.CanManageTags, Mode=TwoWay}"
+                              Content="{CustomResource EditAdminEditTags}" />
+
                     <CheckBox x:Name="ManageTopics"
                               IsChecked="{x:Bind ViewModel.CanManageTopics, Mode=TwoWay}"
                               Content="{CustomResource ManageTopicsPermission}" />
@@ -128,16 +134,24 @@
                 <TextBlock x:Name="EditRankHeader"
                            Text="{CustomResource EditAdminRank}"
                            Style="{StaticResource BaseTextBlockStyle}"
-                           Margin="0,12,0,0" />
+                           Margin="0,16,0,0" />
+
+                <Grid CornerRadius="4"
+                      Margin="0,8">
+                    <chats:ChatBackgroundControl x:Name="BackgroundControl" />
+                    <messages:MessageBubble x:Name="Message"
+                                            Margin="8,12,12,12" />
+                </Grid>
 
                 <TextBox x:Name="EditRankField"
                          Text="{x:Bind ViewModel.CustomTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         TextChanged="EditRankField_TextChanged"
                          FontFamily="{ThemeResource EmojiThemeFontFamily}"
                          MaxLength="16"
-                         PlaceholderText="{CustomResource ChannelCreator}"
+                         PlaceholderText="{CustomResource MemberTagHintEdit}"
                          TextWrapping="Wrap"
                          AcceptsReturn="True"
-                         Margin="0,4,0,8" />
+                         Margin="0,0,0,8" />
 
                 <TextBlock x:Name="EditRankFooter"
                            Text="{CustomResource EditAdminRankInfo}"
@@ -159,5 +173,8 @@
             </StackPanel>
         </ScrollViewer>
 
+        <controls:ScrollViewerScrim Background="{ThemeResource ContentDialogTopOverlaySolid}"
+                                    ScrollingHost="{x:Bind ScrollingHost}"
+                                    BottomInset="0" />
     </Grid>
 </controls:ContentPopup>

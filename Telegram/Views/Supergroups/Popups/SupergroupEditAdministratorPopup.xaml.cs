@@ -8,9 +8,11 @@
 using Telegram.Controls;
 using Telegram.Converters;
 using Telegram.Td.Api;
+using Telegram.ViewModels;
 using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Supergroups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Views.Supergroups.Popups
 {
@@ -80,8 +82,7 @@ namespace Telegram.Views.Supergroups.Popups
                 PrimaryButtonText = canBeEdited ? Strings.Done : string.Empty;
                 Dismiss.Visibility = member.Status is ChatMemberStatusAdministrator && canBeEdited ? Visibility.Visible : Visibility.Collapsed;
                 PermissionsFooter.Visibility = canBeEdited ? Visibility.Visible : Visibility.Collapsed;
-                EditRankField.PlaceholderText = member.Status is ChatMemberStatusCreator ? Strings.ChannelCreator : Strings.ChannelAdmin;
-                EditRankFooter.Text = string.Format(Strings.EditAdminRankInfo, member.Status is ChatMemberStatusCreator ? Strings.ChannelCreator : Strings.ChannelAdmin);
+                EditRankFooter.Text = string.Format(Strings.EditAdminRankInfo, member.Status is ChatMemberStatusCreator ? Strings.ChatTagOwner : Strings.ChatTagAdmin);
 
                 ChangeInfo.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited && !chat.Permissions.CanChangeInfo;
                 CanManageMessages.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
@@ -97,6 +98,7 @@ namespace Telegram.Views.Supergroups.Popups
                 ManageDirectMessages.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 AddUsers.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 PinMessages.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited && !chat.Permissions.CanPinMessages;
+                ManageTags.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited && !chat.Permissions.CanEditTag;
                 ManageTopics.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 ManageVideoChats.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
                 AddAdmins.IsEnabled = member.Status is ChatMemberStatusAdministrator && canBeEdited;
@@ -107,12 +109,12 @@ namespace Telegram.Views.Supergroups.Popups
             {
                 ChangeInfo.IsEnabled = !chat.Permissions.CanChangeInfo;
                 PinMessages.IsEnabled = !chat.Permissions.CanPinMessages;
+                ManageTags.IsEnabled = !chat.Permissions.CanEditTag;
 
                 PrimaryButtonText = Strings.Done;
                 Dismiss.Visibility = Visibility.Collapsed;
                 PermissionsFooter.Visibility = Visibility.Collapsed;
-                EditRankField.PlaceholderText = Strings.ChannelAdmin;
-                EditRankFooter.Text = string.Format(Strings.EditAdminRankInfo, Strings.ChannelAdmin);
+                EditRankFooter.Text = string.Format(Strings.EditAdminRankInfo, Strings.ChatTagAdmin);
             }
 
             if (chat.Type is ChatTypeSupergroup group)
@@ -133,6 +135,7 @@ namespace Telegram.Views.Supergroups.Popups
                 ChangeInfo.Content = group.IsChannel ? Strings.EditAdminChangeChannelInfo : Strings.EditAdminChangeGroupInfo;
                 ManageDirectMessages.Visibility = group.IsChannel ? Visibility.Visible : Visibility.Collapsed;
                 PinMessages.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
+                ManageTags.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 IsAnonymous.Visibility = group.IsChannel ? Visibility.Collapsed : Visibility.Visible;
                 ManageTopics.Visibility = ViewModel.IsForum ? Visibility.Visible : Visibility.Collapsed;
                 AddUsers.Content = chat.Permissions.CanInviteUsers ? Strings.EditAdminAddUsersViaLink : Strings.EditAdminAddUsers;
@@ -142,6 +145,11 @@ namespace Telegram.Views.Supergroups.Popups
                 PermissionsRoot.Visibility = Visibility.Collapsed;
                 PermissionsFooter.Visibility = Visibility.Collapsed;
             }
+
+            UpdatePreview(chat, member);
+
+            BackgroundControl.Update(ViewModel.ClientService, null);
+            Message.Margin = new Thickness(8, 12, 12, 12);
 
             //TransferOwnership.Content = group.IsChannel ? Strings.EditAdminChannelTransfer : Strings.EditAdminGroupTransfer;
         }
@@ -164,5 +172,30 @@ namespace Telegram.Views.Supergroups.Popups
         }
 
         #endregion
+
+        private void EditRankField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ViewModel.Member == null)
+            {
+                return;
+            }
+
+            UpdatePreview(ViewModel.Chat, ViewModel.Member);
+        }
+
+        private void UpdatePreview(Chat chat, ChatMember member)
+        {
+            var tag = member.Status switch
+            {
+                ChatMemberStatusCreator => string.IsNullOrEmpty(EditRankField.Text) ? Strings.ChatTagOwner : EditRankField.Text,
+                _ => string.IsNullOrEmpty(EditRankField.Text) ? Strings.ChatTagAdmin : EditRankField.Text,
+            };
+
+            Message.UpdateMockup(ViewModel.ClientService, chat, member.MemberId, tag, member.Status switch
+            {
+                ChatMemberStatusCreator => ChatMemberRank.Owner,
+                _ => ChatMemberRank.Admin
+            });
+        }
     }
 }
