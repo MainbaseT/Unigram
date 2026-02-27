@@ -34,7 +34,10 @@ namespace Telegram.ViewModels.Supergroups
                 {
                     if (update.NewChatMember.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator)
                     {
+                        item.Tag = update.NewChatMember.Tag;
                         item.Status = update.NewChatMember.Status;
+
+                        Delegate?.UpdateMember(item);
                     }
                     else
                     {

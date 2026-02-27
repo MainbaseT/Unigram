@@ -15,11 +15,12 @@ using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Supergroups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views.Supergroups
 {
-    public sealed partial class SupergroupMembersPage : HostedPage, IBasicAndSupergroupDelegate, ISearchablePage
+    public sealed partial class SupergroupMembersPage : HostedPage, ISupergroupMembersDelegate, ISearchablePage
     {
         public SupergroupMembersViewModel ViewModel => DataContext as SupergroupMembersViewModel;
 
@@ -168,7 +169,7 @@ namespace Telegram.Views.Supergroups
             }
             else if (args.ItemContainer.ContentTemplateRoot is ProfileCell cell)
             {
-                cell.UpdateSupergroupMember(ViewModel.ClientService, args, OnContainerContentChanging);
+                cell.UpdateChatSharedMembers(ViewModel.ClientService, args, OnContainerContentChanging);
             }
         }
 
@@ -217,6 +218,14 @@ namespace Telegram.Views.Supergroups
         public void UpdateChat(Chat chat) { }
         public void UpdateChatTitle(Chat chat) { }
         public void UpdateChatPhoto(Chat chat) { }
+
+        public void UpdateMember(ChatMember member)
+        {
+            var container = ScrollingHost.ContainerFromItem(member) as SelectorItem;
+            var content = container?.ContentTemplateRoot as ProfileCell;
+
+            content?.UpdateChatSharedMembers(ViewModel.ClientService, member);
+        }
 
         #endregion
     }

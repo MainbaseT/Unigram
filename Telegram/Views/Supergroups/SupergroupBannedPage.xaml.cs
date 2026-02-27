@@ -15,11 +15,12 @@ using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Supergroups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views.Supergroups
 {
-    public sealed partial class SupergroupBannedPage : HostedPage, ISupergroupDelegate, ISearchablePage
+    public sealed partial class SupergroupBannedPage : HostedPage, ISupergroupMembersDelegate, ISearchablePage
     {
         public SupergroupBannedViewModel ViewModel => DataContext as SupergroupBannedViewModel;
 
@@ -63,9 +64,23 @@ namespace Telegram.Views.Supergroups
             Footer.Text = group.IsChannel ? Strings.NoBlockedChannel : Strings.NoBlockedGroup;
         }
 
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
+        {
+            AddNewPanel.Visibility = group.CanRestrictMembers() ? Visibility.Visible : Visibility.Collapsed;
+            Footer.Text = Strings.NoBlockedGroup;
+        }
+
         public void UpdateChat(Chat chat) { }
         public void UpdateChatTitle(Chat chat) { }
         public void UpdateChatPhoto(Chat chat) { }
+
+        public void UpdateMember(ChatMember member)
+        {
+            var container = ScrollingHost.ContainerFromItem(member) as SelectorItem;
+            var content = container?.ContentTemplateRoot as ProfileCell;
+
+            content?.UpdateSupergroupBanned(ViewModel.ClientService, member);
+        }
 
         #endregion
 

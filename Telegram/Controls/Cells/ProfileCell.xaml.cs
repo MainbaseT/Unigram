@@ -471,6 +471,20 @@ namespace Telegram.Controls.Cells
             args.Handled = true;
         }
 
+        public void UpdateSupergroupMember(IClientService clientService, ChatMember member)
+        {
+            var user = clientService.GetMessageSender(member.MemberId) as User;
+            if (user == null)
+            {
+                return;
+            }
+
+            TitleLabel.Text = user.FullName();
+            SubtitleLabel.Text = ChannelParticipantToTypeConverter.Convert(clientService, member);
+            Photo.Source = ProfilePictureSource.User(clientService, user);
+            Identity.SetStatus(clientService, user, BotVerified);
+        }
+
         public void UpdateSupergroupAdminFilter(IClientService clientService, ContainerContentChangingEventArgs args, TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> callback)
         {
             UpdateStyleNoSubtitle();
@@ -549,6 +563,32 @@ namespace Telegram.Controls.Cells
             }
 
             args.Handled = true;
+        }
+
+        public void UpdateSupergroupBanned(IClientService clientService, ChatMember member)
+        {
+            var messageSender = clientService.GetMessageSender(member.MemberId);
+            if (messageSender == null)
+            {
+                return;
+            }
+
+            if (messageSender is User user)
+            {
+                TitleLabel.Text = user.FullName();
+
+                Photo.Source = ProfilePictureSource.User(clientService, user);
+                Identity.SetStatus(clientService, user, BotVerified);
+            }
+            else if (messageSender is Chat chat)
+            {
+                TitleLabel.Text = chat.Title;
+
+                Photo.Source = ProfilePictureSource.Chat(clientService, chat);
+                Identity.SetStatus(clientService, chat, BotVerified);
+            }
+
+            SubtitleLabel.Text = ChannelParticipantToTypeConverter.Convert(clientService, member);
         }
 
         public void UpdateBoostSlot(IClientService clientService, ContainerContentChangingEventArgs args, TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> callback)
@@ -820,15 +860,16 @@ namespace Telegram.Controls.Cells
                 SubtitleLabel.Text = LastSeenConverter.GetLabel(user, false);
 
                 var infoLabel = Content as BadgeControl;
+                var tag = member.GetTag();
 
-                if (string.IsNullOrEmpty(member.Tag))
+                if (string.IsNullOrEmpty(tag))
                 {
                     infoLabel?.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
                     infoLabel?.Visibility = Visibility.Visible;
-                    infoLabel?.Text = member.Tag;
+                    infoLabel?.Text = tag;
                 }
 
                 if (member.Status is ChatMemberStatusAdministrator)
@@ -863,6 +904,55 @@ namespace Telegram.Controls.Cells
             }
 
             args.Handled = true;
+        }
+
+        public void UpdateChatSharedMembers(IClientService clientService, ChatMember member)
+        {
+            var user = clientService.GetMessageSender(member.MemberId) as User;
+            if (user == null)
+            {
+                return;
+            }
+
+            TitleLabel.Text = user.FullName();
+
+            SubtitleLabel.Text = LastSeenConverter.GetLabel(user, false);
+
+            var infoLabel = Content as BadgeControl;
+            var tag = member.GetTag();
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                infoLabel?.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                infoLabel?.Visibility = Visibility.Visible;
+                infoLabel?.Text = tag;
+            }
+
+            if (member.Status is ChatMemberStatusAdministrator)
+            {
+                var color = Color.FromArgb(0xFF, 0x75, 0xC8, 0x73);
+
+                infoLabel?.Background = new SolidColorBrush(color) { Opacity = 0.2 };
+                infoLabel?.Foreground = new SolidColorBrush(color.Darken());
+            }
+            else if (member.Status is ChatMemberStatusCreator)
+            {
+                var color = Color.FromArgb(0xFF, 0x65, 0x60, 0xF6);
+
+                infoLabel?.Background = new SolidColorBrush(color) { Opacity = 0.2 };
+                infoLabel?.Foreground = new SolidColorBrush(color.Darken());
+            }
+            else
+            {
+                infoLabel?.ClearValue(BackgroundProperty);
+                infoLabel?.ClearValue(ForegroundProperty);
+            }
+
+            Photo.Source = ProfilePictureSource.User(clientService, user);
+            Identity.SetStatus(clientService, user, BotVerified);
         }
 
         public void UpdateNotificationException(IClientService clientService, ContainerContentChangingEventArgs args, TypedEventHandler<ListViewBase, ContainerContentChangingEventArgs> callback)

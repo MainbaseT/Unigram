@@ -15,7 +15,7 @@ using Telegram.Views.Supergroups.Popups;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupMembersViewModel : SupergroupMembersViewModelBase, IDelegable<ISupergroupDelegate>, IHandle
+    public partial class SupergroupMembersViewModel : SupergroupMembersViewModelBase, IDelegable<ISupergroupMembersDelegate>, IHandle
     {
         public SupergroupMembersViewModel(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator)
             : base(clientService, settingsService, aggregator, new SupergroupMembersFilterRecent(), query => new SupergroupMembersFilterSearch(query))
@@ -36,7 +36,10 @@ namespace Telegram.ViewModels.Supergroups
                 {
                     if (update.NewChatMember.Status is ChatMemberStatusMember or ChatMemberStatusAdministrator or ChatMemberStatusCreator or ChatMemberStatusRestricted)
                     {
+                        item.Tag = update.NewChatMember.Tag;
                         item.Status = update.NewChatMember.Status;
+
+                        Delegate?.UpdateMember(item);
                     }
                     else
                     {

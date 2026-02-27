@@ -690,6 +690,7 @@
     <Compile Include="ViewModels\Delegates\IDirectMessagesTopicDelegate.cs" />
     <Compile Include="ViewModels\Delegates\IReactionsDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ISavedMessagesChatsDelegate.cs" />
+    <Compile Include="ViewModels\Delegates\ISupergroupMembersDelegate.cs" />
     <Compile Include="ViewModels\Delegates\ITopicListDelegate.cs" />
     <Compile Include="ViewModels\DialogBusinessRepliesViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\DialogPendingTextMessage.cs" />

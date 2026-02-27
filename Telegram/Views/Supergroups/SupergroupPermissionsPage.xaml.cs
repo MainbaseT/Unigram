@@ -17,11 +17,12 @@ using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Supergroups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views.Supergroups
 {
-    public sealed partial class SupergroupPermissionsPage : HostedPage, ISupergroupDelegate, ISearchablePage
+    public sealed partial class SupergroupPermissionsPage : HostedPage, ISupergroupMembersDelegate, ISearchablePage
     {
         public SupergroupPermissionsViewModel ViewModel => DataContext as SupergroupPermissionsViewModel;
 
@@ -98,9 +99,41 @@ namespace Telegram.Views.Supergroups
                 : Strings.SlowmodeInfoOff;
         }
 
+        public void UpdateBasicGroup(Chat chat, BasicGroup group, BasicGroupFullInfo fullInfo)
+        {
+            AddNew.Visibility = group.CanRestrictMembers() ? Visibility.Visible : Visibility.Collapsed;
+            Footer.Text = Strings.NoBlockedGroup;
+
+            PinMessages.IsEnabled = true;
+            ChangeInfo.IsEnabled = true;
+
+            if (fullInfo == null)
+            {
+                return;
+            }
+
+            Blacklist.Badge = 0;
+            ViewModel.SlowModeDelay = 0;
+
+            ViewModel.ChargePerMessage = false;
+            ViewModel.PaidMessageStarCount = 0;
+
+            PaidMessagesPanel.Visibility = Visibility.Collapsed;
+
+            SlowmodePanel.Footer = Strings.SlowmodeInfoOff;
+        }
+
         public void UpdateChat(Chat chat) { }
         public void UpdateChatTitle(Chat chat) { }
         public void UpdateChatPhoto(Chat chat) { }
+
+        public void UpdateMember(ChatMember member)
+        {
+            var container = ScrollingHost.ContainerFromItem(member) as SelectorItem;
+            var content = container?.ContentTemplateRoot as ProfileCell;
+
+            content?.UpdateSupergroupMember(ViewModel.ClientService, member);
+        }
 
         private string ConvertPriceValue(int value)
         {

@@ -14,11 +14,12 @@ using Telegram.ViewModels.Delegates;
 using Telegram.ViewModels.Supergroups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views.Supergroups
 {
-    public sealed partial class SupergroupAdministratorsPage : HostedPage, IBasicAndSupergroupDelegate
+    public sealed partial class SupergroupAdministratorsPage : HostedPage, ISupergroupMembersDelegate
     {
         public SupergroupAdministratorsViewModel ViewModel => DataContext as SupergroupAdministratorsViewModel;
 
@@ -142,6 +143,14 @@ namespace Telegram.Views.Supergroups
             HeaderPanel.Visibility = EventLog.Visibility == Visibility.Visible || AddNew.Visibility == Visibility.Visible
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+        }
+
+        public void UpdateMember(ChatMember member)
+        {
+            var container = ScrollingHost.ContainerFromItem(member) as SelectorItem;
+            var content = container?.ContentTemplateRoot as ProfileCell;
+
+            content?.UpdateSupergroupMember(ViewModel.ClientService, member);
         }
 
         private string ConvertSignMessagesFooter(bool showMessageSender)

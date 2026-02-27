@@ -17,14 +17,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Supergroups
 {
-    public partial class SupergroupMembersViewModelBase : SupergroupViewModelBase, IDelegable<ISupergroupDelegate>
+    public partial class SupergroupMembersViewModelBase : SupergroupViewModelBase, IDelegable<ISupergroupMembersDelegate>
     {
         private readonly SupergroupMembersFilter _filter;
         private readonly Func<string, SupergroupMembersFilter> _find;
 
         private int _memberCount;
 
-        public ISupergroupDelegate Delegate { get; set; }
+        public ISupergroupMembersDelegate Delegate { get; set; }
 
         public SupergroupMembersViewModelBase(IClientService clientService, ISettingsService settingsService, IEventAggregator aggregator, SupergroupMembersFilter filter, Func<string, SupergroupMembersFilter> search)
             : base(clientService, settingsService, aggregator)
