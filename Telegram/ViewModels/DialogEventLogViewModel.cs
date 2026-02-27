@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Telegram.ViewModels
 
         private long _minEventId = long.MaxValue;
 
-        private ChatEventLogFilters _filters = new(true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+        private ChatEventLogFilters _filters = new(true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
         public ChatEventLogFilters Filters
         {
             get => _filters;
@@ -298,6 +299,8 @@ namespace Telegram.ViewModels
                     case ChatEventAccentColorChanged:
                     case ChatEventProfileAccentColorChanged:
                     case ChatEventEmojiStatusChanged:
+                    case ChatEventMemberTagChanged:
+                    case ChatEventIsForumToggled:
                         message = GetMessage(_chat.Id, channel, item);
                         message.Content = new MessageChatEvent(item);
                         break;
@@ -343,6 +346,11 @@ namespace Telegram.ViewModels
                         message = GetMessage(_chat.Id, channel, item);
                         message.Content = new MessageChatChangeTitle(titleChanged.NewTitle);
                         break;
+#if DEBUG
+                    default:
+                        Debugger.Break();
+                        break;
+#endif
                 }
 
                 if (message != null)
@@ -462,6 +470,14 @@ namespace Telegram.ViewModels
                 if (o.CanPinMessages != n.CanPinMessages)
                 {
                     AppendChange(n.CanPinMessages, Strings.EventLogRestrictedPinMessages);
+                }
+                if (o.CanEditTag != n.CanEditTag)
+                {
+                    AppendChange(n.CanEditTag, Strings.EventLogRestrictedEditRank);
+                }
+                if (o.CanCreateTopics != n.CanCreateTopics)
+                {
+                    AppendChange(n.CanCreateTopics, Strings.EventLogRestrictedCreateTopics);
                 }
 
                 string text = rights.ToString();
@@ -652,6 +668,14 @@ namespace Telegram.ViewModels
                         {
                             AppendChange(n.Permissions.CanPinMessages, Strings.EventLogRestrictedPinMessages);
                         }
+                        if (o.Permissions.CanEditTag != n.Permissions.CanEditTag)
+                        {
+                            AppendChange(n.Permissions.CanEditTag, Strings.EventLogRestrictedEditRank);
+                        }
+                        if (o.Permissions.CanCreateTopics != n.Permissions.CanCreateTopics)
+                        {
+                            AppendChange(n.Permissions.CanCreateTopics, Strings.EventLogRestrictedCreateTopics);
+                        }
 
                         text = rights.ToString();
                     }
@@ -800,6 +824,14 @@ namespace Telegram.ViewModels
                     if (o.CanPinMessages != n.CanPinMessages)
                     {
                         AppendChange(n.CanPinMessages, Strings.EventLogPromotedPinMessages);
+                    }
+                    if (o.CanManageTags != n.CanManageTags)
+                    {
+                        AppendChange(n.CanManageTags, Strings.EventLogPromotedEditRank);
+                    }
+                    if (o.CanManageTopics != n.CanManageTopics)
+                    {
+                        AppendChange(n.CanManageTopics, Strings.EventLogPromotedManageTopics);
                     }
                     if (o.CanManageVideoChats != n.CanManageVideoChats)
                     {

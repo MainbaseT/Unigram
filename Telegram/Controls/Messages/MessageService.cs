@@ -748,6 +748,7 @@ namespace Telegram.Controls.Messages
                     ChatEventAccentColorChanged accentColorChanged => UpdateChatEventAccentColorChanged(message, accentColorChanged, history),
                     ChatEventProfileAccentColorChanged profileAccentColorChanged => UpdateChatEventProfileAccentColorChanged(message, profileAccentColorChanged, history),
                     ChatEventEmojiStatusChanged emojiStatusChanged => UpdateChatEventEmojiStatusChanged(message, emojiStatusChanged, history),
+                    ChatEventMemberTagChanged memberTagChanged => UpdateChatEventMemberTagChanged(message, memberTagChanged, history),
                     ChatEventBackgroundChanged backgroundChanged => UpdateChatEventBackgroundChanged(message, backgroundChanged, history),
                     //ChatEventActiveUsernamesChanged activeUsernamesChanged => UpdateChatEventActiveUsernames(messageUsernamesChanged),
                     _ => _emptyString
@@ -907,6 +908,31 @@ namespace Telegram.Controls.Messages
             //}
 
             //return new FormattedText(content, entities);
+        }
+
+        private static FormattedText UpdateChatEventMemberTagChanged(MessageWithOwner message, ChatEventMemberTagChanged memberTagChanged, bool history)
+        {
+            var newValue = !string.IsNullOrEmpty(memberTagChanged.NewTag);
+            var oldValue = !string.IsNullOrEmpty(memberTagChanged.OldTag);
+
+            var outgoing = message.SenderId.IsUser(memberTagChanged.UserId);
+
+            if (newValue && oldValue)
+            {
+                return outgoing
+                    ? FormattedText.Format(ReplaceWithLink(Strings.EventLogRankSelfEdit, message.GetSender()), memberTagChanged.OldTag, memberTagChanged.NewTag)
+                    : FormattedText.Format(ReplaceWithLink(Strings.EventLogRankEdit, message.GetSender(), message.ClientService.GetUser(memberTagChanged.UserId)), memberTagChanged.OldTag, memberTagChanged.NewTag);
+            }
+            else if (newValue && !oldValue)
+            {
+                return outgoing
+                    ? FormattedText.Format(ReplaceWithLink(Strings.EventLogRankSelfAdd, message.GetSender()), memberTagChanged.NewTag)
+                    : FormattedText.Format(ReplaceWithLink(Strings.EventLogRankAdd, message.GetSender(), message.ClientService.GetUser(memberTagChanged.UserId)), memberTagChanged.NewTag);
+            }
+
+            return outgoing
+                ? FormattedText.Format(ReplaceWithLink(Strings.EventLogRankSelfRemove, message.GetSender()), memberTagChanged.OldTag)
+                : FormattedText.Format(ReplaceWithLink(Strings.EventLogRankRemove, message.GetSender(), message.ClientService.GetUser(memberTagChanged.UserId)), memberTagChanged.OldTag);
         }
 
         private static FormattedText UpdateChatEventBackgroundChanged(MessageWithOwner message, ChatEventBackgroundChanged backgroundChanged, bool history)
