@@ -3606,6 +3606,9 @@ Do you want to revoke verification?</value>
   <data name="CantBoostWithGiftedPremiumDescription" xml:space="preserve">
     <value>Because your **Telegram Premium** subscription was gifted to you, you can&apos;t use it to boost channels.</value>
   </data>
+  <data name="CantEditTagAdmins" xml:space="preserve">
+    <value>Only admins can set member tags in this group.</value>
+  </data>
   <data name="Caption" xml:space="preserve">
     <value>Caption</value>
   </data>
@@ -4312,6 +4315,12 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="ChatsUnmute" xml:space="preserve">
     <value>Unmute</value>
+  </data>
+  <data name="ChatTagAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="ChatTagOwner" xml:space="preserve">
+    <value>Owner</value>
   </data>
   <data name="ChatThemeChangedTo" xml:space="preserve">
     <value>{0} changed the chat theme to {1}</value>
@@ -5442,6 +5451,9 @@ Anyone from the channel will be able to see messages in this group.</value>
   </data>
   <data name="EditAdminEditStories" xml:space="preserve">
     <value>Edit Stories of Others</value>
+  </data>
+  <data name="EditAdminEditTags" xml:space="preserve">
+    <value>Edit Member Tags</value>
   </data>
   <data name="EditAdminGroupDeleteMessages" xml:space="preserve">
     <value>Delete Messages</value>
@@ -6663,11 +6675,23 @@ Duration: {1}</value>
   <data name="ForwardSelected" xml:space="preserve">
     <value>Forward Selected</value>
   </data>
+  <data name="ForwardsRestrictedInfoBot" xml:space="preserve">
+    <value>Copying and forwarding is not allowed from this bot.</value>
+  </data>
   <data name="ForwardsRestrictedInfoChannel" xml:space="preserve">
     <value>Сopying and forwarding is not allowed in this channel.</value>
   </data>
   <data name="ForwardsRestrictedInfoGroup" xml:space="preserve">
     <value>Сopying and forwarding is not allowed from this group.</value>
+  </data>
+  <data name="ForwardsRestrictedInfoUser" xml:space="preserve">
+    <value>Сopying and forwarding is not allowed for this user.</value>
+  </data>
+  <data name="ForwardsRestrictedInfoUserBecauseUser" xml:space="preserve">
+    <value>**{0}** disabled copying and forwarding in this chat.</value>
+  </data>
+  <data name="ForwardsRestrictedInfoUserBecauseYou" xml:space="preserve">
+    <value>You disabled copying and forwarding in this chat.</value>
   </data>
   <data name="Fragment" xml:space="preserve">
     <value>Fragment</value>
@@ -8390,8 +8414,50 @@ This setting does not affect group chats.</value>
   <data name="IncreaseLimit" xml:space="preserve">
     <value>Increase Limit</value>
   </data>
+  <data name="InDay" xml:space="preserve">
+    <value>in one day</value>
+  </data>
+  <data name="InDays_one" xml:space="preserve">
+    <value>in {0} day</value>
+  </data>
+  <data name="InDays_other" xml:space="preserve">
+    <value>in {0} days</value>
+  </data>
   <data name="Info" xml:space="preserve">
     <value>Info</value>
+  </data>
+  <data name="InHour" xml:space="preserve">
+    <value>in one hour</value>
+  </data>
+  <data name="InHours_one" xml:space="preserve">
+    <value>in {0} hour</value>
+  </data>
+  <data name="InHours_other" xml:space="preserve">
+    <value>in {0} hours</value>
+  </data>
+  <data name="InMinute" xml:space="preserve">
+    <value>in one minute</value>
+  </data>
+  <data name="InMinutes_one" xml:space="preserve">
+    <value>in {0} minute</value>
+  </data>
+  <data name="InMinutes_other" xml:space="preserve">
+    <value>in {0} minutes</value>
+  </data>
+  <data name="InMonth" xml:space="preserve">
+    <value>in one month</value>
+  </data>
+  <data name="InMonths_one" xml:space="preserve">
+    <value>in {0} month</value>
+  </data>
+  <data name="InMonths_other" xml:space="preserve">
+    <value>in {0} months</value>
+  </data>
+  <data name="InSeconds_one" xml:space="preserve">
+    <value>in {0} second</value>
+  </data>
+  <data name="InSeconds_other" xml:space="preserve">
+    <value>in {0} seconds</value>
   </data>
   <data name="InstallBetaUpdates" xml:space="preserve">
     <value>Install Beta Updates</value>
@@ -8482,6 +8548,15 @@ This setting does not affect group chats.</value>
   </data>
   <data name="InviteToGroupError" xml:space="preserve">
     <value>Sorry, you can&apos;t add this user to groups because of their privacy settings.</value>
+  </data>
+  <data name="InYear" xml:space="preserve">
+    <value>in one year</value>
+  </data>
+  <data name="InYears_one" xml:space="preserve">
+    <value>in {0} year</value>
+  </data>
+  <data name="InYears_other" xml:space="preserve">
+    <value>in {0} years</value>
   </data>
   <data name="IpAddress" xml:space="preserve">
     <value>IP address</value>
@@ -9236,6 +9311,27 @@ Minimum length is 5 characters.</value>
   </data>
   <data name="MembersTalkingNobody" xml:space="preserve">
     <value>Click to join</value>
+  </data>
+  <data name="MemberTagButtonAdd" xml:space="preserve">
+    <value>Add Tag</value>
+  </data>
+  <data name="MemberTagButtonEdit" xml:space="preserve">
+    <value>Edit Tag</value>
+  </data>
+  <data name="MemberTagButtonRemove" xml:space="preserve">
+    <value>Remove Tag</value>
+  </data>
+  <data name="MemberTagHintAdd" xml:space="preserve">
+    <value>Add Member Tag</value>
+  </data>
+  <data name="MemberTagHintEdit" xml:space="preserve">
+    <value>Edit Member Tag</value>
+  </data>
+  <data name="MemberTagInfo" xml:space="preserve">
+    <value>Share your role, title or how you’re known in this group. Your tag is visible to all members.</value>
+  </data>
+  <data name="MemberTagTitle" xml:space="preserve">
+    <value>Member Tag</value>
   </data>
   <data name="Mention" xml:space="preserve">
     <value>Mention</value>
@@ -11946,6 +12042,15 @@ seamlessly and efficiently.</value>
   <data name="Regular" xml:space="preserve">
     <value>Regular</value>
   </data>
+  <data name="RelativeDateMenuAddToACalendar" xml:space="preserve">
+    <value>Add to Calendar</value>
+  </data>
+  <data name="RelativeDateMenuCopy" xml:space="preserve">
+    <value>Copy Date</value>
+  </data>
+  <data name="RelativeDateMenuSetAReminder" xml:space="preserve">
+    <value>Set a Reminder</value>
+  </data>
   <data name="RemindDayAt" xml:space="preserve">
     <value>&apos;Remind on&apos; MMM d &apos;at&apos; HH:mm</value>
   </data>
@@ -12727,6 +12832,12 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="Seconds_other" xml:space="preserve">
     <value>{0} seconds</value>
+  </data>
+  <data name="SecondsAgo_one" xml:space="preserve">
+    <value>{0} second ago</value>
+  </data>
+  <data name="SecondsAgo_other" xml:space="preserve">
+    <value>{0} seconds ago</value>
   </data>
   <data name="SecretChat" xml:space="preserve">
     <value>Secret Chats</value>
@@ -15659,6 +15770,9 @@ However, it is currently available for purchase. **Learn more…**</value>
   <data name="UserRestrictionsDuration" xml:space="preserve">
     <value>Duration</value>
   </data>
+  <data name="UserRestrictionsEditTags" xml:space="preserve">
+    <value>Edit Own Tags</value>
+  </data>
   <data name="UserRestrictionsEmbedLinks" xml:space="preserve">
     <value>Embed Links</value>
   </data>
@@ -15697,6 +15811,9 @@ However, it is currently available for purchase. **Learn more…**</value>
   </data>
   <data name="UserRestrictionsSendVoices" xml:space="preserve">
     <value>Send Voice Messages</value>
+  </data>
+  <data name="UserRestrictionsTagInfo" xml:space="preserve">
+    <value>Add short tag next to {0}’s name.</value>
   </data>
   <data name="UserRestrictionsUntil" xml:space="preserve">
     <value>Restricted until</value>

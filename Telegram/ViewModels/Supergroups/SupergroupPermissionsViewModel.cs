@@ -46,6 +46,7 @@ namespace Telegram.ViewModels.Supergroups
             CanSendPolls = chat.Permissions.CanSendPolls;
             CanAddLinkPreviews = chat.Permissions.CanAddLinkPreviews;
             CanSendBasicMessages = chat.Permissions.CanSendBasicMessages;
+            CanEditTag = chat.Permissions.CanEditTag;
 
             UpdateCanSendMediaMessages();
 
@@ -74,6 +75,7 @@ namespace Telegram.ViewModels.Supergroups
                 {
                     if (update.NewChatMember.Status is ChatMemberStatusRestricted)
                     {
+                        item.Tag = update.NewChatMember.Tag;
                         item.Status = update.NewChatMember.Status;
                     }
                     else
@@ -336,6 +338,13 @@ namespace Telegram.ViewModels.Supergroups
             set => Set(ref _canChangeInfo, value);
         }
 
+        private bool _canEditTag;
+        public bool CanEditTag
+        {
+            get => _canEditTag;
+            set => Set(ref _canEditTag, value);
+        }
+
         #endregion
 
         private int _slowModeDelay;
@@ -424,7 +433,8 @@ namespace Telegram.ViewModels.Supergroups
                 CanSendVideoNotes = _canSendVideoNotes,
                 CanSendPolls = _canSendPolls,
                 CanAddLinkPreviews = _canAddLinkPreviews,
-                CanSendBasicMessages = _canSendBasicMessages
+                CanSendBasicMessages = _canSendBasicMessages,
+                CanEditTag = _canEditTag
             };
 
             var response = await ClientService.SendAsync(new SetChatPermissions(chat.Id, permissions));

@@ -52,7 +52,7 @@
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <CheckBox IsChecked="{x:Bind ViewModel.CanSendMediaMessages, Mode=TwoWay}"
-                                              Margin="8,-11,0,-12" />
+                                              Margin="2,-11,0,-12" />
                                     <TextBlock Grid.Column="1">
                                         <Run Text="{CustomResource UserRestrictionsSendMedia}" />
                                         <Run Text="{x:Bind ConvertCanSendCount(ViewModel.CanSendCount), Mode=OneWay}"
@@ -133,6 +133,11 @@
                         <CheckBox x:Name="PinMessages"
                                   IsChecked="{x:Bind ViewModel.CanPinMessages, Mode=TwoWay}"
                                   Content="{CustomResource UserRestrictionsPinMessages}"
+                                  Style="{StaticResource SettingsCheckBoxStyle}" />
+
+                        <CheckBox x:Name="EditOwnTags"
+                                  IsChecked="{x:Bind ViewModel.CanEditTag, Mode=TwoWay}"
+                                  Content="{CustomResource UserRestrictionsEditTags}"
                                   Style="{StaticResource SettingsCheckBoxStyle}" />
 
                         <CheckBox x:Name="ChangeInfo"

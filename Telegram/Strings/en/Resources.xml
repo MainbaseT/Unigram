@@ -13288,6 +13288,29 @@
     <string name="EnableSharing">Enable Sharing</string>
     <string name="PrivateMessagesChargePremiumLocked">Unlock with Telegram Premium</string>
 
+    <string name="RelativeDateMenuAddToACalendar">Add to Calendar</string>
+    <string name="RelativeDateMenuCopy">Copy Date</string>
+    <string name="RelativeDateMenuSetAReminder">Set a Reminder</string>
+    <string name="InYear">in one year</string>
+    <string name="InYears_one">in {0} year</string>
+    <string name="InYears_other">in {0} years</string>
+    <string name="InMonth">in one month</string>
+    <string name="InMonths_one">in {0} month</string>
+    <string name="InMonths_other">in {0} months</string>
+    <string name="InDay">in one day</string>
+    <string name="InDays_one">in {0} day</string>
+    <string name="InDays_other">in {0} days</string>
+    <string name="InHour">in one hour</string>
+    <string name="InHours_one">in {0} hour</string>
+    <string name="InHours_other">in {0} hours</string>
+    <string name="InMinute">in one minute</string>
+    <string name="InMinutes_one">in {0} minute</string>
+    <string name="InMinutes_other">in {0} minutes</string>
+    <string name="InSeconds_one">in {0} second</string>
+    <string name="InSeconds_other">in {0} seconds</string>
+    <string name="SecondsAgo_one">{0} second ago</string>
+    <string name="SecondsAgo_other">{0} seconds ago</string>
+
     <string name="ReportReactionAndBan">Ban and Report</string>
     <string name="ReportReaction">Report reaction</string>
     <string name="ReportAlertReaction">Are you sure you want to report reaction from this user?</string>
@@ -13327,8 +13350,27 @@
     <string name="TagInfoMemberTitle">Member Tag</string>
     <string name="TagInfoOwnerText">This purple tag un1 is **{0}’s** owner tag.\n**{0}** is the owner of **{1}**.</string>
     <string name="TagInfoOwnerTitle">Owner Tag</string>
+    <string name="CantEditTagAdmins">Only admins can set member tags in this group.</string>
+    <string name="UserRestrictionsEditTags">Edit Own Tags</string>
+    <string name="UserRestrictionsTagInfo">Add short tag next to {0}’s name.</string>
+    <string name="EditAdminEditTags">Edit Member Tags</string>
+
+    <string name="MemberTagButtonAdd">Add Tag</string>
+    <string name="MemberTagButtonEdit">Edit Tag</string>
+    <string name="MemberTagButtonRemove">Remove Tag</string>
+    <string name="MemberTagHintAdd">Add Member Tag</string>
+    <string name="MemberTagHintEdit">Edit Member Tag</string>
+    <string name="MemberTagInfo">Share your role, title or how you’re known in this group. Your tag is visible to all members.</string>
+    <string name="MemberTagTitle">Member Tag</string>
+    <string name="ChatTagAdmin">Admin</string>
+    <string name="ChatTagOwner">Owner</string>
 
     <string name="ShortToday">today</string>
     <string name="ShortYesterday">yesterday</string>
+
+    <string name="ForwardsRestrictedInfoBot">Copying and forwarding is not allowed from this bot.</string>
+    <string name="ForwardsRestrictedInfoUser">Сopying and forwarding is not allowed for this user.</string>
+    <string name="ForwardsRestrictedInfoUserBecauseUser">**{0}** disabled copying and forwarding in this chat.</string>
+    <string name="ForwardsRestrictedInfoUserBecauseYou">You disabled copying and forwarding in this chat.</string>
 
 </resources>

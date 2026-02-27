@@ -3399,7 +3399,47 @@ namespace Telegram.Td.Api
         public static int Count(this ChatPermissions permissions)
         {
             var count = 0;
+            if (permissions.CanSendBasicMessages)
+            {
+                count++;
+            }
+            if (permissions.CanSendAudios)
+            {
+                count++;
+            }
+            if (permissions.CanSendDocuments)
+            {
+                count++;
+            }
+            if (permissions.CanSendPhotos)
+            {
+                count++;
+            }
+            if (permissions.CanSendVideos)
+            {
+                count++;
+            }
+            if (permissions.CanSendVideoNotes)
+            {
+                count++;
+            }
+            if (permissions.CanSendVoiceNotes)
+            {
+                count++;
+            }
+            if (permissions.CanSendPolls)
+            {
+                count++;
+            }
+            if (permissions.CanSendOtherMessages)
+            {
+                count++;
+            }
             if (permissions.CanAddLinkPreviews)
+            {
+                count++;
+            }
+            if (permissions.CanEditTag)
             {
                 count++;
             }
@@ -3415,49 +3455,17 @@ namespace Telegram.Td.Api
             {
                 count++;
             }
-            if (permissions.CanSendVoiceNotes)
-            {
-                count++;
-            }
-            if (permissions.CanSendVideoNotes)
-            {
-                count++;
-            }
-            if (permissions.CanSendVideos)
-            {
-                count++;
-            }
-            if (permissions.CanSendPhotos)
-            {
-                count++;
-            }
-            if (permissions.CanSendDocuments)
-            {
-                count++;
-            }
-            if (permissions.CanSendAudios)
-            {
-                count++;
-            }
-            if (permissions.CanSendBasicMessages)
-            {
-                count++;
-            }
-            if (permissions.CanSendOtherMessages)
-            {
-                count++;
-            }
-            if (permissions.CanSendPolls)
-            {
-                count++;
-            }
+            //if (permissions.CanCreateTopics)
+            //{
+            //    count++;
+            //}
 
             return count;
         }
 
         public static int Total(this ChatPermissions permissions)
         {
-            return 13;
+            return 14;
         }
 
         public static bool CanCreateTopics(this Chat chat, IClientService clientService)
@@ -3969,6 +3977,54 @@ namespace Telegram.Td.Api
             }
 
             return basicGroup.Status is ChatMemberStatusCreator;
+        }
+
+        public static bool CanEditTag(this Supergroup supergroup, Chat chat, MessageSender sender, long myId)
+        {
+            if (supergroup.Status == null)
+            {
+                return false;
+            }
+
+            if (supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTags: true })
+            {
+                return true;
+            }
+            else if (supergroup.Status is ChatMemberStatusRestricted restricted)
+            {
+                return restricted.Permissions.CanEditTag && sender.IsUser(myId);
+            }
+
+            return chat.Permissions.CanEditTag && sender.IsUser(myId);
+        }
+
+        public static bool CanEditTag(this BasicGroup basicGroup, Chat chat, MessageSender sender, long myId)
+        {
+            if (basicGroup.Status == null)
+            {
+                return false;
+            }
+
+            if (basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTags: true })
+            {
+                return true;
+            }
+            else if (basicGroup.Status is ChatMemberStatusRestricted restricted)
+            {
+                return restricted.Permissions.CanEditTag && sender.IsUser(myId);
+            }
+
+            return chat.Permissions.CanEditTag && sender.IsUser(myId);
+        }
+
+        public static string GetTag(this ChatMember member)
+        {
+            return member.Status switch
+            {
+                ChatMemberStatusCreator => string.IsNullOrEmpty(member.Tag) ? Strings.ChatTagOwner : member.Tag,
+                ChatMemberStatusAdministrator => string.IsNullOrEmpty(member.Tag) ? Strings.ChatTagAdmin : member.Tag,
+                _ => member.Tag
+            };
         }
 
         public static bool CanInviteUsers(this Supergroup supergroup, Chat chat)
