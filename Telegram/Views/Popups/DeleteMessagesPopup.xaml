@@ -237,6 +237,10 @@
                               IsChecked="{x:Bind ViewModel.CanPinMessages, Mode=TwoWay}"
                               Content="{CustomResource UserRestrictionsPinMessages}" />
 
+                    <CheckBox x:Name="CanEditTag"
+                              IsChecked="{x:Bind ViewModel.CanEditTag, Mode=TwoWay}"
+                              Content="{CustomResource UserRestrictionsEditTags}" />
+
                     <CheckBox x:Name="CanChangeInfo"
                               IsChecked="{x:Bind ViewModel.CanChangeInfo, Mode=TwoWay}"
                               Content="{CustomResource UserRestrictionsChangeInfo}" />

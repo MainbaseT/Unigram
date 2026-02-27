@@ -214,6 +214,7 @@ namespace Telegram.Views.Popups
             ViewModel.CanInviteUsers = chat.Permissions.CanInviteUsers;
             ViewModel.CanPinMessages = chat.Permissions.CanPinMessages;
             ViewModel.CanChangeInfo = chat.Permissions.CanChangeInfo;
+            ViewModel.CanEditTag = chat.Permissions.CanEditTag;
 
             CanSendBasicMessages.IsEnabled = chat.Permissions.CanSendBasicMessages;
             CanSendPhotos.IsEnabled = chat.Permissions.CanSendPhotos;
