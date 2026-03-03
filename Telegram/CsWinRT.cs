@@ -59,7 +59,15 @@ namespace WinRT
     // This attribute is just a dummy for making it easier to port the code to .NET 9 and Native AOT.
     public partial class GeneratedBindableCustomPropertyAttribute : Attribute
     {
+        public GeneratedBindableCustomPropertyAttribute()
+        {
 
+        }
+
+        public GeneratedBindableCustomPropertyAttribute(object arg1, object arg2)
+        {
+
+        }
     }
 }
 #endif

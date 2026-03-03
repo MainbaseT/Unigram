@@ -275,7 +275,7 @@ namespace Telegram.Controls.Cells
 
         private void Paragraph_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
-            MessageHelper.Hyperlink_ContextRequested(null, sender, args);
+            MessageHelper.Hyperlink_ContextRequested(null, sender, args, null);
         }
 
         private void InstantView_Click(Hyperlink sender, string link)

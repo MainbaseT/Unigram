@@ -211,14 +211,7 @@ namespace Telegram.ViewModels
 
         public string GetAdminTitle(MessageViewModel message, long userId, out ChatMemberRank rank)
         {
-            var chat = Chat;
-            if (chat == null)
-            {
-                rank = ChatMemberRank.Other;
-                return string.Empty;
-            }
-
-            if (_admins.TryGetValue(chat.Id, out Dictionary<long, ChatMemberTag> value))
+            if (_admins.TryGetValue(message.ChatId, out Dictionary<long, ChatMemberTag> value))
             {
                 if (value.TryGetValue(userId, out ChatMemberTag tag))
                 {
@@ -228,10 +221,10 @@ namespace Telegram.ViewModels
                     {
                         if (tag.Rank == ChatMemberRank.Owner)
                         {
-                            return Strings.ChannelCreator;
+                            return Strings.ChatTagOwner;
                         }
 
-                        return Strings.ChannelAdmin;
+                        return Strings.ChatTagAdmin;
                     }
 
                     return tag.Tag;
@@ -283,6 +276,8 @@ namespace Telegram.ViewModels
 
                     members[senderUser.UserId] = new ChatMemberTag(type, member.Tag);
                 }
+
+                _admins[chat.Id] = members;
             }
             else if (chat.Type is ChatTypeSupergroup { IsChannel: false })
             {

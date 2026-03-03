@@ -921,7 +921,7 @@ namespace Telegram.ViewModels
 
             var protectedContent = chat.HasProtectedContent;
 
-            if (!protectedContent && (!IsPremium || Settings.ToolTip.Required("DisableSharing")))
+            if (!protectedContent && (Constants.DEBUG || !IsPremium || Settings.ToolTip.Required("DisableSharing")))
             {
                 var confirm = await ShowPopupAsync(new DisableSharingPopup(ClientService));
                 if (confirm != ContentDialogResult.Primary)

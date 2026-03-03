@@ -50,13 +50,6 @@ namespace Telegram.Td.Api
         /// <summary>
         /// User rights changed in a chat; for bots only
         /// </summary>
-        public UpdateChatMember()
-        {
-        }
-
-        /// <summary>
-        /// User rights changed in a chat; for bots only
-        /// </summary>
         /// <param name="chatId">Chat identifier</param>
         /// <param name="actorUserId">Identifier of the user, changing the rights</param>
         /// <param name="date">Point in time (Unix timestamp) when the user rights were changed</param>

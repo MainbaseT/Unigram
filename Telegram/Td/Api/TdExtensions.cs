@@ -4056,6 +4056,16 @@ namespace Telegram.Td.Api
             return supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanRestrictMembers: true };
         }
 
+        public static bool CanRestrictMembers(this BasicGroup basicGroup)
+        {
+            if (basicGroup.Status == null)
+            {
+                return false;
+            }
+
+            return basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanRestrictMembers: true };
+        }
+
         public static bool CanPromoteMembers(this Supergroup supergroup)
         {
             if (supergroup.Status == null)
