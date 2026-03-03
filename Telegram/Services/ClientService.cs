@@ -3530,7 +3530,7 @@ namespace Telegram.Services
                     {
                         if (_chats.TryGetValue(updateChatReplyMarkup.ChatId, out Chat value))
                         {
-                            value.ReplyMarkupMessageId = updateChatReplyMarkup.ReplyMarkupMessageId;
+                            value.ReplyMarkupMessageId = updateChatReplyMarkup.ReplyMarkupMessage?.Id ?? 0;
                         }
 
                         break;

@@ -482,15 +482,7 @@ namespace Telegram.ViewModels
         {
             if (update.ChatId == _chat?.Id)
             {
-                var response = await ClientService.SendAsync(new GetMessage(update.ChatId, update.ReplyMarkupMessageId));
-                if (response is Message message)
-                {
-                    BeginOnUIThread(() => Delegate?.UpdateChatReplyMarkup(_chat, CreateMessage(message)));
-                }
-                else
-                {
-                    BeginOnUIThread(() => Delegate?.UpdateChatReplyMarkup(_chat, null));
-                }
+                BeginOnUIThread(() => Delegate?.UpdateChatReplyMarkup(_chat, CreateMessage(update.ReplyMarkupMessage)));
             }
         }
 
