@@ -4086,42 +4086,38 @@ namespace Telegram.Td.Api
             return basicGroup.Status is ChatMemberStatusCreator;
         }
 
-        public static bool CanEditTag(this Supergroup supergroup, Chat chat, MessageSender sender, long myId)
+        public static bool CanEditTag(this Supergroup supergroup, Chat chat, ChatMember member, long myId)
         {
-            if (supergroup.Status == null)
+            var can_manage_ranks = supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTags: true };
+            var can_edit_rank = supergroup.Status is ChatMemberStatusRestricted { Permissions.CanEditTag: true } || chat.Permissions.CanEditTag;
+
+            if (member.MemberId.IsUser(myId))
             {
-                return false;
+                return can_manage_ranks || can_edit_rank;
+            }
+            else if (member.Status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.CanBeEdited;
             }
 
-            if (supergroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTags: true })
-            {
-                return true;
-            }
-            else if (supergroup.Status is ChatMemberStatusRestricted restricted)
-            {
-                return restricted.Permissions.CanEditTag && sender.IsUser(myId);
-            }
-
-            return chat.Permissions.CanEditTag && sender.IsUser(myId);
+            return can_manage_ranks;
         }
 
-        public static bool CanEditTag(this BasicGroup basicGroup, Chat chat, MessageSender sender, long myId)
+        public static bool CanEditTag(this BasicGroup basicGroup, Chat chat, ChatMember member, long myId)
         {
-            if (basicGroup.Status == null)
+            var can_manage_ranks = basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTags: true };
+            var can_edit_rank = basicGroup.Status is ChatMemberStatusRestricted { Permissions.CanEditTag: true } || chat.Permissions.CanEditTag;
+
+            if (member.MemberId.IsUser(myId))
             {
-                return false;
+                return can_manage_ranks || can_edit_rank;
+            }
+            else if (member.Status is ChatMemberStatusAdministrator administrator)
+            {
+                return administrator.CanBeEdited;
             }
 
-            if (basicGroup.Status is ChatMemberStatusCreator or ChatMemberStatusAdministrator { Rights.CanManageTags: true })
-            {
-                return true;
-            }
-            else if (basicGroup.Status is ChatMemberStatusRestricted restricted)
-            {
-                return restricted.Permissions.CanEditTag && sender.IsUser(myId);
-            }
-
-            return chat.Permissions.CanEditTag && sender.IsUser(myId);
+            return can_manage_ranks;
         }
 
         public static string GetTag(this ChatMember member)

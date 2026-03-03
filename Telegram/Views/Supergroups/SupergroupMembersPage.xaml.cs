@@ -73,7 +73,7 @@ namespace Telegram.Views.Supergroups
 
             var flyout = new MenuFlyout();
 
-            if (ViewModel.ClientService.CanEditTag(chat, member.MemberId))
+            if (ViewModel.ClientService.CanEditTag(chat, member))
             {
                 flyout.CreateFlyoutItem(ViewModel.EditTag, member, member.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator ? Strings.EditAdminTag : Strings.EditMemberTag, Icons.PersonTag);
             }

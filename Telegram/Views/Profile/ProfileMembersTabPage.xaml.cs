@@ -79,7 +79,7 @@ namespace Telegram.Views.Profile
                 return;
             }
 
-            if (ViewModel.ClientService.CanEditTag(chat, member.MemberId))
+            if (ViewModel.ClientService.CanEditTag(chat, member))
             {
                 flyout.CreateFlyoutItem(ViewModel.MembersTab.EditTag, member, member.Status is ChatMemberStatusAdministrator or ChatMemberStatusCreator ? Strings.EditAdminTag : Strings.EditMemberTag, Icons.PersonTag);
             }
