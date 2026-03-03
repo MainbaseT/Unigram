@@ -74,6 +74,8 @@ namespace Telegram.Controls
                 }
             }
 
+            Closing += OnClosing;
+
             Connected += OnLoaded;
             Disconnected += OnUnloaded;
 
@@ -82,6 +84,14 @@ namespace Telegram.Controls
             this.RegisterPropertyChangedCallback(PrimaryButtonTextProperty, OnButtonTextChanged, ref _primaryTextToken);
             this.RegisterPropertyChangedCallback(SecondaryButtonTextProperty, OnButtonTextChanged, ref _secondaryTextToken);
             this.RegisterPropertyChangedCallback(CloseButtonTextProperty, OnButtonTextChanged, ref _closeTextToken);
+        }
+
+        private ContentDialogResult _closingResult;
+        private TaskCompletionSource<ContentDialogResult> _closingTask;
+
+        private void OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            _closingResult = args.Result;
         }
 
         private void OnCloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -190,18 +200,18 @@ namespace Telegram.Controls
             this.RegisterPropertyChangedCallback(SecondaryButtonTextProperty, OnButtonTextChanged, ref _secondaryTextToken);
             this.RegisterPropertyChangedCallback(CloseButtonTextProperty, OnButtonTextChanged, ref _closeTextToken);
 
-            try
-            {
-                if (XamlRoot.Content is IPopupHost host)
-                {
-                    host.PopupOpened();
-                }
-            }
-            catch
-            {
-                // XamlRoot.Content seems to throw a NullReferenceException
-                // whenever corresponding window has been already closed.
-            }
+            //try
+            //{
+            //    if (XamlRoot.Content is IPopupHost host)
+            //    {
+            //        host.PopupOpened();
+            //    }
+            //}
+            //catch
+            //{
+            //    // XamlRoot.Content seems to throw a NullReferenceException
+            //    // whenever corresponding window has been already closed.
+            //}
 
             var canvas = VisualTreeHelper.GetParent(this) as Canvas;
             if (canvas != null)
@@ -249,18 +259,18 @@ namespace Telegram.Controls
             this.UnregisterPropertyChangedCallback(SecondaryButtonTextProperty, ref _secondaryTextToken);
             this.UnregisterPropertyChangedCallback(CloseButtonTextProperty, ref _closeTextToken);
 
-            try
-            {
-                if (XamlRoot.Content is IPopupHost host)
-                {
-                    host.PopupClosed();
-                }
-            }
-            catch
-            {
-                // XamlRoot.Content seems to throw a NullReferenceException
-                // whenever corresponding window has been already closed.
-            }
+            //try
+            //{
+            //    if (XamlRoot.Content is IPopupHost host)
+            //    {
+            //        host.PopupClosed();
+            //    }
+            //}
+            //catch
+            //{
+            //    // XamlRoot.Content seems to throw a NullReferenceException
+            //    // whenever corresponding window has been already closed.
+            //}
         }
 
         private void OnProcessKeyboardAccelerators(UIElement sender, ProcessKeyboardAcceleratorEventArgs args)
@@ -329,6 +339,7 @@ namespace Telegram.Controls
 
             if (LayoutRoot != null)
             {
+                LayoutRoot.RegisterPropertyChangedCallback(IsHitTestVisibleProperty, OnIsHitTestVisibleChanged);
                 LayoutRoot.ProcessKeyboardAccelerators += OnProcessKeyboardAccelerators;
                 ElementCompositionPreview.SetIsTranslationEnabled(LayoutRoot, true);
             }
@@ -338,6 +349,79 @@ namespace Telegram.Controls
             this.RegisterPropertyChangedCallback(CloseButtonTextProperty, OnButtonTextChanged, ref _closeTextToken);
 
             CalculateButtonsVisualState();
+        }
+
+        private void OnIsHitTestVisibleChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (!LayoutRoot.IsHitTestVisible)
+            {
+                VisualUtilities.QueueCallbackForCompositionRendered(Test);
+            }
+        }
+
+        private void Test()
+        {
+            _closingTask?.TrySetResult(_closingResult);
+        }
+
+        [ThreadStatic]
+        private static TaskCompletionSource<ContentDialogResult> _currentDialogShowRequest;
+
+        /// <summary>
+        /// Begins an asynchronous operation showing a dialog.
+        /// If another dialog is already shown using
+        /// ShowQueuedAsync or ShowIfPossibleAsync method - it will wait
+        /// for that previous dialog to be dismissed before showing the new one.
+        /// </summary>
+        /// <param name="dialog">The dialog.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">This method can only be invoked from UI thread.</exception>
+        public async Task<ContentDialogResult> ShowQueuedAsync(XamlRoot xamlRoot)
+        {
+            while (_currentDialogShowRequest != null)
+            {
+                await _currentDialogShowRequest.Task;
+            }
+
+            Logger.Info(GetType().Name);
+
+            XamlRoot = xamlRoot;
+            OnCreate();
+
+            _closingTask = new TaskCompletionSource<ContentDialogResult>();
+            _currentDialogShowRequest = _closingTask;
+            _ = ShowAsync();
+
+            try
+            {
+                if (XamlRoot.Content is IPopupHost host)
+                {
+                    host.PopupOpened();
+                }
+            }
+            catch
+            {
+                // XamlRoot.Content seems to throw a NullReferenceException
+                // whenever corresponding window has been already closed.
+            }
+
+            var result = await _closingTask.Task;
+            _currentDialogShowRequest = null;
+
+            try
+            {
+                if (XamlRoot.Content is IPopupHost host)
+                {
+                    host.PopupClosed();
+                }
+            }
+            catch
+            {
+                // XamlRoot.Content seems to throw a NullReferenceException
+                // whenever corresponding window has been already closed.
+            }
+
+            return result;
         }
 
         private void OnButtonTextChanged(DependencyObject sender, DependencyProperty dp)
@@ -584,19 +668,6 @@ namespace Telegram.Controls
 
         #endregion
 
-        #region SecondaryBackground
-
-        public Brush SecondaryBackground
-        {
-            get { return (Brush)GetValue(SecondaryBackgroundProperty); }
-            set { SetValue(SecondaryBackgroundProperty, value); }
-        }
-
-        public static readonly DependencyProperty SecondaryBackgroundProperty =
-            DependencyProperty.Register("SecondaryBackground", typeof(Brush), typeof(ContentPopup), new PropertyMetadata(null));
-
-        #endregion
-
         #region ContentMaxWidth
 
         public double ContentMaxWidth
@@ -782,33 +853,33 @@ namespace Telegram.Controls
             args.Cancel = sender.Tag != null;
         }
 
-        [ThreadStatic]
-        private static TaskCompletionSource<ContentDialog> _currentDialogShowRequest;
+        //[ThreadStatic]
+        //private static TaskCompletionSource<ContentDialog> _currentDialogShowRequest;
 
-        public async Task<ContentDialogResult> ShowQueuedAsync(XamlRoot xamlRoot)
-        {
-            while (_currentDialogShowRequest != null)
-            {
-                await _currentDialogShowRequest.Task;
-            }
+        //public async Task<ContentDialogResult> ShowQueuedAsync(XamlRoot xamlRoot)
+        //{
+        //    while (_currentDialogShowRequest != null)
+        //    {
+        //        await _currentDialogShowRequest.Task;
+        //    }
 
-            var dialog = this;
-            Logger.Info(dialog.GetType().Name);
+        //    var dialog = this;
+        //    Logger.Info(dialog.GetType().Name);
 
-            if (dialog is ContentPopup popup)
-            {
-                popup.OnCreate();
-            }
+        //    if (dialog is ContentPopup popup)
+        //    {
+        //        popup.OnCreate();
+        //    }
 
-            dialog.XamlRoot = xamlRoot;
+        //    dialog.XamlRoot = xamlRoot;
 
-            var request = _currentDialogShowRequest = new TaskCompletionSource<ContentDialog>();
-            var result = await dialog.ShowAsync();
-            _currentDialogShowRequest = null;
-            request.SetResult(dialog);
+        //    var request = _currentDialogShowRequest = new TaskCompletionSource<ContentDialog>();
+        //    var result = await dialog.ShowAsync();
+        //    _currentDialogShowRequest = null;
+        //    request.SetResult(dialog);
 
-            Logger.Info(dialog.GetType().Name + ", closed");
-            return result;
-        }
+        //    Logger.Info(dialog.GetType().Name + ", closed");
+        //    return result;
+        //}
     }
 }

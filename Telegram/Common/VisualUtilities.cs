@@ -23,6 +23,11 @@ namespace Telegram.Common
 {
     public partial class VisualUtilities
     {
+        public static bool IsInPopupTree(UIElement element)
+        {
+            return null != element.GetParent<ContentDialog>();
+        }
+
         public static SpriteVisual DropShadow(UIElement element, float radius = 20, float opacity = 0.25f, UIElement target = null)
         {
             var compositor = BootStrapper.Current.Compositor;

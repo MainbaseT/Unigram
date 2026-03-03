@@ -40,10 +40,29 @@ using WinRT;
 
 namespace Telegram.Navigation
 {
+    public class PopupActivatedEventArgs : EventArgs
+    {
+        public bool IsActive { get; }
+
+        public PopupActivatedEventArgs(bool isActive)
+        {
+            IsActive = isActive;
+        }
+    }
+
     public partial class WindowControl : Page, IPopupHost, IToastHost
     {
+        private readonly WindowContext _context;
+
+        public WindowControl(WindowContext window)
+        {
+            _context = window;
+        }
+
         public void PopupOpened()
         {
+            _context.RaisePopupActivated(true);
+
             if (OverlayWindow.Current != null)
             {
                 OverlayWindow.Current.PopupOpened();
@@ -56,6 +75,8 @@ namespace Telegram.Navigation
 
         public void PopupClosed()
         {
+            _context.RaisePopupActivated(false);
+
             if (OverlayWindow.Current != null)
             {
                 OverlayWindow.Current.PopupClosed();
@@ -317,7 +338,7 @@ namespace Telegram.Navigation
             }
             else
             {
-                _content = new WindowControl
+                _content = new WindowControl(this)
                 {
                     RequestedTheme = SettingsService.Current.Appearance.GetCalculatedElementTheme(),
                     Content = content,
@@ -370,6 +391,16 @@ namespace Telegram.Navigation
         public double RasterizationScale => _content?.XamlRoot?.RasterizationScale ?? 1;
 
         public CoreWindowActivationMode ActivationMode => _window.CoreWindow.ActivationMode;
+
+        public bool IsPopupOpened { get; private set; }
+
+        public event EventHandler<PopupActivatedEventArgs> PopupActivated;
+
+        public void RaisePopupActivated(bool opened)
+        {
+            IsPopupOpened = opened;
+            PopupActivated?.Invoke(this, new PopupActivatedEventArgs(opened));
+        }
 
         public event EventHandler<WindowActivatedEventArgs> Activated;
 
@@ -504,6 +535,11 @@ namespace Telegram.Navigation
 
         public void DisableScreenCapture(int hash)
         {
+            if (Constants.DEBUG)
+            {
+                return;
+            }
+
             _screenCaptureDisabled.Add(hash);
 
             if (_screenCaptureDisabled.Count == 1 && _screenCaptureEnabled)
@@ -515,6 +551,11 @@ namespace Telegram.Navigation
 
         public void EnableScreenCapture(int hash)
         {
+            if (Constants.DEBUG)
+            {
+                return;
+            }
+
             _screenCaptureDisabled.Remove(hash);
 
             if (_screenCaptureDisabled.Count == 0 && !_screenCaptureEnabled)

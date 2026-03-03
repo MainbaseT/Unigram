@@ -443,7 +443,7 @@ namespace Telegram.Controls
                     return null;
                 }
 
-                return new AnimatedImagePresentation(Source, width, height, scale, LimitFps, LoopCount, AutoPlay, IsCachingEnabled, resize);
+                return new AnimatedImagePresentation(Source, width, height, scale, LimitFps, LoopCount, AutoPlay, IsCachingEnabled, resize, VisualUtilities.IsInPopupTree(this));
             }
 
             return null;
@@ -500,7 +500,7 @@ namespace Telegram.Controls
                 {
                     if (_presenter != null)
                     {
-                        _presenter.Unload(this, _state == PlayingState.Playing);
+                        _presenter.Unload(this, _state == PlayingState.Playing || _presenter.Presentation.AutoPlay);
                         _presenter.LoopCompleted -= OnLoopCompleted;
                         _presenter.PositionChanged -= OnPositionChanged;
                         _presenter.Paused -= OnPaused;
@@ -508,6 +508,7 @@ namespace Telegram.Controls
                     }
 
                     _delayedPlay |= _state == PlayingState.Playing;
+                    _delayedPlay |= presentation?.AutoPlay ?? false;
                     _state = PlayingState.None;
                     _clean = true;
 
@@ -1029,6 +1030,7 @@ namespace Telegram.Controls
             if (_loaded <= 0 && _tracker == 0)
             {
                 _loader.Activated -= OnActivated;
+                _loader.PopupActivated -= OnActivated;
                 _loader.Remove(_presentation);
 
                 var task = Volatile.Read(ref _task);
@@ -1194,6 +1196,7 @@ namespace Telegram.Controls
             else if (_tracker == 0)
             {
                 _loader.Activated -= OnActivated;
+                _loader.PopupActivated -= OnActivated;
                 _loader.Remove(_presentation);
 
                 // Ticking should be always false here
@@ -1248,6 +1251,7 @@ namespace Telegram.Controls
             {
                 _activated = true;
                 _loader.Activated += OnActivated;
+                _loader.PopupActivated += OnActivated;
             }
 
             RegisterRendering();
@@ -1261,19 +1265,42 @@ namespace Telegram.Controls
             _pausedLock.Release();
         }
 
+        private void OnActivated(object sender, PopupActivatedEventArgs args)
+        {
+            if (_presentation.IsPopup)
+            {
+                OnActivated(WindowContext.Current.ActivationMode != CoreWindowActivationMode.Deactivated);
+            }
+            else
+            {
+                OnActivated(WindowContext.Current.ActivationMode != CoreWindowActivationMode.Deactivated && !args.IsActive);
+            }
+        }
+
         private void OnActivated(object sender, WindowActivatedEventArgs args)
+        {
+            if (_presentation.IsPopup)
+            {
+                OnActivated(args.WindowActivationState != CoreWindowActivationState.Deactivated);
+            }
+            else
+            {
+                OnActivated(args.WindowActivationState != CoreWindowActivationState.Deactivated && !WindowContext.Current.IsPopupOpened);
+            }
+        }
+
+        private void OnActivated(bool activated)
         {
             if (_disposed)
             {
                 //UnregisterEvents();
 
                 _loader.Activated -= OnActivated;
+                _loader.PopupActivated -= OnActivated;
                 return;
             }
 
-            var activated = args.WindowActivationState != CoreWindowActivationState.Deactivated;
             var subscribe = Activated(activated);
-
             if (subscribe)
             {
                 RegisterRendering();
@@ -1423,6 +1450,7 @@ namespace Telegram.Controls
             Interlocked.Exchange(ref _backgroundNext, null);
 
             _loader.Activated -= OnActivated;
+            _loader.PopupActivated -= OnActivated;
             _loader.Remove(_presentation);
         }
 
@@ -1735,7 +1763,7 @@ namespace Telegram.Controls
         }
     }
 
-    public record AnimatedImagePresentation(AnimatedImageSource Source, int PixelWidth, int PixelHeight, double RasterizationScale, bool LimitFps, int LoopCount, bool AutoPlay, bool IsCachingEnabled, AnimatedImageResizeMode ResizeMode);
+    public record AnimatedImagePresentation(AnimatedImageSource Source, int PixelWidth, int PixelHeight, double RasterizationScale, bool LimitFps, int LoopCount, bool AutoPlay, bool IsCachingEnabled, AnimatedImageResizeMode ResizeMode, bool IsPopup);
 
     public partial class AnimatedImageLoader
     {
@@ -1784,6 +1812,12 @@ namespace Telegram.Controls
         {
             add => _window.Activated += value;
             remove => _window.Activated -= value;
+        }
+
+        public event EventHandler<PopupActivatedEventArgs> PopupActivated
+        {
+            add => _window.PopupActivated += value;
+            remove => _window.PopupActivated -= value;
         }
 
         private void OnRendering(object sender, object e)
