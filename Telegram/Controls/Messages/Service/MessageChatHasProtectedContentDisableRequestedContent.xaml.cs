@@ -19,7 +19,10 @@ namespace Telegram.Controls.Messages.Service
         {
             InitializeComponent();
 
-            Features.Text = Strings.SharingOfferEnable1 + "\n\n" + Strings.SharingOfferEnable2 + "\n\n" + Strings.SharingOfferEnable3 + "\n\n" + Strings.SharingOfferEnable4;
+            Features.Text = Strings.SharingOfferEnable1.Replace(">", "\u2713")
+                + "\n\n" + Strings.SharingOfferEnable2.Replace(">", "\u2713")
+                + "\n\n" + Strings.SharingOfferEnable3.Replace(">", "\u2713")
+                + "\n\n" + Strings.SharingOfferEnable4.Replace(">", "\u2713");
         }
 
         protected override void UpdateContent(MessageViewModel message)
