@@ -1270,7 +1270,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:MenuFlyoutLabel">
-                    <TextBlock Text="{TemplateBinding Text}"
+                    <TextBlock common:TextBlockHelper.Markdown="{TemplateBinding Text}"
                                TextWrapping="Wrap"
                                Foreground="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"
                                Style="{StaticResource CaptionTextBlockStyle}"
