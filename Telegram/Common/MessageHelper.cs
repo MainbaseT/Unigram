@@ -13,6 +13,7 @@ using Telegram.Controls;
 using Telegram.Controls.Cells;
 using Telegram.Controls.Media;
 using Telegram.Controls.Stories;
+using Telegram.Converters;
 using Telegram.Native;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
@@ -2107,7 +2108,7 @@ namespace Telegram.Common
 
         #region Entity
 
-        public static void Hyperlink_ContextRequested(ITranslateService service, UIElement sender, ContextRequestedEventArgs args)
+        public static void Hyperlink_ContextRequested(ITranslateService service, UIElement sender, ContextRequestedEventArgs args, MessageViewModel message)
         {
             if (args.TryGetPosition(sender, out Point point))
             {
@@ -2115,7 +2116,7 @@ namespace Telegram.Common
 
                 if (sender is RichTextBlock text)
                 {
-                    Hyperlink_ContextRequested(flyout, service, text, point);
+                    Hyperlink_ContextRequested(flyout, service, text, point, message);
                 }
 
                 if (flyout.Items.Count > 0)
@@ -2135,11 +2136,11 @@ namespace Telegram.Common
             }
         }
 
-        public static void Hyperlink_ContextRequested(ITranslateService service, Hyperlink sender, ContextRequestedEventArgs args)
+        public static void Hyperlink_ContextRequested(ITranslateService service, Hyperlink sender, ContextRequestedEventArgs args, MessageViewModel message)
         {
             var flyout = new MenuFlyout();
 
-            Hyperlink_ContextRequested(flyout, service, sender);
+            Hyperlink_ContextRequested(flyout, service, sender, message);
 
             if (flyout.Items.Count > 0)
             {
@@ -2159,7 +2160,7 @@ namespace Telegram.Common
             {
                 var flyout = new MenuFlyout();
 
-                Hyperlink_ContextRequested(sender.XamlRoot, flyout, service, text, point);
+                Hyperlink_ContextRequested(sender.XamlRoot, flyout, service, text);
 
                 if (flyout.Items.Count > 0)
                 {
@@ -2178,13 +2179,8 @@ namespace Telegram.Common
             }
         }
 
-        private static void Hyperlink_ContextRequested(XamlRoot xamlRoot, MenuFlyout flyout, ITranslateService service, string text, Point point)
+        private static void Hyperlink_ContextRequested(XamlRoot xamlRoot, MenuFlyout flyout, ITranslateService service, string text)
         {
-            if (point.X < 0 || point.Y < 0)
-            {
-                point = new Point(Math.Max(point.X, 0), Math.Max(point.Y, 0));
-            }
-
             var length = text.Length;
             if (length > 0)
             {
@@ -2209,7 +2205,7 @@ namespace Telegram.Common
             }
         }
 
-        public static void Hyperlink_ContextRequested(MenuFlyout flyout, ITranslateService service, RichTextBlock text, Point point)
+        public static void Hyperlink_ContextRequested(MenuFlyout flyout, ITranslateService service, RichTextBlock text, Point point, MessageViewModel message)
         {
             if (point.X < 0 || point.Y < 0)
             {
@@ -2218,19 +2214,19 @@ namespace Telegram.Common
 
             if (text.SelectedText.Length > 0)
             {
-                Hyperlink_ContextRequested(text.XamlRoot, flyout, service, text.SelectedText, point);
+                Hyperlink_ContextRequested(text.XamlRoot, flyout, service, text.SelectedText);
             }
             else
             {
                 var hyperlink = text.GetHyperlinkFromPoint(point);
                 if (hyperlink != null)
                 {
-                    Hyperlink_ContextRequested(flyout, service, hyperlink);
+                    Hyperlink_ContextRequested(flyout, service, hyperlink, message);
                 }
             }
         }
 
-        public static void Hyperlink_ContextRequested(MenuFlyout flyout, ITranslateService service, Hyperlink hyperlink)
+        public static void Hyperlink_ContextRequested(MenuFlyout flyout, ITranslateService service, Hyperlink hyperlink, MessageViewModel message)
         {
             var info = GetHyperlinkInfo(hyperlink);
             if (info == null)
@@ -2266,6 +2262,20 @@ namespace Telegram.Common
 
                 CreateProfileFlyoutItem(flyout, service.ClientService, hyperlink, new SearchPublicChat(info.Text));
             }
+            else if (info.Type is TextEntityTypeDateTime dateTime)
+            {
+                flyout.Items.Add(new MenuFlyoutLabel
+                {
+                    Padding = new Thickness(12, 4, 12, 4),
+                    MaxWidth = 178,
+                    Text = Formatter.DateAt(dateTime.UnixTime)
+                });
+
+                flyout.CreateFlyoutSeparator();
+                flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, info.Text), Strings.RelativeDateMenuCopy, Icons.Copy);
+                //flyout.CreateFlyoutItem(() => AddToCalendar_Click(hyperlink.XamlRoot, dateTime.UnixTime, message), Strings.RelativeDateMenuAddToACalendar, Icons.Calendar);
+                flyout.CreateFlyoutItem(() => SetAReminder_Click(hyperlink.XamlRoot, dateTime.UnixTime, message), Strings.RelativeDateMenuSetAReminder, Icons.Alert);
+            }
             else
             {
                 var text = info.Type switch
@@ -2276,6 +2286,41 @@ namespace Telegram.Common
                 };
 
                 flyout.CreateFlyoutItem(() => TextCopy_Click(hyperlink.XamlRoot, info.Text), text, Icons.Copy);
+            }
+        }
+
+//        private static async void AddToCalendar_Click(XamlRoot xamlRoot, int date, MessageViewModel message)
+//        {
+//            DateTime eventStart = Formatter.ToLocalTime(date).ToUniversalTime();
+
+//            string content = $@"BEGIN:VCALENDAR
+//VERSION:2.0
+//PRODID:-//Telegram//EN
+//BEGIN:VEVENT
+//UID:{Guid.NewGuid()}@yourdomain.com
+//DTSTAMP:{DateTime.UtcNow.ToString("yyyyMMddTHHmmss")}Z
+//DTSTART:{eventStart.ToString("yyyyMMddTHHmmss")}
+//SUMMARY:Event Title
+//END:VEVENT
+//END:VCALENDAR";
+
+//            var file = await ApplicationData.Current.TemporaryFolder.CreateFileAsync("event.ics", CreationCollisionOption.ReplaceExisting);
+
+//            await FileIO.WriteTextAsync(file, content);
+//            await Launcher.LaunchFileAsync(file);
+//        }
+
+        private static async void SetAReminder_Click(XamlRoot xamlRoot, int date, MessageViewModel message)
+        {
+            var user = message.ClientService.GetUser(message.ClientService.Options.MyId);
+            var popup = new ScheduleMessagePopup(message.ClientService, message.Delegate.NavigationService, user, true);
+
+            var confirm = await message.Delegate.NavigationService.ShowPopupAsync(popup);
+
+            if (popup.SchedulingState != null)
+            {
+                var options = new MessageSendOptions(null, false, false, 0, false, popup.SchedulingState, 0, 0, false);
+                message.ClientService.Send(new ForwardMessages(message.ClientService.Options.MyId, null, message.ChatId, [message.Id], options, false, false));
             }
         }
 

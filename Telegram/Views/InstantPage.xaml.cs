@@ -962,7 +962,7 @@ namespace Telegram.Views
 
         private void Text_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
-            MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, sender, args);
+            MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, sender, args, null);
         }
 
         private void Text_ContextMenuOpening(object sender, ContextMenuEventArgs e)

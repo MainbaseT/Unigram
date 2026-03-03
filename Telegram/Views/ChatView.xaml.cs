@@ -2888,7 +2888,7 @@ namespace Telegram.Views
 
                     if (selectionEnd - selectionStart <= 0)
                     {
-                        MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, textBlock, args);
+                        MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, textBlock, args, message);
 
                         if (args.Handled)
                         {
@@ -2898,7 +2898,7 @@ namespace Telegram.Views
                 }
                 else if (textBlock != null)
                 {
-                    MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, textBlock, args);
+                    MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, textBlock, args, message);
 
                     if (args.Handled)
                     {
@@ -2961,7 +2961,7 @@ namespace Telegram.Views
 
                 if (selectionEnd - selectionStart <= 0)
                 {
-                    MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, originalBlock, args);
+                    MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, originalBlock, args, message);
 
                     if (args.Handled)
                     {
@@ -2971,7 +2971,7 @@ namespace Telegram.Views
             }
             else if (args.OriginalSource is Hyperlink originalHyperlink)
             {
-                MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, originalHyperlink, args);
+                MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, originalHyperlink, args, message);
 
                 if (args.Handled)
                 {
