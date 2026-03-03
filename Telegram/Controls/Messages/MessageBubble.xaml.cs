@@ -3542,7 +3542,7 @@ namespace Telegram.Controls.Messages
                 }
 
                 PhotoRoot.Visibility = Visibility.Visible;
-                Photo.Source = ProfilePictureSource.MessageSender(clientService, clientService.MyId);
+                Photo.Source = ProfilePictureSource.MessageSender(clientService, sender);
 
                 if (PhotoColumn.Width.IsAuto)
                 {
