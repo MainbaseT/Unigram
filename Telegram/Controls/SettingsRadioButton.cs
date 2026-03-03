@@ -15,7 +15,7 @@ namespace Telegram.Controls
 
         public SettingsRadioButton()
         {
-            DefaultStyleKey = typeof(SettingsCheckBox);
+            DefaultStyleKey = typeof(SettingsRadioButton);
         }
 
         protected override void OnApplyTemplate()
