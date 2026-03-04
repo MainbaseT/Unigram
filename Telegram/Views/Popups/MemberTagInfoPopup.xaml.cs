@@ -201,9 +201,12 @@ namespace Telegram.Views.Popups
         private void ApplyAlphaMask(UIElement element, Size newSize)
         {
             var layerVisual = CompositionDevice.GetElementLayerVisual(element);
+            if (layerVisual == null)
+            {
+                return;
+            }
 
             var compositor = layerVisual.Compositor;
-
             var alphaMask = new AlphaMaskEffect
             {
                 Name = "AlphaMask",
