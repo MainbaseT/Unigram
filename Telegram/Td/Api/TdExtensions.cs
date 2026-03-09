@@ -96,14 +96,14 @@ namespace Telegram.Td.Api
                     query.TryGetValue("time", out string time);
                     query.TryGetValue("date", out string date);
 
-                    absolute.TimePrecision = time.ToLowerInvariant() switch
+                    absolute.TimePrecision = time?.ToLowerInvariant() switch
                     {
                         "short" => new DateTimePartPrecisionShort(),
                         "long" => new DateTimePartPrecisionLong(),
                         _ => new DateTimePartPrecisionNone()
                     };
 
-                    absolute.DatePrecision = date.ToLowerInvariant() switch
+                    absolute.DatePrecision = date?.ToLowerInvariant() switch
                     {
                         "short" => new DateTimePartPrecisionShort(),
                         "long" => new DateTimePartPrecisionLong(),
