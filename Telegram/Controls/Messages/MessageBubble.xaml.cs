@@ -1284,7 +1284,7 @@ namespace Telegram.Controls.Messages
                     }
                 }
 
-                if (shown && !outgoing && title.Length > 0)
+                if (shown && !outgoing && title?.Length > 0)
                 {
                     if (MemberTag == null)
                     {
