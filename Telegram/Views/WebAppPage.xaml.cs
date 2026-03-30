@@ -2020,11 +2020,21 @@ namespace Telegram.Views
                     {
                         data[key] = eventData[i + 1] switch
                         {
-                            string stringValue => Windows.Data.Json.JsonValue.CreateStringValue(stringValue),
+                            string stringValue => CreateStringValue(stringValue),
                             double numberValue => Windows.Data.Json.JsonValue.CreateNumberValue(numberValue),
                             bool booleanValue => Windows.Data.Json.JsonValue.CreateBooleanValue(booleanValue),
                             _ => Windows.Data.Json.JsonValue.CreateNullValue(),
                         };
+
+                        static Windows.Data.Json.JsonValue CreateStringValue(string stringValue)
+                        {
+                            if (Windows.Data.Json.JsonValue.TryParse(stringValue, out Windows.Data.Json.JsonValue obj))
+                            {
+                                return obj;
+                            }
+
+                            return Windows.Data.Json.JsonValue.CreateStringValue(stringValue);
+                        }
                     }
                 }
 
