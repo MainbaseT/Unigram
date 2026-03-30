@@ -45,7 +45,7 @@ namespace Telegram.Controls.Chats
             {
                 if (Field.State != ChatSearchState.Members && !AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
                 {
-                    ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag);
+                    ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag, null);
                 }
             };
         }
@@ -308,7 +308,7 @@ namespace Telegram.Controls.Chats
             if (e.Key == VirtualKey.Enter && modifiers == VirtualKeyModifiers.None && Field.State != ChatSearchState.Members)
             {
                 _debouncer.Cancel();
-                ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag);
+                ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag, ListAutocomplete.SelectedItem as Message);
                 e.Handled = true;
             }
             else if (e.Key == VirtualKey.Enter && modifiers == VirtualKeyModifiers.Shift && Field.State != ChatSearchState.Members)
@@ -326,7 +326,7 @@ namespace Telegram.Controls.Chats
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             _debouncer.Cancel();
-            ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag);
+            ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag, null);
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -406,7 +406,7 @@ namespace Telegram.Controls.Chats
             DeleteButton.Visibility = string.IsNullOrEmpty(Field.Text) && state == ChatSearchState.Text ? Visibility.Collapsed : Visibility.Visible;
 
             _debouncer.Cancel();
-            ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag);
+            ViewModel?.Search(Field.Text, Field.From, ViewModel.SavedMessagesTag, null);
         }
 
         private void Delete(bool allowDispose)

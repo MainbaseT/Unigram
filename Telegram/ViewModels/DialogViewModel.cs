@@ -559,7 +559,7 @@ namespace Telegram.ViewModels
 
             if (filterByTag is false && tag != null)
             {
-                Search?.Search(Search.Query, null, tag);
+                Search?.Search(Search.Query, null, tag, null);
             }
         }
 

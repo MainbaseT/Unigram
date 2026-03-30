@@ -35,7 +35,7 @@ namespace Telegram.ViewModels.Chats
 
             if (!string.IsNullOrEmpty(query) || from != null)
             {
-                Search(query, from, null);
+                Search(query, from, null, null);
             }
         }
 
@@ -179,7 +179,7 @@ namespace Telegram.ViewModels.Chats
             _ = Dialog.LoadMessageSliceAsync(null, message.Id);
         }
 
-        public async void Search(string query, MessageSender from, ReactionType savedMessagesTag)
+        public async void Search(string query, MessageSender from, ReactionType savedMessagesTag, Message selectedMessage)
         {
             static bool FromEquals(MessageSender x, MessageSender y)
             {
@@ -199,9 +199,16 @@ namespace Telegram.ViewModels.Chats
             {
                 await Dialog.LoadEventLogSliceAsync(query);
             }
-            else if (string.Equals(_query, query) && FromEquals(_from, from) && _savedMessagesTag.AreTheSame(savedMessagesTag) && PreviousCanExecute())
+            else if (string.Equals(_query, query) && FromEquals(_from, from) && _savedMessagesTag.AreTheSame(savedMessagesTag) && (selectedMessage != null || PreviousCanExecute()))
             {
-                PreviousExecute();
+                if (selectedMessage != null)
+                {
+                    SetSelectedItem(selectedMessage);
+                }
+                else
+                {
+                    PreviousExecute();
+                }
             }
             else
             {
