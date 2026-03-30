@@ -1388,9 +1388,22 @@ namespace Telegram.Controls.Messages
             }
         }
 
-        private void MemberTag_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void MemberTag_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            _message?.Delegate?.NavigationService?.ShowPopup(new MemberTagInfoPopup(_message));
+            if (_message is not MessageViewModel message)
+            {
+                return;
+            }
+
+            var response = await message.ClientService.SendAsync(new GetChatMember(message.ChatId, message.SenderId));
+            if (response is ChatMember member && message.ClientService.CanEditTag(message.Chat, member))
+            {
+                _message?.Delegate?.NavigationService?.ShowPopup(new MemberTagEditPopup(message.ClientService, message.Delegate.Aggregator, message.Chat, member));
+            }
+            else
+            {
+                _message?.Delegate?.NavigationService?.ShowPopup(new MemberTagInfoPopup(_message));
+            }
         }
 
         private void BoostCount_Tapped(object sender, TappedRoutedEventArgs e)
