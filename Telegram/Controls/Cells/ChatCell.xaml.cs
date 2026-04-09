@@ -121,6 +121,7 @@ namespace Telegram.Controls.Cells
         private Button BotOpen;
         private Rectangle DropVisual;
         private TextBlock UnreadMentionsLabel;
+        private SolidColorBrush UnreadMentionsBrush;
         private Run FromLabel;
         private Run DraftLabel;
         private FormattedTextBlock BriefText;
@@ -172,6 +173,9 @@ namespace Telegram.Controls.Cells
             Segments = GetTemplateChild(nameof(Segments)) as ActiveStoriesSegments;
             Photo = GetTemplateChild(nameof(Photo)) as ProfilePicture;
             Folders = GetTemplateChild(nameof(Folders)) as StackPanel;
+
+            UnreadMentionsBrush = new SolidColorBrush();
+            UnreadMentionsLabel.Foreground = UnreadMentionsBrush;
 
             Segments.Click += Segments_Click;
             BotOpen.Click += BotOpen_Click;
@@ -693,7 +697,11 @@ namespace Telegram.Controls.Cells
                 ? _clientService.UnreadTopicCount(chat.Id)
                 : chat.UnreadCount;
 
-            PinnedIcon.Visibility = unreadCount == 0 && !chat.IsMarkedAsUnread && (position?.IsPinned ?? false) ? Visibility.Visible : Visibility.Collapsed;
+            PinnedIcon.Visibility = unreadCount == 0
+                && chat.UnreadMentionCount == 0
+                && chat.UnreadPollVoteCount == 0
+                && !chat.IsMarkedAsUnread
+                && (position?.IsPinned ?? false) ? Visibility.Visible : Visibility.Collapsed;
 
             var unread = (unreadCount > 0 || chat.IsMarkedAsUnread) ? chat.UnreadMentionCount == 1 && unreadCount == 1 ? Visibility.Collapsed : Visibility.Visible : Visibility.Collapsed;
             if (unread == Visibility.Visible)
@@ -745,11 +753,12 @@ namespace Telegram.Controls.Cells
 
             UpdateChatReadInbox(chat, position, false);
 
-            var unread = chat.UnreadMentionCount > 0 || chat.UnreadReactionCount > 0 ? Visibility.Visible : Visibility.Collapsed;
-            if (unread == Visibility.Visible)
+            var unread = chat.UnreadMentionCount > 0 || chat.UnreadReactionCount > 0 || chat.UnreadPollVoteCount > 0;
+            if (unread)
             {
                 UnreadMentionsBadge.Visibility = Visibility.Visible;
-                UnreadMentionsLabel.Text = chat.UnreadMentionCount > 0 ? Icons.Mention16 : Icons.HeartFilled12;
+                UnreadMentionsLabel.Text = chat.UnreadMentionCount > 0 ? Icons.MentionFilled : chat.UnreadReactionCount > 0 ? Icons.HeartFilled : Icons.PollFilled;
+                UnreadMentionsBrush.Color = chat.UnreadMentionCount > 0 ? Color.FromArgb(0xFF, 0x00, 0x7a, 0xff) : chat.UnreadReactionCount > 0 ? Color.FromArgb(0xFF, 0xff, 0x2d, 0x55) : Color.FromArgb(0xFF, 0xaf, 0x52, 0xde);
             }
             else
             {

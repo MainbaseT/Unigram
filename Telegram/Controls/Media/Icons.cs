@@ -247,9 +247,12 @@ namespace Telegram.Controls.Media
         public const string Reactions = "\uE980";
         public const string Mention = "\uE9F2";
         public const string Mention16 = "\uE986";
+        public const string MentionFilled = "\uEB00";
+        public const string HeartFilled = "\uE9B6";
         public const string HeartFilled16 = "\uE985";
         public const string HeartFilled12 = "\uE998";
         public const string Heart = "\uE987";
+        public const string PollFilled = "\uEB01";
 
         public const string AutoDeleteOff = "\uE99F";
         public const string AutoDeleteDay = "\uE9A0";
@@ -457,7 +460,6 @@ namespace Telegram.Controls.Media
         public const string CrownOffFilled = "\uEAB1";
         public const string HandOpenHeartFilled = "\uEA69";
         public const string StickerFilled = "\uE9AD";
-        public const string HeartFilled = "\uE9B6";
         public const string MegaphoneOffFilled = "\uE9AF";
         public const string TopSpeedFilled = "\uE9B3";
         public const string DocumentFilled = "\uE9B4";

@@ -332,6 +332,11 @@ namespace Telegram.Views
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatUnreadMentionCount(chat));
         }
 
+        public void Handle(UpdateChatUnreadPollVoteCount update)
+        {
+            Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatUnreadMentionCount(chat));
+        }
+
         public void Handle(UpdateChatAddedToList update)
         {
             Handle(update.ChatId, (chatView, chat) => chatView.UpdateChatChatLists(chat));
@@ -1087,6 +1092,7 @@ namespace Telegram.Views
                 .Subscribe<UpdateChatReadOutbox>(Handle)
                 .Subscribe<UpdateChatUnreadMentionCount>(Handle)
                 .Subscribe<UpdateChatUnreadReactionCount>(Handle)
+                .Subscribe<UpdateChatUnreadPollVoteCount>(Handle)
                 .Subscribe<UpdateChatAddedToList>(Handle)
                 .Subscribe<UpdateChatRemovedFromList>(Handle)
                 .Subscribe<UpdateChatTitle>(Handle)

@@ -287,10 +287,8 @@
                                        Grid.Column="1" />
 
                             <Border x:Name="UnreadMentionsBadge"
-                                    Background="{ThemeResource ChatUnreadBadgeBrush}"
                                     Width="16"
                                     Height="16"
-                                    CornerRadius="8"
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Right"
                                     Margin="4,2,0,0"
@@ -298,12 +296,12 @@
                                     Grid.Column="1">
                                 <TextBlock x:Name="UnreadMentionsLabel"
                                            Text="&#xE986;"
-                                           FontSize="12"
+                                           FontSize="20"
                                            FontFamily="{StaticResource SymbolThemeFontFamily}"
                                            Style="{StaticResource CaptionTextBlockStyle}"
-                                           Foreground="{ThemeResource ChatUnreadLabelBrush}"
                                            VerticalAlignment="Center"
-                                           TextAlignment="Center" />
+                                           TextAlignment="Center"
+                                           Margin="-2" />
                             </Border>
                             <controls:BadgeControl x:Name="UnreadBadge"
                                                    VerticalAlignment="Top"
