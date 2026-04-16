@@ -366,6 +366,7 @@ namespace Telegram.Views.Stars.Popups
 
         private readonly GiftForResaleOrder _order = new GiftForResaleOrderPrice();
         private readonly bool _forCrafting;
+        private readonly bool _forStars;
         private readonly IList<UpgradedGiftAttributeId> _attributes = Array.Empty<UpgradedGiftAttributeId>();
 
         private string _nextOffset = string.Empty;
@@ -398,7 +399,7 @@ namespace Telegram.Views.Stars.Popups
         {
             var totalCount = 0u;
 
-            var response = await _clientService.SendAsync(new SearchGiftsForResale(_giftId, _order, _forCrafting, _attributes, _nextOffset, 24));
+            var response = await _clientService.SendAsync(new SearchGiftsForResale(_giftId, _order, _forCrafting, _forStars, _attributes, _nextOffset, 24));
             if (response is GiftsForResale gifts)
             {
                 foreach (var gift in gifts.Gifts)

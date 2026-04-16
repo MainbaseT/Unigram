@@ -49,7 +49,7 @@ namespace Telegram.Services.Factories
                 return new InputMessageDocument(generated, thumbnail, false, caption);
             }
 
-            return new InputMessagePhoto(generated, thumbnail, null, size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
+            return new InputMessagePhoto(generated, thumbnail, null, null, size.Width, size.Height, caption, captionAboveMedia, ttl, spoiler);
         }
 
         public static async Task<Object> CreateVideoAsync(StorageVideo video, FormattedText caption, bool animated, bool captionAboveMedia, bool spoiler, MessageSelfDestructType ttl, long starCount)

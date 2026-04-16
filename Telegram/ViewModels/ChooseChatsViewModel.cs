@@ -874,7 +874,7 @@ namespace Telegram.ViewModels
                     .Select(x => x.Type is ChatTypePrivate privata ? privata.UserId : 0)
                     .Where(x => x != 0)
                     .ToList();
-                ClientService.Send(new ShareUsersWithBot(requestUsers.ChatId, requestUsers.MessageId, requestUsers.Id, userIds, false));
+                ClientService.Send(new ShareUsersWithBot(requestUsers.Source, requestUsers.Id, userIds, false));
             }
             else if (_configuration is ChooseChatsConfigurationVerifyChat verifyChat && ClientService.TryGetUserFull(verifyChat.BotUserId, out UserFullInfo verifyChatFullInfo))
             {

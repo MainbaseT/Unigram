@@ -267,7 +267,7 @@ namespace Telegram.Views.Stars.Popups
                     return;
                 }
 
-                _clientService.Send(new SearchGiftsForResale(availableGift.Gift.Id, new GiftForResaleOrderPrice(), false, Array.Empty<UpgradedGiftAttributeId>(), string.Empty, 1), result =>
+                _clientService.Send(new SearchGiftsForResale(availableGift.Gift.Id, new GiftForResaleOrderPrice(), false, false, Array.Empty<UpgradedGiftAttributeId>(), string.Empty, 1), result =>
                 {
                     if (result is GiftsForResale gifts && gifts.Gifts.Count > 0)
                     {

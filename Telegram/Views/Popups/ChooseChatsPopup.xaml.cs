@@ -915,10 +915,9 @@ namespace Telegram.Views.Popups
 
     public partial class ChooseChatsConfigurationRequestUsers : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationRequestUsers(long chatId, long messageId, KeyboardButtonTypeRequestUsers requestUsers)
+        public ChooseChatsConfigurationRequestUsers(KeyboardButtonSource source, KeyboardButtonTypeRequestUsers requestUsers)
         {
-            ChatId = chatId;
-            MessageId = messageId;
+            Source = source;
 
             MaxQuantity = requestUsers.MaxQuantity;
             UserIsPremium = requestUsers.UserIsPremium;
@@ -928,9 +927,7 @@ namespace Telegram.Views.Popups
             Id = requestUsers.Id;
         }
 
-        public long ChatId { get; }
-
-        public long MessageId { get; }
+        public KeyboardButtonSource Source { get; }
 
         /// <summary>
         /// The maximum number of users to share.

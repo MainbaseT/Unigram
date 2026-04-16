@@ -1834,7 +1834,7 @@ namespace Telegram.ViewModels
             }
             else if (keyboardButton.Type is KeyboardButtonTypeRequestUsers requestUsers)
             {
-                await NavigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationRequestUsers(message.ChatId, message.Id, requestUsers));
+                await NavigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationRequestUsers(new KeyboardButtonSourceMessage(message.ChatId, message.Id), requestUsers));
             }
             else if (keyboardButton.Type is KeyboardButtonTypeRequestChat requestChat)
             {

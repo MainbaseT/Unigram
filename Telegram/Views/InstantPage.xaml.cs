@@ -1109,7 +1109,7 @@ namespace Telegram.Views
             var galleryItem = new GalleryPhoto(ViewModel.ClientService, block.Photo, block.Caption.ToFormattedText());
             ViewModel.Gallery.Items.Add(galleryItem);
 
-            var message = CreateMessage(new MessagePhoto(block.Photo, null, false, false, false));
+            var message = CreateMessage(new MessagePhoto(block.Photo, null, null, false, false, false));
             var element = new StackPanel { Style = Resources["BlockPhotoStyle"] as Style };
 
             var content = new PhotoContent(message);
@@ -1319,7 +1319,7 @@ namespace Telegram.Views
                     var galleryItem = new GalleryPhoto(ViewModel.ClientService, photoBlock.Photo, block.Caption.ToFormattedText());
                     ViewModel.Gallery.Items.Add(galleryItem);
 
-                    var message = CreateMessage(new MessagePhoto(photoBlock.Photo, null, false, false, false));
+                    var message = CreateMessage(new MessagePhoto(photoBlock.Photo, null, null, false, false, false));
 
                     var content = new PhotoContent(message);
                     content.Tag = galleryItem;

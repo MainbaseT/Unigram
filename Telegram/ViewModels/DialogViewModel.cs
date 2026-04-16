@@ -1032,7 +1032,7 @@ namespace Telegram.ViewModels
                         }
                         else if (fullInfo.BotInfo.Photo != null)
                         {
-                            content = new MessagePhoto(fullInfo.BotInfo.Photo, text, false, false, false);
+                            content = new MessagePhoto(fullInfo.BotInfo.Photo, null, text, false, false, false);
                         }
                         else
                         {
@@ -2205,7 +2205,7 @@ namespace Telegram.ViewModels
 
                         if (story.Content is StoryContentPhoto photo)
                         {
-                            message.GeneratedContent = new MessagePhoto(photo.Photo, null, false, false, false);
+                            message.GeneratedContent = new MessagePhoto(photo.Photo, null, null, false, false, false);
                         }
                         else if (story.Content is StoryContentVideo video)
                         {
@@ -3569,6 +3569,19 @@ namespace Telegram.ViewModels
         }
 
         #endregion
+
+        public async void OpenTextEditor()
+        {
+            var text = GetFormattedText();
+
+            var popup = new TextEditorPopup(ClientService, NavigationService, text);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+        }
 
         public void Boost()
         {
