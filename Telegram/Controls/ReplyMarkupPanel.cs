@@ -17,6 +17,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 namespace Telegram.Controls
 {
@@ -480,6 +481,45 @@ namespace Telegram.Controls
         }
 
         #endregion
+
+        protected override void OnKeyDown(KeyRoutedEventArgs e)
+        {
+            if (e.Key is VirtualKey.Left or VirtualKey.Right && Parent is Panel panel)
+            {
+                e.Handled = true;
+
+                var index = panel.Children.IndexOf(this);
+
+                Control control = null;
+                if (e.Key == VirtualKey.Left && index > 0)
+                {
+                    control = panel.Children[index - 1] as Control;
+                }
+                else if (e.Key == VirtualKey.Right && index < panel.Children.Count - 1)
+                {
+                    control = panel.Children[index + 1] as Control;
+                }
+
+                control?.Focus(Windows.UI.Xaml.FocusState.Keyboard);
+            }
+            if (e.Key is >= VirtualKey.Left and <= VirtualKey.Down && false)
+            {
+                e.Handled = true;
+
+                var direction = e.Key switch
+                {
+                    VirtualKey.Left => FocusNavigationDirection.Left,
+                    VirtualKey.Up => FocusNavigationDirection.Up,
+                    VirtualKey.Right => FocusNavigationDirection.Right,
+                    VirtualKey.Down => FocusNavigationDirection.Down,
+                    _ => FocusNavigationDirection.Next
+                };
+
+                FocusManager.TryMoveFocus(direction, new FindNextElementOptions { SearchRoot = Parent });
+            }
+
+            base.OnKeyDown(e);
+        }
     }
 
     public partial class ReplyMarkupInlineButtonAutomationPeer : ButtonAutomationPeer
@@ -495,6 +535,11 @@ namespace Telegram.Controls
         protected override string GetNameCore()
         {
             return _owner.Text;
+        }
+
+        protected override AutomationControlType GetAutomationControlTypeCore()
+        {
+            return AutomationControlType.ListItem;
         }
 
         protected override int GetPositionInSetCore()

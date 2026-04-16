@@ -16,8 +16,10 @@ using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls.Messages
@@ -33,6 +35,16 @@ namespace Telegram.Controls.Messages
         public List<int> Rows { get; } = new();
 
         public Vector2 CornerRadius { get; set; }
+
+        public ReplyMarkupInlinePanel()
+        {
+            TabFocusNavigation = KeyboardNavigationMode.Once;
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ReplyMarkupInlinePanelAutomationPeer(this);
+        }
 
         public void Update(MessageViewModel message)
         {
@@ -244,6 +256,19 @@ namespace Telegram.Controls.Messages
 
             _clip.Geometry = _clip.Compositor.CreatePathGeometry(PlaceholderHelper.Foreground.GetReplyMarkupClip(rows, CornerRadius.X, CornerRadius.Y));
             return finalSize;
+        }
+    }
+
+    public partial class ReplyMarkupInlinePanelAutomationPeer : FrameworkElementAutomationPeer
+    {
+        public ReplyMarkupInlinePanelAutomationPeer(ReplyMarkupInlinePanel owner)
+            : base(owner)
+        {
+        }
+
+        protected override AutomationControlType GetAutomationControlTypeCore()
+        {
+            return AutomationControlType.List;
         }
     }
 }
