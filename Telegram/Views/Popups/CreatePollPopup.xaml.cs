@@ -95,11 +95,11 @@ namespace Telegram.Views.Popups
             }
         }
 
-        public IList<FormattedText> Options
+        public IList<InputPollOption> Options
         {
             get
             {
-                return Items.Where(x => !string.IsNullOrWhiteSpace(x.Text.Text)).Select(x => x.Text).ToList();
+                return Items.Where(x => !string.IsNullOrWhiteSpace(x.Text.Text)).Select(x => new InputPollOption(x.Text)).ToList();
             }
         }
 
@@ -111,16 +111,21 @@ namespace Telegram.Views.Popups
             }
         }
 
-        public PollType Type
+        public InputPollType Type
         {
             get
             {
                 if (Quiz.IsChecked == true)
                 {
-                    return new PollTypeQuiz(Items.IndexOf(Items.FirstOrDefault(x => x.IsChecked)), QuizExplanation.GetFormattedText());
+                    List<int> correct = [];
+                    for (int i = 0; i < Items.Count; i++)
+                        if (Items[i].IsChecked)
+                            correct.Add(i);
+
+                    return new InputPollTypeQuiz(correct, QuizExplanation.GetFormattedText());
                 }
 
-                return new PollTypeRegular(Multiple.IsChecked == true);
+                return new InputPollTypeRegular(Multiple.IsChecked == true);
             }
         }
 

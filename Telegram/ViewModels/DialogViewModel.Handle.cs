@@ -30,6 +30,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateChatReplyMarkup>(Handle)
                 .Subscribe<UpdateChatUnreadMentionCount>(Handle)
                 .Subscribe<UpdateChatUnreadReactionCount>(Handle)
+                .Subscribe<UpdateChatUnreadPollVoteCount>(Handle)
                 .Subscribe<UpdateChatReadOutbox>(Handle)
                 .Subscribe<UpdateForumTopicReadOutbox>(Handle)
                 .Subscribe<UpdateChatReadInbox>(Handle)
@@ -499,6 +500,14 @@ namespace Telegram.ViewModels
             if (update.ChatId == _chat?.Id)
             {
                 BeginOnUIThread(() => Delegate?.UpdateChatUnreadReactionCount(_chat, update.UnreadReactionCount));
+            }
+        }
+
+        public void Handle(UpdateChatUnreadPollVoteCount update)
+        {
+            if (update.ChatId == _chat?.Id)
+            {
+                BeginOnUIThread(() => Delegate?.UpdateChatUnreadPollVoteCount(_chat, update.UnreadPollVoteCount));
             }
         }
 

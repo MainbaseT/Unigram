@@ -1186,6 +1186,63 @@ This is a one-time process using your phone&apos;s camera. Your selfie will not 
   <data name="Agree" xml:space="preserve">
     <value>Agree</value>
   </data>
+  <data name="AIEditor" xml:space="preserve">
+    <value>AI Editor</value>
+  </data>
+  <data name="AIEditorApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="AIEditorChooseStyle" xml:space="preserve">
+    <value>Choose a style</value>
+  </data>
+  <data name="AIEditorEmojify" xml:space="preserve">
+    <value>emojify</value>
+  </data>
+  <data name="AIEditorFrom" xml:space="preserve">
+    <value>From {0}</value>
+  </data>
+  <data name="AIEditorFromOther" xml:space="preserve">
+    <value>From {0}</value>
+  </data>
+  <data name="AIEditorHint" xml:space="preserve">
+    <value>Rewrite, translate and correct your text using AI.</value>
+  </data>
+  <data name="AIEditorLimitButton" xml:space="preserve">
+    <value>Increase Limit</value>
+  </data>
+  <data name="AIEditorLimitText" xml:space="preserve">
+    <value>Get **Telegram Premium** for **50x** more text edits per day.</value>
+  </data>
+  <data name="AIEditorLimitTitle" xml:space="preserve">
+    <value>Daily Limit Reached</value>
+  </data>
+  <data name="AIEditorOriginal" xml:space="preserve">
+    <value>Original</value>
+  </data>
+  <data name="AIEditorOriginalText" xml:space="preserve">
+    <value>Original Text</value>
+  </data>
+  <data name="AIEditorResult" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="AIEditorTabFix" xml:space="preserve">
+    <value>Fix</value>
+  </data>
+  <data name="AIEditorTabStyle" xml:space="preserve">
+    <value>Style</value>
+  </data>
+  <data name="AIEditorTabTranslate" xml:space="preserve">
+    <value>Translate</value>
+  </data>
+  <data name="AIEditorTo" xml:space="preserve">
+    <value>To {0}</value>
+  </data>
+  <data name="AIEditorToneNeutral" xml:space="preserve">
+    <value>Neutral</value>
+  </data>
+  <data name="AIEditorToOther" xml:space="preserve">
+    <value>To {0}</value>
+  </data>
   <data name="Album" xml:space="preserve">
     <value>Album</value>
   </data>
@@ -10997,6 +11054,18 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="Poll" xml:space="preserve">
     <value>Poll</value>
   </data>
+  <data name="PollAddingActionOther" xml:space="preserve">
+    <value>un1 added &quot;{0}&quot; to the poll</value>
+  </data>
+  <data name="PollAddingActionYou" xml:space="preserve">
+    <value>You added &quot;{0}&quot; to the poll</value>
+  </data>
+  <data name="PollItemQuote" xml:space="preserve">
+    <value>Reply to Option</value>
+  </data>
+  <data name="PollMenuTabOption" xml:space="preserve">
+    <value>Option</value>
+  </data>
   <data name="PollMultiple" xml:space="preserve">
     <value>Multiple Answers</value>
   </data>
@@ -11006,11 +11075,20 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PollQuiz" xml:space="preserve">
     <value>Quiz Mode</value>
   </data>
+  <data name="PollRemovedActionOther" xml:space="preserve">
+    <value>un1 removed &quot;{0}&quot; from the poll</value>
+  </data>
+  <data name="PollRemovedActionYou" xml:space="preserve">
+    <value>You removed &quot;{0}&quot; from the poll</value>
+  </data>
   <data name="PollResults" xml:space="preserve">
     <value>Poll Results</value>
   </data>
   <data name="PollSubmitVotes" xml:space="preserve">
     <value>VOTE</value>
+  </data>
+  <data name="PollSubmitVotesNoCaps" xml:space="preserve">
+    <value>Vote</value>
   </data>
   <data name="PollViewResults" xml:space="preserve">
     <value>VIEW RESULTS</value>

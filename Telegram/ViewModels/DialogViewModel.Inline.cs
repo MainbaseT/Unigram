@@ -230,7 +230,7 @@ namespace Telegram.ViewModels
                 if (replyTo is InputMessageReplyToTopicMessage replyToTopicMessage)
                 {
                     topicId = replyToTopicMessage.TopicId;
-                    replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId);
+                    replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId, replyToTopicMessage.PollOptionId);
                 }
 
                 function = new SendInlineQueryResultMessage(chat.Id, topicId, replyTo, options, queryId, queryResult.GetId(), false);

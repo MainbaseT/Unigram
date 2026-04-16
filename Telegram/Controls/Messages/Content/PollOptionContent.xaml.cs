@@ -11,8 +11,10 @@ using System.Linq;
 using Telegram.Assets.Icons;
 using Telegram.Common;
 using Telegram.Composition;
+using Telegram.Converters;
 using Telegram.Native.Controls;
 using Telegram.Navigation;
+using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.UI.Composition;
@@ -40,11 +42,16 @@ namespace Telegram.Controls.Messages.Content
 
         #region InitializeComponent
 
-        private Ellipse Ellipse;
+        private Grid RootGrid;
+        private Rectangle Ellipse;
         private Microsoft.UI.Xaml.Controls.ProgressRing Loading;
         private TextBlock Percentage;
         private FormattedTextBlock TextText;
-        private Grid Tick;
+        private StackPanel RecentVotersRoot;
+        private TextBlock RecentVotersCount;
+        private RecentUserHeads RecentVoters;
+        private HyperlinkButton Media;
+        private Border Tick;
         private Ellipse Zero;
         private Windows.UI.Xaml.Controls.ProgressBar Votes;
         private Border VotesLine;
@@ -54,11 +61,12 @@ namespace Telegram.Controls.Messages.Content
 
         protected override void OnApplyTemplate()
         {
-            Ellipse = GetTemplateChild(nameof(Ellipse)) as Ellipse;
+            RootGrid = GetTemplateChild(nameof(RootGrid)) as Grid;
+            Ellipse = GetTemplateChild(nameof(Ellipse)) as Rectangle;
             Loading = GetTemplateChild(nameof(Loading)) as Microsoft.UI.Xaml.Controls.ProgressRing;
             Percentage = GetTemplateChild(nameof(Percentage)) as TextBlock;
             TextText = GetTemplateChild(nameof(TextText)) as FormattedTextBlock;
-            Tick = GetTemplateChild(nameof(Tick)) as Grid;
+            Tick = GetTemplateChild(nameof(Tick)) as Border;
             Zero = GetTemplateChild(nameof(Zero)) as Ellipse;
             Votes = GetTemplateChild(nameof(Votes)) as Windows.UI.Xaml.Controls.ProgressBar;
             VotesLine = GetTemplateChild(nameof(VotesLine)) as Border;
@@ -114,23 +122,25 @@ namespace Telegram.Controls.Messages.Content
                 && _optionId == optionId;
 
             var results = poll.IsClosed || poll.Options.Any(x => x.IsChosen);
-            var correct = poll.Type is PollTypeQuiz quiz && quiz.CorrectOptionId == poll.Options.IndexOf(option);
+            var correct = poll.Type is PollTypeQuiz quiz && quiz.CorrectOptionIds.Contains(poll.Options.IndexOf(option));
 
             var votes = Locale.Declension(poll.Type is PollTypeQuiz ? Strings.R.Answer : Strings.R.Vote, option.VoterCount);
 
             Option = option;
             IsThreeState = results;
 
-            if (results || !recycled || poll.Type is PollTypeRegular { AllowMultipleAnswers: false })
+            RootGrid.Padding = new Thickness(10, option.Media != null ? 4 : 0, 10, 0);
+
+            if (results || !recycled || !poll.AllowsMultipleAnswers)
             {
                 IsChecked = results ? null : new bool?(false);
             }
 
-            _allowToggle = poll.Type is PollTypeRegular regular && regular.AllowMultipleAnswers && !results;
+            _allowToggle = poll.AllowsMultipleAnswers && !results;
 
             if (_allowToggle)
             {
-                CreateIcon();
+                CreateIcon(true);
             }
             else
             {
@@ -139,6 +149,8 @@ namespace Telegram.Controls.Messages.Content
             }
 
             Ellipse.Opacity = results || option.IsBeingChosen ? 0 : 1;
+            Ellipse.RadiusX = Ellipse.RadiusY = poll.AllowsMultipleAnswers ? 4 : 10;
+            Tick.CornerRadius = new CornerRadius(poll.AllowsMultipleAnswers ? 2 : 6);
 
             Percentage.Visibility = results ? Visibility.Visible : Visibility.Collapsed;
             Percentage.Text = $"{option.VotePercentage}%";
@@ -147,10 +159,42 @@ namespace Telegram.Controls.Messages.Content
 
             TextText.SetText(message.ClientService, option.Text);
 
+            if (option.VoterCount > 0)
+            {
+                if (RecentVotersRoot == null)
+                {
+                    RecentVotersRoot = GetTemplateChild(nameof(RecentVotersRoot)) as StackPanel;
+                    RecentVotersCount = GetTemplateChild(nameof(RecentVotersCount)) as TextBlock;
+                    RecentVoters = GetTemplateChild(nameof(RecentVoters)) as RecentUserHeads;
+                    RecentVoters.RecentUserHeadChanged += RecentVoters_RecentUserHeadChanged;
+                }
+
+                var destination = RecentVoters.Items;
+                var origin = option.RecentVoterIds;
+
+                if (destination.Count > 0 && recycled)
+                {
+                    destination.ReplaceDiff(origin);
+                }
+                else
+                {
+                    destination.ReplaceWith(origin);
+                }
+
+                RecentVotersCount.Text = Formatter.ShortNumber(option.VoterCount);
+            }
+            else if (RecentVotersRoot != null)
+            {
+                RecentVotersRoot.Visibility = Visibility.Collapsed;
+            }
+
+            UpdatePollOptionMedia(message, poll, option);
+
             Zero.Visibility = results ? Visibility.Visible : Visibility.Collapsed;
 
             Votes.Maximum = results ? Math.Max(poll.Options.Max(x => x.VoterCount), 1) : 1;
             Votes.Value = results ? option.VoterCount : 0;
+            Votes.Opacity = results ? 1 : 0;
             VotesLine.Opacity = results ? 0 : 0.3;
 
             Loading.IsActive = option.IsBeingChosen;
@@ -180,6 +224,108 @@ namespace Telegram.Controls.Messages.Content
             _optionId = optionId;
         }
 
+        private void RecentVoters_RecentUserHeadChanged(ProfilePicture photo, MessageSender sender)
+        {
+            photo.Source = ProfilePictureSource.MessageSender(_message.ClientService, sender);
+        }
+
+        private void UpdatePollOptionMedia(MessageViewModel message, Poll poll, PollOption option)
+        {
+            // Currently, can be only of the types messageAnimation, messageLocation, messagePhoto, messageSticker, messageVenue, or messageVideo without caption
+
+            if (option.Media is MessageAnimation animation)
+            {
+                var child = new ImageView
+                {
+                    Width = 32,
+                    Height = 32,
+                    Stretch = Stretch.UniformToFill
+                };
+
+                child.XamlRoot = XamlRoot;
+                child.SetSource(message.ClientService, animation.Animation.Thumbnail?.File, animation.Animation.Minithumbnail);
+
+                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                Media.Content = child;
+            }
+            else if (option.Media is MessageLocation location)
+            {
+                var child = new ImageView
+                {
+                    Width = 32,
+                    Height = 32,
+                    Stretch = Stretch.UniformToFill
+                };
+
+                child.XamlRoot = XamlRoot;
+                child.SetSource(message.ClientService, location.Location, 32, 32, message.ChatId);
+
+                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                Media.Content = child;
+            }
+            else if (option.Media is MessagePhoto photo)
+            {
+                var child = new ImageView
+                {
+                    Width = 32,
+                    Height = 32,
+                    Stretch = Stretch.UniformToFill
+                };
+
+                child.XamlRoot = XamlRoot;
+                child.SetSource(message.ClientService, photo.Photo.GetSmall()?.Photo, photo.Photo.Minithumbnail);
+
+                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                Media.Content = child;
+            }
+            else if (option.Media is MessageSticker sticker)
+            {
+                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                Media.Content = new AnimatedImage
+                {
+                    Width = 32,
+                    Height = 32,
+                    FrameSize = new Windows.Foundation.Size(32, 32),
+                    DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
+                    Source = DelayedFileSource.FromSticker(message.ClientService, sticker.Sticker)
+                };
+            }
+            else if (option.Media is MessageVenue venue)
+            {
+                var child = new ImageView
+                {
+                    Width = 32,
+                    Height = 32,
+                    Stretch = Stretch.UniformToFill
+                };
+
+                child.XamlRoot = XamlRoot;
+                child.SetSource(message.ClientService, venue.Venue.Location, 32, 32, message.ChatId);
+
+                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                Media.Content = child;
+            }
+            else if (option.Media is MessageVideo video)
+            {
+                var child = new ImageView
+                {
+                    Width = 32,
+                    Height = 32,
+                    Stretch = Stretch.UniformToFill
+                };
+
+                child.XamlRoot = XamlRoot;
+                child.SetSource(message.ClientService, video.Cover?.GetSmall()?.Photo ?? video.Video.Thumbnail?.File, video.Cover?.Minithumbnail ?? video.Video.Minithumbnail);
+
+                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                Media.Content = child;
+            }
+            else
+            {
+                Media?.Content = null;
+            }
+        }
+
         protected override void OnToggle()
         {
             if (_allowToggle)
@@ -189,18 +335,19 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
-        private void CreateIcon()
+        private void CreateIcon(bool allowsMultipleAnswers)
         {
-            if (_source != null)
+            if (_source != null && _allowsMultipleAnswers == allowsMultipleAnswers)
             {
                 CheckmarkIcon.Visibility = Visibility.Visible;
                 return;
             }
 
-            var visual = GetVisual(BootStrapper.Current.Compositor, out var source, out _props);
+            var visual = GetVisual(BootStrapper.Current.Compositor, allowsMultipleAnswers, out var source, out _props);
 
             _source = source;
             _previous = visual;
+            _allowsMultipleAnswers = allowsMultipleAnswers;
             _selectionStrokeBrush = new CompositionVisualColorSource(SelectionStroke, source, "Color_FF0000", IsConnected);
 
             ElementCompositionPreview.SetElementChildVisual(CheckmarkIcon, visual?.RootVisual);
@@ -232,9 +379,13 @@ namespace Telegram.Controls.Messages.Content
         private IAnimatedVisual _previous;
         private IAnimatedVisualSource2 _source;
 
-        private IAnimatedVisual GetVisual(Compositor compositor, out IAnimatedVisualSource2 source, out CompositionPropertySet properties)
+        private bool _allowsMultipleAnswers;
+
+        private IAnimatedVisual GetVisual(Compositor compositor, bool allowsMultipleAnswers, out IAnimatedVisualSource2 source, out CompositionPropertySet properties)
         {
-            source = new ChecklistSelect();
+            source = allowsMultipleAnswers
+                ? new PollSelect()
+                : new ChecklistSelect();
 
             if (source == null)
             {

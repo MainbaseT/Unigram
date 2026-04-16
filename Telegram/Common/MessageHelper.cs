@@ -1551,12 +1551,18 @@ namespace Telegram.Common
             {
                 if (info.Message != null)
                 {
+                    var state = new NavigationState
+                    {
+                        { "checklist_task_id", info.ChecklistTaskId },
+                        { "poll_option_id", info.PollOptionId }
+                    };
+
                     if (info.TopicId is MessageTopicThread topicThread)
                     {
                         var thread = await clientService.SendAsync(new GetMessageThread(info.ChatId, topicThread.MessageThreadId));
                         if (thread is MessageThreadInfo)
                         {
-                            navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId);
+                            navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId, state: state);
                         }
                         else
                         {
@@ -1568,7 +1574,7 @@ namespace Telegram.Common
                         var topic = await clientService.SendAsync(new GetForumTopic(chat.Id, topicForum.ForumTopicId)) as ForumTopic;
                         if (topic != null)
                         {
-                            navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId);
+                            navigation.NavigateToChat(chat, info.Message.Id, topic: info.TopicId, state: state);
                         }
                         else
                         {
@@ -1577,7 +1583,7 @@ namespace Telegram.Common
                     }
                     else
                     {
-                        navigation.NavigateToChat(chat, info.Message.Id);
+                        navigation.NavigateToChat(chat, info.Message.Id, state: state);
                     }
                 }
                 else

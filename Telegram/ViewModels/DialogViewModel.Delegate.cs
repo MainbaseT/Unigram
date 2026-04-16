@@ -138,7 +138,12 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                NavigationService.NavigateToChat(chatId, messageId, topic: messageTopic, state: new NavigationState { { "highlight", replyToMessage.Quote }, { "checklist_task_id", replyToMessage.ChecklistTaskId } });
+                NavigationService.NavigateToChat(chatId, messageId, topic: messageTopic, state: new NavigationState
+                {
+                    { "highlight", replyToMessage.Quote },
+                    { "checklist_task_id", replyToMessage.ChecklistTaskId },
+                    { "poll_option_id", replyToMessage.PollOptionId }
+                });
             }
             else if (replyToMessage.Origin != null && replyToMessage.MessageId == 0)
             {
@@ -148,7 +153,7 @@ namespace Telegram.ViewModels
             }
             else if (replyToMessage.ChatId == message.ChatId || replyToMessage.ChatId == 0)
             {
-                await LoadMessageSliceAsync(message.Id, replyToMessage.MessageId, highlight: replyToMessage.Quote, checklistTaskId: replyToMessage.ChecklistTaskId);
+                await LoadMessageSliceAsync(message.Id, replyToMessage.MessageId, highlight: replyToMessage.Quote, checklistTaskId: replyToMessage.ChecklistTaskId, pollOptionId: replyToMessage.PollOptionId);
             }
         }
 
@@ -298,7 +303,10 @@ namespace Telegram.ViewModels
             var updated = message.Content as MessagePoll;
             if (updated.Poll.Type is PollTypeQuiz quiz)
             {
-                if (quiz.CorrectOptionId == options[0])
+                var ids1 = quiz.CorrectOptionIds.OrderBy(x => x).ToList();
+                var ids2 = options.OrderBy(x => x).ToList();
+
+                if (ids1.SequenceEqual(ids2))
                 {
                     Aggregator.Publish(new UpdateConfetti());
                 }
@@ -383,6 +391,14 @@ namespace Telegram.ViewModels
             _messageDelegate.OpenUrl(url, untrust, source);
         }
 
+        public void OpenPoll(MessageViewModel message)
+        {
+            if (message.Content is MessagePoll poll)
+            {
+                ShowPopup(new PollResultsPopup(ClientService, Settings, Aggregator, _messageDelegate, message.ChatId, message.Id, poll.Poll));
+            }
+        }
+
         public async void OpenMedia(MessageViewModel message, FrameworkElement target, double timestamp = 0)
         {
             if (message.Content is MessageAudio or MessageVoiceNote)
@@ -393,10 +409,6 @@ namespace Telegram.ViewModels
                 {
                     LifetimeService.Current.Playback.Seek(TimeSpan.FromSeconds(timestamp));
                 }
-            }
-            else if (message.Content is MessagePoll poll)
-            {
-                await ShowPopupAsync(new PollResultsPopup(ClientService, Settings, Aggregator, _messageDelegate, message.ChatId, message.Id, poll.Poll));
             }
             else if (message.Content is MessageGame game && message.ReplyMarkup is ReplyMarkupInlineKeyboard inline)
             {

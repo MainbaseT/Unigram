@@ -47,11 +47,12 @@ namespace Telegram.Controls.Messages
 {
     public partial class MessageBubbleHighlightOptions
     {
-        public MessageBubbleHighlightOptions(long messageId, TextQuote quote, int checklistTaskId, bool moveFocus = true, bool highlight = true)
+        public MessageBubbleHighlightOptions(long messageId, TextQuote quote, int checklistTaskId, string pollOptionId, bool moveFocus = true, bool highlight = true)
         {
             MessageId = messageId;
             Quote = quote;
             ChecklistTaskId = checklistTaskId;
+            PollOptionId = pollOptionId;
             MoveFocus = moveFocus;
             Highlight = highlight;
         }
@@ -65,6 +66,8 @@ namespace Telegram.Controls.Messages
         public long MessageId { get; }
 
         public int ChecklistTaskId { get; } = 0;
+
+        public string PollOptionId { get; } = "";
 
         public TextQuote Quote { get; }
 
@@ -1895,7 +1898,7 @@ namespace Telegram.Controls.Messages
             }
             else if (content is MessagePoll or MessageChecklist)
             {
-                ContentPanel.Padding = new Thickness(0, 4, 0, 0);
+                ContentPanel.Padding = new Thickness(0, 0, 0, 0);
                 Media.Margin = new Thickness(0);
                 FooterToNormal();
                 Grid.SetRow(Footer, 4);
@@ -2938,6 +2941,17 @@ namespace Telegram.Controls.Messages
                     solid.Size = area.ToSizeF();
                 }
             }
+            else if (Media.Child is PollContent poll && !string.IsNullOrEmpty(options.PollOptionId))
+            {
+                var area = poll.Highlight(options);
+                if (!area.IsEmpty)
+                {
+                    var point = Media.TransformToVector2(ContentPanel);
+                    var offset = area.ToOffset();
+                    solid.Offset = new Vector3(offset.X, point.Y + offset.Y, 0);
+                    solid.Size = area.ToSizeF();
+                }
+            }
 
             var animation = _highlight.Compositor.CreateScalarKeyFrameAnimation();
             animation.Duration = TimeSpan.FromSeconds(2);
@@ -3652,6 +3666,11 @@ namespace Telegram.Controls.Messages
             {
                 //ttl = message.SelfDestructTime > 0;
                 constraint = message.Content;
+            }
+
+            if (constraint is MessagePoll poll)
+            {
+                constraint = poll.Media;
             }
 
             if (constraint is MessageAnimation animationMessage)

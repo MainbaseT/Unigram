@@ -1089,13 +1089,15 @@ namespace Telegram.Services
         public void GetReplyTo(MessageViewModel message, Action<Object> handler)
         {
             if (message.ReplyTo is MessageReplyToMessage replyToMessage ||
-                message.Content is MessagePinMessage ||
-                message.Content is MessageGameScore ||
-                message.Content is MessagePaymentSuccessful ||
-                message.Content is MessageChecklistTasksAdded ||
-                message.Content is MessageChecklistTasksDone ||
-                message.Content is MessageSuggestedPostPaid ||
-                message.Content is MessageSuggestedPostRefunded)
+                message.Content is MessagePinMessage or
+                MessageGameScore or
+                MessagePaymentSuccessful or
+                MessageChecklistTasksAdded or
+                MessageChecklistTasksDone or
+                MessagePollOptionAdded or
+                MessagePollOptionDeleted or
+                MessageSuggestedPostPaid or 
+                MessageSuggestedPostRefunded)
             {
                 Send(new GetRepliedMessage(message.ChatId, message.Id), handler);
             }
@@ -3584,6 +3586,16 @@ namespace Telegram.Services
                         if (_chats.TryGetValue(updateChatUnreadReactionCount.ChatId, out Chat value))
                         {
                             value.UnreadReactionCount = updateChatUnreadReactionCount.UnreadReactionCount;
+                        }
+
+                        break;
+                    }
+
+                case UpdateChatUnreadPollVoteCount updateChatUnreadPollVoteCount:
+                    {
+                        if (_chats.TryGetValue(updateChatUnreadPollVoteCount.ChatId, out Chat value))
+                        {
+                            value.UnreadPollVoteCount = updateChatUnreadPollVoteCount.UnreadPollVoteCount;
                         }
 
                         break;

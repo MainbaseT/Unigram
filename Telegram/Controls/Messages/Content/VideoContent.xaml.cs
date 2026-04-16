@@ -513,28 +513,30 @@ namespace Telegram.Controls.Messages.Content
 
         public bool IsValid(MessageContent content, bool primary)
         {
-            if (content is MessageVideo)
+            switch (content)
             {
-                return true;
-            }
-            else if (content is MessageText text && text.LinkPreview != null && !primary)
-            {
-                if (text.LinkPreview.Type is LinkPreviewTypeVideo or LinkPreviewTypeEmbeddedVideoPlayer { Video: not null } || text.LinkPreview.Type is LinkPreviewTypeAlbum album && album.Media[0] is LinkPreviewAlbumMediaVideo)
-                {
+                case MessageVideo:
                     return true;
-                }
-                else if (text.LinkPreview.Type is LinkPreviewTypeStoryAlbum { VideoIcon: not null })
-                {
+                case MessageText text when text.LinkPreview != null && !primary:
+                    {
+                        if (text.LinkPreview.Type is LinkPreviewTypeVideo or LinkPreviewTypeEmbeddedVideoPlayer { Video: not null } || text.LinkPreview.Type is LinkPreviewTypeAlbum album && album.Media[0] is LinkPreviewAlbumMediaVideo)
+                        {
+                            return true;
+                        }
+                        else if (text.LinkPreview.Type is LinkPreviewTypeStoryAlbum { VideoIcon: not null })
+                        {
+                            return true;
+                        }
+
+                        break;
+                    }
+
+                case MessageInvoice invoice when invoice.PaidMedia is PaidMediaVideo:
                     return true;
-                }
-            }
-            else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaVideo)
-            {
-                return true;
-            }
-            else if (content is MessageSponsored { Content: MessageVideo } && !primary)
-            {
-                return true;
+                case MessagePoll poll when poll.Media is MessageVideo && !primary:
+                    return true;
+                case MessageSponsored { Content: MessageVideo } when !primary:
+                    return true;
             }
 
             return false;
@@ -559,47 +561,50 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var content = message.GeneratedContent ?? message.Content;
-            if (content is MessageVideo video)
+            switch (content)
             {
-                if (video.AlternativeVideos.Count > 0)
-                {
-                    lowQuality = video.AlternativeVideos[0];
-                }
+                case MessageVideo video:
+                    if (video.AlternativeVideos.Count > 0)
+                    {
+                        lowQuality = video.AlternativeVideos[0];
+                    }
 
-                cover = video.Cover;
-                hasSpoiler = video.HasSpoiler;
-                isSecret = video.IsSecret;
-                return video.Video;
-            }
-            else if (content is MessageText text)
-            {
-                if (text.LinkPreview?.Type is LinkPreviewTypeVideo previewVideo)
-                {
-                    cover = previewVideo.Cover;
-                    return previewVideo.Video;
-                }
-                else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer)
-                {
-                    return embeddedVideoPlayer.Video;
-                }
-                else if (text.LinkPreview?.Type is LinkPreviewTypeAlbum previewAlbum && previewAlbum.Media[0] is LinkPreviewAlbumMediaVideo albumVideo)
-                {
-                    return albumVideo.Video;
-                }
-                else if (text.LinkPreview?.Type is LinkPreviewTypeStoryAlbum previewStoryAlbum && previewStoryAlbum.VideoIcon != null)
-                {
-                    return previewStoryAlbum.VideoIcon;
-                }
-            }
-            else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaVideo paidMedia)
-            {
-                cover = paidMedia.Cover;
-                return paidMedia.Video;
-            }
-            else if (content is MessageSponsored { Content: MessageVideo sponsored })
-            {
-                cover = sponsored.Cover;
-                return sponsored.Video;
+                    cover = video.Cover;
+                    hasSpoiler = video.HasSpoiler;
+                    isSecret = video.IsSecret;
+                    return video.Video;
+                case MessageText text:
+                    {
+                        if (text.LinkPreview?.Type is LinkPreviewTypeVideo previewVideo)
+                        {
+                            cover = previewVideo.Cover;
+                            return previewVideo.Video;
+                        }
+                        else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedVideoPlayer embeddedVideoPlayer)
+                        {
+                            return embeddedVideoPlayer.Video;
+                        }
+                        else if (text.LinkPreview?.Type is LinkPreviewTypeAlbum previewAlbum && previewAlbum.Media[0] is LinkPreviewAlbumMediaVideo albumVideo)
+                        {
+                            return albumVideo.Video;
+                        }
+                        else if (text.LinkPreview?.Type is LinkPreviewTypeStoryAlbum previewStoryAlbum && previewStoryAlbum.VideoIcon != null)
+                        {
+                            return previewStoryAlbum.VideoIcon;
+                        }
+
+                        break;
+                    }
+
+                case MessageInvoice invoice when invoice.PaidMedia is PaidMediaVideo paidMedia:
+                    cover = paidMedia.Cover;
+                    return paidMedia.Video;
+                case MessagePoll poll when poll.Media is MessageVideo pollVideo:
+                    cover = pollVideo.Cover;
+                    return pollVideo.Video;
+                case MessageSponsored { Content: MessageVideo sponsored }:
+                    cover = sponsored.Cover;
+                    return sponsored.Video;
             }
 
             return null;

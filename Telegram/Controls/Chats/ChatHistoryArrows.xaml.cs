@@ -35,16 +35,22 @@ namespace Telegram.Controls.Chats
 
                 ArrowReactionsShadow.Shadow = shadow;
                 ArrowReactionsShadow.Translation = translation;
+
+                ArrowPollVotesShadow.Shadow = shadow;
+                ArrowPollVotesShadow.Translation = translation;
             }
 
+            var pollVotes = ElementComposition.GetElementVisual(PollVotesPanel);
             var reactions = ElementComposition.GetElementVisual(ReactionsPanel);
             var mentions = ElementComposition.GetElementVisual(MentionsPanel);
             var messages = ElementComposition.GetElementVisual(MessagesPanel);
 
+            pollVotes.CenterPoint = new Vector3(18, 36, 0);
             reactions.CenterPoint = new Vector3(18, 36, 0);
             mentions.CenterPoint = new Vector3(18, 36, 0);
             messages.CenterPoint = new Vector3(18, 36, 0);
 
+            ElementCompositionPreview.SetIsTranslationEnabled(PollVotesPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(ReactionsPanel, true);
             ElementCompositionPreview.SetIsTranslationEnabled(MentionsPanel, true);
         }
@@ -71,6 +77,18 @@ namespace Telegram.Controls.Chats
         {
             add => ReactionsButton.RightTapped += value;
             remove => ReactionsButton.RightTapped -= value;
+        }
+
+        public event RoutedEventHandler NextPollVote
+        {
+            add => PollVotesButton.Click += value;
+            remove => PollVotesButton.Click -= value;
+        }
+
+        public event RightTappedEventHandler ReadPollVotes
+        {
+            add => PollVotesButton.RightTapped += value;
+            remove => PollVotesButton.RightTapped -= value;
         }
 
         public event RoutedEventHandler NextMessage
@@ -117,6 +135,22 @@ namespace Telegram.Controls.Chats
             }
         }
 
+        public int UnreadPollVoteCount
+        {
+            set
+            {
+                if (value > 0)
+                {
+                    ShowHidePollVotes(true);
+                    PollVotes.Text = value.ToString();
+                }
+                else
+                {
+                    ShowHidePollVotes(false);
+                }
+            }
+        }
+
         public int UnreadCount
         {
             set
@@ -150,6 +184,7 @@ namespace Telegram.Controls.Chats
             _messagesCollapsed = !show;
             MessagesPanel.Visibility = Visibility.Visible;
 
+            var pollVotes = ElementComposition.GetElementVisual(PollVotesPanel);
             var reactions = ElementComposition.GetElementVisual(ReactionsPanel);
             var mentions = ElementComposition.GetElementVisual(MentionsPanel);
             var messages = ElementComposition.GetElementVisual(MessagesPanel);
@@ -159,6 +194,7 @@ namespace Telegram.Controls.Chats
             var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
+                pollVotes.Properties.InsertVector3("Translation", Vector3.Zero);
                 reactions.Properties.InsertVector3("Translation", Vector3.Zero);
                 mentions.Properties.InsertVector3("Translation", Vector3.Zero);
 
@@ -184,6 +220,7 @@ namespace Telegram.Controls.Chats
             translate.InsertKeyFrame(1, show ? 0 : 36 + 16, easing);
             translate.Duration = Constants.SoftAnimation;
 
+            pollVotes.StartAnimation("Translation.Y", translate);
             reactions.StartAnimation("Translation.Y", translate);
             mentions.StartAnimation("Translation.Y", translate);
             messages.StartAnimation("Opacity", fade);
@@ -203,6 +240,7 @@ namespace Telegram.Controls.Chats
             _mentionsCollapsed = !show;
             MentionsPanel.Visibility = Visibility.Visible;
 
+            var pollVotes = ElementComposition.GetElementVisual(PollVotesPanel);
             var reactions = ElementComposition.GetElementVisual(ReactionsPanel);
             var mentions = ElementComposition.GetElementVisual(MentionsPanel);
 
@@ -211,6 +249,7 @@ namespace Telegram.Controls.Chats
             var batch = compositor.CreateScopedBatch(Windows.UI.Composition.CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
+                pollVotes.Properties.InsertVector3("Translation", Vector3.Zero);
                 reactions.Properties.InsertVector3("Translation", Vector3.Zero);
 
                 MentionsPanel.Visibility = _mentionsCollapsed
@@ -235,6 +274,7 @@ namespace Telegram.Controls.Chats
             translate.InsertKeyFrame(1, show ? 0 : 36 + 16, easing);
             translate.Duration = Constants.FastAnimation;
 
+            pollVotes.StartAnimation("Translation.Y", translate);
             reactions.StartAnimation("Translation.Y", translate);
             mentions.StartAnimation("Opacity", fade);
             mentions.StartAnimation("Scale", scale);
@@ -253,6 +293,7 @@ namespace Telegram.Controls.Chats
             _reactionsCollapsed = !show;
             ReactionsPanel.Visibility = Visibility.Visible;
 
+            var pollVotes = ElementComposition.GetElementVisual(PollVotesPanel);
             var reactions = ElementComposition.GetElementVisual(ReactionsPanel);
 
             var compositor = reactions.Compositor;
@@ -260,6 +301,8 @@ namespace Telegram.Controls.Chats
             var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
             batch.Completed += (s, args) =>
             {
+                pollVotes.Properties.InsertVector3("Translation", Vector3.Zero);
+
                 ReactionsPanel.Visibility = _reactionsCollapsed
                     ? Visibility.Collapsed
                     : Visibility.Visible;
@@ -277,8 +320,55 @@ namespace Telegram.Controls.Chats
             fade.InsertKeyFrame(show ? 1 : 0, 1, easing);
             fade.Duration = Constants.FastAnimation;
 
+            var translate = compositor.CreateScalarKeyFrameAnimation();
+            translate.InsertKeyFrame(0, show ? 36 + 16 : 0);
+            translate.InsertKeyFrame(1, show ? 0 : 36 + 16, easing);
+            translate.Duration = Constants.FastAnimation;
+
+            pollVotes.StartAnimation("Translation.Y", translate);
             reactions.StartAnimation("Opacity", fade);
             reactions.StartAnimation("Scale", scale);
+
+            batch.End();
+        }
+
+        private bool _pollVotesCollapsed = true;
+        private void ShowHidePollVotes(bool show)
+        {
+            if (_pollVotesCollapsed != show)
+            {
+                return;
+            }
+
+            _pollVotesCollapsed = !show;
+            PollVotesPanel.Visibility = Visibility.Visible;
+
+            var pollVotes = ElementComposition.GetElementVisual(PollVotesPanel);
+
+            var compositor = pollVotes.Compositor;
+
+            var batch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            batch.Completed += (s, args) =>
+            {
+                PollVotesPanel.Visibility = _pollVotesCollapsed
+                    ? Visibility.Collapsed
+                    : Visibility.Visible;
+            };
+
+            var easing = compositor.CreateCubicBezierEasingFunction(new Vector2(0.1f, 0.9f), new Vector2(0.2f, 1.0f));
+
+            var scale = compositor.CreateVector3KeyFrameAnimation();
+            scale.InsertKeyFrame(show ? 0 : 1, Vector3.Zero);
+            scale.InsertKeyFrame(show ? 1 : 0, Vector3.One, easing);
+            scale.Duration = Constants.FastAnimation;
+
+            var fade = compositor.CreateScalarKeyFrameAnimation();
+            fade.InsertKeyFrame(show ? 0 : 1, 0);
+            fade.InsertKeyFrame(show ? 1 : 0, 1, easing);
+            fade.Duration = Constants.FastAnimation;
+
+            pollVotes.StartAnimation("Opacity", fade);
+            pollVotes.StartAnimation("Scale", scale);
 
             batch.End();
         }

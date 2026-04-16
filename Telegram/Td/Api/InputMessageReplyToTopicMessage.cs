@@ -9,12 +9,13 @@ namespace Telegram.Td.Api
 {
     public class InputMessageReplyToTopicMessage : InputMessageReplyTo
     {
-        public InputMessageReplyToTopicMessage(long messageId, MessageTopic topicId, InputTextQuote quote, int checklistTaskId)
+        public InputMessageReplyToTopicMessage(long messageId, MessageTopic topicId, InputTextQuote quote, int checklistTaskId, string pollOptionId)
         {
             MessageId = messageId;
             TopicId = topicId;
             Quote = quote;
             ChecklistTaskId = checklistTaskId;
+            PollOptionId = pollOptionId;
         }
 
         /// <summary>
@@ -32,6 +33,8 @@ namespace Telegram.Td.Api
         public InputTextQuote Quote { get; set; }
 
         public int ChecklistTaskId { get; set; }
+
+        public string PollOptionId { get; set; }
 
         public override string ToString()
         {

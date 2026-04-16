@@ -623,11 +623,12 @@ namespace Telegram.Views.Popups
 
     public partial class ChooseChatsConfigurationReplyToMessage : ChooseChatsConfiguration
     {
-        public ChooseChatsConfigurationReplyToMessage(MessageViewModel message, InputTextQuote quote = null, int checklistTaskId = 0)
+        public ChooseChatsConfigurationReplyToMessage(MessageViewModel message, InputTextQuote quote = null, int checklistTaskId = 0, string pollOptionId = "")
         {
             Message = message;
             Quote = quote;
             ChecklistTaskId = checklistTaskId;
+            PollOptionId = pollOptionId;
         }
 
         public MessageViewModel Message { get; }
@@ -635,6 +636,8 @@ namespace Telegram.Views.Popups
         public InputTextQuote Quote { get; }
 
         public int ChecklistTaskId { get; }
+
+        public string PollOptionId { get; }
     }
 
     public partial class ChooseChatsConfigurationInviteToChat : ChooseChatsConfiguration

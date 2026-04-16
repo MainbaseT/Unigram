@@ -17,7 +17,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:PollContent">
                     <StackPanel>
-                        <Grid Margin="10,0,10,0">
+                        <Border x:Name="Media" />
+                        <controls:FormattedTextBlock x:Name="Description"
+                                                     TextWrapping="Wrap"
+                                                     TextTrimming="CharacterEllipsis"
+                                                     FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                                                     IsTextSelectionEnabled="True"
+                                                     AutoFontSize="True"
+                                                     Margin="10,4,10,0"/>
+
+                        <Grid Margin="10,4,10,0">
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup>
                                     <VisualState x:Name="RunningOut">

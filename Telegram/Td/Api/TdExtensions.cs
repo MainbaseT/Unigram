@@ -1584,6 +1584,8 @@ namespace Telegram.Td.Api
                         LinkPreviewTypeWebApp webApp => webApp.Photo,
                         _ => null
                     };
+                case MessagePoll poll:
+                    return poll.Media?.GetPhoto();
                 case MessageChatChangePhoto chatChangePhoto:
                     return chatChangePhoto.Photo.ToPhoto();
                 default:
@@ -1670,6 +1672,8 @@ namespace Telegram.Td.Api
                     return (videoNote.VideoNote.Video, videoNote.VideoNote.Thumbnail, null);
                 case MessageVoiceNote voiceNote:
                     return (voiceNote.VoiceNote.Voice, null, null);
+                case MessagePoll poll:
+                    return poll.Media.GetFileAndThumbnailAndName();
             }
 
             return (null, null, null);
@@ -1868,6 +1872,8 @@ namespace Telegram.Td.Api
                         PaidMediaVideo video => video.Video.VideoValue,
                         _ => invoice.ProductInfo.Photo?.GetFile()
                     };
+                case MessagePoll poll:
+                    return poll.Media?.GetFile();
                 case MessageSponsored sponsored:
                     return sponsored.Content switch
                     {
@@ -1900,6 +1906,10 @@ namespace Telegram.Td.Api
                         return game.Game.Animation.AnimationValue.Local.IsDownloadingCompleted;
                     }
                     return false;
+                case MessagePoll poll when poll.Media is MessageAnimation pollAnimation:
+                    return pollAnimation.Animation.AnimationValue.Local.IsDownloadingCompleted;
+                case MessagePoll poll when poll.Media is MessageVideo:
+                    return true;
                 case MessageText text:
                     if (text.LinkPreview?.Type is LinkPreviewTypeAnimation previewAnimation)
                     {
@@ -2057,7 +2067,12 @@ namespace Telegram.Td.Api
 
         public static Thumbnail GetThumbnail(this Message message)
         {
-            return message.Content switch
+            return GetThumbnail(message.Content);
+        }
+
+        public static Thumbnail GetThumbnail(this MessageContent content)
+        {
+            return content switch
             {
                 MessageAnimation animation => animation.Animation.Thumbnail,
                 MessageAudio audio => audio.Audio.AlbumCoverThumbnail,
@@ -2068,6 +2083,7 @@ namespace Telegram.Td.Api
                 MessageText text => text.LinkPreview?.GetThumbnail(),
                 MessageVideo video => video.Video.Thumbnail,
                 MessageVideoNote videoNote => videoNote.VideoNote.Thumbnail,
+                MessagePoll poll => poll.Media?.GetThumbnail(),
                 MessageSponsored sponsored => sponsored.Content switch
                 {
                     MessageAnimation sponsoredAnimation => sponsoredAnimation.Animation.Thumbnail,
@@ -2081,7 +2097,12 @@ namespace Telegram.Td.Api
 
         public static Minithumbnail GetMinithumbnail(this Message message, bool secret = false)
         {
-            return message.Content switch
+            return GetMinithumbnail(message.Content);
+        }
+
+        public static Minithumbnail GetMinithumbnail(this MessageContent content, bool secret = false)
+        {
+            return content switch
             {
                 MessagePhoto photo => photo.IsSecret && !secret ? null : photo.Photo.Minithumbnail,
                 MessageAnimation animation => animation.IsSecret && !secret ? null : animation.Animation.Minithumbnail,
@@ -2091,6 +2112,7 @@ namespace Telegram.Td.Api
                 MessageText text => text.LinkPreview?.GetMinithumbnail(),
                 MessageVideo video => video.IsSecret && !secret ? null : (video.Cover?.Minithumbnail ?? video.Video.Minithumbnail),
                 MessageVideoNote videoNote => videoNote.IsSecret && !secret ? null : videoNote.VideoNote.Minithumbnail,
+                MessagePoll poll => poll.Media?.GetMinithumbnail(secret),
                 MessageSponsored sponsored => sponsored.Content switch
                 {
                     MessageAnimation sponsoredAnimation => sponsoredAnimation.Animation.Minithumbnail,

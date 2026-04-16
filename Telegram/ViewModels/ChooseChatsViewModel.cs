@@ -700,6 +700,7 @@ namespace Telegram.ViewModels
                     { "reply_to", replyToMessage.Message },
                     { "reply_to_quote", replyToMessage.Quote },
                     { "reply_to_task_id", replyToMessage.ChecklistTaskId },
+                    { "reply_to_option_id", replyToMessage.PollOptionId },
                 });
             }
             else if (_configuration is ChooseChatsConfigurationShareGame shareGame)

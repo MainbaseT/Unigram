@@ -1751,6 +1751,8 @@
                                          ReadMentions="{x:Bind ViewModel.ReadMentions}"
                                          NextReaction="{x:Bind ViewModel.Reactions.NextMessage}"
                                          ReadReactions="{x:Bind ViewModel.ReadReactions}"
+                                         NextPollVote="{x:Bind ViewModel.PollVotes.NextMessage}"
+                                         ReadPollVotes="{x:Bind ViewModel.ReadPollVotes}"
                                          ReadMessages="{x:Bind ViewModel.ReadMessages}"
                                          NextMessage="{x:Bind ViewModel.PreviousSlice}"
                                          HorizontalAlignment="Right"

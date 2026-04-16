@@ -13472,4 +13472,35 @@
   <string name="SecondsAgo_two">{0} seconds ago</string>
   <string name="SecondsAgo_few">{0} seconds ago</string>
   <string name="SecondsAgo_many">{0} seconds ago</string>
+
+    <string name="AIEditor">AI Editor</string>
+    <string name="AIEditorHint">Rewrite, translate and correct your text using AI.</string>
+    <string name="AIEditorTabTranslate">Translate</string>
+    <string name="AIEditorTabStyle">Style</string>
+    <string name="AIEditorTabFix">Fix</string>
+    <string name="AIEditorApply">Apply</string>
+    <string name="AIEditorLimitButton">Increase Limit</string>
+    <string name="AIEditorLimitTitle">Daily Limit Reached</string>
+    <string name="AIEditorLimitText">Get **Telegram Premium** for **50x** more text edits per day.</string>
+    <string name="AIEditorChooseStyle">Choose a style</string>
+    <string name="AIEditorOriginalText">Original Text</string>
+    <string name="AIEditorFrom">From {0}</string>
+    <string name="AIEditorFromOther">From {0}</string>
+    <string name="AIEditorTo">To {0}</string>
+    <string name="AIEditorToOther">To {0}</string>
+    <string name="AIEditorOriginal">Original</string>
+    <string name="AIEditorResult">Result</string>
+    <string name="AIEditorToneNeutral">Neutral</string>
+    
+    <string name="AIEditorEmojify">emojify</string>
+
+    <string name="PollAddingActionYou">You added \"{0}\" to the poll</string>
+    <string name="PollAddingActionOther">un1 added \"{0}\" to the poll</string>
+    <string name="PollRemovedActionYou">You removed \"{0}\" from the poll</string>
+    <string name="PollRemovedActionOther">un1 removed \"{0}\" from the poll</string>
+    <string name="PollItemQuote">Reply to Option</string>
+    <string name="PollMenuTabOption">Option</string>
+    <string name="Unvote">Retract Vote</string>
+    <string name="PollSubmitVotesNoCaps">Vote</string>
+
 </resources>

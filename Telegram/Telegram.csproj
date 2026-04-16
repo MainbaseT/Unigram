@@ -149,6 +149,7 @@
     <Compile Include="Assets\Icons\Notifications.cs" />
     <Compile Include="Assets\Icons\PersonAdd.cs" />
     <Compile Include="Assets\Icons\Phone.cs" />
+    <Compile Include="Assets\Icons\PollSelect.cs" />
     <Compile Include="Assets\Icons\PowerSaving.cs" />
     <Compile Include="Assets\Icons\PremiumStars.cs" />
     <Compile Include="Assets\Icons\Premium.cs" />

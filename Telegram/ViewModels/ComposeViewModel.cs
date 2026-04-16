@@ -769,7 +769,7 @@ namespace Telegram.ViewModels
             if (replyTo is InputMessageReplyToTopicMessage replyToTopicMessage)
             {
                 topicId = replyToTopicMessage.TopicId;
-                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId);
+                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId, replyToTopicMessage.PollOptionId);
             }
 
             return new SendMessage(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);
@@ -828,7 +828,7 @@ namespace Telegram.ViewModels
             }
 
             var reply = GetReply(true);
-            var input = new InputMessagePoll(popup.Question, popup.Options, popup.IsAnonymous, popup.Type);
+            var input = new InputMessagePoll(popup.Question, popup.Options, null, popup.IsAnonymous, false, false, false, false, popup.Type, 0, 0);
 
             await SendMessageAsync(reply, input, options);
         }
@@ -936,7 +936,7 @@ namespace Telegram.ViewModels
             if (replyTo is InputMessageReplyToTopicMessage replyToTopicMessage)
             {
                 topicId = replyToTopicMessage.TopicId;
-                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId);
+                replyTo = new InputMessageReplyToMessage(replyToTopicMessage.MessageId, replyToTopicMessage.Quote, replyToTopicMessage.ChecklistTaskId, replyToTopicMessage.PollOptionId);
             }
 
             return new SendMessageAlbum(chatId, topicId, replyTo, messageSendOptions, inputMessageContent);

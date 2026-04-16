@@ -393,28 +393,16 @@ namespace Telegram.Controls.Messages.Content
 
         public bool IsValid(MessageContent content, bool primary)
         {
-            if (content is MessagePhoto)
+            return content switch
             {
-                return true;
-            }
-            else if (content is MessageGame game && !primary)
-            {
-                return game.Game.Photo != null;
-            }
-            else if (content is MessageText text && text.LinkPreview != null && !primary)
-            {
-                return text.LinkPreview.HasPhoto();
-            }
-            else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaPhoto)
-            {
-                return true;
-            }
-            else if (content is MessageSponsored { Content: MessagePhoto } && !primary)
-            {
-                return true;
-            }
-
-            return false;
+                MessagePhoto => true,
+                MessageGame game when !primary => game.Game.Photo != null,
+                MessageText text when text.LinkPreview != null && !primary => text.LinkPreview.HasPhoto(),
+                MessageInvoice invoice when invoice.PaidMedia is PaidMediaPhoto => true,
+                MessagePoll poll when poll.Media is MessagePhoto && !primary => true,
+                MessageSponsored { Content: MessagePhoto } when !primary => true,
+                _ => false,
+            };
         }
 
         private Photo GetContent(MessageViewModel message, out bool hasSpoiler, out bool isSecret, out bool isGame)
@@ -476,6 +464,10 @@ namespace Telegram.Controls.Messages.Content
             else if (content is MessageInvoice invoice && invoice.PaidMedia is PaidMediaPhoto paidMediaPhoto)
             {
                 return paidMediaPhoto.Photo;
+            }
+            else if (content is MessagePoll poll && poll.Media is MessagePhoto pollPhoto)
+            {
+                return pollPhoto.Photo;
             }
             else if (content is MessageSponsored { Content: MessagePhoto sponsored })
             {

@@ -13,12 +13,13 @@ using Telegram.Common;
 using Telegram.Native.Controls;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls.Messages.Content
 {
-    public sealed partial class PollContent : ControlEx, IContent
+    public sealed partial class PollContent : ControlEx, IContent, IContentWithPlayback
     {
         private MessageViewModel _message;
         public MessageViewModel Message => _message;
@@ -41,6 +42,8 @@ namespace Telegram.Controls.Messages.Content
 
         #region InitializeComponent
 
+        private Border Media;
+        private FormattedTextBlock Description;
         private FormattedTextBlock QuestionText;
         private TextBlock Type;
         private RecentUserHeads RecentVoters;
@@ -56,6 +59,8 @@ namespace Telegram.Controls.Messages.Content
 
         protected override void OnApplyTemplate()
         {
+            Media = GetTemplateChild(nameof(Media)) as Border;
+            Description = GetTemplateChild(nameof(Description)) as FormattedTextBlock;
             QuestionText = GetTemplateChild(nameof(QuestionText)) as FormattedTextBlock;
             Type = GetTemplateChild(nameof(Type)) as TextBlock;
             RecentVoters = GetTemplateChild(nameof(RecentVoters)) as RecentUserHeads;
@@ -68,6 +73,7 @@ namespace Telegram.Controls.Messages.Content
             Submit = GetTemplateChild(nameof(Submit)) as Button;
             View = GetTemplateChild(nameof(View)) as Button;
 
+            Description.TextEntityClick += QuestionText_TextEntityClick;
             QuestionText.TextEntityClick += QuestionText_TextEntityClick;
             RecentVoters.RecentUserHeadChanged += RecentVoters_RecentUserHeadChanged;
             Explanation.Click += Explanation_Click;
@@ -130,6 +136,13 @@ namespace Telegram.Controls.Messages.Content
                 TimeoutLabel.Visibility = Visibility.Collapsed;
             }
 
+            UpdateMedia(message, poll);
+
+            Description.SetText(message.ClientService, poll.Description);
+            Description.Visibility = poll.Description.Text.Length > 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             QuestionText.SetText(message.ClientService, poll.Poll.Question);
 
             Votes.Text = poll.Poll.TotalVoterCount > 0
@@ -144,7 +157,7 @@ namespace Telegram.Controls.Messages.Content
                 View.Visibility = results && poll.Poll.TotalVoterCount > 0 && !poll.Poll.IsAnonymous
                     ? Visibility.Visible
                     : Visibility.Collapsed;
-                Submit.Visibility = !results && reg.AllowMultipleAnswers
+                Submit.Visibility = !results && poll.Poll.AllowsMultipleAnswers
                     ? Visibility.Visible
                     : Visibility.Collapsed;
                 Explanation.Visibility = Visibility.Collapsed;
@@ -191,7 +204,7 @@ namespace Telegram.Controls.Messages.Content
                     {
                         button.UpdatePollOption(message, poll.Poll, poll.Poll.Options[i]);
 
-                        if (poll.Poll.Type is PollTypeRegular regular && regular.AllowMultipleAnswers)
+                        if (poll.Poll.AllowsMultipleAnswers)
                         {
                             button.Checked += Option_Toggled;
                             button.Unchecked += Option_Toggled;
@@ -211,7 +224,7 @@ namespace Telegram.Controls.Messages.Content
                     var button = new PollOptionContent();
                     button.UpdatePollOption(message, poll.Poll, poll.Poll.Options[i]);
 
-                    if (poll.Poll.Type is PollTypeRegular regular && regular.AllowMultipleAnswers)
+                    if (poll.Poll.AllowsMultipleAnswers)
                     {
                         button.Checked += Option_Toggled;
                         button.Unchecked += Option_Toggled;
@@ -238,9 +251,73 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
+        public void UpdateMedia(MessageViewModel message, MessagePoll poll)
+        {
+            // Currently, can be only of the types messageAnimation, messageAudio, messageDocument, messageLocation, messagePhoto, messageVenue, or messageVideo without caption
+
+            var content = poll.Media;
+
+            if (Media.Child is IContent media)
+            {
+                if (media.IsValid(content, true))
+                {
+                    media.UpdateMessage(message);
+                    return;
+                }
+                else
+                {
+                    media.Recycle();
+                }
+            }
+
+            //if (Media.Child is StickerContent or VideoNoteContent)
+            //{
+            //    UpdateAttach(message);
+            //}
+
+            Media.Child = content switch
+            {
+                MessageAnimation => new AnimationContent(message),
+                MessageAudio => new AudioContent(message),
+                MessageDocument => new DocumentContent(message),
+                MessageLocation => new LocationContent(message),
+                MessagePhoto => new PhotoContent(message),
+                MessageVenue => new VenueContent(message),
+                MessageVideo => new VideoContent(message),
+                _ => null
+            };
+
+            // Media.Margin = new Thickness(10, 4, 10, 8);
+            Media.Margin = content switch
+            {
+                //MessageAnimation => new AnimationContent(message),
+                MessageAudio => new Thickness(10, 8, 10, 4),
+                MessageDocument => new Thickness(10, 8, 10, 4),
+                //MessageLocation => new LocationContent(message),
+                //MessagePhoto => new PhotoContent(message),
+                //MessageVenue => new VenueContent(message),
+                //MessageVideo => new VideoContent(message),
+                _ => new Thickness(0)
+            };
+        }
+
+        public IPlayerView GetPlaybackElement()
+        {
+            if (Media?.Child is IContentWithPlayback content)
+            {
+                return content.GetPlaybackElement();
+            }
+            else if (Media?.Child is IPlayerView playback)
+            {
+                return playback;
+            }
+
+            return null;
+        }
+
         private void QuestionText_TextEntityClick(object sender, TextEntityClickEventArgs e)
         {
-            MessageBubble.TextEntityClick(_message, QuestionText, e);
+            MessageBubble.TextEntityClick(_message, sender as FormattedTextBlock, e);
         }
 
         private void RecentVoters_RecentUserHeadChanged(ProfilePicture photo, MessageSender sender)
@@ -280,6 +357,23 @@ namespace Telegram.Controls.Messages.Content
                 _timeoutTimer?.Stop();
                 TimeoutLabel.Visibility = Visibility.Collapsed;
             }
+        }
+
+        public Rect Highlight(MessageBubbleHighlightOptions options)
+        {
+            foreach (var child in Options.Children)
+            {
+                if (child is PollOptionContent button
+                    && button.Option.Id == options.PollOptionId)
+                {
+                    var transform = child.TransformToVisual(this);
+                    var point = transform.TransformPoint(new Point());
+
+                    return new Rect(point.X, point.Y, button.ActualWidth, button.ActualHeight);
+                }
+            }
+
+            return Rect.Empty;
         }
 
         public void Recycle()
@@ -363,7 +457,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void View_Click(object sender, RoutedEventArgs e)
         {
-            _message.Delegate.OpenMedia(_message, null);
+            _message.Delegate.OpenPoll(_message);
         }
 
         private void Explanation_Click(object sender, RoutedEventArgs e)

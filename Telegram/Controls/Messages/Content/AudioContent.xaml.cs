@@ -405,16 +405,13 @@ namespace Telegram.Controls.Messages.Content
 
         public bool IsValid(MessageContent content, bool primary)
         {
-            if (content is MessageAudio)
+            return content switch
             {
-                return true;
-            }
-            else if (content is MessageText text && text.LinkPreview != null && !primary)
-            {
-                return text.LinkPreview.Type is LinkPreviewTypeAudio or LinkPreviewTypeEmbeddedAudioPlayer { Audio: not null };
-            }
-
-            return false;
+                MessageAudio => true,
+                MessageText text when text.LinkPreview != null && !primary => text.LinkPreview.Type is LinkPreviewTypeAudio or LinkPreviewTypeEmbeddedAudioPlayer { Audio: not null },
+                MessagePoll poll when poll.Media is MessageAudio && !primary => true,
+                _ => false,
+            };
         }
 
         private Audio GetContent(MessageViewModel message)
@@ -425,20 +422,25 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var content = message.Content;
-            if (content is MessageAudio audio)
+            switch (content)
             {
-                return audio.Audio;
-            }
-            else if (content is MessageText text)
-            {
-                if (text.LinkPreview?.Type is LinkPreviewTypeAudio previewAudio)
-                {
-                    return previewAudio.Audio;
-                }
-                else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer)
-                {
-                    return embeddedAudioPlayer.Audio;
-                }
+                case MessageAudio audio:
+                    return audio.Audio;
+                case MessageText text:
+                    {
+                        if (text.LinkPreview?.Type is LinkPreviewTypeAudio previewAudio)
+                        {
+                            return previewAudio.Audio;
+                        }
+                        else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAudioPlayer embeddedAudioPlayer)
+                        {
+                            return embeddedAudioPlayer.Audio;
+                        }
+
+                        break;
+                    }
+                case MessagePoll poll when poll.Media is MessageAudio pollAudio:
+                    return pollAudio.Audio;
             }
 
             return null;

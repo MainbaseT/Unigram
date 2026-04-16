@@ -703,6 +703,8 @@ namespace Telegram.Controls.Messages
                 MessageChatBoost chatBoost => UpdateChatBoost(message, chatBoost, history),
                 MessageChecklistTasksAdded checklistTasksAdded => UpdateChecklistTasksAdded(message, checklistTasksAdded, history),
                 MessageChecklistTasksDone checklistTasksDone => UpdateChecklistTasksDone(message, checklistTasksDone, history),
+                MessagePollOptionAdded pollOptionAdded => UpdatePollOptionAdded(message, pollOptionAdded, history),
+                MessagePollOptionDeleted pollOptionDeleted => UpdatePollOptionDeleted(message, pollOptionDeleted, history),
                 MessageSuggestedPostPaid suggestedPostPaid => UpdateSuggestedPostPaid(message, suggestedPostPaid, history),
                 MessageSuggestedPostRefunded suggestedPostRefunded => UpdateSuggestedPostRefunded(message, suggestedPostRefunded, history),
                 MessageAsyncStory story => UpdateStory(message, story, history),
@@ -2819,6 +2821,41 @@ namespace Telegram.Controls.Messages
 
                 return ReplaceWithLink(formatted, message.GetSender());
             }
+        }
+        private static FormattedText UpdatePollOptionAdded(MessageWithOwner message, MessagePollOptionAdded pollOptionAdded, bool history)
+        {
+            FormattedText formatted;
+            var text = message.IsOutgoing
+                ? Strings.PollAddingActionYou
+                : Strings.PollAddingActionOther;
+            formatted = ClientEx.Format(text, pollOptionAdded.Text);
+            formatted = ClientEx.ParseMarkdown(formatted);
+            //formatted = TdExtensions.Concat(ClientEx.CustomEmoji("\uEAD2 "), formatted);
+
+            if (message.IsOutgoing)
+            {
+                return formatted;
+            }
+
+            return ReplaceWithLink(formatted, message.GetSender());
+        }
+
+        private static FormattedText UpdatePollOptionDeleted(MessageWithOwner message, MessagePollOptionDeleted pollOptionDeleted, bool history)
+        {
+            FormattedText formatted;
+            var text = message.IsOutgoing
+                ? Strings.PollRemovedActionYou
+                : Strings.PollRemovedActionOther;
+            formatted = ClientEx.Format(text, pollOptionDeleted.Text);
+            formatted = ClientEx.ParseMarkdown(formatted);
+            //formatted = TdExtensions.Concat(ClientEx.CustomEmoji("\uEAD2 "), formatted);
+
+            if (message.IsOutgoing)
+            {
+                return formatted;
+            }
+
+            return ReplaceWithLink(formatted, message.GetSender());
         }
 
         private static FormattedText UpdateSuggestedPostPaid(MessageWithOwner message, MessageSuggestedPostPaid suggestedPostPaid, bool history)

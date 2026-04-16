@@ -245,16 +245,13 @@ namespace Telegram.Controls.Messages.Content
 
         public bool IsValid(MessageContent content, bool primary)
         {
-            if (content is MessageDocument)
+            return content switch
             {
-                return true;
-            }
-            else if (content is MessageText text && text.LinkPreview != null && !primary)
-            {
-                return text.LinkPreview.Type is LinkPreviewTypeDocument;
-            }
-
-            return false;
+                MessageDocument => true,
+                MessageText text when text.LinkPreview != null && !primary => text.LinkPreview.Type is LinkPreviewTypeDocument,
+                MessagePoll poll when poll.Media is MessageDocument && !primary => true,
+                _ => false,
+            };
         }
 
         private Document GetContent(MessageViewModel message)
@@ -265,13 +262,14 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var content = message.Content;
-            if (content is MessageDocument document)
+            switch (content)
             {
-                return document.Document;
-            }
-            else if (content is MessageText text && text.LinkPreview?.Type is LinkPreviewTypeDocument previewDocument)
-            {
-                return previewDocument.Document;
+                case MessageDocument document:
+                    return document.Document;
+                case MessageText text when text.LinkPreview?.Type is LinkPreviewTypeDocument previewDocument:
+                    return previewDocument.Document;
+                case MessagePoll poll when poll.Media is MessageDocument pollDocument:
+                    return pollDocument.Document;
             }
 
             return null;

@@ -180,7 +180,7 @@
                                 <VisualState x:Name="Unknown" />
                                 <VisualState x:Name="Correct">
                                     <VisualState.Setters>
-                                        <Setter Target="TickFill.Foreground"
+                                        <Setter Target="Tick.Background"
                                                 Value="{ThemeResource MessagePollCorrectBrush}" />
                                         <Setter Target="Zero.Fill"
                                                 Value="{ThemeResource MessagePollCorrectBrush}" />
@@ -192,7 +192,7 @@
                                     <VisualState.Setters>
                                         <Setter Target="TickGlyph.Glyph"
                                                 Value="&#xF13D;" />
-                                        <Setter Target="TickFill.Foreground"
+                                        <Setter Target="Tick.Background"
                                                 Value="{ThemeResource MessagePollWrongBrush}" />
                                         <Setter Target="Zero.Fill"
                                                 Value="{ThemeResource MessagePollWrongBrush}" />
@@ -205,19 +205,20 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="28" />
                             <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                             <RowDefinition Height="0" />
                         </Grid.RowDefinitions>
-                        <Ellipse x:Name="Ellipse"
-                                 Width="20"
-                                 Height="20"
-                                 UseLayoutRounding="False"
-                                 Stroke="{ThemeResource MessageHeaderBorderBrush}"
-                                 StrokeThickness="1.5"
-                                 VerticalAlignment="Top"
-                                 Margin="0,8,8,8" />
+                        <Rectangle x:Name="Ellipse"
+                                   Width="20"
+                                   Height="20"
+                                   UseLayoutRounding="False"
+                                   Stroke="{ThemeResource MessageHeaderBorderBrush}"
+                                   StrokeThickness="1.5"
+                                   VerticalAlignment="Top"
+                                   Margin="0,8,8,8" />
                         <Grid x:Name="CheckmarkRoot"
                               Visibility="Collapsed"
                               Width="20"
@@ -275,23 +276,44 @@
                                                      Margin="0,8,0,8"
                                                      Grid.Column="1" />
 
-                        <Grid x:Name="Tick"
-                              VerticalAlignment="Top"
-                              HorizontalAlignment="Right"
-                              Width="12"
-                              Height="12"
-                              Margin="0,-8,6,-4"
-                              Grid.Column="0"
-                              Grid.Row="1">
-                            <FontIcon x:Name="TickFill"
-                                      Glyph="&#xF136;"
-                                      FontSize="12"
-                                      Foreground="{ThemeResource MessageHeaderBorderBrush}" />
+                        <StackPanel x:Name="RecentVotersRoot"
+                                    x:Load="False"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,6,0,0"
+                                    Grid.Column="1">
+                            <TextBlock x:Name="RecentVotersCount"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       VerticalAlignment="Top"
+                                       Margin="0,4,4,0" />
+
+                            <controls:RecentUserHeads x:Name="RecentVoters"
+                                                      BorderBrush="{ThemeResource MessageBackgroundBrush}"
+                                                      ItemSize="18"
+                                                      ItemOverlap="6"
+                                                      Margin="0,0,0,-8" />
+                        </StackPanel>
+
+                        <HyperlinkButton x:Name="Media"
+                                         x:Load="False"
+                                         Style="{StaticResource EmptyHyperlinkButtonStyle}"
+                                         Margin="8,0,0,-4"
+                                         Grid.Column="2" />
+
+                        <Border x:Name="Tick"
+                                Background="{ThemeResource MessageHeaderBorderBrush}"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"
+                                Width="12"
+                                Height="12"
+                                Margin="0,-8,6,-4"
+                                Grid.Column="0"
+                                Grid.Row="1">
                             <FontIcon x:Name="TickGlyph"
                                       Glyph="&#xF13E;"
                                       FontSize="12"
                                       Foreground="White" />
-                        </Grid>
+                        </Border>
 
                         <Ellipse x:Name="Zero"
                                  Fill="{ThemeResource MessageHeaderBorderBrush}"
@@ -305,8 +327,8 @@
 
                         <ProgressBar x:Name="Votes"
                                      Foreground="{ThemeResource MessageHeaderBorderBrush}"
+                                     Background="{ThemeResource ListViewItemBackgroundPointerOver}"
                                      Style="{StaticResource PollOptionProgressBarStyle}"
-                                     Background="Transparent"
                                      Margin="0,-4,0,0"
                                      VerticalAlignment="Top"
                                      Grid.Row="1"

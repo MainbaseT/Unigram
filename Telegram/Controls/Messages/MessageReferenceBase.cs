@@ -87,12 +87,12 @@ namespace Telegram.Controls.Messages
             else if (embedded.Editing != null)
             {
                 Message = embedded.Editing.Message;
-                GetMessageTemplate(embedded.Editing.Message, null, false, 0, Strings.Edit, true, false, false);
+                GetMessageTemplate(embedded.Editing.Message, null, false, 0, string.Empty, Strings.Edit, true, false, false);
             }
             else if (embedded.ReplyTo != null)
             {
                 Message = embedded.ReplyTo.Message;
-                GetMessageTemplate(embedded.ReplyTo.Message, embedded.ReplyTo.Quote?.Text, false, embedded.ReplyTo.ChecklistTaskId, embedded.ReplyTo.Quote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
+                GetMessageTemplate(embedded.ReplyTo.Message, embedded.ReplyTo.Quote?.Text, false, embedded.ReplyTo.ChecklistTaskId, embedded.ReplyTo.PollOptionId, embedded.ReplyTo.Quote != null ? Strings.ReplyToQuote : Strings.ReplyTo, true, false, false);
             }
         }
 
@@ -161,7 +161,7 @@ namespace Telegram.Controls.Messages
             else if (message.ReplyToItem is MessageViewModel replyToMessage && message.ReplyTo is MessageReplyToMessage replyToMessage1)
             {
                 Visibility = Visibility.Visible;
-                GetMessageTemplate(replyToMessage, replyToMessage1.Quote?.Text, replyToMessage1.Quote?.IsManual ?? false, replyToMessage1.ChecklistTaskId, null, outgoing, light, message.ForwardInfo != null);
+                GetMessageTemplate(replyToMessage, replyToMessage1.Quote?.Text, replyToMessage1.Quote?.IsManual ?? false, replyToMessage1.ChecklistTaskId, replyToMessage1.PollOptionId, null, outgoing, light, message.ForwardInfo != null);
             }
             else if (message.ReplyToItem is Story replyToStory)
             {
@@ -203,7 +203,7 @@ namespace Telegram.Controls.Messages
             else
             {
                 Message = message;
-                GetMessageTemplate(message, null, false, 0, title, true, false, message.ForwardInfo != null);
+                GetMessageTemplate(message, null, false, 0, string.Empty, title, true, false, message.ForwardInfo != null);
             }
         }
 
@@ -324,7 +324,7 @@ namespace Telegram.Controls.Messages
 
         #region Reply
 
-        private void GetMessageTemplate(MessageViewModel message, FormattedText quote, bool manual, int checklistTaskId, string title, bool outgoing, bool white, bool forward)
+        private void GetMessageTemplate(MessageViewModel message, FormattedText quote, bool manual, int checklistTaskId, string pollOptionId, string title, bool outgoing, bool white, bool forward)
         {
             MessageSender sender;
             if (title == null)
@@ -393,7 +393,7 @@ namespace Telegram.Controls.Messages
                     SetPhotoTemplate(message, sender, quote, manual, photo, title, outgoing, white, message.SelfDestructType is null);
                     break;
                 case MessagePoll poll:
-                    SetPollTemplate(message, sender, poll, title, outgoing, white);
+                    SetPollTemplate(message, sender, poll, pollOptionId, title, outgoing, white);
                     break;
                 case MessageChecklist checklist:
                     SetChecklistTemplate(message, sender, checklist, checklistTaskId, title, outgoing, white);
@@ -479,7 +479,7 @@ namespace Telegram.Controls.Messages
                     SetPhotoTemplate(message, sender, quote, manual, photo, title, outgoing, white, true);
                     break;
                 case MessagePoll poll:
-                    SetPollTemplate(message, sender, poll, title, outgoing, white);
+                    SetPollTemplate(message, sender, poll, replyToMessage.PollOptionId, title, outgoing, white);
                     break;
                 case MessageChecklist checklist:
                     SetChecklistTemplate(message, sender, checklist, replyToMessage.ChecklistTaskId, title, outgoing, white);
@@ -827,11 +827,25 @@ namespace Telegram.Controls.Messages
                 white);
         }
 
-        private void SetPollTemplate(MessageViewModel message, MessageSender sender, MessagePoll poll, string title, bool outgoing, bool white)
+        private void SetPollTemplate(MessageViewModel message, MessageSender sender, MessagePoll poll, string pollOptionId, string title, bool outgoing, bool white)
         {
             HideThumbnail();
 
-            SetText(message,
+            var task = string.IsNullOrEmpty(pollOptionId) ? null : poll.Poll.Options.FirstOrDefault(x => x.Id == pollOptionId);
+            if (task != null)
+            {
+                SetText(message,
+                    outgoing,
+                    sender,
+                    title,
+                    string.Empty,
+                    TdExtensions.Concat(ClientEx.CustomEmoji("\uEACF "), task.Text),
+                    false,
+                    white);
+            }
+            else
+            {
+                SetText(message,
                 outgoing,
                 sender,
                 title,
@@ -839,6 +853,7 @@ namespace Telegram.Controls.Messages
                 poll.Poll.Question,
                 false,
                 white);
+            }
         }
 
         private void SetChecklistTemplate(MessageViewModel message, MessageSender sender, MessageChecklist checklist, int checklistTaskId, string title, bool outgoing, bool white)

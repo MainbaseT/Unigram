@@ -13,6 +13,38 @@
                 HorizontalAlignment="Right"
                 Margin="12,0,12,-8"
                 Width="48">
+        <StackPanel x:Name="PollVotesPanel"
+                    Visibility="Collapsed"
+                    Margin="0,0,0,16"
+                    Canvas.ZIndex="2">
+            <controls:BadgeControl x:Name="PollVotes"
+                                   HorizontalAlignment="Center"
+                                   IsHitTestVisible="False"
+                                   Margin="0,-10,0,-6"
+                                   Canvas.ZIndex="1" />
+            <Grid>
+                <Rectangle x:Name="ArrowPollVotesShadow"
+                           Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                           Width="36"
+                           Height="36"
+                           RadiusX="18"
+                           RadiusY="18" />
+                <Border Background="{ThemeResource PageSubHeaderBackgroundBrush}"
+                        CornerRadius="18"
+                        Height="36"
+                        Width="36">
+                    <controls:GlyphButton x:Name="PollVotesButton"
+                                          Width="36"
+                                          Height="36"
+                                          Glyph="&#xE91F;"
+                                          CornerRadius="18"
+                                          Padding="0"
+                                          AutomationProperties.Name="{CustomResource AccDescrReactionMentionDown}"
+                                          ToolTipService.ToolTip="{CustomResource AccDescrReactionMentionDown}" />
+                </Border>
+            </Grid>
+        </StackPanel>
+
         <StackPanel x:Name="ReactionsPanel"
                     Visibility="Collapsed"
                     Margin="0,0,0,16"

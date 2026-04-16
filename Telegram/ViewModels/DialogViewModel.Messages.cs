@@ -86,6 +86,29 @@ namespace Telegram.ViewModels
         }
     }
 
+    public partial class MessagePollOption
+    {
+        public MessageViewModel Message { get; set; }
+
+        public PollOption Option { get; set; }
+
+        public MessagePollOption(MessageViewModel message, PollOption option)
+        {
+            Message = message;
+            Option = option;
+        }
+
+        public MessagePollOption(MessageComposerReplyTo reply)
+        {
+            Message = reply.Message;
+
+            if (reply.Message.Content is MessagePoll poll)
+            {
+                Option = poll.Poll.Options.FirstOrDefault(x => x.Id == reply.PollOptionId);
+            }
+        }
+    }
+
     public partial class DialogViewModel
     {
         #region Reply
@@ -175,7 +198,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, null, 0, should != ShouldReplyInAnotherChatResult.NotAvailable)
+                    ReplyTo = new MessageComposerReplyTo(message, null, 0, string.Empty, should != ShouldReplyInAnotherChatResult.NotAvailable)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -226,7 +249,7 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, quote.ToInput(), 0, should != ShouldReplyInAnotherChatResult.NotAvailable)
+                    ReplyTo = new MessageComposerReplyTo(message, quote.ToInput(), 0, string.Empty, should != ShouldReplyInAnotherChatResult.NotAvailable)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -277,7 +300,58 @@ namespace Telegram.ViewModels
             {
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, null, checklistTask.Task.Id, should != ShouldReplyInAnotherChatResult.NotAvailable)
+                    ReplyTo = new MessageComposerReplyTo(message, null, checklistTask.Task.Id, string.Empty, should != ShouldReplyInAnotherChatResult.NotAvailable)
+                };
+
+                TextField?.Focus(FocusState.Keyboard);
+            }
+        }
+
+        public void ReplyToPollOption(MessagePollOption message)
+        {
+            ReplyToPollOption(message, false);
+        }
+
+        public void ReplyToPollOptionInAnotherChat(MessagePollOption message)
+        {
+            ReplyToPollOption(message, true);
+        }
+
+        public async void ReplyToPollOption(MessagePollOption pollOption, bool inAnotherChat)
+        {
+            DisposeSearch();
+
+            var message = pollOption.Message;
+            if (message == null)
+            {
+                return;
+            }
+
+            if (message.Content is MessageAlbum album)
+            {
+                message = album.Messages[album.IsMedia ? 0 : ^1];
+            }
+
+            var should = await ShouldReplyInAnotherChatAsync(message);
+            if (should == ShouldReplyInAnotherChatResult.True || inAnotherChat)
+            {
+                var header = ComposerHeader;
+                var text = GetFormattedText(true, false);
+
+                GetReply(true);
+
+                var confirm = await ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationReplyToMessage(message, pollOptionId: pollOption.Option.Id));
+                if (confirm != ContentDialogResult.Primary)
+                {
+                    ComposerHeader = header;
+                    SetFormattedText(text);
+                }
+            }
+            else
+            {
+                ComposerHeader = new MessageComposerHeader(ClientService)
+                {
+                    ReplyTo = new MessageComposerReplyTo(message, null, 0, pollOption.Option.Id, should != ShouldReplyInAnotherChatResult.NotAvailable)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -951,7 +1025,7 @@ namespace Telegram.ViewModels
                 return;
             }
 
-            var response = await ClientService.SendAsync(new GetMessageLink(chat.Id, message.Id, 0, false, ForumTopic != null || Thread != null));
+            var response = await ClientService.SendAsync(new GetMessageLink(chat.Id, message.Id, 0, 0, string.Empty, false, ForumTopic != null || Thread != null));
             if (response is MessageLink link)
             {
                 MessageHelper.CopyLink(XamlRoot, link.Link, link.IsPublic);
@@ -1378,6 +1452,15 @@ namespace Telegram.ViewModels
             }
         }
 
+        public async void CopyChecklistTask(MessageChecklistTask task)
+        {
+            var response = await ClientService.SendAsync(new GetMessageLink(task.Message.ChatId, task.Message.Id, 0, task.Task.Id, string.Empty, false, ForumTopic != null || Thread != null));
+            if (response is MessageLink link)
+            {
+                MessageHelper.CopyLink(XamlRoot, link.Link, link.IsPublic);
+            }
+        }
+
         private async void EditChecklist(MessageViewModel message, Checklist checklist, bool addTask, ChecklistTask taskToEdit)
         {
             var response = await ClientService.SendAsync(new GetMessageProperties(message.ChatId, message.Id));
@@ -1736,7 +1819,7 @@ namespace Telegram.ViewModels
             else if (keyboardButton.Type is KeyboardButtonTypeText)
             {
                 var input = new InputMessageText(new FormattedText(keyboardButton.Text, null), null, true);
-                await SendMessageAsync(chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup ? new InputMessageReplyToMessage(message.Id, null, 0) : null, input, null);
+                await SendMessageAsync(chat.Type is ChatTypeSupergroup or ChatTypeBasicGroup ? new InputMessageReplyToMessage(message.Id, null, 0, string.Empty) : null, input, null);
             }
             else if (keyboardButton.Type is KeyboardButtonTypeWebApp webApp)
             {
@@ -2063,6 +2146,20 @@ namespace Telegram.ViewModels
                     await LoadMessageSliceAsync(message.Id, checklistTasksDone.ChecklistMessageId, checklistTaskId: checklistTasksDone.MarkedAsDoneTaskIds.Count > 0 ? checklistTasksDone.MarkedAsDoneTaskIds[0] : checklistTasksDone.MarkedAsNotDoneTaskIds[0]);
                 }
             }
+            else if (message.Content is MessagePollOptionAdded pollOptionAdded && pollOptionAdded.PollMessageId != 0)
+            {
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, pollOptionAdded.PollMessageId, pollOptionId: pollOptionAdded.OptionId);
+                }
+            }
+            else if (message.Content is MessagePollOptionDeleted pollOptionDeleted && pollOptionDeleted.PollMessageId != 0)
+            {
+                if (message.ReplyToState != MessageReplyToState.Deleted)
+                {
+                    await LoadMessageSliceAsync(message.Id, pollOptionDeleted.PollMessageId, pollOptionId: pollOptionDeleted.OptionId);
+                }
+            }
             else if (message.Content is MessageSuggestedPostPaid suggestedPostPaid && suggestedPostPaid.SuggestedPostMessageId != 0)
             {
                 if (message.ReplyToState != MessageReplyToState.Deleted)
@@ -2298,6 +2395,50 @@ namespace Telegram.ViewModels
             }
 
             ClientService.Send(new StopPoll(message.ChatId, message.Id));
+        }
+
+        #endregion
+
+        #region Polls
+
+        public void MarkPollOption(MessagePollOption option)
+        {
+            if (option.Message.Content is MessagePoll poll)
+            {
+                var votes = new List<int>();
+
+                for (int i = 0; i < poll.Poll.Options.Count; i++)
+                {
+                    var item = poll.Poll.Options[i];
+                    if (item.Id == option.Option.Id)
+                    {
+                        if (!item.IsChosen)
+                        {
+                            votes.Add(i);
+                        }
+                    }
+                    else if (item.IsChosen)
+                    {
+                        votes.Add(i);
+                    }
+                }
+
+                VotePoll(option.Message, votes);
+            }
+        }
+
+        public void DeletePollOption(MessagePollOption option)
+        {
+            ClientService.SendAsync(new DeletePollOption(option.Message.ChatId, option.Message.Id, option.Option.Id));
+        }
+
+        public async void CopyPollOption(MessagePollOption option)
+        {
+            var response = await ClientService.SendAsync(new GetMessageLink(option.Message.ChatId, option.Message.Id, 0, 0, option.Option.Id, false, ForumTopic != null || Thread != null));
+            if (response is MessageLink link)
+            {
+                MessageHelper.CopyLink(XamlRoot, link.Link, link.IsPublic);
+            }
         }
 
         #endregion

@@ -10,7 +10,7 @@ using Telegram.Td.Api;
 
 namespace Telegram.ViewModels
 {
-    public record MessageComposerReplyTo(MessageViewModel Message, InputTextQuote Quote, int ChecklistTaskId, bool CanBeRepliedInAnotherChat)
+    public record MessageComposerReplyTo(MessageViewModel Message, InputTextQuote Quote, int ChecklistTaskId, string PollOptionId, bool CanBeRepliedInAnotherChat)
     {
         public InputMessageReplyTo ToInput(DialogViewModel viewModel)
         {
@@ -27,13 +27,13 @@ namespace Telegram.ViewModels
                     //    return new InputMessageReplyToTopicMessage(Message.Id, new MessageTopicForum(Message.MessageThreadId), Quote, ChecklistTaskId);
                     //}
 
-                    return new InputMessageReplyToTopicMessage(Message.Id, Message.TopicId, Quote, ChecklistTaskId);
+                    return new InputMessageReplyToTopicMessage(Message.Id, Message.TopicId, Quote, ChecklistTaskId, PollOptionId);
                 }
 
-                return new InputMessageReplyToMessage(Message.Id, Quote, ChecklistTaskId);
+                return new InputMessageReplyToMessage(Message.Id, Quote, ChecklistTaskId, PollOptionId);
             }
 
-            return new InputMessageReplyToExternalMessage(chatId, Message.Id, Quote, ChecklistTaskId);
+            return new InputMessageReplyToExternalMessage(chatId, Message.Id, Quote, ChecklistTaskId, PollOptionId);
         }
     }
 

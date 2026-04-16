@@ -138,6 +138,11 @@ namespace Telegram.Controls
                 constraint = message.Content;
             }
 
+            if (constraint is MessagePoll poll)
+            {
+                constraint = poll.Media;
+            }
+
             if (constraint is MessageAnimation animationMessage)
             {
                 constraint = animationMessage.Animation;

@@ -253,24 +253,15 @@ namespace Telegram.Controls.Messages.Content
 
         public bool IsValid(MessageContent content, bool primary)
         {
-            if (content is MessageAnimation)
+            return content switch
             {
-                return true;
-            }
-            else if (content is MessageGame game && !primary)
-            {
-                return game.Game.Animation != null;
-            }
-            else if (content is MessageText text && text.LinkPreview != null && !primary)
-            {
-                return text.LinkPreview.Type is LinkPreviewTypeAnimation or LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null };
-            }
-            else if (content is MessageSponsored { Content: MessageAnimation } && !primary)
-            {
-                return true;
-            }
-
-            return false;
+                MessageAnimation => true,
+                MessageGame game when !primary => game.Game.Animation != null,
+                MessageText text when text.LinkPreview != null && !primary => text.LinkPreview.Type is LinkPreviewTypeAnimation or LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null },
+                MessagePoll poll when poll.Media is MessageAnimation && !primary => true,
+                MessageSponsored { Content: MessageAnimation } when !primary => true,
+                _ => false,
+            };
         }
 
         private Animation GetContent(MessageViewModel message, out bool isSecret, out bool isGame)
@@ -284,30 +275,31 @@ namespace Telegram.Controls.Messages.Content
             }
 
             var content = message.Content;
-            if (content is MessageAnimation animation)
+            switch (content)
             {
-                isSecret = animation.IsSecret;
-                return animation.Animation;
-            }
-            else if (content is MessageGame game)
-            {
-                isGame = true;
-                return game.Game.Animation;
-            }
-            else if (content is MessageText text)
-            {
-                if (text.LinkPreview?.Type is LinkPreviewTypeAnimation previewAnimation)
-                {
-                    return previewAnimation.Animation;
-                }
-                else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer)
-                {
-                    return embeddedAnimationPlayer.Animation;
-                }
-            }
-            else if (content is MessageSponsored { Content: MessageAnimation sponsored })
-            {
-                return sponsored.Animation;
+                case MessageAnimation animation:
+                    isSecret = animation.IsSecret;
+                    return animation.Animation;
+                case MessageGame game:
+                    isGame = true;
+                    return game.Game.Animation;
+                case MessageText text:
+                    {
+                        if (text.LinkPreview?.Type is LinkPreviewTypeAnimation previewAnimation)
+                        {
+                            return previewAnimation.Animation;
+                        }
+                        else if (text.LinkPreview?.Type is LinkPreviewTypeEmbeddedAnimationPlayer embeddedAnimationPlayer)
+                        {
+                            return embeddedAnimationPlayer.Animation;
+                        }
+
+                        break;
+                    }
+                case MessagePoll poll when poll.Media is MessageAnimation pollAnimation:
+                    return pollAnimation.Animation;
+                case MessageSponsored { Content: MessageAnimation sponsored }:
+                    return sponsored.Animation;
             }
 
             return null;

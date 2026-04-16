@@ -136,6 +136,7 @@ namespace Telegram.ViewModels
 
         public DialogUnreadMessagesViewModel Mentions { get; }
         public DialogUnreadMessagesViewModel Reactions { get; }
+        public DialogUnreadMessagesViewModel PollVotes { get; }
 
         public DialogPinnedMessagesViewModel PinnedMessages { get; }
 
@@ -156,6 +157,7 @@ namespace Telegram.ViewModels
 
             Mentions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadMention());
             Reactions = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadReaction());
+            PollVotes = new DialogUnreadMessagesViewModel(this, new SearchMessagesFilterUnreadPollVote());
 
             PinnedMessages = new DialogPinnedMessagesViewModel(this);
 
@@ -1204,7 +1206,7 @@ namespace Telegram.ViewModels
             Initialized = null;
         }
 
-        public async Task LoadMessageSliceAsync(long? previousId, long fromMessageId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, int checklistTaskId = 0, int fromDateOffset = 0, bool onlyRemote = false)
+        public async Task LoadMessageSliceAsync(long? previousId, long fromMessageId, VerticalAlignment alignment = VerticalAlignment.Center, double? pixel = null, ScrollIntoViewAlignment? direction = null, bool? disableAnimation = null, TextQuote highlight = null, int checklistTaskId = 0, string pollOptionId = "", int fromDateOffset = 0, bool onlyRemote = false)
         {
             if (Type is not DialogType.History and not DialogType.Thread and not DialogType.Pinned)
             {
@@ -1265,7 +1267,7 @@ namespace Telegram.ViewModels
                     }
                 }
 
-                HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(fromMessageId, highlight, checklistTaskId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
+                HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(fromMessageId, highlight, checklistTaskId, pollOptionId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
 
                 if (previousId.HasValue && !_repliesStack.Contains(previousId.Value))
                 {
@@ -1351,7 +1353,7 @@ namespace Telegram.ViewModels
 
                 if (Items.TryGetValue(fromMessageId, out already))
                 {
-                    HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(fromMessageId, highlight, checklistTaskId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
+                    HistoryField?.ScrollToItem(already, alignment, alignment == VerticalAlignment.Center ? new MessageBubbleHighlightOptions(fromMessageId, highlight, checklistTaskId, pollOptionId) : null, pixel, direction ?? ScrollIntoViewAlignment.Leading, disableAnimation);
 
                     if (previousId.HasValue && !_repliesStack.Contains(previousId.Value))
                     {
@@ -2139,13 +2141,15 @@ namespace Telegram.ViewModels
             }
 
             if (message.ReplyTo is not null ||
-                message.Content is MessagePinMessage ||
-                message.Content is MessageGameScore ||
-                message.Content is MessagePaymentSuccessful ||
-                message.Content is MessageChecklistTasksAdded ||
-                message.Content is MessageChecklistTasksDone ||
-                message.Content is MessageSuggestedPostPaid ||
-                message.Content is MessageSuggestedPostRefunded)
+                message.Content is MessagePinMessage or
+                MessageGameScore or
+                MessagePaymentSuccessful or
+                MessageChecklistTasksAdded or
+                MessageChecklistTasksDone or
+                MessagePollOptionAdded or
+                MessagePollOptionDeleted or
+                MessageSuggestedPostPaid or
+                MessageSuggestedPostRefunded)
             {
                 message.ReplyToState = message.Content is MessageGiveawayWinners
                     ? MessageReplyToState.Hidden
@@ -2379,7 +2383,8 @@ namespace Telegram.ViewModels
 
                 state.TryRemove("highlight", out TextQuote quote);
                 state.TryRemove("checklist_task_id", out int checklistTaskId);
-                LoadMessageSliceAsync(null, navigation, highlight: quote, checklistTaskId: checklistTaskId);
+                state.TryRemove("poll_option_id", out string pollOptionId);
+                LoadMessageSliceAsync(null, navigation, highlight: quote, checklistTaskId: checklistTaskId, pollOptionId: pollOptionId);
             }
             else if (state.TryRemove("prepared_message", out Function preparedMessage))
             {
@@ -2743,15 +2748,17 @@ namespace Telegram.ViewModels
             {
                 state.TryGet("reply_to_quote", out InputTextQuote quote);
                 state.TryGet("reply_to_task_id", out int taskId);
+                state.TryGet("reply_to_option_id", out string optionId);
 
                 state.Remove("reply_to");
                 state.Remove("reply_to_quote");
                 state.Remove("reply_to_task_id");
+                state.Remove("reply_to_option_id");
 
                 // We arrive here from "Reply in another chat", so we assume the message can be replied in another chat
                 ComposerHeader = new MessageComposerHeader(ClientService)
                 {
-                    ReplyTo = new MessageComposerReplyTo(message, quote, taskId, true)
+                    ReplyTo = new MessageComposerReplyTo(message, quote, taskId, optionId ?? string.Empty, true)
                 };
 
                 TextField?.Focus(FocusState.Keyboard);
@@ -2853,7 +2860,7 @@ namespace Telegram.ViewModels
 
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
-                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToMessage.Quote, replyToMessage.ChecklistTaskId, properties?.CanBeRepliedInAnotherChat ?? false)
+                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToMessage.Quote, replyToMessage.ChecklistTaskId, replyToMessage.PollOptionId, properties?.CanBeRepliedInAnotherChat ?? false)
                         };
 
                         goto UpdateText;
@@ -2868,7 +2875,7 @@ namespace Telegram.ViewModels
 
                         ComposerHeader = new MessageComposerHeader(ClientService)
                         {
-                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToExternalMessage.Quote, replyToExternalMessage.ChecklistTaskId, properties?.CanBeRepliedInAnotherChat ?? false)
+                            ReplyTo = new MessageComposerReplyTo(CreateMessage(message), replyToExternalMessage.Quote, replyToExternalMessage.ChecklistTaskId, replyToExternalMessage.PollOptionId, properties?.CanBeRepliedInAnotherChat ?? false)
                         };
 
                         goto UpdateText;
@@ -2957,6 +2964,7 @@ namespace Telegram.ViewModels
             var replyToMessageId = 0L;
             var replyToChatId = 0L;
             var replyToTaskId = 0;
+            var replyToOptionId = string.Empty;
             var quote = default(InputTextQuote);
 
             if (embedded != null && embedded.ReplyTo != null)
@@ -2964,6 +2972,7 @@ namespace Telegram.ViewModels
                 replyToMessageId = embedded.ReplyTo.Message.Id;
                 replyToChatId = embedded.ReplyTo.Message.ChatId;
                 replyToTaskId = embedded.ReplyTo.ChecklistTaskId;
+                replyToOptionId = embedded.ReplyTo.PollOptionId;
                 quote = embedded.ReplyTo.Quote;
 
                 if (replyToChatId == chat.Id)
@@ -2982,8 +2991,8 @@ namespace Telegram.ViewModels
 
                 InputMessageReplyTo inputReply = replyToMessageId != 0
                     ? replyToChatId == chat.Id || replyToChatId == 0
-                    ? new InputMessageReplyToMessage(replyToMessageId, quote, replyToTaskId)
-                    : new InputMessageReplyToExternalMessage(replyToChatId, replyToMessageId, quote, replyToTaskId)
+                    ? new InputMessageReplyToMessage(replyToMessageId, quote, replyToTaskId, replyToOptionId)
+                    : new InputMessageReplyToExternalMessage(replyToChatId, replyToMessageId, quote, replyToTaskId, replyToOptionId)
                     : null;
 
                 draft = new DraftMessage(inputReply, 0, new InputMessageText(formattedText, null, false), 0, embedded?.SuggestedPostInfo);
@@ -4308,6 +4317,28 @@ namespace Telegram.ViewModels
             else
             {
                 ClientService.Send(new ReadAllChatReactions(chat.Id));
+            }
+        }
+
+        #endregion
+
+        #region Read poll votes
+
+        public void ReadPollVotes()
+        {
+            var chat = _chat;
+            if (chat == null)
+            {
+                return;
+            }
+
+            if (ForumTopic != null)
+            {
+                ClientService.Send(new ReadAllForumTopicPollVotes(chat.Id, ForumTopic.Info.ForumTopicId));
+            }
+            else
+            {
+                ClientService.Send(new ReadAllChatPollVotes(chat.Id));
             }
         }
 

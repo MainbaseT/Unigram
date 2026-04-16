@@ -424,7 +424,15 @@ namespace Telegram.Common
                 var viewModel = page.ViewModel;
                 if (message != null)
                 {
-                    await viewModel.LoadMessageSliceAsync(null, message.Value);
+                    TextQuote quote = null;
+                    int checklistTaskId = 0;
+                    string pollOptionId = string.Empty;
+
+                    state?.TryRemove("highlight", out quote);
+                    state?.TryRemove("checklist_task_id", out checklistTaskId);
+                    state?.TryRemove("poll_option_id", out pollOptionId);
+
+                    await viewModel.LoadMessageSliceAsync(null, message.Value, highlight: quote, checklistTaskId: checklistTaskId, pollOptionId: pollOptionId);
                 }
                 else
                 {

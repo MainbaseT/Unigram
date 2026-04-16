@@ -57,7 +57,7 @@ namespace Telegram.Controls.Messages.Content
         {
             _message = message;
 
-            var venue = message.Content as MessageVenue;
+            var venue = GetContent(message);
             if (venue == null || !_templateApplied)
             {
                 return;
@@ -86,12 +86,36 @@ namespace Telegram.Controls.Messages.Content
 
         public bool IsValid(MessageContent content, bool primary)
         {
-            return content is MessageVenue;
+            return content switch
+            {
+                MessageVenue => true,
+                MessagePoll poll when poll.Media is MessageVenue && !primary => true,
+                _ => false,
+            };
+        }
+
+        private MessageVenue GetContent(MessageViewModel message)
+        {
+            if (message?.Delegate == null)
+            {
+                return null;
+            }
+
+            var content = message.Content;
+            switch (content)
+            {
+                case MessageVenue venue:
+                    return venue;
+                case MessagePoll poll when poll.Media is MessageVenue pollVenue:
+                    return pollVenue;
+            }
+
+            return null;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var venue = _message.Content as MessageVenue;
+            var venue = GetContent(_message);
             if (venue == null)
             {
                 return;

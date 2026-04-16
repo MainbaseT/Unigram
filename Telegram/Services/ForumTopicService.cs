@@ -190,11 +190,11 @@ namespace Telegram.Services
                 {
                     if (_clientService.TryGetChat(_chatId, out Chat chat) && chat.Type is ChatTypePrivate)
                     {
-                        yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, Strings.BotForumNewTopic, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
+                        yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, Strings.BotForumNewTopic, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
                     }
                     else
                     {
-                        yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, Strings.AllTopicsShort, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
+                        yield return new ForumTopic(new ForumTopicInfo(_chatId, 0, Strings.AllTopicsShort, new ForumTopicIcon(), 0, null, false, false, false, false, false), null, long.MaxValue, false, 0, 0, 0, 0, 0, 0, new ChatNotificationSettings(), null);
                     }
                 }
 
