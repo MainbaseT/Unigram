@@ -564,7 +564,7 @@ namespace Telegram.Views
                         ShowState(Strings.WaitingForNetwork);
                         break;
                     case ConnectionStateConnecting connecting:
-                        ShowState(Strings.Connecting);
+                        ShowState(_clientService.Options.EnabledProxyId == 0 ? Strings.Connecting : Strings.ConnectingToProxy);
                         break;
                     case ConnectionStateConnectingToProxy connectingToProxy:
                         ShowState(Strings.ConnectingToProxy);
