@@ -18,6 +18,7 @@ namespace Telegram.Views.Popups
     {
         private readonly ITranslateService _translateService;
         private readonly string _toLanguage;
+        private readonly string _tone;
 
         private readonly long _chatId;
         private readonly long _messageId;
@@ -90,11 +91,11 @@ namespace Telegram.Views.Popups
             Task<object> task;
             if (_chatId != 0 && _messageId != 0)
             {
-                task = _translateService.TranslateAsync(_chatId, _messageId, _toLanguage);
+                task = _translateService.TranslateAsync(_chatId, _messageId, _toLanguage, _tone);
             }
             else
             {
-                task = _translateService.TranslateAsync(block.PlaceholderText, _toLanguage);
+                task = _translateService.TranslateAsync(block.PlaceholderText, _toLanguage, _tone);
             }
 
             var response = await task;

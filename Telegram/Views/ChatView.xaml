@@ -1960,7 +1960,8 @@
                                                    MaxHeight="192"
                                                    TextChanging="TextField_TextChanging"
                                                    Capture="TextField_Tapped"
-                                                   Sending="TextField_Sending" />
+                                                   Sending="TextField_Sending"
+                                                   SizeChanged="TextField_SizeChanged" />
                             </Border>
                             <Border x:Name="btnAttach"
                                     Grid.Column="1"
@@ -2185,6 +2186,14 @@
                                                        Width="28"
                                                        Height="28" />
                                 </Grid>
+
+                                <!--<controls:GlyphButton x:Name="ButtonEditor"
+                                                      Click="ButtonEditor_Click"
+                                                      Glyph="&#xEACE;"
+                                                      VerticalAlignment="Top"
+                                                      Height="48"
+                                                      Visibility="Collapsed"
+                                                      Grid.Column="2" />-->
                             </Grid>
                         </Grid>
                     </Grid>

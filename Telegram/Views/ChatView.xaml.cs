@@ -7142,7 +7142,7 @@ namespace Telegram.Views
 
                         if (ViewModel.ClientService.TryGetSupergroup(senderChat, out Supergroup supergroup))
                         {
-                            item.Info = Locale.Declension(Strings.R.Subscribers, supergroup.MemberCount);
+                            item.Info = Locale.Declension(supergroup.IsChannel ? Strings.R.Subscribers : Strings.R.Members, supergroup.MemberCount);
                         }
                     }
 
@@ -8092,6 +8092,20 @@ namespace Telegram.Views
             rectangle.StartAnimation("Size", size);
 
             batch.End();
+        }
+
+        private void TextField_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //ButtonEditor.Visibility = e.NewSize.Height >= 84
+            //    ? Visibility.Visible
+            //    : Visibility.Collapsed;
+
+            //Logger.Info(e.NewSize.Height);
+        }
+
+        private void ButtonEditor_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.OpenTextEditor();
         }
     }
 

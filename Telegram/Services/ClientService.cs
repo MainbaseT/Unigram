@@ -113,6 +113,8 @@ namespace Telegram.Services
 
         IList<string> ActiveReactions { get; }
 
+        IList<TextCompositionStyle> TextCompositionStyles { get; }
+
         IList<string> AnimationSearchEmojis { get; }
         string AnimationSearchProvider { get; }
 
@@ -353,6 +355,7 @@ namespace Telegram.Services
         private IList<long> _installedStickerSets;
         private IList<long> _installedMaskSets;
         private IList<long> _installedEmojiSets;
+        private IList<TextCompositionStyle> _textCompositionStyles;
 
         private ReactionType _defaultReaction;
 
@@ -807,6 +810,8 @@ namespace Telegram.Services
         public UpdateAvailableMessageEffects AvailableMessageEffects => _availableMessageEffects;
 
         public IList<string> ActiveReactions => _activeReactions;
+
+        public IList<TextCompositionStyle> TextCompositionStyles => _textCompositionStyles ?? Array.Empty<TextCompositionStyle>();
 
         public IDictionary<int, NameColor> AccentColors { get; private set; }
         public IList<int> AvailableAccentColors { get; private set; }
@@ -3737,6 +3742,9 @@ namespace Telegram.Services
                     break;
                 case UpdateSavedAnimations updateSavedAnimations:
                     _savedAnimations = updateSavedAnimations.AnimationIds;
+                    break;
+                case UpdateTextCompositionStyles updateTextCompositionStyles:
+                    _textCompositionStyles = updateTextCompositionStyles.Styles;
                     break;
                 case UpdateScopeNotificationSettings updateScopeNotificationSettings:
                     _settings.Notifications.Scope[updateScopeNotificationSettings.Scope.GetType()] = updateScopeNotificationSettings.NotificationSettings;

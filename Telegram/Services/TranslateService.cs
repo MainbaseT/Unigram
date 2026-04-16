@@ -24,9 +24,9 @@ namespace Telegram.Services
 
         bool CanTranslate(string language, bool entireChat);
 
-        Task<object> TranslateAsync(long chatId, long messageId, string toLanguage);
-        Task<object> TranslateAsync(string text, string toLanguage);
-        Task<object> TranslateAsync(FormattedText text, string toLanguage);
+        Task<object> TranslateAsync(long chatId, long messageId, string toLanguage, string tone);
+        Task<object> TranslateAsync(string text, string toLanguage, string tone);
+        Task<object> TranslateAsync(FormattedText text, string toLanguage, string tone);
 
         bool Translate(MessageViewModel message, string toLanguage);
         bool Summarize(MessageViewModel message, string toLanguage);
@@ -123,19 +123,19 @@ namespace Telegram.Services
             return true;
         }
 
-        public Task<object> TranslateAsync(string text, string toLanguage)
+        public Task<object> TranslateAsync(string text, string toLanguage, string tone)
         {
-            return TranslateAsync(new FormattedText(text, null), toLanguage);
+            return TranslateAsync(new FormattedText(text, null), toLanguage, tone);
         }
 
-        public async Task<object> TranslateAsync(FormattedText text, string toLanguage)
+        public async Task<object> TranslateAsync(FormattedText text, string toLanguage, string tone)
         {
-            return await ClientService.SendAsync(new TranslateText(text, toLanguage));
+            return await ClientService.SendAsync(new TranslateText(text, toLanguage, tone));
         }
 
-        public async Task<object> TranslateAsync(long chatId, long messageId, string toLanguage)
+        public async Task<object> TranslateAsync(long chatId, long messageId, string toLanguage, string tone)
         {
-            return await ClientService.SendAsync(new TranslateMessageText(chatId, messageId, toLanguage));
+            return await ClientService.SendAsync(new TranslateMessageText(chatId, messageId, toLanguage, tone));
         }
 
         private readonly ConcurrentDictionary<TranslatedKey, TranslatedMessage> _translations = new();
@@ -170,7 +170,7 @@ namespace Telegram.Services
                 message.TranslatedText = new MessageTranslateResultPending();
 
                 _translations[key] = new TranslatedMessage(cached, null);
-                ClientService.Send(new TranslateMessageText(message.ChatId, message.Id, toLanguage), handler =>
+                ClientService.Send(new TranslateMessageText(message.ChatId, message.Id, toLanguage, string.Empty), handler =>
                 {
                     if (handler is FormattedText text && string.Equals(message.Text?.Text, cached))
                     {
@@ -236,7 +236,7 @@ namespace Telegram.Services
                 message.SummarizedText = new MessageTranslateResultPending();
 
                 _summaries[key] = new TranslatedMessage(cached, null);
-                ClientService.Send(new SummarizeMessage(message.ChatId, message.Id, toLanguage), handler =>
+                ClientService.Send(new SummarizeMessage(message.ChatId, message.Id, toLanguage, string.Empty), handler =>
                 {
                     if (handler is FormattedText text && string.Equals(message.Text?.Text, cached))
                     {
