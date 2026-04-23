@@ -1383,7 +1383,7 @@ namespace Telegram.Controls
             UpdateBelow();
             UpdateSpoilers();
 
-            if (!_skeletonCollapsed)
+            if (!_skeletonCollapsed && _text != null)
             {
                 InvalidateSkeleton();
             }
@@ -2140,7 +2140,7 @@ namespace Telegram.Controls
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (_skeleton == null)
+            if (_skeleton == null || _text == null)
             {
                 return base.ArrangeOverride(finalSize);
             }

@@ -3114,6 +3114,8 @@
                 Value="{ThemeResource ContentControlThemeFontFamily}" />
         <Setter Property="MinHeight"
                 Value="0" />
+        <Setter Property="MinWidth"
+                Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:TopNavViewItem">
