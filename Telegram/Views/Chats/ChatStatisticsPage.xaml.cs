@@ -153,9 +153,9 @@ namespace Telegram.Views.Chats
                     {
                         title.Text = Strings.AttachLocation;
                     }
-                    else if (message.Content is MessagePhoto)
+                    else if (message.Content is MessagePhoto messagePhoto)
                     {
-                        title.Text = Strings.AttachPhoto;
+                        title.Text = messagePhoto.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto;
                     }
                     else if (message.Content is MessagePoll poll)
                     {

@@ -708,7 +708,7 @@ namespace Telegram.ViewModels
 
                     if (message.Content is MessagePhoto photo)
                     {
-                        builder.Append($"[{Strings.AttachPhoto}]");
+                        builder.Append($"[{(photo.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto)}]");
 
                         if (photo.Caption != null && !string.IsNullOrEmpty(photo.Caption.Text))
                         {

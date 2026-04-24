@@ -362,7 +362,7 @@ namespace Telegram.Common
             }
             else if (message.Content is MessagePhoto photo)
             {
-                return (photo.IsSecret ? Strings.AttachDestructingPhoto : Strings.AttachPhoto) + GetCaption(photo.Caption.Text) + ", ";
+                return (photo.IsSecret ? Strings.AttachDestructingPhoto : photo.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto) + GetCaption(photo.Caption.Text) + ", ";
             }
             else if (message.Content is MessagePoll poll)
             {
@@ -677,7 +677,7 @@ namespace Telegram.Common
             }
             else if (message.Content is MessagePhoto photo)
             {
-                return (photo.IsSecret ? Strings.AttachDestructingPhoto : Strings.AttachPhoto) + GetCaption(photo.Caption.Text) + ", ";
+                return (photo.IsSecret ? Strings.AttachDestructingPhoto : photo.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto) + GetCaption(photo.Caption.Text) + ", ";
             }
             else if (message.Content is MessagePoll poll)
             {

@@ -1597,6 +1597,9 @@ Please take a look at the &lt;a href=&quot;https://telegram.org/faq#general-ques
   <data name="AttachLiveLocation" xml:space="preserve">
     <value>Live Location</value>
   </data>
+  <data name="AttachLivePhoto" xml:space="preserve">
+    <value>Motion Photo</value>
+  </data>
   <data name="AttachLocation" xml:space="preserve">
     <value>Location</value>
   </data>

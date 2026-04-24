@@ -13491,7 +13491,6 @@
     <string name="AIEditorOriginal">Original</string>
     <string name="AIEditorResult">Result</string>
     <string name="AIEditorToneNeutral">Neutral</string>
-    
     <string name="AIEditorEmojify">emojify</string>
 
     <string name="PollAddingActionYou">You added \"{0}\" to the poll</string>
@@ -13502,5 +13501,7 @@
     <string name="PollMenuTabOption">Option</string>
     <string name="Unvote">Retract Vote</string>
     <string name="PollSubmitVotesNoCaps">Vote</string>
+    
+    <string name="AttachLivePhoto">Motion Photo</string>
 
 </resources>

@@ -596,7 +596,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                quote != null ? null : Strings.AttachPhoto,
+                quote != null ? null : photo.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto,
                 quote,
                 manual,
                 white);

@@ -1672,11 +1672,11 @@ namespace Telegram.Controls.Cells
                 case MessagePhoto photo:
                     if (photo.Photo.Minithumbnail == null || photo.IsSecret || forceEmoji)
                     {
-                        return Text1("\U0001F5BC ", photo.Caption, Strings.AttachPhoto);
+                        return Text1("\U0001F5BC ", photo.Caption, photo.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto);
                     }
 
                     thumbnail = new MinithumbnailId(photo.Photo.Sizes[^1].Photo.Id, photo.Photo.Minithumbnail, false);
-                    return Text1(string.Empty, photo.Caption, Strings.AttachPhoto);
+                    return Text1(string.Empty, photo.Caption, photo.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto);
                 case MessagePoll poll:
                     return Text1("\U0001F4CA ", poll.Poll.Question, Strings.Poll);
                 case MessageChecklist checklist:
@@ -1724,7 +1724,7 @@ namespace Telegram.Controls.Cells
                             if (album.LastMessage is MessagePhoto albumPhoto && albumPhoto.Photo.Minithumbnail != null)
                             {
                                 thumbnail = new MinithumbnailId(albumPhoto.Photo.Sizes[^1].Photo.Id, albumPhoto.Photo.Minithumbnail, false);
-                                return Text1(string.Empty, album.Caption, album.PhotosCount > 1 ? Locale.Declension(Strings.R.Photos, album.PhotosCount) : Strings.AttachPhoto);
+                                return Text1(string.Empty, album.Caption, album.PhotosCount > 1 ? Locale.Declension(Strings.R.Photos, album.PhotosCount) : albumPhoto.Video != null ? Strings.AttachLivePhoto : Strings.AttachPhoto);
                             }
 
                             return Text1("\U0001F5BC ", album.Caption, album.PhotosCount > 1 ? Locale.Declension(Strings.R.Photos, album.PhotosCount) : Strings.AttachPhoto);
