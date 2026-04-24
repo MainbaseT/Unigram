@@ -6368,7 +6368,8 @@ namespace Telegram.Views
             ButtonManage.CornerRadius = new CornerRadius(min, 4, 4, min);
             ComposerHeaderReference.CornerRadius = new CornerRadius(4, min, 4, 4);
 
-            ComposerHeaderCancel.CornerRadius = new CornerRadius(4, min, 4, 4);
+            ComposerHeaderCancel.CornerRadius =
+                ButtonEditor.CornerRadius = new CornerRadius(4, min, 4, 4);
             TextRoot.CornerRadius =
                 ChatFooter.CornerRadius =
                 ChatRecord.CornerRadius =
@@ -8096,11 +8097,11 @@ namespace Telegram.Views
 
         private void TextField_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //ButtonEditor.Visibility = e.NewSize.Height >= 84
-            //    ? Visibility.Visible
-            //    : Visibility.Collapsed;
+            ButtonEditor.Visibility = e.NewSize.Height >= 84
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
-            //Logger.Info(e.NewSize.Height);
+            Logger.Info(e.NewSize.Height);
         }
 
         private void ButtonEditor_Click(object sender, RoutedEventArgs e)

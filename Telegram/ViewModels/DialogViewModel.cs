@@ -3574,12 +3574,20 @@ namespace Telegram.ViewModels
         {
             var text = GetFormattedText();
 
-            var popup = new TextEditorPopup(ClientService, NavigationService, text);
+            var tcs = new TaskCompletionSource<FormattedText>();
+            var popup = new TextEditorPopup(ClientService, NavigationService, text, tcs);
 
             var confirm = await ShowPopupAsync(popup);
             if (confirm != ContentDialogResult.Primary)
             {
                 return;
+            }
+
+            text = await tcs.Task;
+
+            if (text != null)
+            {
+                SetFormattedText(text);
             }
         }
 

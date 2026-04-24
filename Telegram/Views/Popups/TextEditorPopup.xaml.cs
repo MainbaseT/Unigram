@@ -263,6 +263,8 @@ namespace Telegram.Views.Popups
                 {
                     this.BeginOnUIThread(() =>
                     {
+                        TabStyleState.Text = Strings.AIEditorResult;
+
                         if (result is FormattedText text)
                         {
                             _styles[styleName] = text;

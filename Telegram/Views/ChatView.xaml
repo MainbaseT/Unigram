@@ -2187,13 +2187,13 @@
                                                        Height="28" />
                                 </Grid>
 
-                                <!--<controls:GlyphButton x:Name="ButtonEditor"
+                                <controls:GlyphButton x:Name="ButtonEditor"
                                                       Click="ButtonEditor_Click"
-                                                      Glyph="&#xEACE;"
+                                                      Glyph="&#xEB02;"
                                                       VerticalAlignment="Top"
                                                       Height="48"
                                                       Visibility="Collapsed"
-                                                      Grid.Column="2" />-->
+                                                      Grid.Column="2" />
                             </Grid>
                         </Grid>
                     </Grid>
