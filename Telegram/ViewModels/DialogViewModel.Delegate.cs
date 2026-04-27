@@ -498,6 +498,12 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void OpenMedia(GalleryMedia media, FrameworkElement target)
+        {
+            var viewModel = new StandaloneGalleryViewModel(ClientService, _storageService, Aggregator, media);
+            NavigationService.ShowGallery(viewModel, target);
+        }
+
         public void OpenPaidMedia(MessageViewModel message, PaidMedia media, FrameworkElement target, double timestamp = 0)
         {
             if (message.Content is MessagePaidAlbum album)

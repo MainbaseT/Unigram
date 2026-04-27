@@ -298,6 +298,7 @@
                                          x:Load="False"
                                          Style="{StaticResource EmptyHyperlinkButtonStyle}"
                                          Margin="8,0,0,-4"
+                                         CornerRadius="4"
                                          Grid.Column="2" />
 
                         <Border x:Name="Tick"

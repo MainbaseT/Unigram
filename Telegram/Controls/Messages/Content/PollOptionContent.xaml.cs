@@ -17,6 +17,7 @@ using Telegram.Navigation;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
+using Telegram.ViewModels.Gallery;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
@@ -245,7 +246,12 @@ namespace Telegram.Controls.Messages.Content
                 child.XamlRoot = XamlRoot;
                 child.SetSource(message.ClientService, animation.Animation.Thumbnail?.File, animation.Animation.Minithumbnail);
 
-                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                if (Media == null)
+                {
+                    Media = GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                    Media.Click += Media_Click;
+                }
+
                 Media.Content = child;
             }
             else if (option.Media is MessageLocation location)
@@ -260,7 +266,12 @@ namespace Telegram.Controls.Messages.Content
                 child.XamlRoot = XamlRoot;
                 child.SetSource(message.ClientService, location.Location, 32, 32, message.ChatId);
 
-                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                if (Media == null)
+                {
+                    Media = GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                    Media.Click += Media_Click;
+                }
+
                 Media.Content = child;
             }
             else if (option.Media is MessagePhoto photo)
@@ -275,7 +286,12 @@ namespace Telegram.Controls.Messages.Content
                 child.XamlRoot = XamlRoot;
                 child.SetSource(message.ClientService, photo.Photo.GetSmall()?.Photo, photo.Photo.Minithumbnail);
 
-                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                if (Media == null)
+                {
+                    Media = GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                    Media.Click += Media_Click;
+                }
+
                 Media.Content = child;
             }
             else if (option.Media is MessageSticker sticker)
@@ -302,7 +318,12 @@ namespace Telegram.Controls.Messages.Content
                 child.XamlRoot = XamlRoot;
                 child.SetSource(message.ClientService, venue.Venue.Location, 32, 32, message.ChatId);
 
-                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                if (Media == null)
+                {
+                    Media = GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                    Media.Click += Media_Click;
+                }
+
                 Media.Content = child;
             }
             else if (option.Media is MessageVideo video)
@@ -317,12 +338,57 @@ namespace Telegram.Controls.Messages.Content
                 child.XamlRoot = XamlRoot;
                 child.SetSource(message.ClientService, video.Cover?.GetSmall()?.Photo ?? video.Video.Thumbnail?.File, video.Cover?.Minithumbnail ?? video.Video.Minithumbnail);
 
-                Media ??= GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                if (Media == null)
+                {
+                    Media = GetTemplateChild(nameof(Media)) as HyperlinkButton;
+                    Media.Click += Media_Click;
+                }
+
                 Media.Content = child;
             }
             else
             {
                 Media?.Content = null;
+            }
+        }
+
+        private void Media_Click(object sender, RoutedEventArgs e)
+        {
+            if (_option.Media is MessageLocation location)
+            {
+                _message.Delegate.OpenLocation(location.Location, null);
+            }
+            else if (_option.Media is MessageSticker sticker)
+            {
+
+            }
+            else if (_option.Media is MessageVenue venue)
+            {
+                _message.Delegate.OpenLocation(venue.Venue.Location, null);
+            }
+            else
+            {
+                GalleryMedia media = null;
+                if (_option.Media is MessageAnimation animation)
+                {
+                    media = new GalleryAnimation(_message.ClientService, animation.Animation, _option.Text);
+                }
+                // Location
+                else if (_option.Media is MessagePhoto photo)
+                {
+                    media = new GalleryPhoto(_message.ClientService, photo.Photo, _option.Text);
+                }
+                // Sticker
+                // Venue
+                else if (_option.Media is MessageVideo video)
+                {
+                    media = new GalleryVideo(_message.ClientService, video.Video, _option.Text);
+                }
+
+                if (media != null)
+                {
+                    _message.Delegate.OpenMedia(media, Media);
+                }
             }
         }
 

@@ -450,6 +450,11 @@ namespace Telegram.ViewModels
         /// <summary>
         /// Only available when created through DialogViewModel
         /// </summary>
+        public virtual void OpenMedia(GalleryMedia media, FrameworkElement target) { }
+
+        /// <summary>
+        /// Only available when created through DialogViewModel
+        /// </summary>
         public virtual void OpenPoll(MessageViewModel message) { }
 
         /// <summary>
@@ -599,6 +604,8 @@ namespace Telegram.ViewModels
         }
 
         public override void OpenMedia(MessageViewModel message, FrameworkElement target, double timestamp = 0) => _viewModel.OpenMedia(message, target, timestamp);
+
+        public override void OpenMedia(GalleryMedia media, FrameworkElement target) => _viewModel.OpenMedia(media, target);
 
         public override void OpenPoll(MessageViewModel message) => _viewModel.OpenPoll(message);
 

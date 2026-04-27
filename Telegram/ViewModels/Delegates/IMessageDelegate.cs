@@ -10,6 +10,7 @@ using Telegram.Common;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
+using Telegram.ViewModels.Gallery;
 using Windows.UI.Xaml;
 
 namespace Telegram.ViewModels.Delegates
@@ -54,6 +55,7 @@ namespace Telegram.ViewModels.Delegates
         void OpenGame(MessageViewModel message);
         void OpenInlineButton(MessageViewModel message, InlineKeyboardButton button);
         void OpenMedia(MessageViewModel message, FrameworkElement target, double timestamp = 0);
+        void OpenMedia(GalleryMedia media, FrameworkElement target);
         void OpenPoll(MessageViewModel message);
         void OpenPaidMedia(MessageViewModel message, PaidMedia media, FrameworkElement target, double timestamp = 0);
         void PlayMessage(MessageViewModel message);
