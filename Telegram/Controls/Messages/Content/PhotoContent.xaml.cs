@@ -56,6 +56,7 @@ namespace Telegram.Controls.Messages.Content
         private AspectView LayoutRoot;
         private ImageBrush ThumbnailTexture;
         private ImageBrush Texture;
+        private AnimatedImage Player;
         private AnimatedImage Particles;
         private Border Overlay;
         private TextBlock Subtitle;
@@ -68,6 +69,7 @@ namespace Telegram.Controls.Messages.Content
             LayoutRoot = GetTemplateChild(nameof(LayoutRoot)) as AspectView;
             ThumbnailTexture = LayoutRoot.Background as ImageBrush;
             Texture = GetTemplateChild(nameof(Texture)) as ImageBrush;
+            Player = GetTemplateChild(nameof(Player)) as AnimatedImage;
             Particles = GetTemplateChild(nameof(Particles)) as AnimatedImage;
             Overlay = GetTemplateChild(nameof(Overlay)) as Border;
             Subtitle = GetTemplateChild(nameof(Subtitle)) as TextBlock;
@@ -107,7 +109,7 @@ namespace Telegram.Controls.Messages.Content
 
             _message = message;
 
-            var photo = GetContent(message, out bool hasSpoiler, out bool isSecret, out _);
+            var photo = GetContent(message, out _, out bool hasSpoiler, out bool isSecret, out _);
             if (photo == null || !_templateApplied)
             {
                 _hidden = (prevId != nextId || _hidden) && hasSpoiler;
@@ -129,7 +131,7 @@ namespace Telegram.Controls.Messages.Content
 
             if (small == null || big == null)
             {
-                UpdateTexture(message, null);
+                UpdateTexture(message, null, null);
                 return;
             }
 
@@ -174,7 +176,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateFile(MessageViewModel message, File file)
         {
-            var photo = GetContent(message, out bool hasSpoiler, out bool isSecret, out bool isGame);
+            var photo = GetContent(message, out Video video, out bool hasSpoiler, out bool isSecret, out bool isGame);
             if (photo == null || !_templateApplied)
             {
                 return;
@@ -226,7 +228,7 @@ namespace Telegram.Controls.Messages.Content
 
                 Button.Opacity = 1;
 
-                UpdateTexture(message, null);
+                UpdateTexture(message, null, null);
             }
             else if (file.Remote.IsUploadingActive || message.SendingState is MessageSendingStateFailed || (message.SendingState is MessageSendingStatePending && !file.Remote.IsUploadingCompleted))
             {
@@ -237,11 +239,11 @@ namespace Telegram.Controls.Messages.Content
 
                 if (isSecret || string.IsNullOrEmpty(file.Local.Path))
                 {
-                    UpdateTexture(message, null);
+                    UpdateTexture(message, null, null);
                 }
                 else
                 {
-                    UpdateTexture(message, big);
+                    UpdateTexture(message, big, video);
                 }
             }
             else if (canBeDownloaded)
@@ -251,7 +253,7 @@ namespace Telegram.Controls.Messages.Content
 
                 Button.Opacity = 1;
 
-                UpdateTexture(message, null);
+                UpdateTexture(message, null, null);
             }
             else
             {
@@ -262,7 +264,7 @@ namespace Telegram.Controls.Messages.Content
 
                     Button.Opacity = 1;
 
-                    UpdateTexture(message, null);
+                    UpdateTexture(message, null, null);
                 }
                 else
                 {
@@ -281,11 +283,11 @@ namespace Telegram.Controls.Messages.Content
 
                     if (hasSpoiler && _hidden)
                     {
-                        UpdateTexture(message, null);
+                        UpdateTexture(message, null, null);
                     }
                     else
                     {
-                        UpdateTexture(message, big);
+                        UpdateTexture(message, big, video);
                     }
                 }
             }
@@ -293,8 +295,13 @@ namespace Telegram.Controls.Messages.Content
 
         private int _textureId;
 
-        private void UpdateTexture(MessageViewModel message, PhotoSize photoSize)
+        private void UpdateTexture(MessageViewModel message, PhotoSize photoSize, Video video)
         {
+            //if (video != null)
+            //{
+            //    Player.Source = new DelayedFileSource(message.ClientService, video.VideoValue);
+            //}
+
             if (_textureId == (photoSize?.Photo.Id ?? 0))
             {
                 return;
@@ -327,7 +334,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void UpdateThumbnail(object target, File file)
         {
-            var photo = GetContent(_message, out bool hasSpoiler, out bool isSecret, out _);
+            var photo = GetContent(_message, out _, out bool hasSpoiler, out bool isSecret, out _);
             if (photo == null || !_templateApplied)
             {
                 return;
@@ -405,8 +412,9 @@ namespace Telegram.Controls.Messages.Content
             };
         }
 
-        private Photo GetContent(MessageViewModel message, out bool hasSpoiler, out bool isSecret, out bool isGame)
+        private Photo GetContent(MessageViewModel message, out Video video, out bool hasSpoiler, out bool isSecret, out bool isGame)
         {
+            video = null;
             hasSpoiler = false;
             isSecret = false;
             isGame = false;
@@ -424,6 +432,7 @@ namespace Telegram.Controls.Messages.Content
             var content = message.GeneratedContent ?? message.Content;
             if (content is MessagePhoto photo)
             {
+                video = photo.Video;
                 hasSpoiler = photo.HasSpoiler;
                 isSecret = photo.IsSecret;
                 return photo.Photo;
@@ -479,7 +488,7 @@ namespace Telegram.Controls.Messages.Content
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var photo = GetContent(_message, out bool hasSpoiler, out _, out _);
+            var photo = GetContent(_message, out _, out bool hasSpoiler, out _, out _);
             if (photo == null)
             {
                 return;
