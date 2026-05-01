@@ -852,6 +852,16 @@ namespace Telegram.Controls
                 return;
             }
 
+            if (fullInfo.UsesUnofficialApp)
+            {
+                UnofficialRoot.Visibility = Visibility.Visible;
+                UnofficialText.Text = string.Format(Strings.ProfileUnofficialSecurityRisk, user.FullName(true));
+            }
+            else
+            {
+                UnofficialRoot.Visibility = Visibility.Collapsed;
+            }
+
             if (fullInfo.Rating != null)
             {
                 Rating.Visibility = Visibility.Visible;
@@ -1117,6 +1127,7 @@ namespace Telegram.Controls
             Statistics.Visibility = Visibility.Collapsed;
             AffiliateProgram.Visibility = Visibility.Collapsed;
             ChannelSettings.Visibility = Visibility.Collapsed;
+            UnofficialRoot.Visibility = Visibility.Collapsed;
 
             if (chat.Permissions.CanChangeInfo || group.Status is ChatMemberStatusCreator || group.Status is ChatMemberStatusAdministrator)
             {
@@ -1210,6 +1221,7 @@ namespace Telegram.Controls
             }
 
             RatingRoot.Visibility = Visibility.Collapsed;
+            UnofficialRoot.Visibility = Visibility.Collapsed;
 
             Description.Description = Strings.DescriptionPlaceholder;
 

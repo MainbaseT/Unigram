@@ -369,6 +369,16 @@
         <StackPanel x:Name="ControlsRoot"
                     Canvas.ZIndex="-1"
                     Grid.Row="1">
+            <controls:HeaderedControl x:Name="UnofficialRoot"
+                                      Visibility="Collapsed">
+                <controls:SettingsButton Glyph="&#xEAD9;"
+                                         Foreground="{ThemeResource DangerButtonBackground}">
+                    <TextBlock x:Name="UnofficialText"
+                               Foreground="{ThemeResource ButtonForeground}"
+                               TextWrapping="Wrap"/>
+                </controls:SettingsButton>
+            </controls:HeaderedControl>
+
             <StackPanel x:Name="PersonalChannelRoot"
                         Visibility="Collapsed">
                 <Grid Margin="24,32,24,-8"

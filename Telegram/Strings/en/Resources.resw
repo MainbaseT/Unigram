@@ -11957,6 +11957,9 @@ seamlessly and efficiently.</value>
   <data name="ProfileTabSetAsMain" xml:space="preserve">
     <value>Set as Main Tab</value>
   </data>
+  <data name="ProfileUnofficialSecurityRisk" xml:space="preserve">
+    <value>{0} uses an unofficial Telegram client — messages to this user may be less secure.</value>
+  </data>
   <data name="PromoteUrl" xml:space="preserve">
     <value>https://ads.telegram.org</value>
   </data>
