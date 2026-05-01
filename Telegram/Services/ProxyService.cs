@@ -21,6 +21,7 @@ namespace Telegram.Services
     public interface IProxyService
     {
         void Migrate(int sessionId);
+        void Enable(IClientService clientService);
 
         Task<AddedProxies> GetProxiesAsync();
 
@@ -131,6 +132,55 @@ namespace Telegram.Services
             else if (enabled != null)
             {
                 EnableProxy(enabled);
+            }
+        }
+
+        public async void Enable(IClientService clientService)
+        {
+            if (_settings.EnabledProxyId == -1)
+            {
+                if (_watcher.IsEnabled)
+                {
+                    string host;
+                    int port;
+                    if (TryCreateUri(_watcher.Server, out Uri result))
+                    {
+                        host = result.Host;
+                        port = result.Port;
+                    }
+                    else
+                    {
+                        host = "localhost";
+                        port = 80;
+                    }
+
+                    Enable(clientService, new Proxy(host, port, new ProxyTypeHttp()));
+                }
+            }
+            else if (_settings.EnabledProxyId != 0)
+            {
+                var enabled = GetProxyById(_settings.EnabledProxyId);
+                if (enabled != null)
+                {
+                    Enable(clientService, enabled.Proxy);
+                }
+            }
+
+            static async void Enable(IClientService clientService, Proxy proxy)
+            {
+                var proxyId = await clientService.SendAsync(new GetOption(OptionsService.R.Proxy)) as OptionValueInteger;
+                if (proxyId != null)
+                {
+                    await clientService.SendAsync(new EditProxy((int)proxyId.Value, proxy, true));
+                }
+                else
+                {
+                    var added = await clientService.SendAsync(new AddProxy(proxy, true)) as AddedProxy;
+                    if (added != null)
+                    {
+                        clientService.Options.Proxy = added.Id;
+                    }
+                }
             }
         }
 

@@ -233,6 +233,7 @@ namespace Telegram.Services
 
             if (update)
             {
+                _proxy.Enable(session.ClientService);
                 ActiveItem = session;
             }
 
