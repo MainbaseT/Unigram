@@ -342,6 +342,10 @@ namespace Telegram.ViewModels
             {
                 return true;
             }
+            else if (GuestBotCallerId != null)
+            {
+                return true;
+            }
             else if (IsOutgoing)
             {
                 return false;

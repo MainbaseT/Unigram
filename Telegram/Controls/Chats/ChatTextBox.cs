@@ -468,7 +468,7 @@ namespace Telegram.Controls.Chats
                         return true;
                     }
 
-                    var members = chat.Type is ChatTypePrivate or ChatTypeSecret or ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false };
+                    var members = chat.Type is /*ChatTypePrivate or ChatTypeSecret or*/ ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false };
 
                     autocomplete = new UsernameCollection(ViewModel.ClientService, ViewModel.Chat.Id, ViewModel.TopicId, result, index == 0, members, false);
                     recycle = prev is UsernameCollection;
@@ -714,6 +714,22 @@ namespace Telegram.Controls.Chats
                     if (_bots)
                     {
                         var response = await _clientService.SendAsync(new GetTopChats(new TopChatCategoryInlineBots(), 10));
+                        if (response is Telegram.Td.Api.Chats chats)
+                        {
+                            foreach (var id in chats.ChatIds)
+                            {
+                                var user = _clientService.GetUser(_clientService.GetChat(id));
+                                if (user != null && (user.HasActiveUsername(_query, out _) || ClientEx.SearchByPrefix(user.FullName(), _query)))
+                                {
+                                    Add(user);
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+
+                    {
+                        var response = await _clientService.SendAsync(new GetTopChats(new TopChatCategoryGuestBots(), 10));
                         if (response is Telegram.Td.Api.Chats chats)
                         {
                             foreach (var id in chats.ChatIds)

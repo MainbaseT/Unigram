@@ -1130,7 +1130,7 @@ namespace Telegram.Controls.Messages
                 HeaderLinkRun.Text = title;
                 Identity.ClearStatus();
             }
-            else if (!light && isFirst && !outgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup))
+            else if (!light && isFirst && !outgoing && (message.HasSenderPhoto || (!message.IsChannelPost && !message.IsDirectMessagesChatTopicMessage)) && (chat.Type is ChatTypeBasicGroup || chat.Type is ChatTypeSupergroup || message.GuestBotCallerId != null))
             {
                 if (message.ClientService.TryGetUser(message.SenderId, out User senderUser))
                 {
@@ -1156,6 +1156,27 @@ namespace Telegram.Controls.Messages
 
                     HeaderLinkRun.Text = title;
                     Identity.SetStatus(message.ClientService, senderUser);
+
+                    if (message.GuestBotCallerId != null)
+                    {
+                        if (HeaderLabel.Inlines.Count > 1)
+                        {
+                            HeaderLabel.Inlines.RemoveAt(HeaderLabel.Inlines.Count - 1);
+                        }
+
+                        var run = new Run
+                        {
+                            Text = string.Format(header ? " {0} {1}" : "{0} {1}", Strings.GuestBotFor, message.ClientService.GetTitle(message.GuestBotCallerId, true)),
+                            FontWeight = FontWeights.Normal
+                        };
+
+                        if (foreground != null)
+                        {
+                            run.Foreground = foreground;
+                        }
+
+                        HeaderLabel.Inlines.Add(run);
+                    }
                 }
                 else if (message.ClientService.TryGetChat(message.SenderId, out Chat senderChat))
                 {
@@ -1259,7 +1280,7 @@ namespace Telegram.Controls.Messages
 
                 HeaderLabel.Inlines.Add(hyperlink);
             }
-            else if (header && HeaderLabel?.Inlines.Count > 1)
+            else if (header && HeaderLabel?.Inlines.Count > 1 && message.GuestBotCallerId == null)
             {
                 HeaderLabel.Inlines.RemoveAt(HeaderLabel.Inlines.Count - 1);
             }

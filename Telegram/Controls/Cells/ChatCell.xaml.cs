@@ -1889,7 +1889,8 @@ namespace Telegram.Controls.Cells
             if (chat?.Type is not ChatTypePrivate and not ChatTypeSecret
                 || message.ChatId == clientService.Options.MyId
                 || message.ChatId == clientService.Options.RepliesBotChatId
-                || message.ChatId == clientService.Options.VerificationCodesBotChatId)
+                || message.ChatId == clientService.Options.VerificationCodesBotChatId
+                || message.GuestBotCallerId != null)
             {
                 senderChat = null;
                 return clientService.TryGetUser(message.SenderId, out senderUser)

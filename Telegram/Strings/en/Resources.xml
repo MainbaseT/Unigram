@@ -13522,10 +13522,12 @@
     <string name="CreateManagedBotLimitTextTime">You can create another bot in {0}.</string>
     <string name="CreateManagedBotLimitTextPremium">Subscribe to **Premium** to create up to {0} bots, or delete one of your {0} bots via @BotFather</string>
     <string name="CreateManagedBotLimitText">You can create up to {0} bots, or delete your current ones via @BotFather</string>
-    
+
     <string name="AudioSearchLocal">Local Music</string>
     <string name="AudioSearchChats">Shared Music</string>
     <string name="AudioSearchProfile">Profile Music</string>
     <string name="AudioSearchGlobal">Global Search</string>
+
+    <string name="GuestBotFor">for</string>
 
 </resources>
