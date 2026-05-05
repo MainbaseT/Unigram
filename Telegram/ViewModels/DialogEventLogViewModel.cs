@@ -459,6 +459,10 @@ namespace Telegram.ViewModels
                 {
                     AppendChange(n.CanAddLinkPreviews, Strings.EventLogRestrictedSendEmbed);
                 }
+                if (o.CanReactToMessages != n.CanReactToMessages)
+                {
+                    AppendChange(n.CanReactToMessages, Strings.EventLogRestrictedSendReactions);
+                }
                 if (o.CanChangeInfo != n.CanChangeInfo)
                 {
                     AppendChange(n.CanChangeInfo, Strings.EventLogRestrictedChangeInfo);
@@ -655,6 +659,10 @@ namespace Telegram.ViewModels
                         if (o.Permissions.CanAddLinkPreviews != n.Permissions.CanAddLinkPreviews)
                         {
                             AppendChange(n.Permissions.CanAddLinkPreviews, Strings.EventLogRestrictedSendEmbed);
+                        }
+                        if (o.Permissions.CanReactToMessages != n.Permissions.CanReactToMessages)
+                        {
+                            AppendChange(n.Permissions.CanReactToMessages, Strings.EventLogRestrictedSendReactions);
                         }
                         if (o.Permissions.CanChangeInfo != n.Permissions.CanChangeInfo)
                         {
