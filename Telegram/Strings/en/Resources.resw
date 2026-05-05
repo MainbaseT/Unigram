@@ -1681,6 +1681,18 @@ Please take a look at the &lt;a href=&quot;https://telegram.org/faq#general-ques
   <data name="AudioSaveToSavedMessagesSaved" xml:space="preserve">
     <value>Audio sent to Saved Messages.</value>
   </data>
+  <data name="AudioSearchChats" xml:space="preserve">
+    <value>Shared Music</value>
+  </data>
+  <data name="AudioSearchGlobal" xml:space="preserve">
+    <value>Global Search</value>
+  </data>
+  <data name="AudioSearchLocal" xml:space="preserve">
+    <value>Local Music</value>
+  </data>
+  <data name="AudioSearchProfile" xml:space="preserve">
+    <value>Profile Music</value>
+  </data>
   <data name="AudioUnknownArtist" xml:space="preserve">
     <value>Unknown artist</value>
   </data>

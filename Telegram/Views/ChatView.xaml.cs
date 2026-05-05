@@ -1991,6 +1991,7 @@ namespace Telegram.Views
 
             if (header == null || header.Editing == null || (header.IsEmpty && header.LinkPreviewDisabled))
             {
+                var audioRights = !ViewModel.VerifyRights(chat, x => x.CanSendAudios);
                 var messageRights = !ViewModel.VerifyRights(chat, x => x.CanSendBasicMessages);
                 var pollRights = !ViewModel.VerifyRights(chat, x => x.CanSendPolls);
 
@@ -2011,6 +2012,11 @@ namespace Telegram.Views
                 if (documentRights)
                 {
                     flyout.CreateFlyoutItem(ViewModel.SendDocument, Strings.ChatDocument, Icons.Document);
+                }
+
+                if (audioRights)
+                {
+                    flyout.CreateFlyoutItem(ViewModel.SendAudio, Strings.AttachMusic, Icons.MusicNote2);
                 }
 
                 if (messageRights)

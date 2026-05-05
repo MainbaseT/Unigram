@@ -336,7 +336,7 @@ namespace Telegram.Controls.Cells
 
         private void UpdateThumbnail(PlaybackItem item, Thumbnail thumbnail, File file)
         {
-            if (thumbnail.File.Id != file.Id)
+            if (thumbnail?.File.Id != file.Id)
             {
                 return;
             }

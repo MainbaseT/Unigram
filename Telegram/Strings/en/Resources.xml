@@ -13505,4 +13505,9 @@
     <string name="AttachLivePhoto">Motion Photo</string>
     <string name="ProfileUnofficialSecurityRisk">{0} uses an unofficial Telegram client — messages to this user may be less secure.</string>
 
+    
+    <string name="AudioSearchLocal">Local Music</string>
+    <string name="AudioSearchChats">Shared Music</string>
+    <string name="AudioSearchProfile">Profile Music</string>
+    <string name="AudioSearchGlobal">Global Search</string>
 </resources>

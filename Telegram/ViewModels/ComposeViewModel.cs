@@ -332,6 +332,95 @@ namespace Telegram.ViewModels
             catch { }
         }
 
+        public async void SendAudio()
+        {
+            var restricted = await VerifyRightsAsync(x => x.CanSendAudios,
+                Strings.ErrorSendRestrictedMusicAll,
+                Strings.ErrorSendRestrictedMusic,
+                Strings.ErrorSendRestrictedMusic);
+            if (restricted)
+            {
+                return;
+            }
+
+            var popup = new SendAudiosPopup(ClientService, NavigationService);
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm != ContentDialogResult.Primary)
+            {
+                return;
+            }
+
+            if (popup.SelectedItems?.Count > 0)
+            {
+                var options = await PickMessageSendOptionsAsync();
+                if (options == null)
+                {
+                    return;
+                }
+
+                var reply = GetReply(true);
+                var chat = Chat;
+
+                if (popup.SelectedItems.Count > 1)
+                {
+                    var operations = new List<InputMessageContent>();
+                    var groups = new List<List<InputMessageContent>>();
+
+                    foreach (var selected in popup.SelectedItems)
+                    {
+                        operations.Add(selected.ToInputMessage());
+
+                        if (operations.Count > 9)
+                        {
+                            groups.Add(operations);
+                            operations = new();
+                        }
+                    }
+
+                    groups.Add(operations);
+
+                    foreach (var content in groups)
+                    {
+                        var function = CreateSendMessageAlbum(chat.Id, OutgoingTopicId, reply, options, content);
+                        if (function == null)
+                        {
+                            return;
+                        }
+
+                        await SendMessageAsync(function);
+                    }
+                }
+                else
+                {
+                    var function = CreateSendMessage(chat.Id, OutgoingTopicId, reply, options, popup.SelectedItems[0].ToInputMessage());
+                    if (function == null)
+                    {
+                        return;
+                    }
+
+                    await SendMessageAsync(function);
+                }
+            }
+            else
+            {
+                try
+                {
+                    var picker = new FileOpenPicker();
+                    picker.ViewMode = PickerViewMode.Thumbnail;
+                    picker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
+                    picker.FileTypeFilter.Add("*");
+
+                    var files = await picker.PickMultipleFilesAsync();
+                    if (files != null && files.Count > 0)
+                    {
+                        SendFileExecute(files, media: false);
+                    }
+                }
+                catch { }
+            }
+        }
+
         public async void SendFileExecute(IReadOnlyList<StorageFile> files, FormattedText caption = null, bool media = true)
         {
             var items = await StorageMedia.CreateAsync(files);
