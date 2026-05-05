@@ -192,8 +192,9 @@ namespace Telegram.ViewModels.Supergroups
                     Set(ref _canSendVideoNotes, value.Value, nameof(CanSendVideoNotes));
                     Set(ref _canSendPolls, value.Value, nameof(CanSendPolls));
                     Set(ref _canAddLinkPreviews, value.Value, nameof(CanAddLinkPreviews));
+                    Set(ref _canReactToMessages, value.Value, nameof(CanReactToMessages));
 
-                    Set(ref _canSendCount, value.Value ? 9 : 0, nameof(CanSendCount));
+                    Set(ref _canSendCount, value.Value ? 10 : 0, nameof(CanSendCount));
                 }
             }
         }
@@ -203,7 +204,7 @@ namespace Telegram.ViewModels.Supergroups
             var count = Count();
 
             Set(ref _canSendCount, count, nameof(CanSendCount));
-            Set(ref _canSendMediaMessages, count == 0 ? false : count == 9 ? true : null, nameof(CanSendMediaMessages));
+            Set(ref _canSendMediaMessages, count == 0 ? false : count == 10 ? true : null, nameof(CanSendMediaMessages));
         }
 
         private int Count()
@@ -242,6 +243,10 @@ namespace Telegram.ViewModels.Supergroups
                 count++;
             }
             if (_canSendPolls)
+            {
+                count++;
+            }
+            if (_canReactToMessages)
             {
                 count++;
             }
@@ -374,6 +379,19 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _canReactToMessages;
+        public bool CanReactToMessages
+        {
+            get => _canReactToMessages;
+            set
+            {
+                if (Set(ref _canReactToMessages, value))
+                {
+                    UpdateCanSendMediaMessages();
+                }
+            }
+        }
+
 
 
         private bool _canInviteUsers;
@@ -463,6 +481,7 @@ namespace Telegram.ViewModels.Supergroups
                     CanSendVideoNotes = _canSendVideoNotes,
                     CanSendPolls = _canSendPolls,
                     CanAddLinkPreviews = _canAddLinkPreviews,
+                    CanReactToMessages = _canReactToMessages,
                     CanSendBasicMessages = _canSendBasicMessages,
                     CanEditTag = _canEditTag,
                 }
@@ -508,6 +527,7 @@ namespace Telegram.ViewModels.Supergroups
                 CanSendVideoNotes = _canSendVideoNotes,
                 CanSendPolls = _canSendPolls,
                 CanAddLinkPreviews = _canAddLinkPreviews,
+                CanReactToMessages = _canReactToMessages,
                 CanSendBasicMessages = _canSendBasicMessages,
                 CanEditTag = _canEditTag,
             }

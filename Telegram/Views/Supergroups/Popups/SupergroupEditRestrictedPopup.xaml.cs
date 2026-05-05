@@ -101,6 +101,7 @@ namespace Telegram.Views.Supergroups.Popups
             CanSendVideoNotes.IsEnabled = chat.Permissions.CanSendVideoNotes;
             CanSendPolls.IsEnabled = chat.Permissions.CanSendPolls;
             CanAddLinkPreviews.IsEnabled = chat.Permissions.CanAddLinkPreviews;
+            CanReactToMessages.IsEnabled = chat.Permissions.CanReactToMessages;
             CanInviteUsers.IsEnabled = chat.Permissions.CanInviteUsers;
             CanPinMessages.IsEnabled = chat.Permissions.CanPinMessages;
             CanEditTag.IsEnabled = chat.Permissions.CanEditTag;
