@@ -1769,6 +1769,7 @@ namespace Telegram.Td.Api
                 || linkPreview.Type is LinkPreviewTypeEmbeddedAnimationPlayer { Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeEmbeddedVideoPlayer { Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeGiftCollection
+                || linkPreview.Type is LinkPreviewTypeTextCompositionStyle
                 || linkPreview.Type is LinkPreviewTypeSticker { Sticker.Thumbnail: not null }
                 || linkPreview.Type is LinkPreviewTypeStickerSet
                 || linkPreview.Type is LinkPreviewTypeStoryAlbum { PhotoIcon: not null }
@@ -2325,6 +2326,7 @@ namespace Telegram.Td.Api
                 LinkPreviewTypeVideo or
                 LinkPreviewTypeVideoNote or
                 LinkPreviewTypeVoiceNote or
+                LinkPreviewTypeTextCompositionStyle or
                 LinkPreviewTypeEmbeddedAnimationPlayer { Animation: not null } or
                 LinkPreviewTypeEmbeddedAudioPlayer { Audio: not null } or
                 LinkPreviewTypeEmbeddedVideoPlayer { Video: not null } or

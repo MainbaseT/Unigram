@@ -6,6 +6,7 @@
 //
 
 using System.Collections.Generic;
+using System.Linq;
 using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
@@ -79,7 +80,7 @@ namespace Telegram.Controls.Messages.Content
                     Height = size,
                     FrameSize = new Size(size, size),
                     DecodeFrameType = Windows.UI.Xaml.Media.Imaging.DecodePixelType.Logical,
-                    Source = new DelayedFileSource(message.ClientService, stickers[i]),
+                    Source = stickers[i],
                     AutoPlay = false,
                     IsViewportAware = true
                 };
@@ -100,24 +101,28 @@ namespace Telegram.Controls.Messages.Content
         {
             if (content is MessageText text && text.LinkPreview != null && !primary)
             {
-                return text.LinkPreview.Type is LinkPreviewTypeStickerSet or LinkPreviewTypeGiftCollection;
+                return text.LinkPreview.Type is LinkPreviewTypeStickerSet or LinkPreviewTypeGiftCollection or LinkPreviewTypeTextCompositionStyle;
             }
 
             return false;
         }
 
-        private IList<Sticker> GetContent(MessageViewModel message)
+        private IList<AnimatedImageSource> GetContent(MessageViewModel message)
         {
             var content = message?.GeneratedContent ?? message?.Content;
             if (content is MessageText text)
             {
                 if (text.LinkPreview?.Type is LinkPreviewTypeStickerSet stickerSet)
                 {
-                    return stickerSet.Stickers;
+                    return stickerSet.Stickers.Select(x => new DelayedFileSource(message.ClientService, x)).ToList<AnimatedImageSource>();
                 }
                 else if (text.LinkPreview?.Type is LinkPreviewTypeGiftCollection giftCollection)
                 {
-                    return giftCollection.Icons;
+                    return giftCollection.Icons.Select(x => new DelayedFileSource(message.ClientService, x)).ToList<AnimatedImageSource>();
+                }
+                else if (text.LinkPreview?.Type is LinkPreviewTypeTextCompositionStyle textCompositionStyle)
+                {
+                    return new[] { new CustomEmojiFileSource(message.ClientService, textCompositionStyle.CustomEmojiId) };
                 }
             }
 
