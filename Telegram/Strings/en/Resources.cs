@@ -1220,6 +1220,11 @@ namespace Telegram
         public static string ActionLeftUser => Resource.GetString("ActionLeftUser");
         
         /// <summary>
+        /// Localized resource similar to "You created un1 bot for un2 to manage"
+        /// </summary>
+        public static string ActionManagedBotCreated => Resource.GetString("ActionManagedBotCreated");
+        
+        /// <summary>
         /// Localized resource similar to "This group was upgraded to a supergroup"
         /// </summary>
         public static string ActionMigrateFromGroup => Resource.GetString("ActionMigrateFromGroup");
@@ -7445,6 +7450,77 @@ namespace Telegram
         /// Localized resource similar to "Create Link"
         /// </summary>
         public static string CreateLink => Resource.GetString("CreateLink");
+        
+        /// <summary>
+        /// Localized resource similar to "Create"
+        /// </summary>
+        public static string CreateManagedBotButton => Resource.GetString("CreateManagedBotButton");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** will manage this bot for you."
+        /// </summary>
+        public static string CreateManagedBotCreatedText => Resource.GetString("CreateManagedBotCreatedText");
+        
+        /// <summary>
+        /// Localized resource similar to "{0} created!"
+        /// </summary>
+        public static string CreateManagedBotCreatedTitle => Resource.GetString("CreateManagedBotCreatedTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "You can create up to {0} bots, or delete your current ones via @BotFather"
+        /// </summary>
+        public static string CreateManagedBotLimitText => Resource.GetString("CreateManagedBotLimitText");
+        
+        /// <summary>
+        /// Localized resource similar to "Subscribe to **Premium** to create up to {0} bots, or delete one of your {0} bots via @BotFather"
+        /// </summary>
+        public static string CreateManagedBotLimitTextPremium => Resource.GetString("CreateManagedBotLimitTextPremium");
+        
+        /// <summary>
+        /// Localized resource similar to "You can create another bot in {0}."
+        /// </summary>
+        public static string CreateManagedBotLimitTextTime => Resource.GetString("CreateManagedBotLimitTextTime");
+        
+        /// <summary>
+        /// Localized resource similar to "Bot Limit Exceeded"
+        /// </summary>
+        public static string CreateManagedBotLimitTitle => Resource.GetString("CreateManagedBotLimitTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "Bot Name"
+        /// </summary>
+        public static string CreateManagedBotName => Resource.GetString("CreateManagedBotName");
+        
+        /// <summary>
+        /// Localized resource similar to "Tap to edit bot name."
+        /// </summary>
+        public static string CreateManagedBotNameInfo => Resource.GetString("CreateManagedBotNameInfo");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** would like you to create
+        ///and manage a chatbot on your behalf."
+        /// </summary>
+        public static string CreateManagedBotText => Resource.GetString("CreateManagedBotText");
+        
+        /// <summary>
+        /// Localized resource similar to "Create Bot"
+        /// </summary>
+        public static string CreateManagedBotTitle => Resource.GetString("CreateManagedBotTitle");
+        
+        /// <summary>
+        /// Localized resource similar to "**{0}** doesn’t support Bot Management mode."
+        /// </summary>
+        public static string CreateManagedBotUnsupported => Resource.GetString("CreateManagedBotUnsupported");
+        
+        /// <summary>
+        /// Localized resource similar to "Username"
+        /// </summary>
+        public static string CreateManagedBotUsername => Resource.GetString("CreateManagedBotUsername");
+        
+        /// <summary>
+        /// Localized resource similar to "Tap to edit bot username."
+        /// </summary>
+        public static string CreateManagedBotUsernameInfo => Resource.GetString("CreateManagedBotUsernameInfo");
         
         /// <summary>
         /// Localized resource similar to "Create New Contact"
@@ -13840,6 +13916,13 @@ namespace Telegram
         public static string ManageChannelMenu => Resource.GetString("ManageChannelMenu");
         
         /// <summary>
+        /// Localized resource similar to "**{0}** is ready!
+        ///
+        ///Tap **Start** below to test your new chatbot. Its behavior is defined by **{0}**."
+        /// </summary>
+        public static string ManagedBotChatInfo => Resource.GetString("ManagedBotChatInfo");
+        
+        /// <summary>
         /// Localized resource similar to "Manage group"
         /// </summary>
         public static string ManageGroupMenu => Resource.GetString("ManageGroupMenu");
@@ -17741,6 +17824,11 @@ namespace Telegram
         /// Localized resource similar to "Share a link to {0} with other users and earn {1} of their spending there."
         /// </summary>
         public static string ProfileBotAffiliateProgramInfoOwner => Resource.GetString("ProfileBotAffiliateProgramInfoOwner");
+        
+        /// <summary>
+        /// Localized resource similar to "Created and managed by **@{0}**"
+        /// </summary>
+        public static string ProfileBotManagedBy => Resource.GetString("ProfileBotManagedBy");
         
         /// <summary>
         /// Localized resource similar to "Open App"

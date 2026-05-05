@@ -92,6 +92,8 @@ namespace Telegram.Td.Api
         //2FA_RECENT_CONFIRM,   // 420
         //2FA_CONFIRM_WAIT_XXX, // 420
 
-        RPC_CALL_FAIL           // 500
+        RPC_CALL_FAIL,           // 500
+
+        BOT_CREATE_LIMIT_EXCEEDED
     }
 }

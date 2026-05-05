@@ -13505,9 +13505,27 @@
     <string name="AttachLivePhoto">Motion Photo</string>
     <string name="ProfileUnofficialSecurityRisk">{0} uses an unofficial Telegram client — messages to this user may be less secure.</string>
 
+    <string name="ActionManagedBotCreated">You created un1 bot for un2 to manage</string>
+    <string name="CreateManagedBotTitle">Create Bot</string>
+    <string name="CreateManagedBotText">**{0}** would like you to create\nand manage a chatbot on your behalf.</string>
+    <string name="CreateManagedBotName">Bot Name</string>
+    <string name="CreateManagedBotNameInfo">Tap to edit bot name.</string>
+    <string name="CreateManagedBotUsername">Username</string>
+    <string name="CreateManagedBotUsernameInfo">Tap to edit bot username.</string>
+    <string name="CreateManagedBotButton">Create</string>
+    <string name="CreateManagedBotCreatedTitle">{0} created!</string>
+    <string name="CreateManagedBotCreatedText">**{0}** will manage this bot for you.</string>
+    <string name="CreateManagedBotUnsupported">**{0}** doesn’t support Bot Management mode.</string>
+    <string name="ProfileBotManagedBy">Created and managed by **@{0}**</string>
+    <string name="ManagedBotChatInfo">**{0}** is ready!\n\nTap **Start** below to test your new chatbot. Its behavior is defined by **{0}**.</string>
+    <string name="CreateManagedBotLimitTitle">Bot Limit Exceeded</string>
+    <string name="CreateManagedBotLimitTextTime">You can create another bot in {0}.</string>
+    <string name="CreateManagedBotLimitTextPremium">Subscribe to **Premium** to create up to {0} bots, or delete one of your {0} bots via @BotFather</string>
+    <string name="CreateManagedBotLimitText">You can create up to {0} bots, or delete your current ones via @BotFather</string>
     
     <string name="AudioSearchLocal">Local Music</string>
     <string name="AudioSearchChats">Shared Music</string>
     <string name="AudioSearchProfile">Profile Music</string>
     <string name="AudioSearchGlobal">Global Search</string>
+
 </resources>

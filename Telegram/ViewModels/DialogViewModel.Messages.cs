@@ -24,6 +24,7 @@ using Telegram.Td;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Chats;
 using Telegram.Views.Chats;
+using Telegram.Views.Create;
 using Telegram.Views.Popups;
 using Telegram.Views.Settings.Popups;
 using Telegram.Views.Stars.Popups;
@@ -1834,11 +1835,18 @@ namespace Telegram.ViewModels
             }
             else if (keyboardButton.Type is KeyboardButtonTypeRequestUsers requestUsers)
             {
-                await NavigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationRequestUsers(new KeyboardButtonSourceMessage(message.ChatId, message.Id), requestUsers));
+                NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationRequestUsers(new KeyboardButtonSourceMessage(message.ChatId, message.Id), requestUsers));
             }
             else if (keyboardButton.Type is KeyboardButtonTypeRequestChat requestChat)
             {
-                await NavigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationRequestChat(requestChat));
+                NavigationService.ShowPopup(new ChooseChatsPopup(), new ChooseChatsConfigurationRequestChat(requestChat));
+            }
+            else if (keyboardButton.Type is KeyboardButtonTypeRequestManagedBot requestManagedBot)
+            {
+                if (ClientService.TryGetUser(message.SenderId, out Td.Api.User botUser))
+                {
+                    NavigationService.ShowPopup(new NewBotPopup(), new NewBotArgs(botUser.Id, false, requestManagedBot));
+                }
             }
         }
 

@@ -651,6 +651,29 @@ namespace Telegram.Common
                 case InternalLinkTypeOauth oauth:
                     NavigateToOauth(clientService, navigation, oauth.Url);
                     break;
+                case InternalLinkTypeRequestManagedBot requestManagedBot:
+                    NavigateToRequestManagedBot(clientService, navigation, requestManagedBot.ManagerBotUsername, requestManagedBot.SuggestedBotName, requestManagedBot.SuggestedBotUsername);
+                    break;
+            }
+        }
+
+        private static async void NavigateToRequestManagedBot(IClientService clientService, INavigationService navigation, string managerBotUsername, string suggestedBotName, string suggestedBotUsername)
+        {
+            var response = await clientService.SendAsync(new SearchPublicChat(managerBotUsername));
+            if (response is Chat chat && clientService.TryGetUser(chat, out User user))
+            {
+                if (user.Type is UserTypeBot { CanManageBots: true })
+                {
+                    navigation.ShowPopup(new NewBotPopup(), new NewBotArgs(user.Id, true, suggestedBotName, suggestedBotUsername));
+                }
+                else
+                {
+                    navigation.ShowToast(string.Format(Strings.CreateManagedBotUnsupported, chat.Title), ToastPopupIcon.Info);
+                }
+            }
+            else
+            {
+                navigation.ShowToast(Strings.NoUsernameFound, ToastPopupIcon.Info);
             }
         }
 

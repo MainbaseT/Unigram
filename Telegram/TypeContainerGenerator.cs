@@ -129,6 +129,7 @@ namespace Telegram
                 typeof(NewContactViewModel),
                 typeof(NewChannelViewModel),
                 typeof(NewGroupViewModel),
+                typeof(NewBotViewModel),
                 typeof(InstantViewModel),
                 typeof(LogOutViewModel),
                 typeof(DiagnosticsViewModel),

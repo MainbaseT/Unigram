@@ -360,6 +360,7 @@ namespace Telegram
                 NewContactPopup => session.Resolve<NewContactViewModel>(),
                 NewChannelPopup => session.Resolve<NewChannelViewModel>(),
                 NewGroupPopup => session.Resolve<NewGroupViewModel>(),
+                NewBotPopup => session.Resolve<NewBotViewModel>(),
                 UserEditPage userEdit => session.Resolve<UserEditViewModel, IUserDelegate>(userEdit),
                 UserAffiliatePage => session.Resolve<UserAffiliateViewModel>(),
                 //

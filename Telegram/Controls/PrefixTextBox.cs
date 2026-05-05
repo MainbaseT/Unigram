@@ -106,4 +106,38 @@ namespace Telegram.Controls
 
         #endregion
     }
+
+    public partial class PrefixTextBox2 : TextBox
+    {
+        public PrefixTextBox2()
+        {
+            DefaultStyleKey = typeof(PrefixTextBox2);
+        }
+
+        #region Prefix
+
+        public string Prefix
+        {
+            get { return (string)GetValue(PrefixProperty); }
+            set { SetValue(PrefixProperty, value); }
+        }
+
+        public static readonly DependencyProperty PrefixProperty =
+            DependencyProperty.Register(nameof(Prefix), typeof(string), typeof(PrefixTextBox2), new PropertyMetadata(string.Empty));
+
+        #endregion
+
+        #region Suffix
+
+        public string Suffix
+        {
+            get { return (string)GetValue(SuffixProperty); }
+            set { SetValue(SuffixProperty, value); }
+        }
+
+        public static readonly DependencyProperty SuffixProperty =
+            DependencyProperty.Register(nameof(Suffix), typeof(string), typeof(PrefixTextBox2), new PropertyMetadata(string.Empty));
+
+        #endregion
+    }
 }

@@ -619,6 +619,9 @@
   <data name="ActionLeftUser" xml:space="preserve">
     <value>un1 left the group</value>
   </data>
+  <data name="ActionManagedBotCreated" xml:space="preserve">
+    <value>You created un1 bot for un2 to manage</value>
+  </data>
   <data name="ActionMigrateFromGroup" xml:space="preserve">
     <value>This group was upgraded to a supergroup</value>
   </data>
@@ -4895,6 +4898,49 @@ handles AI tasks safely and efficiently.</value>
   </data>
   <data name="CreateLink" xml:space="preserve">
     <value>Create Link</value>
+  </data>
+  <data name="CreateManagedBotButton" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="CreateManagedBotCreatedText" xml:space="preserve">
+    <value>**{0}** will manage this bot for you.</value>
+  </data>
+  <data name="CreateManagedBotCreatedTitle" xml:space="preserve">
+    <value>{0} created!</value>
+  </data>
+  <data name="CreateManagedBotLimitText" xml:space="preserve">
+    <value>You can create up to {0} bots, or delete your current ones via @BotFather</value>
+  </data>
+  <data name="CreateManagedBotLimitTextPremium" xml:space="preserve">
+    <value>Subscribe to **Premium** to create up to {0} bots, or delete one of your {0} bots via @BotFather</value>
+  </data>
+  <data name="CreateManagedBotLimitTextTime" xml:space="preserve">
+    <value>You can create another bot in {0}.</value>
+  </data>
+  <data name="CreateManagedBotLimitTitle" xml:space="preserve">
+    <value>Bot Limit Exceeded</value>
+  </data>
+  <data name="CreateManagedBotName" xml:space="preserve">
+    <value>Bot Name</value>
+  </data>
+  <data name="CreateManagedBotNameInfo" xml:space="preserve">
+    <value>Tap to edit bot name.</value>
+  </data>
+  <data name="CreateManagedBotText" xml:space="preserve">
+    <value>**{0}** would like you to create
+and manage a chatbot on your behalf.</value>
+  </data>
+  <data name="CreateManagedBotTitle" xml:space="preserve">
+    <value>Create Bot</value>
+  </data>
+  <data name="CreateManagedBotUnsupported" xml:space="preserve">
+    <value>**{0}** doesn’t support Bot Management mode.</value>
+  </data>
+  <data name="CreateManagedBotUsername" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="CreateManagedBotUsernameInfo" xml:space="preserve">
+    <value>Tap to edit bot username.</value>
   </data>
   <data name="CreateNewContact" xml:space="preserve">
     <value>Create New Contact</value>
@@ -9305,6 +9351,11 @@ Secret chats and pending messages will be lost.</value>
   <data name="ManageChannelMenu" xml:space="preserve">
     <value>Manage channel</value>
   </data>
+  <data name="ManagedBotChatInfo" xml:space="preserve">
+    <value>**{0}** is ready!
+
+Tap **Start** below to test your new chatbot. Its behavior is defined by **{0}**.</value>
+  </data>
   <data name="ManageGroupMenu" xml:space="preserve">
     <value>Manage group</value>
   </data>
@@ -11893,6 +11944,9 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ProfileBotAffiliateProgramInfoOwner" xml:space="preserve">
     <value>Share a link to {0} with other users and earn {1} of their spending there.</value>
+  </data>
+  <data name="ProfileBotManagedBy" xml:space="preserve">
+    <value>Created and managed by **@{0}**</value>
   </data>
   <data name="ProfileBotOpenApp" xml:space="preserve">
     <value>Open App</value>
