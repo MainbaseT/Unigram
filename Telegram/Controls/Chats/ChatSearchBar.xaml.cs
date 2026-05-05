@@ -295,7 +295,7 @@ namespace Telegram.Controls.Chats
         {
             if (Field.State == ChatSearchState.Members)
             {
-                ViewModel.Autocomplete = new UsernameCollection(ViewModel.ClientService, ViewModel.Dialog.Chat.Id, ViewModel.Dialog.TopicId, Field.Text, false, true, true);
+                ViewModel.Autocomplete = new UsernameCollection(ViewModel.ClientService, ViewModel.Dialog.Chat.Id, ViewModel.Dialog.TopicId, Field.Text, false, false, true, true);
             }
 
             DeleteButton.Visibility = string.IsNullOrEmpty(Field.Text) && Field.State == ChatSearchState.Text ? Visibility.Collapsed : Visibility.Visible;
@@ -391,7 +391,7 @@ namespace Telegram.Controls.Chats
             {
                 case ChatSearchState.Members:
                     FilterByMember.Visibility = Visibility.Collapsed;
-                    viewModel.Autocomplete = new UsernameCollection(viewModel.ClientService, viewModel.Dialog.Chat.Id, viewModel.Dialog.TopicId, string.Empty, false, true, true);
+                    viewModel.Autocomplete = new UsernameCollection(viewModel.ClientService, viewModel.Dialog.Chat.Id, viewModel.Dialog.TopicId, string.Empty, false, false, true, true);
                     break;
                 case ChatSearchState.TextByMember:
                     FilterByMember.Visibility = Visibility.Collapsed;

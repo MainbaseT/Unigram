@@ -221,10 +221,13 @@ namespace Telegram.Controls
 
             if (entity == AutocompleteEntity.Username && viewModel is ComposeViewModel compose)
             {
-                if (compose.Chat.Type is ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false })
+                var guestBots = compose.Chat.Type is not ChatTypeSecret;
+                var members = compose.Chat.Type is ChatTypeBasicGroup or ChatTypeSupergroup { IsChannel: false };
+
+                if (guestBots || members)
                 {
                     ClearAutocomplete();
-                    SetAutocomplete(new ChatTextBox.UsernameCollection(viewModel.ClientService, compose.Chat.Id, compose.TopicId, result, false, true, false));
+                    SetAutocomplete(new ChatTextBox.UsernameCollection(viewModel.ClientService, compose.Chat.Id, compose.TopicId, result, false, guestBots, members, false));
                     return;
                 }
             }
