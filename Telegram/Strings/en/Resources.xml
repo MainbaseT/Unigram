@@ -13530,4 +13530,9 @@
 
     <string name="GuestBotFor">for</string>
 
+    <string name="PollV2ToastOnlySubscribersCanVote">Only subscribers of **{0}** can vote.</string>
+    <string name="PollV2ToastOnlySubscribersJoined24hCanVote">Only subscribers who joined more than **24 hours** ago can vote.</string>
+    <string name="PollV2ToastOnlyUsersFromCountriesCanVoteOne">Only users from **{0}** can vote.</string>
+    <string name="PollV2ToastOnlyUsersFromCountriesCanVoteOther">Only users from **{0}** and **{1}** can vote.</string>
+
 </resources>

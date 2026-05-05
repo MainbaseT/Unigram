@@ -122,7 +122,7 @@ namespace Telegram.Controls.Messages.Content
                 && _messageId == message.Id
                 && _optionId == optionId;
 
-            var results = poll.IsClosed || poll.Options.Any(x => x.IsChosen);
+            var results = poll.IsClosed || poll.VoteRestrictionReason != null || poll.Options.Any(x => x.IsChosen);
             var correct = poll.Type is PollTypeQuiz quiz && quiz.CorrectOptionIds.Contains(poll.Options.IndexOf(option));
 
             var votes = Locale.Declension(poll.Type is PollTypeQuiz ? Strings.R.Answer : Strings.R.Vote, option.VoterCount);

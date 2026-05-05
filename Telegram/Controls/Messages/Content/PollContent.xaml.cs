@@ -8,6 +8,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Native.Controls;
@@ -204,7 +205,7 @@ namespace Telegram.Controls.Messages.Content
                     {
                         button.UpdatePollOption(message, poll.Poll, poll.Poll.Options[i]);
 
-                        if (poll.Poll.AllowsMultipleAnswers)
+                        if (poll.Poll.AllowsMultipleAnswers && poll.Poll.VoteRestrictionReason == null)
                         {
                             button.Checked += Option_Toggled;
                             button.Unchecked += Option_Toggled;
@@ -224,7 +225,7 @@ namespace Telegram.Controls.Messages.Content
                     var button = new PollOptionContent();
                     button.UpdatePollOption(message, poll.Poll, poll.Poll.Options[i]);
 
-                    if (poll.Poll.AllowsMultipleAnswers)
+                    if (poll.Poll.AllowsMultipleAnswers && poll.Poll.VoteRestrictionReason == null)
                     {
                         button.Checked += Option_Toggled;
                         button.Unchecked += Option_Toggled;
@@ -388,9 +389,61 @@ namespace Telegram.Controls.Messages.Content
 
         private async void Option_Click(object sender, RoutedEventArgs e)
         {
-            if (_message?.SchedulingState != null)
+            if (_message.Content is not MessagePoll poll)
+            {
+                return;
+            }
+
+            if (poll.Poll.VoteRestrictionReason is PollVoteRestrictionReasonScheduled)
             {
                 await MessagePopup.ShowAsync(XamlRoot, Strings.MessageScheduledVote, Strings.AppName, Strings.OK);
+                return;
+            }
+            else if (poll.Poll.VoteRestrictionReason is PollVoteRestrictionReasonCountryRestricted)
+            {
+                if (poll.Poll.CountryCodes.Count > 2)
+                {
+                    _message.Delegate.NavigationService.ShowToast(string.Format(Strings.PollV2ToastOnlyUsersFromCountriesCanVoteOther, string.Join(", ", poll.Poll.CountryCodes.Take(poll.Poll.CountryCodes.Count - 1).Select(x => CountryName(x))), CountryName(poll.Poll.CountryCodes[^1])), ToastPopupIcon.Ban);
+                }
+                else if (poll.Poll.CountryCodes.Count > 1)
+                {
+                    _message.Delegate.NavigationService.ShowToast(string.Format(Strings.PollV2ToastOnlyUsersFromCountriesCanVoteOther, CountryName(poll.Poll.CountryCodes[0]), CountryName(poll.Poll.CountryCodes[1])), ToastPopupIcon.Ban);
+                }
+                else
+                {
+                    _message.Delegate.NavigationService.ShowToast(string.Format(Strings.PollV2ToastOnlyUsersFromCountriesCanVoteOne, CountryName(poll.Poll.CountryCodes[0])), ToastPopupIcon.Ban);
+                }
+
+                return;
+
+                static string CountryName(string name)
+                {
+                    try
+                    {
+                        var info = new RegionInfo(name);
+                        return info.DisplayName;
+                    }
+                    catch
+                    {
+                        return name;
+                    }
+                }
+            }
+            else if (poll.Poll.VoteRestrictionReason is PollVoteRestrictionReasonMembershipRequired membershipRequired && _message.ClientService.TryGetChat(membershipRequired.ChatId, out Chat restrictedChat))
+            {
+                if (_message.ClientService.TryGetSupergroup(restrictedChat, out Supergroup supergroup) && supergroup.Status is ChatMemberStatusLeft)
+                {
+                    _message.Delegate.NavigationService.ShowToast(string.Format(Strings.PollV2ToastOnlySubscribersCanVote, restrictedChat.Title), ToastPopupIcon.Ban);
+                }
+                else if (_message.ClientService.TryGetBasicGroup(restrictedChat, out BasicGroup basicGroup) && basicGroup.Status is ChatMemberStatusLeft)
+                {
+                    _message.Delegate.NavigationService.ShowToast(string.Format(Strings.PollV2ToastOnlySubscribersCanVote, restrictedChat.Title), ToastPopupIcon.Ban);
+                }
+                else
+                {
+                    _message.Delegate.NavigationService.ShowToast(string.Format(Strings.PollV2ToastOnlySubscribersJoined24hCanVote, restrictedChat.Title), ToastPopupIcon.Ban);
+                }
+
                 return;
             }
 
@@ -402,12 +455,6 @@ namespace Telegram.Controls.Messages.Content
 
             var option = button.Option as PollOption;
             if (option == null)
-            {
-                return;
-            }
-
-            var poll = _message?.Content as MessagePoll;
-            if (poll == null)
             {
                 return;
             }

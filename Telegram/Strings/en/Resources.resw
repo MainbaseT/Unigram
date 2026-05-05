@@ -11159,6 +11159,18 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PollSubmitVotesNoCaps" xml:space="preserve">
     <value>Vote</value>
   </data>
+  <data name="PollV2ToastOnlySubscribersCanVote" xml:space="preserve">
+    <value>Only subscribers of **{0}** can vote.</value>
+  </data>
+  <data name="PollV2ToastOnlySubscribersJoined24hCanVote" xml:space="preserve">
+    <value>Only subscribers who joined more than **24 hours** ago can vote.</value>
+  </data>
+  <data name="PollV2ToastOnlyUsersFromCountriesCanVoteOne" xml:space="preserve">
+    <value>Only users from **{0}** can vote.</value>
+  </data>
+  <data name="PollV2ToastOnlyUsersFromCountriesCanVoteOther" xml:space="preserve">
+    <value>Only users from **{0}** and **{1}** can vote.</value>
+  </data>
   <data name="PollViewResults" xml:space="preserve">
     <value>VIEW RESULTS</value>
   </data>
