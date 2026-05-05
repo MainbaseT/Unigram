@@ -54,6 +54,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateMessageContentOpened>(Handle)
                 .Subscribe<UpdateMessageMentionRead>(Handle)
                 .Subscribe<UpdateMessageUnreadReactions>(Handle)
+                .Subscribe<UpdateMessageContainsUnreadPollVotes>(Handle)
                 .Subscribe<UpdateMessageEdited>(Handle)
                 .Subscribe<UpdateMessageInteractionInfo>(Handle)
                 .Subscribe<UpdateMessageIsPinned>(Handle)
@@ -1081,6 +1082,29 @@ namespace Telegram.ViewModels
                 });
 
                 BeginOnUIThread(() => Delegate?.UpdateChatUnreadMentionCount(_chat, update.UnreadMentionCount));
+            }
+        }
+
+        public void Handle(UpdateMessageContainsUnreadPollVotes update)
+        {
+            if (update.ChatId == _chat?.Id)
+            {
+                if (update.ContainsUnreadPollVotes)
+                {
+                    PollVotes.AddMessage(update.MessageId);
+                }
+                else
+                {
+                    PollVotes.RemoveMessage(update.MessageId);
+                }
+
+                Handle(update.MessageId, message =>
+                {
+                    message.ContainsUnreadPollVotes = update.ContainsUnreadPollVotes;
+                    return false;
+                });
+
+                BeginOnUIThread(() => Delegate?.UpdateChatUnreadPollVoteCount(_chat, update.UnreadPollVoteCount));
             }
         }
 

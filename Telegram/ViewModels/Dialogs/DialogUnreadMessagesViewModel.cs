@@ -37,6 +37,11 @@ namespace Telegram.ViewModels
             _lastMessage = messageId;
         }
 
+        public void AddMessage(long messageId)
+        {
+            _messages.Clear();
+        }
+
         public void RemoveMessage(long messageId)
         {
             _messages?.Remove(messageId);

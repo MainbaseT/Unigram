@@ -569,6 +569,11 @@ namespace Telegram.Views
                     continue;
                 }
 
+                if (message.ContainsUnreadPollVotes)
+                {
+                    ViewModel.PollVotes.SetLastViewedMessage(message.Id);
+                }
+
                 if (message.ContainsUnreadMention)
                 {
                     ViewModel.Mentions.SetLastViewedMessage(message.Id);
