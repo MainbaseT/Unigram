@@ -99,7 +99,7 @@ namespace Telegram.Views.Popups
         {
             get
             {
-                return Items.Where(x => !string.IsNullOrWhiteSpace(x.Text.Text)).Select(x => new InputPollOption(x.Text)).ToList();
+                return Items.Where(x => !string.IsNullOrWhiteSpace(x.Text.Text)).Select(x => new InputPollOption(x.Text, null)).ToList();
             }
         }
 
@@ -122,7 +122,7 @@ namespace Telegram.Views.Popups
                         if (Items[i].IsChecked)
                             correct.Add(i);
 
-                    return new InputPollTypeQuiz(correct, QuizExplanation.GetFormattedText());
+                    return new InputPollTypeQuiz(correct, QuizExplanation.GetFormattedText(), null);
                 }
 
                 return new InputPollTypeRegular(Multiple.IsChecked == true);

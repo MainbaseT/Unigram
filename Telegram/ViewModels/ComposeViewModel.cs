@@ -917,7 +917,7 @@ namespace Telegram.ViewModels
             }
 
             var reply = GetReply(true);
-            var input = new InputMessagePoll(popup.Question, popup.Options, null, popup.IsAnonymous, false, false, false, false, popup.Type, 0, 0);
+            var input = new InputMessagePoll(popup.Question, popup.Options, null, null, popup.IsAnonymous, false, false, false, Array.Empty<string>(), false, false, popup.Type, 0, 0);
 
             await SendMessageAsync(reply, input, options);
         }
