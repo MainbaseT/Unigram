@@ -45,6 +45,7 @@ namespace Telegram.ViewModels.Supergroups
             CanSendVideoNotes = chat.Permissions.CanSendVideoNotes;
             CanSendPolls = chat.Permissions.CanSendPolls;
             CanAddLinkPreviews = chat.Permissions.CanAddLinkPreviews;
+            CanReactToMessages = chat.Permissions.CanReactToMessages;
             CanSendBasicMessages = chat.Permissions.CanSendBasicMessages;
             CanEditTag = chat.Permissions.CanEditTag;
 
@@ -131,6 +132,7 @@ namespace Telegram.ViewModels.Supergroups
                     Set(ref _canSendVideoNotes, value.Value, nameof(CanSendVideoNotes));
                     Set(ref _canSendPolls, value.Value, nameof(CanSendPolls));
                     Set(ref _canAddLinkPreviews, value.Value, nameof(CanAddLinkPreviews));
+                    Set(ref _canReactToMessages, value.Value, nameof(CanReactToMessages));
 
                     Set(ref _canSendCount, value.Value ? 9 : 0, nameof(CanSendCount));
                 }
@@ -142,7 +144,7 @@ namespace Telegram.ViewModels.Supergroups
             var count = Count();
 
             Set(ref _canSendCount, count, nameof(CanSendCount));
-            Set(ref _canSendMediaMessages, count == 0 ? false : count == 9 ? true : null, nameof(CanSendMediaMessages));
+            Set(ref _canSendMediaMessages, count == 0 ? false : count == 10 ? true : null, nameof(CanSendMediaMessages));
 
             RaisePropertyChanged(nameof(CanUnrestrictBoosters));
         }
@@ -183,6 +185,10 @@ namespace Telegram.ViewModels.Supergroups
                 count++;
             }
             if (_canSendPolls)
+            {
+                count++;
+            }
+            if (_canReactToMessages)
             {
                 count++;
             }
@@ -315,6 +321,19 @@ namespace Telegram.ViewModels.Supergroups
             }
         }
 
+        private bool _canReactToMessages;
+        public bool CanReactToMessages
+        {
+            get => _canReactToMessages;
+            set
+            {
+                if (Set(ref _canReactToMessages, value))
+                {
+                    UpdateCanSendMediaMessages();
+                }
+            }
+        }
+
 
 
         private bool _canInviteUsers;
@@ -403,6 +422,7 @@ namespace Telegram.ViewModels.Supergroups
                         || !CanSendVideoNotes
                         || !CanSendPolls
                         || !CanAddLinkPreviews
+                        || !CanReactToMessages
                         || !CanSendBasicMessages
                         || SlowModeDelay > 0;
                 }
@@ -433,6 +453,7 @@ namespace Telegram.ViewModels.Supergroups
                 CanSendVideoNotes = _canSendVideoNotes,
                 CanSendPolls = _canSendPolls,
                 CanAddLinkPreviews = _canAddLinkPreviews,
+                CanReactToMessages = _canReactToMessages,
                 CanSendBasicMessages = _canSendBasicMessages,
                 CanEditTag = _canEditTag
             };

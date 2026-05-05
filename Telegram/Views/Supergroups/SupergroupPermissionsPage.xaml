@@ -123,6 +123,12 @@
                                           Style="{StaticResource SettingsCheckBoxStyle}"
                                           Background="Transparent"
                                           CornerRadius="0" />
+
+                                <CheckBox IsChecked="{x:Bind ViewModel.CanReactToMessages, Mode=TwoWay}"
+                                          Content="{CustomResource UserRestrictionsSendReactions}"
+                                          Style="{StaticResource SettingsCheckBoxStyle}"
+                                          Background="Transparent"
+                                          CornerRadius="0" />
                             </StackPanel>
                         </controls:SettingsExpander>
 

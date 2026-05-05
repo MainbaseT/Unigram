@@ -6274,6 +6274,9 @@ Learn more at telegram.org</value>
   <data name="EventLogRestrictedSendPolls" xml:space="preserve">
     <value>Send polls</value>
   </data>
+  <data name="EventLogRestrictedSendReactions" xml:space="preserve">
+    <value>Send Reactions</value>
+  </data>
   <data name="EventLogRestrictedSendStickers" xml:space="preserve">
     <value>Send stickers &amp; GIFs</value>
   </data>
@@ -16014,6 +16017,9 @@ However, it is currently available for purchase. **Learn more…**</value>
   </data>
   <data name="UserRestrictionsSendPolls" xml:space="preserve">
     <value>Send Polls</value>
+  </data>
+  <data name="UserRestrictionsSendReactions" xml:space="preserve">
+    <value>Send Reactions</value>
   </data>
   <data name="UserRestrictionsSendRound" xml:space="preserve">
     <value>Send Video Messages</value>

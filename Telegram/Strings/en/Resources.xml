@@ -13535,4 +13535,7 @@
     <string name="PollV2ToastOnlyUsersFromCountriesCanVoteOne">Only users from **{0}** can vote.</string>
     <string name="PollV2ToastOnlyUsersFromCountriesCanVoteOther">Only users from **{0}** and **{1}** can vote.</string>
 
+    <string name="UserRestrictionsSendReactions">Send Reactions</string>
+    <string name="EventLogRestrictedSendReactions">Send Reactions</string>
+
 </resources>
