@@ -1334,6 +1334,9 @@
     <Compile Include="Views\Popups\SendAudiosPopup.xaml.cs">
       <DependentUpon>SendAudiosPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\TextStylePreviewPopup.xaml.cs">
+      <DependentUpon>TextStylePreviewPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\TextEditorPopup.xaml.cs">
       <DependentUpon>TextEditorPopup.xaml</DependentUpon>
     </Compile>
@@ -3506,6 +3509,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\SendAudiosPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\TextStylePreviewPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

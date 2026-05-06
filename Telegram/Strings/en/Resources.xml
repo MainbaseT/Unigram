@@ -13492,6 +13492,20 @@
     <string name="AIEditorResult">Result</string>
     <string name="AIEditorToneNeutral">Neutral</string>
     <string name="AIEditorEmojify">emojify</string>
+    <string name="AIEditorStyleText">Add this style to instantly\nrewrite your messages.</string>
+    <string name="AIEditorBefore">Before</string>
+    <string name="AIEditorAfter">After</string>
+    <string name="AIEditorAnotherExample">Another Example</string>
+    <string name="AIEditorUsedBy_one">Used by {0} person.</string>
+    <string name="AIEditorUsedBy_other">Used by {0} people.</string>
+    <string name="AIEditorCreatedBy">Created by **{0}**.</string>
+    <string name="AIEditorEditStyle">Edit Style</string>
+    <string name="AIEditorShareStyle">Share Style</string>
+    <string name="AIEditorAddStyle">Add Style</string>
+    <string name="AIEditorStyleDone">Done</string>
+    <string name="AIEditorNewStyle">New Style</string>
+    <string name="AIEditorDeleteStyle">Delete Style</string>
+    <string name="AIEditorRemoveStyle">Remove Style</string>
 
     <string name="PollAddingActionYou">You added \"{0}\" to the poll</string>
     <string name="PollAddingActionOther">un1 added \"{0}\" to the poll</string>

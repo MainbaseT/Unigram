@@ -654,6 +654,22 @@ namespace Telegram.Common
                 case InternalLinkTypeRequestManagedBot requestManagedBot:
                     NavigateToRequestManagedBot(clientService, navigation, requestManagedBot.ManagerBotUsername, requestManagedBot.SuggestedBotName, requestManagedBot.SuggestedBotUsername);
                     break;
+                case InternalLinkTypeTextCompositionStyle textCompositionStyle:
+                    NavigateToTextCompositionStyle(clientService, navigation, textCompositionStyle.StyleName);
+                    break;
+            }
+        }
+
+        private static async void NavigateToTextCompositionStyle(IClientService clientService, INavigationService navigation, string styleName)
+        {
+            var response = await clientService.SendAsync(new SearchTextCompositionStyle(styleName));
+            if (response is TextCompositionStyle style)
+            {
+                navigation.ShowPopup(new TextStylePreviewPopup(clientService, navigation, style, style.EnglishExample));
+            }
+            else
+            {
+                // TODO
             }
         }
 

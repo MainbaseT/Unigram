@@ -1192,11 +1192,32 @@ This is a one-time process using your phone&apos;s camera. Your selfie will not 
   <data name="AIEditor" xml:space="preserve">
     <value>AI Editor</value>
   </data>
+  <data name="AIEditorAddStyle" xml:space="preserve">
+    <value>Add Style</value>
+  </data>
+  <data name="AIEditorAfter" xml:space="preserve">
+    <value>After</value>
+  </data>
+  <data name="AIEditorAnotherExample" xml:space="preserve">
+    <value>Another Example</value>
+  </data>
   <data name="AIEditorApply" xml:space="preserve">
     <value>Apply</value>
   </data>
+  <data name="AIEditorBefore" xml:space="preserve">
+    <value>Before</value>
+  </data>
   <data name="AIEditorChooseStyle" xml:space="preserve">
     <value>Choose a style</value>
+  </data>
+  <data name="AIEditorCreatedBy" xml:space="preserve">
+    <value>Created by **{0}**.</value>
+  </data>
+  <data name="AIEditorDeleteStyle" xml:space="preserve">
+    <value>Delete Style</value>
+  </data>
+  <data name="AIEditorEditStyle" xml:space="preserve">
+    <value>Edit Style</value>
   </data>
   <data name="AIEditorEmojify" xml:space="preserve">
     <value>emojify</value>
@@ -1219,14 +1240,30 @@ This is a one-time process using your phone&apos;s camera. Your selfie will not 
   <data name="AIEditorLimitTitle" xml:space="preserve">
     <value>Daily Limit Reached</value>
   </data>
+  <data name="AIEditorNewStyle" xml:space="preserve">
+    <value>New Style</value>
+  </data>
   <data name="AIEditorOriginal" xml:space="preserve">
     <value>Original</value>
   </data>
   <data name="AIEditorOriginalText" xml:space="preserve">
     <value>Original Text</value>
   </data>
+  <data name="AIEditorRemoveStyle" xml:space="preserve">
+    <value>Remove Style</value>
+  </data>
   <data name="AIEditorResult" xml:space="preserve">
     <value>Result</value>
+  </data>
+  <data name="AIEditorShareStyle" xml:space="preserve">
+    <value>Share Style</value>
+  </data>
+  <data name="AIEditorStyleDone" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="AIEditorStyleText" xml:space="preserve">
+    <value>Add this style to instantly
+rewrite your messages.</value>
   </data>
   <data name="AIEditorTabFix" xml:space="preserve">
     <value>Fix</value>
@@ -1245,6 +1282,12 @@ This is a one-time process using your phone&apos;s camera. Your selfie will not 
   </data>
   <data name="AIEditorToOther" xml:space="preserve">
     <value>To {0}</value>
+  </data>
+  <data name="AIEditorUsedBy_one" xml:space="preserve">
+    <value>Used by {0} person.</value>
+  </data>
+  <data name="AIEditorUsedBy_other" xml:space="preserve">
+    <value>Used by {0} people.</value>
   </data>
   <data name="Album" xml:space="preserve">
     <value>Album</value>
