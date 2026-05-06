@@ -155,7 +155,7 @@
             </Grid.RowDefinitions>
             <controls:TopNavView x:Name="TabStyleItems"
                                  SelectionChanged="TabStyleItems_SelectionChanged"
-                                 PrepareContainerForItem="TabStyleItems_PrepareContainerForItem"
+                                 ChoosingItemContainer="TabStyleItems_ChoosingItemContainer"
                                  ContainerContentChanging="TabStyleItems_ContainerContentChanging"
                                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                                  ScrollViewer.HorizontalScrollMode="Auto"
@@ -362,6 +362,27 @@
                         <ItemsStackPanel Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </controls:TopNavView.ItemsPanel>
+                <controls:TopNavView.Header>
+                    <Button x:Name="TabStyleCreate"
+                            Click="TabStyleCreate_Click"
+                            Style="{StaticResource ListEmptyButtonStyle}">
+                        <Grid Padding="0,8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="&#xF164;"
+                                       FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                       FontSize="24"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{CustomResource AIEditorStyleCreate}"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Margin="8,0"
+                                       Grid.Row="1" />
+                        </Grid>
+                    </Button>
+                </controls:TopNavView.Header>
                 <!--<controls:TopNavView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <local:TabStylePanel />

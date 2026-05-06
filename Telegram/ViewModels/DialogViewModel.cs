@@ -3577,12 +3577,7 @@ namespace Telegram.ViewModels
             var tcs = new TaskCompletionSource<FormattedText>();
             var popup = new TextEditorPopup(ClientService, NavigationService, text, tcs);
 
-            var confirm = await ShowPopupAsync(popup);
-            if (confirm != ContentDialogResult.Primary)
-            {
-                return;
-            }
-
+            await ShowPopupAsync(popup);
             text = await tcs.Task;
 
             if (text != null)

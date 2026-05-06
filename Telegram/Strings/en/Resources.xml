@@ -13506,6 +13506,14 @@
     <string name="AIEditorNewStyle">New Style</string>
     <string name="AIEditorDeleteStyle">Delete Style</string>
     <string name="AIEditorRemoveStyle">Remove Style</string>
+    <string name="AIEditorDeleteStyleText">Are you sure you want to delete this style? It will be removed for everyone who installed it.</string>
+    <string name="AIEditorStyleTitle">Style Name</string>
+    <string name="AIEditorStyleTitleHint">for example: \"Pirate\"</string>
+    <string name="AIEditorStylePrompt">Instructions</string>
+    <string name="AIEditorStylePromptHint">for example, \"Write like a swashbuckling pirate. Use arr, ye, matey, and talk about treasure and the sea\"</string>
+    <string name="AIEditorStyleAddLink">Add a link to my account</string>
+    <string name="AIEditorStyleCreate">Create</string>
+    <string name="AIEditorStyleEdit">Save</string>
 
     <string name="PollAddingActionYou">You added \"{0}\" to the poll</string>
     <string name="PollAddingActionOther">un1 added \"{0}\" to the poll</string>

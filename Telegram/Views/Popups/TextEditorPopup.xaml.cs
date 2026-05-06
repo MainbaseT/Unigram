@@ -8,9 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Common;
 using Telegram.Controls;
+using Telegram.Controls.Media;
 using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Streams;
@@ -18,8 +20,8 @@ using Telegram.Td.Api;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Input;
 
 namespace Telegram.Views.Popups
 {
@@ -30,6 +32,7 @@ namespace Telegram.Views.Popups
         private readonly FormattedText _text;
 
         private readonly TaskCompletionSource<FormattedText> _tcs;
+        private bool _closedExpected;
 
         private string _translateToLanguage;
 
@@ -52,6 +55,33 @@ namespace Telegram.Views.Popups
 
             Title = Strings.AIEditor;
             PrimaryButtonText = Strings.AIEditorApply;
+
+            Closed += OnClosed;
+
+            clientService.Session.Aggregator.Subscribe<UpdateTextCompositionStyles>(this, Handle);
+        }
+
+        private void Handle(UpdateTextCompositionStyles update)
+        {
+            this.BeginOnUIThread(() =>
+            {
+                var style = TabStyleItems.SelectedItem as TextCompositionStyle;
+
+                TabStyleItems.ItemsSource = update.Styles;
+                TabStyleItems.SelectedItem = update.Styles.FirstOrDefault(x => x.Name == style?.Name);
+            });
+        }
+
+        private void OnClosed(ContentDialog sender, ContentDialogClosedEventArgs args)
+        {
+            if (_closedExpected)
+            {
+                _closedExpected = false;
+                return;
+            }
+
+            _tcs.TrySetResult(null);
+            _clientService.Session.Aggregator.Unsubscribe(this);
         }
 
         private void Navigation_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -191,6 +221,22 @@ namespace Telegram.Views.Popups
             }
         }
 
+        private void TabStyleItems_ChoosingItemContainer(ListViewBase sender, ChoosingItemContainerEventArgs args)
+        {
+            if (args.ItemContainer == null)
+            {
+                args.ItemContainer = new TopNavViewItem
+                {
+                    ContentTemplate = sender.ItemTemplate,
+                    Style = sender.ItemContainerStyle
+                };
+
+                args.ItemContainer.ContextRequested += OnContextRequested;
+            }
+
+            args.IsContainerPrepared = true;
+        }
+
         private void TabStyleItems_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.InRecycleQueue)
@@ -209,15 +255,56 @@ namespace Telegram.Views.Popups
             args.Handled = true;
         }
 
-        private void TabStyleItems_PrepareContainerForItem(SelectorItem sender, object args)
+        private void OnContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
-            if (sender.ContentTemplateRoot is Grid content && args is TextCompositionStyle style)
+            var style = TabStyleItems.ItemFromContainer(sender) as TextCompositionStyle;
+            if (style == null)
             {
-                var animated = content.Children[0] as AnimatedImage;
-                var text = content.Children[1] as TextBlock;
+                return;
+            }
 
-                animated.Source = new CustomEmojiFileSource(_clientService, style.CustomEmojiId);
-                text.Text = style.Title;
+            var flyout = new MenuFlyout();
+
+            if (style.IsCreator)
+            {
+                flyout.CreateFlyoutItem(EditStyle, style, Strings.AIEditorEditStyle, Icons.Edit);
+            }
+
+            flyout.CreateFlyoutItem(ShareStyle, style, Strings.AIEditorShareStyle, Icons.Share);
+            flyout.CreateFlyoutItem(DeleteStyle, style, style.IsCreator ? Strings.AIEditorDeleteStyle : Strings.AIEditorRemoveStyle, Icons.Delete, destructive: true);
+
+            flyout.ShowAt(sender, args);
+        }
+
+        private async void EditStyle(TextCompositionStyle style)
+        {
+            _closedExpected = true;
+            Hide();
+            await _navigationService.ShowPopupAsync(new TextStylePopup(_clientService, _navigationService, style));
+            await ShowQueuedAsync(XamlRoot);
+        }
+
+        private async void ShareStyle(TextCompositionStyle style)
+        {
+            _closedExpected = true;
+            Hide();
+            await _navigationService.ShowPopupAsync(new ChooseChatsPopup(), new ChooseChatsConfigurationPostLink(new InternalLinkTypeTextCompositionStyle(style.Name)));
+            await ShowQueuedAsync(XamlRoot);
+        }
+
+        private async void DeleteStyle(TextCompositionStyle style)
+        {
+            if (style.IsCreator)
+            {
+                var confirm = await _navigationService.ShowPopupAsync(Strings.AIEditorDeleteStyleText, Strings.AIEditorDeleteStyle, Strings.Delete, Strings.Cancel, destructive: true);
+                if (confirm == ContentDialogResult.Primary)
+                {
+                    _clientService.Send(new DeleteTextCompositionStyle(style.Name));
+                }
+            }
+            else
+            {
+                _clientService.Send(new RemoveTextCompositionStyle(style.Name));
             }
         }
 
@@ -325,6 +412,15 @@ namespace Telegram.Views.Popups
             }
 
             args.Cancel = true;
+        }
+
+        private async void TabStyleCreate_Click(object sender, RoutedEventArgs e)
+        {
+            _closedExpected = true;
+            Hide();
+
+            await _navigationService.ShowPopupAsync(new TextStylePopup(_clientService, _navigationService));
+            await ShowQueuedAsync(XamlRoot);
         }
     }
 

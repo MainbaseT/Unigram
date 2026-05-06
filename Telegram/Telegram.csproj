@@ -1331,6 +1331,9 @@
     <Compile Include="Views\Popups\DisableSharingPopup.xaml.cs">
       <DependentUpon>DisableSharingPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\TextStylePopup.xaml.cs">
+      <DependentUpon>TextStylePopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Popups\SendAudiosPopup.xaml.cs">
       <DependentUpon>SendAudiosPopup.xaml</DependentUpon>
     </Compile>
@@ -3505,6 +3508,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\DisableSharingPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\TextStylePopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
