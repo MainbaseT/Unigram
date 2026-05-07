@@ -563,6 +563,13 @@
                     </controls:SettingsButton.ContentTemplate>
                 </controls:SettingsButton>
 
+                <controls:SettingsButton x:Name="DeleteReaction"
+                                         Click="{x:Bind ViewModel.DeleteReaction}"
+                                         Visibility="{x:Bind ViewModel.DeleteReactions, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"
+                                         Content="{CustomResource DeleteReaction}"
+                                         Foreground="{ThemeResource DangerButtonBackground}"
+                                         Glyph="&#xEB04;" />
+
                 <controls:SettingsButton x:Name="BanAndReport"
                                          Click="{x:Bind ViewModel.BanAndReport}"
                                          Visibility="{x:Bind ViewModel.ReportReactions, Mode=OneWay, Converter={StaticResource NullToVisibilityConverter}}"

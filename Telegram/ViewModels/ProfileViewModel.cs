@@ -86,6 +86,13 @@ namespace Telegram.ViewModels
 
         public long LinkedChatId { get; private set; }
 
+        private DeleteMessageReactionsFromSender _deleteReactions;
+        public DeleteMessageReactionsFromSender DeleteReactions
+        {
+            get => _deleteReactions;
+            set => Set(ref _deleteReactions, value);
+        }
+
         private ReportMessageReactions _reportReactions;
         public ReportMessageReactions ReportReactions
         {
@@ -115,6 +122,11 @@ namespace Telegram.ViewModels
                         Topic = new MessageTopicForum(topic.Info.ForumTopicId);
                     }
                 }
+            }
+
+            if (state != null && state.TryGet("delete_reactions", out DeleteMessageReactionsFromSender deleteReactions))
+            {
+                DeleteReactions = deleteReactions;
             }
 
             if (state != null && state.TryGet("report_reactions", out ReportMessageReactions reportReactions))
@@ -1513,6 +1525,36 @@ namespace Telegram.ViewModels
             }
 
             MessageHelper.NavigateToMainWebApp(ClientService, NavigationService, user, string.Empty, new WebAppOpenModeFullSize());
+        }
+
+        public async void DeleteReaction()
+        {
+            var deleteReactions = DeleteReactions;
+            if (deleteReactions == null)
+            {
+                return;
+            }
+
+            var popup = new MessagePopup
+            {
+                Message = Strings.DeleteAlertReaction,
+                Title = Strings.DeleteReaction,
+                PrimaryButtonText = Strings.Delete,
+                SecondaryButtonText = Strings.Cancel,
+                IsChecked = true,
+                PrimaryButtonStyle = BootStrapper.Current.Resources["DangerButtonStyle"] as Style
+            };
+
+            var confirm = await ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                DeleteReactions = null;
+                Delegate?.UpdateChat(Chat);
+
+                ClientService.Send(deleteReactions);
+
+                ShowToast(Strings.ReactionDeleteSent, ToastPopupIcon.Info);
+            }
         }
 
         public async void BanAndReport()

@@ -13318,6 +13318,11 @@
     <string name="ReportReaction">Report reaction</string>
     <string name="ReportAlertReaction">Are you sure you want to report reaction from this user?</string>
     <string name="ReportChatSent">Report sent</string>
+    <string name="DeleteReactionMenu">Delete Reaction</string>
+    <string name="DeleteAlertReaction">Are you sure you want to delete the reaction from this user?</string>
+    <string name="DeleteReaction">Delete Reaction</string>
+    <string name="ReportReactionAndBan2">Ban and Report Reaction</string>
+    <string name="ReactionDeleteSent">Reaction deleted</string>
 
     <string name="DisableSharingActionOther">{0} disabled sharing in this chat</string>
     <string name="DisableSharingActionStillDisabled">Sharing in this chat is still disabled</string>

@@ -5167,6 +5167,9 @@ You can always switch back to the default Telegram theme here.</value>
   <data name="DeleteAdditionalActions" xml:space="preserve">
     <value>Additional actions</value>
   </data>
+  <data name="DeleteAlertReaction" xml:space="preserve">
+    <value>Are you sure you want to delete the reaction from this user?</value>
+  </data>
   <data name="DeleteAll" xml:space="preserve">
     <value>Delete All</value>
   </data>
@@ -5280,6 +5283,12 @@ You can always switch back to the default Telegram theme here.</value>
   </data>
   <data name="DeleteProxyTitle" xml:space="preserve">
     <value>Delete Proxy</value>
+  </data>
+  <data name="DeleteReaction" xml:space="preserve">
+    <value>Delete Reaction</value>
+  </data>
+  <data name="DeleteReactionMenu" xml:space="preserve">
+    <value>Delete Reaction</value>
   </data>
   <data name="DeleteReportSpam" xml:space="preserve">
     <value>Report spam</value>
@@ -12243,6 +12252,9 @@ seamlessly and efficiently.</value>
   <data name="ReactionCreateOwnPack" xml:space="preserve">
     <value>You can also **create your own** emoji packs and use them.</value>
   </data>
+  <data name="ReactionDeleteSent" xml:space="preserve">
+    <value>Reaction deleted</value>
+  </data>
   <data name="ReactionLevelRequiredBtn_one" xml:space="preserve">
     <value>Level {0} Required</value>
   </data>
@@ -12539,6 +12551,9 @@ seamlessly and efficiently.</value>
   </data>
   <data name="ReportReactionAndBan" xml:space="preserve">
     <value>Ban and Report</value>
+  </data>
+  <data name="ReportReactionAndBan2" xml:space="preserve">
+    <value>Ban and Report Reaction</value>
   </data>
   <data name="ReportSelectedMessages" xml:space="preserve">
     <value>Report Selected</value>

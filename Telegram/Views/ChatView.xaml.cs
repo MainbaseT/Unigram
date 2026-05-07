@@ -3749,7 +3749,17 @@ namespace Telegram.Views
 
                     if (e.ClickedItem is AddedReaction addedReaction)
                     {
-                        ViewModel.NavigationService.NavigateToSender(addedReaction.SenderId, state: new NavigationState { { "report_reactions", new ReportMessageReactions(message.ChatId, message.Id, addedReaction.SenderId) } });
+                        var state = new NavigationState();
+                        if (properties.CanReportReactions)
+                        {
+                            state.Add("report_reactions", new ReportMessageReactions(message.ChatId, message.Id, addedReaction.SenderId));
+                        }
+                        if (properties.CanDeleteReactions)
+                        {
+                            state.Add("delete_reactions", new DeleteMessageReactionsFromSender(message.ChatId, message.Id, addedReaction.SenderId));
+                        }
+
+                        ViewModel.NavigationService.NavigateToSender(addedReaction.SenderId, state: state);
                     }
                     else if (e.ClickedItem is MessageViewer messageViewer)
                     {
