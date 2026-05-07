@@ -226,6 +226,10 @@
                             <CheckBox x:Name="CanAddLinkPreviews"
                                       IsChecked="{x:Bind ViewModel.CanAddLinkPreviews, Mode=TwoWay}"
                                       Content="{CustomResource UserRestrictionsEmbedLinks}" />
+
+                            <CheckBox x:Name="CanReactToMessages"
+                                      IsChecked="{x:Bind ViewModel.CanReactToMessages, Mode=TwoWay}"
+                                      Content="{CustomResource UserRestrictionsSendReactions}" />
                         </StackPanel>
                     </controls:SettingsExpander>
 
