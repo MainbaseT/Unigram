@@ -2551,6 +2551,9 @@ from **{0}**.</value>
   <data name="BoostingReceivedPrizeFrom" xml:space="preserve">
     <value>You won a prize in a giveaway organized by **{0}**.</value>
   </data>
+  <data name="BoostingSelectCountry" xml:space="preserve">
+    <value>Select Countries</value>
+  </data>
   <data name="BoostingSendLinkToFriends" xml:space="preserve">
     <value>You can also **send this link** to a friend as a gift.</value>
   </data>
@@ -11238,6 +11241,86 @@ Payments will go directly to the developer of {0}. Telegram cannot provide any g
   <data name="PollSubmitVotesNoCaps" xml:space="preserve">
     <value>Vote</value>
   </data>
+  <data name="PollV2AllowAddingOptions" xml:space="preserve">
+    <value>Allow Adding Options</value>
+  </data>
+  <data name="PollV2AllowAddingOptionsInfo" xml:space="preserve">
+    <value>Participants can suggest new options</value>
+  </data>
+  <data name="PollV2AllowedCountries" xml:space="preserve">
+    <value>Allowed Countries</value>
+  </data>
+  <data name="PollV2AllowedCountriesListManyP_one" xml:space="preserve">
+    <value>{0} country</value>
+  </data>
+  <data name="PollV2AllowedCountriesListManyP_other" xml:space="preserve">
+    <value>{0} countries</value>
+  </data>
+  <data name="PollV2AllowMultipleAnswers" xml:space="preserve">
+    <value>Allow Multiple Answers</value>
+  </data>
+  <data name="PollV2AllowMultipleAnswersInfo" xml:space="preserve">
+    <value>Voters can select more than one option</value>
+  </data>
+  <data name="PollV2AllowRevoting" xml:space="preserve">
+    <value>Allow Revoting</value>
+  </data>
+  <data name="PollV2AllowRevotingInfo" xml:space="preserve">
+    <value>Voters can change their vote</value>
+  </data>
+  <data name="PollV2HideResults" xml:space="preserve">
+    <value>Hide results</value>
+  </data>
+  <data name="PollV2HideResultsInfo" xml:space="preserve">
+    <value>When enabled, results will not be visible until the poll closes.</value>
+  </data>
+  <data name="PollV2LimitByCountry" xml:space="preserve">
+    <value>Limit by Country</value>
+  </data>
+  <data name="PollV2LimitByCountryInfo" xml:space="preserve">
+    <value>Only users from selected
+countries can vote</value>
+  </data>
+  <data name="PollV2LimitDuration" xml:space="preserve">
+    <value>Limit Duration</value>
+  </data>
+  <data name="PollV2LimitDurationInfo" xml:space="preserve">
+    <value>Automatically close the poll at a set time</value>
+  </data>
+  <data name="PollV2PollDuration" xml:space="preserve">
+    <value>Poll duration</value>
+  </data>
+  <data name="PollV2PollDurationOptionCustom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="PollV2PollEnds" xml:space="preserve">
+    <value>Poll ends</value>
+  </data>
+  <data name="PollV2RestrictToSubscribers" xml:space="preserve">
+    <value>Restrict to Subscribers</value>
+  </data>
+  <data name="PollV2RestrictToSubscribersInfo" xml:space="preserve">
+    <value>Only subscribers who joined
+24+ hours ago can vote</value>
+  </data>
+  <data name="PollV2SetCorrectAnswer" xml:space="preserve">
+    <value>Set Correct Answer</value>
+  </data>
+  <data name="PollV2SetCorrectAnswerInfo" xml:space="preserve">
+    <value>Mark one option as the right answer</value>
+  </data>
+  <data name="PollV2ShowWhoVoted" xml:space="preserve">
+    <value>Show Who Voted</value>
+  </data>
+  <data name="PollV2ShowWhoVotedInfo" xml:space="preserve">
+    <value>Display voter name on each option</value>
+  </data>
+  <data name="PollV2ShuffleOptions" xml:space="preserve">
+    <value>Shuffle Options</value>
+  </data>
+  <data name="PollV2ShuffleOptionsInfo" xml:space="preserve">
+    <value>Answers appear in a random order for each voter</value>
+  </data>
   <data name="PollV2ToastOnlySubscribersCanVote" xml:space="preserve">
     <value>Only subscribers of **{0}** can vote.</value>
   </data>
@@ -12210,6 +12293,9 @@ seamlessly and efficiently.</value>
   <data name="Question" xml:space="preserve">
     <value>Question</value>
   </data>
+  <data name="QuestionDescriptionHint" xml:space="preserve">
+    <value>Add Description (optional)</value>
+  </data>
   <data name="QuestionHint" xml:space="preserve">
     <value>Ask a question</value>
   </data>
@@ -13051,6 +13137,9 @@ The channel &quot;**{1}**&quot; will become private.</value>
   </data>
   <data name="SearchAppsPopular" xml:space="preserve">
     <value>Grossing apps</value>
+  </data>
+  <data name="SearchCountriesSelect" xml:space="preserve">
+    <value>Select</value>
   </data>
   <data name="SearchFrom" xml:space="preserve">
     <value>from:</value>

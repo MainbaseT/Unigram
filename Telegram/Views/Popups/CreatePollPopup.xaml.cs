@@ -15,6 +15,7 @@ using Telegram.Controls;
 using Telegram.Controls.Drawers;
 using Telegram.Controls.Messages;
 using Telegram.Navigation;
+using Telegram.Navigation.Services;
 using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels.Drawers;
@@ -37,15 +38,19 @@ namespace Telegram.Views.Popups
     {
         private readonly CreatePollViewModel _viewModel;
 
-        public CreatePollPopup(IClientService clientService, FormattedText question, bool forceQuiz, bool forceRegular, bool forceAnonymous)
+        private IList<CountryInfo> _countryCodes = [];
+
+        public CreatePollPopup(IClientService clientService, INavigationService navigationService, FormattedText question, bool forceQuiz, bool forceRegular, bool channel)
         {
             InitializeComponent();
 
             _viewModel = new CreatePollViewModel(clientService,
                 clientService.Session.Resolve<ISettingsService>(),
                 clientService.Session.Resolve<IEventAggregator>());
+            _viewModel.NavigationService = navigationService;
 
             QuestionText.DataContext = _viewModel;
+            DescriptionText.DataContext = _viewModel;
             EmojiPanel.DataContext = EmojiDrawerViewModel.Create(clientService.Session);
 
             if (question != null)
@@ -59,62 +64,70 @@ namespace Telegram.Views.Popups
 
             Items = new ObservableCollection<PollOptionViewModel>();
             Items.CollectionChanged += Items_CollectionChanged;
-            Items.Add(new PollOptionViewModel(string.Empty, forceQuiz, false, option => Remove_Click(option)));
+            Items.Add(new PollOptionViewModel(string.Empty, forceQuiz, false, Remove_Click));
 
-            if (forceQuiz)
-            {
-                Quiz.IsChecked = true;
-                Quiz.Visibility = Visibility.Collapsed;
-                Multiple.Visibility = Visibility.Collapsed;
-                Settings.Footer = string.Empty;
-            }
-            else if (forceRegular)
-            {
-                Quiz.IsChecked = false;
-                Quiz.Visibility = Visibility.Collapsed;
-                Settings.Footer = string.Empty;
-            }
+            Duration.Badge = Locale.Declension(Strings.R.Hours, 24);
 
-            if (forceAnonymous)
+            //if (forceQuiz)
+            //{
+            //    Quiz.IsChecked = true;
+            //    Quiz.Visibility = Visibility.Collapsed;
+            //    Multiple.Visibility = Visibility.Collapsed;
+            //    Settings.Footer = string.Empty;
+            //}
+            //else if (forceRegular)
+            //{
+            //    Quiz.IsChecked = false;
+            //    Quiz.Visibility = Visibility.Collapsed;
+            //    Settings.Footer = string.Empty;
+            //}
+
+            //if (forceAnonymous)
+            //{
+            //    Anonymous.IsChecked = true;
+            //    Anonymous.Visibility = Visibility.Collapsed;
+            //}
+            //else
+            //{
+            //    Anonymous.IsChecked = true;
+            //    Anonymous.Visibility = Visibility.Visible;
+            //}
+
+            if (channel)
             {
-                Anonymous.IsChecked = true;
-                Anonymous.Visibility = Visibility.Collapsed;
+                IsAnonymous.IsChecked = false;
+                IsAnonymous.Visibility = Visibility.Collapsed;
+                AllowsAddingOptions.IsChecked = false;
+                AllowsAddingOptions.Visibility = Visibility.Collapsed;
             }
             else
             {
-                Anonymous.IsChecked = true;
-                Anonymous.Visibility = Visibility.Visible;
+                MembersOnly.IsChecked = false;
+                MembersOnly.Visibility = Visibility.Collapsed;
+                CountriesOnly.IsChecked = false;
+                CountriesOnly.Visibility = Visibility.Collapsed;
             }
         }
 
-        public FormattedText Question
+        public InputMessagePoll Input
         {
             get
             {
-                return QuestionText.GetFormattedText();
-            }
-        }
+                var question = QuestionText.GetFormattedText();
+                var options = Items.Where(x => !string.IsNullOrWhiteSpace(x.Text.Text)).Select(x => new InputPollOption(x.Text, null)).ToList();
+                var description = DescriptionText.GetFormattedText();
+                var media = default(InputMessageContent);
+                var isAnonymous = IsAnonymous.IsChecked == false;
+                var allowsMultipleAnswers = AllowsMultipleAnswers.IsChecked == true;
+                var allowsRevoting = AllowsRevoting.IsChecked == true;
+                var membersOnly = MembersOnly.IsChecked == true;
+                var countryCodes = _countryCodes.Select(x => x.CountryCode).ToList();
+                var shuffleOptions = ShuffleOptions.IsChecked == true;
+                var hideResultsUntilCloses = LimitDuration.IsChecked == true && HideResults.IsChecked == true;
+                var openPeriod = 0;
+                var closeDate = 0;
 
-        public IList<InputPollOption> Options
-        {
-            get
-            {
-                return Items.Where(x => !string.IsNullOrWhiteSpace(x.Text.Text)).Select(x => new InputPollOption(x.Text, null)).ToList();
-            }
-        }
-
-        public bool IsAnonymous
-        {
-            get
-            {
-                return Anonymous.IsChecked == true;
-            }
-        }
-
-        public InputPollType Type
-        {
-            get
-            {
+                InputPollType type;
                 if (Quiz.IsChecked == true)
                 {
                     List<int> correct = [];
@@ -122,10 +135,14 @@ namespace Telegram.Views.Popups
                         if (Items[i].IsChecked)
                             correct.Add(i);
 
-                    return new InputPollTypeQuiz(correct, QuizExplanation.GetFormattedText(), null);
+                    type = new InputPollTypeQuiz(correct, QuizExplanation.GetFormattedText(), null);
+                }
+                else
+                {
+                    type = new InputPollTypeRegular(AllowsMultipleAnswers.IsChecked == true);
                 }
 
-                return new InputPollTypeRegular(Multiple.IsChecked == true);
+                return new InputMessagePoll(question, options, description, media, isAnonymous, allowsMultipleAnswers, allowsRevoting, membersOnly, countryCodes, shuffleOptions, hideResultsUntilCloses, type, openPeriod, closeDate);
             }
         }
 
@@ -285,6 +302,16 @@ namespace Telegram.Views.Popups
             OnVisibleChanged(QuestionEmoji, false);
         }
 
+        private void DescriptionText_GotFocus(object sender, RoutedEventArgs e)
+        {
+            OnVisibleChanged(DescriptionEmoji, true);
+        }
+
+        private void DescriptionText_LostFocus(object sender, RoutedEventArgs e)
+        {
+            OnVisibleChanged(DescriptionEmoji, false);
+        }
+
         private void Option_GotFocus(object sender, RoutedEventArgs e)
         {
             AddAnOption.IsReadOnly = false;
@@ -360,20 +387,20 @@ namespace Telegram.Views.Popups
 
         private void Multiple_Toggled(object sender, RoutedEventArgs e)
         {
-            if (Multiple.IsChecked == true)
-            {
-                Quiz.IsChecked = false;
-            }
+            //if (Multiple.IsChecked == true)
+            //{
+            //    Quiz.IsChecked = false;
+            //}
         }
 
         private void Quiz_Toggled(object sender, RoutedEventArgs e)
         {
             QuizSettings.Visibility = Quiz.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
-            if (Quiz.IsChecked == true)
-            {
-                Multiple.IsChecked = false;
-            }
+            //if (Quiz.IsChecked == true)
+            //{
+            //    Multiple.IsChecked = false;
+            //}
 
             foreach (var item in Items)
             {
@@ -420,6 +447,48 @@ namespace Telegram.Views.Popups
         private void EmojiFlyout_Closed(object sender, object e)
         {
             _target = null;
+        }
+
+        private async void CountryCodes_Click(object sender, RoutedEventArgs e)
+        {
+            Hide();
+
+            var popup = new ChooseCountriesPopup(_viewModel.ClientService, _countryCodes.Select(x => x.CountryCode));
+
+            var confirm = await _viewModel.ShowPopupAsync(popup);
+            if (confirm == ContentDialogResult.Primary)
+            {
+                _countryCodes = popup.SelectedItems;
+                CountryCodes.Badge = _countryCodes.Count > 1
+                    ? Locale.Declension(Strings.R.PollV2AllowedCountriesListManyP, _countryCodes.Count)
+                    : _countryCodes.Count > 0
+                    ? _countryCodes[0].Name
+                    : Strings.SearchCountriesSelect;
+            }
+
+            await ShowQueuedAsync(XamlRoot);
+        }
+
+        private void CountriesOnly_Toggled(object sender, RoutedEventArgs e)
+        {
+            CountryCodes.Visibility = CountriesOnly.IsChecked == true
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void LimitDuration_Toggled(object sender, RoutedEventArgs e)
+        {
+            Duration.Visibility = LimitDuration.IsChecked == true
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            HideResults.Visibility = LimitDuration.IsChecked == true
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void Duration_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

@@ -896,12 +896,12 @@ namespace Telegram.ViewModels
             await SendPollAsync(true, false, false, Chat?.Type is ChatTypeSupergroup super && super.IsChannel);
         }
 
-        protected async Task SendPollAsync(bool useTextAsQuestion, bool forceQuiz, bool forceRegular, bool forceAnonymous)
+        protected async Task SendPollAsync(bool useTextAsQuestion, bool forceQuiz, bool forceRegular, bool channel)
         {
             var title = GetFormattedText(true, false);
             title = title.Substring(0, ClientService.Options.ChecklistTitleLengthMax);
 
-            var popup = new CreatePollPopup(ClientService, title, forceQuiz, forceRegular, forceAnonymous);
+            var popup = new CreatePollPopup(ClientService, NavigationService, title, forceQuiz, forceRegular, channel);
 
             var confirm = await ShowPopupAsync(popup);
             if (confirm != ContentDialogResult.Primary)
@@ -917,7 +917,7 @@ namespace Telegram.ViewModels
             }
 
             var reply = GetReply(true);
-            var input = new InputMessagePoll(popup.Question, popup.Options, null, null, popup.IsAnonymous, false, false, false, Array.Empty<string>(), false, false, popup.Type, 0, 0);
+            var input = popup.Input;
 
             await SendMessageAsync(reply, input, options);
         }
