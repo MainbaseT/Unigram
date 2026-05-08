@@ -759,10 +759,12 @@ namespace Telegram.Controls.Cells
                 UnreadMentionsBadge.Visibility = Visibility.Visible;
                 UnreadMentionsLabel.Text = chat.UnreadMentionCount > 0 ? Icons.MentionFilled : chat.UnreadReactionCount > 0 ? Icons.HeartFilled : Icons.PollFilled;
                 UnreadMentionsBrush.Color = chat.UnreadMentionCount > 0 ? Color.FromArgb(0xFF, 0x00, 0x7a, 0xff) : chat.UnreadReactionCount > 0 ? Color.FromArgb(0xFF, 0xff, 0x2d, 0x55) : Color.FromArgb(0xFF, 0xaf, 0x52, 0xde);
+                PinnedIcon.Opacity = 0;
             }
             else
             {
                 UnreadMentionsBadge.Visibility = Visibility.Collapsed;
+                PinnedIcon.Opacity = 1;
             }
 
             if (updateBotOpen)
