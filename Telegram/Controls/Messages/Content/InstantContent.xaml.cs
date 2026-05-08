@@ -1,0 +1,1749 @@
+//
+// Copyright (c) Fela Ameghino 2015-2026
+//
+// Distributed under the GNU General Public License v3.0. (See accompanying
+// file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+//
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Telegram.Common;
+using Telegram.Controls.Media;
+using Telegram.Converters;
+using Telegram.Navigation.Services;
+using Telegram.Td.Api;
+using Telegram.ViewModels;
+using Windows.Foundation;
+using Windows.UI;
+using Windows.UI.Text;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
+
+namespace Telegram.Controls.Messages.Content
+{
+    public sealed partial class InstantContent : Control, IContent
+    {
+        private CancellationTokenSource _instantViewToken;
+
+        private MessageViewModel _message;
+        public MessageViewModel Message => _message;
+
+        public InstantContent(MessageViewModel message)
+        {
+            _message = message;
+
+            DefaultStyleKey = typeof(InstantContent);
+        }
+
+        public InstantContent()
+        {
+            DefaultStyleKey = typeof(InstantContent);
+        }
+
+        #region InitializeComponent
+
+        private StackPanel LayoutRoot;
+        private bool _templateApplied;
+
+        protected override void OnApplyTemplate()
+        {
+            LayoutRoot = GetTemplateChild(nameof(LayoutRoot)) as StackPanel;
+
+            _templateApplied = true;
+
+            if (_message != null)
+            {
+                UpdateMessage(_message);
+            }
+        }
+
+        #endregion
+
+        public void UpdateMessage(MessageViewModel message)
+        {
+            _instantViewToken?.Cancel();
+            _instantViewToken = new CancellationTokenSource();
+
+            _message = message;
+
+            var text = GetContent(message);
+            if (text == null || !_templateApplied)
+            {
+                return;
+            }
+
+            var linkPreview = text.LinkPreview;
+            if (linkPreview == null)
+            {
+                return;
+            }
+
+            UpdateInstantView(linkPreview, _instantViewToken.Token);
+        }
+
+        public void Recycle()
+        {
+            _message = null;
+
+            //if (_templateApplied && Media.Child is IContent content)
+            //{
+            //    content.Recycle();
+            //}
+        }
+
+        public bool IsValid(MessageContent content, bool primary)
+        {
+            return content is MessageText { LinkPreview: LinkPreview { InstantViewVersion: not 0 } };
+        }
+
+        private MessageText GetContent(MessageViewModel message)
+        {
+            var content = message?.GeneratedContent ?? message?.Content;
+            if (content is MessageText text)
+            {
+                return text;
+            }
+
+            return null;
+        }
+
+
+        private async void UpdateInstantView(LinkPreview linkPreview, CancellationToken token)
+        {
+            var response = await _message.ClientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, true));
+            if (response is WebPageInstantView instantView && /*instantView.IsFull &&*/ !token.IsCancellationRequested)
+            {
+                UpdateView(instantView);
+            }
+        }
+
+        private void UpdateView(WebPageInstantView instantView)
+        {
+            //_instantView = instantView;
+
+            //ScrollingHost.FlowDirection = instantView.IsRtl ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+
+            //if (instantView.ViewCount > 0)
+            //{
+            //    ViewsLabel.Text = Locale.Declension(Strings.R.Views, instantView.ViewCount);
+            //}
+            //else
+            //{
+            //    ViewsLabel.Text = string.Empty;
+            //}
+
+            var processed = 0;
+            PageBlock previousBlock = null;
+            FrameworkElement previousElement = null;
+            FrameworkElement firstElement = null;
+            foreach (var block in instantView.PageBlocks)
+            {
+                var element = ProcessBlock(block);
+                var spacing = SpacingBetweenBlocks(previousBlock, block);
+                var padding = PaddingForBlock(block);
+
+                if (element != null)
+                {
+                    if (block is PageBlockChatLink && previousBlock is PageBlockCover)
+                    {
+                        if (previousElement is StackPanel stack && element is Button)
+                        {
+                            element.Style = LayoutRoot.Resources["CoverChannelBlockStyle"] as Style;
+                            element.Margin = new Thickness(padding, -40, padding, 0);
+                            stack.Children.Insert(1, element);
+                        }
+                    }
+                    else
+                    {
+                        element.Margin = new Thickness(padding, spacing, padding, 0);
+                        LayoutRoot.Children.Add(element);
+                    }
+                }
+
+                firstElement ??= element;
+
+                previousBlock = block;
+                previousElement = element;
+                processed++;
+            }
+        }
+
+        private readonly long _webpageId;
+
+        //private Stack<Panel> _containers = new Stack<Panel>();
+        private readonly double _padding = 12;
+
+        private readonly Dictionary<string, Border> _anchors = new();
+
+        private FrameworkElement ProcessBlock(PageBlock block)
+        {
+            return block switch
+            {
+                PageBlockCover cover => ProcessCover(cover),
+                PageBlockAuthorDate authorDate => ProcessAuthorDate(authorDate),
+                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker => ProcessText(block, false),
+                PageBlockBlockQuote blockquote => ProcessBlockquote(blockquote),
+                PageBlockDivider divider => ProcessDivider(divider),
+                PageBlockPhoto photo => ProcessPhoto(photo),
+                PageBlockList list => ProcessList(list),
+                PageBlockVideo video => ProcessVideo(video),
+                PageBlockAnimation animation => ProcessAnimation(animation),
+                PageBlockEmbeddedPost embedPost => ProcessEmbedPost(embedPost),
+                PageBlockSlideshow slideshow => ProcessSlideshow(slideshow),
+                PageBlockCollage collage => ProcessCollage(collage),
+                PageBlockEmbedded embed => ProcessEmbed(embed),
+                PageBlockPullQuote pullquote => ProcessPullquote(pullquote),
+                PageBlockAnchor anchor => ProcessAnchor(anchor),
+                PageBlockPreformatted preformatted => ProcessPreformatted(preformatted),
+                PageBlockChatLink channel => ProcessChannel(channel),
+                PageBlockDetails details => ProcessDetails(details),
+                PageBlockTable table => ProcessTable(table),
+                PageBlockRelatedArticles relatedArticles => ProcessRelatedArticles(relatedArticles),
+                PageBlockMap map => ProcessMap(map),
+                PageBlockAudio audio => ProcessAudio(audio),
+                PageBlockVoiceNote voiceNote => ProcessVoiceNote(voiceNote),
+                _ => ProcessUnsupported(block),
+            };
+        }
+
+        #region 2.0
+
+        private FrameworkElement ProcessMap(PageBlockMap map)
+        {
+            var image = new ImageView();
+            image.Constraint = map;
+            image.XamlRoot = _message.Delegate.NavigationService.XamlRoot;
+            image.SetSource(_message.ClientService, map.Location, map.Width, map.Height, 0);
+
+            var caption = ProcessCaption(map.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+
+                var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
+                panel.Children.Add(image);
+                panel.Children.Add(caption);
+
+                return panel;
+            }
+
+            return image;
+        }
+
+        private FrameworkElement ProcessRelatedArticles(PageBlockRelatedArticles relatedArticles)
+        {
+            var panel = new StackPanel();
+
+            var header = ProcessText(relatedArticles, false);
+            if (header != null)
+            {
+                var border = new Border { Style = LayoutRoot.Resources["BlockRelatedArticlesHeaderPanelStyle"] as Style };
+                border.Child = header;
+
+                panel.Children.Add(border);
+            }
+
+            foreach (var article in relatedArticles.Articles)
+            {
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(1, GridUnitType.Star);
+                grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
+                grid.RowDefinitions.Add(1, GridUnitType.Auto);
+                grid.RowDefinitions.Add(1, GridUnitType.Auto);
+
+                var title = new TextBlock { Text = article.Title };
+                var description = new TextBlock { TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, MaxLines = 2, Style = LayoutRoot.Resources["BlockAuthorDateTextBlockStyle"] as Style };
+
+                if (string.IsNullOrEmpty(article.Author))
+                {
+                    description.Text = article.Description;
+                }
+                else
+                {
+                    description.Text = article.Author;
+
+                    if (article.PublishDate > 0)
+                    {
+                        description.Text += " — " + Formatter.Date(article.PublishDate, Strings.chatFullDate);
+                    }
+                }
+
+                if (article.Photo != null)
+                {
+                    var photo = new ImageView
+                    {
+                        Width = 36,
+                        Height = 36,
+                        Stretch = Stretch.UniformToFill,
+                        VerticalAlignment = VerticalAlignment.Top
+                    };
+
+                    var file = article.Photo.GetSmall()?.Photo;
+                    if (file != null)
+                    {
+                        photo.SetSource(_message.ClientService, file, 36, 36);
+                    }
+
+                    Grid.SetColumn(photo, 1);
+                    Grid.SetRowSpan(photo, 2);
+
+                    grid.Children.Add(photo);
+                }
+
+                Grid.SetRow(description, 1);
+
+                grid.Children.Add(title);
+                grid.Children.Add(description);
+
+                var button = new SettingsButton { HorizontalContentAlignment = HorizontalAlignment.Stretch, VerticalContentAlignment = VerticalAlignment.Stretch, Margin = new Thickness(-12, 0, -12, 0) };
+                button.Content = grid;
+                button.Click += (s, args) => Hyperlink_Click(new RichTextUrl(null, article.Url, true));
+
+                panel.Children.Add(button);
+            }
+
+            return panel;
+        }
+
+        private FrameworkElement ProcessTable(PageBlockTable table, bool test = true)
+        {
+            var grid = new Grid();
+
+            var thickness = table.IsBordered ? 1 : 0;
+
+            var columns = table.Cells.Select(x => x.Sum(x => x.Colspan)).Max();
+            var rows = table.Cells.Count;
+
+            for (int i = 0; i < columns; i++)
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto), MaxWidth = 200 });
+            }
+
+            var row = 0;
+            var offset = new Dictionary<int, int>();
+
+            foreach (var rowz in table.Cells)
+            {
+                var column = 0;
+
+                if (offset.TryGetValue(row, out int adjust))
+                {
+                    column = adjust;
+                }
+
+                foreach (var cell in rowz)
+                {
+                    var textBlock = new RichTextBlock();
+                    var span = new Span();
+                    var paragraph = new Paragraph();
+                    paragraph.Inlines.Add(span);
+                    textBlock.Blocks.Add(paragraph);
+                    textBlock.TextWrapping = TextWrapping.Wrap;
+
+                    switch (cell.Align)
+                    {
+                        case PageBlockHorizontalAlignmentLeft left:
+                            textBlock.TextAlignment = TextAlignment.Left;
+                            break;
+                        case PageBlockHorizontalAlignmentCenter center:
+                            textBlock.TextAlignment = TextAlignment.Center;
+                            break;
+                        case PageBlockHorizontalAlignmentRight right:
+                            textBlock.TextAlignment = TextAlignment.Right;
+                            break;
+                    }
+
+                    switch (cell.Valign)
+                    {
+                        case PageBlockVerticalAlignmentTop top:
+                            textBlock.VerticalAlignment = VerticalAlignment.Top;
+                            break;
+                        case PageBlockVerticalAlignmentMiddle middle:
+                            textBlock.VerticalAlignment = VerticalAlignment.Center;
+                            break;
+                        case PageBlockVerticalAlignmentBottom bottom:
+                            textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+                            break;
+                    }
+
+                    //textBlock.Margin = new Thickness(12, 0, 12, 12);
+                    ProcessRichText(cell.Text, span, textBlock);
+
+                    var border = new Border();
+                    border.Style = Resources[cell.IsHeader || (table.IsStriped && row % 2 == 0) ? "BlockTableHeaderStyle" : "BlockTableCellStyle"] as Style;
+                    border.BorderThickness = new Thickness(column == 0 ? thickness : 0, row == 0 ? thickness : 0, thickness, thickness);
+                    border.Padding = new Thickness(8, 4, 8, 4);
+                    border.Child = textBlock;
+
+                    Grid.SetRow(border, row);
+                    Grid.SetRowSpan(border, cell.Rowspan);
+                    Grid.SetColumn(border, column);
+                    Grid.SetColumnSpan(border, cell.Colspan);
+
+                    if (cell.Rowspan > 1 && column == adjust)
+                    {
+                        for (int i = 1; i < cell.Rowspan; i++)
+                        {
+                            offset[row + i] = column + cell.Colspan;
+                        }
+                    }
+
+                    grid.Children.Add(border);
+
+                    column += cell.Colspan;
+                }
+
+                grid.RowDefinitions.Add(1, GridUnitType.Auto);
+
+                row++;
+            }
+
+            var scroll = new ScrollViewer();
+            scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            scroll.HorizontalScrollMode = ScrollMode.Auto;
+            scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+            scroll.VerticalScrollMode = ScrollMode.Disabled;
+
+            scroll.Content = grid;
+
+            if (test && Constants.DEBUG)
+            {
+                var panel = new StackPanel();
+                //panel.Children.Add(caption);
+                panel.Children.Add(scroll);
+
+                var button = new Button();
+                button.Content = "Rebuild";
+                button.Click += (s, args) =>
+                {
+                    panel.Children.RemoveAt(0);
+                    panel.Children.Insert(0, ProcessTable(table, false));
+                };
+
+                panel.Children.Add(button);
+
+                return panel;
+            }
+
+            var caption = ProcessText(table, true);
+            if (caption != null)
+            {
+                var panel = new StackPanel();
+                panel.Children.Add(caption);
+                panel.Children.Add(scroll);
+
+                return panel;
+            }
+
+            return scroll;
+        }
+
+        private FrameworkElement ProcessDetails(PageBlockDetails details)
+        {
+            var panel = new StackPanel();
+
+            var header = new SettingsButton { Content = ProcessText(details, false), Glyph = details.IsOpen ? Icons.ChevronUp : Icons.ChevronDown, Margin = new Thickness(-12, 0, -12, 0) };
+            var inner = new StackPanel { Padding = new Thickness(0, 12, 0, 12), Visibility = details.IsOpen ? Visibility.Visible : Visibility.Collapsed };
+
+            panel.Children.Add(header);
+            panel.Children.Add(inner);
+
+            foreach (var block in details.PageBlocks)
+            {
+                inner.Children.Add(ProcessBlock(block));
+            }
+
+            header.Click += (s, args) =>
+            {
+                inner.Visibility = inner.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                header.Glyph = inner.Visibility == Visibility.Visible ? Icons.ChevronUp : Icons.ChevronDown;
+            };
+
+            return panel;
+        }
+
+        #endregion
+
+        private FrameworkElement ProcessCover(PageBlockCover block)
+        {
+            return ProcessBlock(block.Cover);
+        }
+
+        private FrameworkElement ProcessChannel(PageBlockChatLink channel)
+        {
+            //var chat = channel.Channel as TLChannel;
+            //if (chat.IsMin)
+            //{
+            //    chat = InMemoryCacheService.Current.GetChat(chat.Id) as TLChannel ?? channel.Channel as TLChannel;
+            //}
+
+            //var button = new Button
+            //{
+            //    Style = Resources["ChannelBlockStyle"] as Style,
+            //    Content = chat
+            //};
+
+            //if (chat.IsMin && chat.HasUsername)
+            //{
+            //    MTProtoService.Current.ResolveUsernameAsync(chat.Username,
+            //        result =>
+            //        {
+            //            this.BeginOnUIThread(() => button.Content = result.Chats.FirstOrDefault());
+            //        });
+            //}
+
+            //return button;
+
+            return new Border();
+        }
+
+        private FrameworkElement ProcessAuthorDate(PageBlockAuthorDate block)
+        {
+            var textBlock = new TextBlock { Style = LayoutRoot.Resources["BlockAuthorDateTextBlockStyle"] as Style };
+
+            if (!block.Author.IsNullOrEmpty())
+            {
+                var span = new Span();
+                textBlock.Inlines.Add(string.Format(Strings.ArticleByAuthor, string.Empty));
+                textBlock.Inlines.Add(span);
+                ProcessRichText(block.Author, span, null);
+            }
+
+            if (block.PublishDate > 0)
+            {
+                if (textBlock.Inlines.Count > 0)
+                {
+                    textBlock.Inlines.Add(" — ");
+                }
+
+                textBlock.Inlines.Add(Formatter.Date(block.PublishDate, Strings.chatFullDate));
+            }
+
+            return textBlock;
+        }
+
+        private FrameworkElement ProcessText(PageBlock block, bool caption)
+        {
+            RichText text = null;
+            switch (block)
+            {
+                case PageBlockTitle title:
+                    text = title.Title;
+                    break;
+                case PageBlockSubtitle subtitle:
+                    text = subtitle.Subtitle;
+                    break;
+                case PageBlockHeader header:
+                    text = header.Header;
+                    break;
+                case PageBlockSubheader subheader:
+                    text = subheader.Subheader;
+                    break;
+                case PageBlockFooter footer:
+                    text = footer.Footer;
+                    break;
+                case PageBlockParagraph paragraphz:
+                    text = paragraphz.Text;
+                    break;
+                case PageBlockPreformatted preformatted:
+                    text = preformatted.Text;
+                    break;
+                case PageBlockBlockQuote blockquote:
+                    text = caption ? blockquote.Credit : blockquote.Text;
+                    break;
+                case PageBlockPullQuote pullquote:
+                    text = caption ? pullquote.Credit : pullquote.Text;
+                    break;
+                case PageBlockDetails details:
+                    text = details.Header;
+                    break;
+                case PageBlockTable table:
+                    text = table.Caption;
+                    break;
+                case PageBlockRelatedArticles relatedArticles:
+                    text = relatedArticles.Header;
+                    break;
+                case PageBlockKicker kicker:
+                    text = kicker.Kicker;
+                    break;
+            }
+
+            if (text == null || text is RichTextPlain plain && string.IsNullOrEmpty(plain.Text))
+            {
+                return null;
+            }
+
+            var textBlock = CreateTextBlock();
+            var span = new Span();
+            var paragraph = new Paragraph();
+            paragraph.Inlines.Add(span);
+            textBlock.Blocks.Add(paragraph);
+            textBlock.TextWrapping = TextWrapping.Wrap;
+
+            textBlock.ContextMenuOpening += Text_ContextMenuOpening;
+            textBlock.AddHandler(ContextRequestedEvent, new TypedEventHandler<UIElement, ContextRequestedEventArgs>(Text_ContextRequested), true);
+
+            //textBlock.Margin = new Thickness(12, 0, 12, 12);
+            ProcessRichText(text, span, textBlock);
+
+            switch (block)
+            {
+                case PageBlockTitle title:
+                    textBlock.FontSize = 28;
+                    textBlock.FontFamily = new FontFamily("Times New Roman");
+                    //textBlock.TextLineBounds = TextLineBounds.TrimToBaseline;
+                    break;
+                case PageBlockSubtitle subtitle:
+                    textBlock.FontSize = 17;
+                    //textBlock.FontFamily = new FontFamily("Times New Roman");
+                    //textBlock.TextLineBounds = TextLineBounds.TrimToBaseline;
+                    break;
+                case PageBlockHeader header:
+                    textBlock.Style = LayoutRoot.Resources["BlockHeaderTextBlockStyle"] as Style;
+                    break;
+                case PageBlockSubheader subheader:
+                    textBlock.Style = LayoutRoot.Resources["BlockSubheaderTextBlockStyle"] as Style;
+                    break;
+                case PageBlockParagraph paragraphz:
+                    textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
+                    break;
+                case PageBlockPreformatted preformatted:
+                    textBlock.FontSize = 16;
+                    break;
+                case PageBlockFooter footer:
+                    textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    //textBlock.TextAlignment = TextAlignment.Center;
+                    break;
+                case PageBlockPhoto photo:
+                case PageBlockVideo video:
+                    textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    textBlock.TextAlignment = TextAlignment.Center;
+                    break;
+                case PageBlockSlideshow slideshow:
+                case PageBlockEmbedded embed:
+                case PageBlockEmbeddedPost embedPost:
+                    textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    //textBlock.TextAlignment = TextAlignment.Center;
+                    break;
+                case PageBlockBlockQuote blockquote:
+                    if (caption)
+                    {
+                        textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                        textBlock.Margin = new Thickness(0, 12, 0, 0);
+                    }
+                    else
+                    {
+                        textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
+                    }
+                    break;
+                case PageBlockPullQuote pullquote:
+                    if (caption)
+                    {
+                        textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    }
+                    else
+                    {
+                        textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
+                        textBlock.FontFamily = new FontFamily("Times New Roman");
+                        //textBlock.TextLineBounds = TextLineBounds.TrimToBaseline;
+                        textBlock.TextAlignment = TextAlignment.Center;
+                    }
+                    break;
+                case PageBlockDetails details:
+                    textBlock.IsTextSelectionEnabled = false;
+                    break;
+                case PageBlockRelatedArticles relatedArticles:
+                    textBlock.Style = LayoutRoot.Resources["BlockRelatedArticlesHeaderStyle"] as Style;
+                    break;
+            }
+
+            return textBlock;
+        }
+
+        #region Text selection
+
+        public partial class SelectionRange
+        {
+            public int Start { get; set; }
+            public int End { get; set; }
+
+            public SelectionRange(int start, int end)
+            {
+                Start = start;
+                End = end;
+            }
+        }
+
+        private RichTextBlock _selectionAnchor;
+        private Point _selectionAnchorPoint;
+        private Point _stackPoint;
+
+        private int _selectionDirection;
+        private TextPointer _selectionPivot;
+
+        private SelectionRange _selectionClue;
+        private bool _selectionDirty;
+
+        private bool _selecting;
+
+        private HashSet<RichTextBlock> _selection = new();
+
+        private RichTextBlock CreateTextBlock()
+        {
+            var block = new RichTextBlock();
+            block.SelectionChanged += OnSelectionChanged;
+            block.LostFocus += OnLostFocus;
+            block.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            block.AddHandler(PointerMovedEvent, new PointerEventHandler(OnPointerMoved), true);
+            block.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+
+            return block;
+        }
+
+        private void RemoveSelectionHighlighter(RichTextBlock block)
+        {
+            for (int i = block.TextHighlighters.Count - 1; i >= 0; i--)
+            {
+                if (block.TextHighlighters[i].Background == block.SelectionHighlightColor)
+                {
+                    block.TextHighlighters.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        private void OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            foreach (var block in _selection)
+            {
+                RemoveSelectionHighlighter(block);
+            }
+
+            if (sender is RichTextBlock anchor)
+            {
+                anchor.Select(anchor.ContentStart, anchor.ContentStart);
+            }
+        }
+
+        private void OnSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (_selectionAnchor == sender && _selectionPivot == null)
+            {
+                if (_selectionClue != null)
+                {
+                    if (_selectionAnchor.SelectionStart.Offset == _selectionClue.Start || _selectionAnchor.SelectionStart.Offset == _selectionClue.End)
+                    {
+                        _selectionPivot = _selectionAnchor.SelectionStart;
+                        return;
+                    }
+                    else if (_selectionAnchor.SelectionEnd.Offset == _selectionClue.Start || _selectionAnchor.SelectionEnd.Offset == _selectionClue.End)
+                    {
+                        _selectionPivot = _selectionAnchor.SelectionEnd;
+                        return;
+                    }
+                }
+
+                _selectionClue = new SelectionRange(_selectionAnchor.SelectionStart.Offset, _selectionAnchor.SelectionEnd.Offset);
+            }
+        }
+
+        private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            _selectionAnchor = sender as RichTextBlock;
+            RemoveSelectionHighlighter(_selectionAnchor);
+
+            var transform = _selectionAnchor.TransformToVisual(XamlRoot.Content);
+            var anchorPoint = transform.TransformPoint(new Point());
+
+            _selectionAnchorPoint = new Point(anchorPoint.X, anchorPoint.Y + (_selectionAnchor.ActualHeight / 2));
+
+            var transform2 = LayoutRoot.TransformToVisual(XamlRoot.Content);
+            var anchorPoint2 = transform2.TransformPoint(new Point());
+
+            _stackPoint = anchorPoint;
+        }
+
+        private void CreateHighlighter(RichTextBlock block, TextPointer start, TextPointer end)
+        {
+            CreateHighlighter(block, start.OffsetToIndex(), end.OffsetToIndex());
+        }
+
+        private void CreateHighlighter(RichTextBlock block, int start, int length)
+        {
+            var highlighter = new TextHighlighter
+            {
+                Background = block.SelectionHighlightColor,
+                Foreground = new SolidColorBrush(Colors.White)
+            };
+
+            highlighter.Ranges.Add(new TextRange
+            {
+                StartIndex = start,
+                Length = length
+            });
+
+            RemoveSelectionHighlighter(block);
+            block.TextHighlighters.Add(highlighter);
+        }
+
+        private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (_selectionAnchor == null)
+            {
+                return;
+            }
+
+            var point = e.GetCurrentPoint(XamlRoot.Content);
+            var y1 = Math.Min(_selectionAnchorPoint.Y, point.Position.Y);
+            var y2 = Math.Max(_selectionAnchorPoint.Y, point.Position.Y);
+
+            var area = new Rect(_stackPoint.X, y1, LayoutRoot.ActualWidth, y2 - y1);
+            var elements = VisualTreeHelper.FindElementsInHostCoordinates(area, LayoutRoot);
+
+            var direction = Math.Sign(_selectionAnchorPoint.Y - point.Position.Y);
+
+            //Debug.WriteLine(direction < 0 ? "Selecting from top to bottom" : "Selecting from bottom to top");
+            //Debug.WriteLine(direction < 0 ? "Using selection start as anchor" : "Using selection end as anchor");
+
+            var selection = new HashSet<RichTextBlock>();
+
+            foreach (var block in elements.OfType<RichTextBlock>())
+            {
+                if (_selectionAnchor == block)
+                {
+                    continue;
+                }
+
+                var relative = e.GetCurrentPoint(block);
+                if (relative.Position.Y >= 0 && relative.Position.Y <= Math.Ceiling(block.ActualHeight))
+                {
+                    // Active block
+                    var position = block.GetPositionFromPoint(relative.Position);
+
+                    if (direction < 0)
+                    {
+                        CreateHighlighter(block, block.ContentStart, position);
+                    }
+                    else
+                    {
+                        CreateHighlighter(block, position, block.ContentEnd);
+                    }
+                }
+                else
+                {
+                    // Full block
+                    CreateHighlighter(block, 0, int.MaxValue);
+                }
+
+                selection.Add(block);
+            }
+
+            selection.Add(_selectionAnchor);
+
+            //Debug.WriteLine(selection.Count);
+
+            if (_selectionPivot != null)
+            {
+                var relative = e.GetCurrentPoint(_selectionAnchor);
+                //Debug.WriteLine("Anchor {0}: ({1} ~> {2})", _selectionAnchor.Tag, relative.Position, _selectionAnchor.ActualHeight);
+
+                if (relative.Position.Y < 0)
+                {
+                    _selectionDirty = true;
+                    _selectionAnchor.Select(_selectionAnchor.ContentStart, _selectionPivot);
+                }
+                else if (relative.Position.Y > _selectionAnchor.ActualHeight)
+                {
+                    _selectionDirty = true;
+                    _selectionAnchor.Select(_selectionPivot, _selectionAnchor.ContentEnd);
+                }
+                else if (_selectionDirty)
+                {
+                    _selectionDirty = false;
+                    _selectionAnchor.Select(_selectionPivot, _selectionPivot);
+                }
+            }
+
+            foreach (var block in _selection)
+            {
+                if (selection.Contains(block))
+                {
+                    continue;
+                }
+
+                RemoveSelectionHighlighter(block);
+            }
+
+            _selection = selection;
+            _selectionDirection = direction;
+        }
+
+        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is RichTextBlock block)
+            {
+                //Debug.WriteLine("Released, {0}", block.Tag);
+            }
+
+            _selectionAnchor = null;
+            _selectionPivot = null;
+            _selectionClue = null;
+            _selectionDirty = false;
+            _selectionDirection = 0;
+            _selecting = false;
+        }
+
+        #endregion
+
+        private void Text_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            //MessageHelper.Hyperlink_ContextRequested(ViewModel.TranslateService, sender, args, null);
+        }
+
+        private void Text_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private FrameworkElement ProcessCaption(PageBlockCaption caption)
+        {
+            var textEmpty = caption.Text == null || caption.Text is RichTextPlain plain1 && string.IsNullOrEmpty(plain1.Text);
+            var citeEmpty = caption.Credit == null || caption.Credit is RichTextPlain plain2 && string.IsNullOrEmpty(plain2.Text);
+
+            if (textEmpty && citeEmpty)
+            {
+                return null;
+            }
+
+            var textBlock = CreateTextBlock();
+            var span = new Span();
+            var paragraph = new Paragraph();
+            paragraph.Inlines.Add(span);
+            textBlock.Blocks.Add(paragraph);
+            textBlock.TextWrapping = TextWrapping.Wrap;
+
+            if (!textEmpty)
+            {
+                ProcessRichText(caption.Text, span, textBlock);
+            }
+
+            if (!citeEmpty)
+            {
+                if (!textEmpty)
+                {
+                    span.Inlines.Add(new LineBreak());
+                }
+
+                ProcessRichText(caption.Credit, span, textBlock);
+            }
+
+            return textBlock;
+        }
+
+        private FrameworkElement ProcessUnsupported(PageBlock block)
+        {
+            return new TextBlock { Text = block.ToString() };
+        }
+
+        private FrameworkElement ProcessPreformatted(PageBlockPreformatted block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockPreformattedStyle"] as Style };
+
+
+            var text = ProcessText(block, false);
+            if (text != null)
+            {
+                element.Children.Add(text);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessDivider(PageBlockDivider block)
+        {
+            var element = new Rectangle { Style = LayoutRoot.Resources["BlockDividerStyle"] as Style };
+            return element;
+        }
+
+        private FrameworkElement ProcessList(PageBlockList block)
+        {
+            var panel = new Grid();
+            panel.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            panel.ColumnDefinitions.Add(new ColumnDefinition());
+
+            var row = 0;
+
+            foreach (var item in block.Items)
+            {
+                var label = new TextBlock { Text = item.Label, TextAlignment = TextAlignment.Right, Margin = new Thickness(0, 0, 8, 0) };
+                var stack = new StackPanel();
+
+                foreach (var inner in item.PageBlocks)
+                {
+                    var child = ProcessBlock(inner);
+                    if (child != null)
+                    {
+                        stack.Children.Add(child);
+                    }
+                }
+
+                Grid.SetRow(label, row);
+                Grid.SetRow(stack, row);
+                Grid.SetColumn(stack, 1);
+
+                panel.RowDefinitions.Add(1, GridUnitType.Auto);
+                panel.Children.Add(label);
+                panel.Children.Add(stack);
+
+                row++;
+            }
+
+            return panel;
+        }
+
+        private FrameworkElement ProcessBlockquote(PageBlockBlockQuote block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockBlockquoteStyle"] as Style };
+
+            var text = ProcessText(block, false);
+            if (text != null)
+            {
+                element.Children.Add(text);
+            }
+
+            var caption = ProcessText(block, true);
+            if (caption != null)
+            {
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessPullquote(PageBlockPullQuote block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockPullquoteStyle"] as Style };
+
+            var text = ProcessText(block, false);
+            if (text != null)
+            {
+                element.Children.Add(text);
+            }
+
+            var caption = ProcessText(block, true);
+            if (caption != null)
+            {
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessPhoto(PageBlockPhoto block)
+        {
+            //var galleryItem = new GalleryPhoto(ViewModel.ClientService, block.Photo, block.Caption.ToFormattedText());
+            //ViewModel.Gallery.Items.Add(galleryItem);
+
+            var message = CreateMessage(new MessagePhoto(block.Photo, null, null, false, false, false));
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockPhotoStyle"] as Style };
+
+            var content = new PhotoContent(message);
+            //content.Tag = galleryItem;
+            content.HorizontalAlignment = HorizontalAlignment.Center;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            element.Children.Add(content);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessVideo(PageBlockVideo block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockVideoStyle"] as Style };
+
+            if (block.Video != null)
+            {
+                //var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
+                //ViewModel.Gallery.Items.Add(galleryItem);
+
+                var message = CreateMessage(new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
+
+                var content = new VideoContent(message);
+                //content.Tag = galleryItem;
+                content.HorizontalAlignment = HorizontalAlignment.Center;
+                content.ClearValue(MaxWidthProperty);
+                content.ClearValue(MaxHeightProperty);
+
+                element.Children.Add(content);
+            }
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessAnimation(PageBlockAnimation block)
+        {
+            //var galleryItem = new GalleryAnimation(ViewModel.ClientService, block.Animation, block.Caption.ToFormattedText());
+            //ViewModel.Gallery.Items.Add(galleryItem);
+
+            var message = CreateMessage(new MessageAnimation(block.Animation, null, false, false, false));
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockVideoStyle"] as Style };
+
+            var content = new AnimationContent(message);
+            //content.Tag = galleryItem;
+            content.HorizontalAlignment = HorizontalAlignment.Center;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            if (block.Animation.AnimationValue.Local.IsDownloadingCompleted)
+            {
+                //_animations.Add(content.GetPlaybackElement());
+            }
+
+            element.Children.Add(content);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessAudio(PageBlockAudio block)
+        {
+            var message = CreateMessage(block.Audio.AudioValue.Id, new MessageAudio(block.Audio, string.Empty.AsFormattedText()));
+            var element = new StackPanel();
+
+            var content = new AudioContent(message);
+            content.HorizontalAlignment = HorizontalAlignment.Left;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            element.Children.Add(content);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(0, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessVoiceNote(PageBlockVoiceNote block)
+        {
+            var message = CreateMessage(block.VoiceNote.Voice.Id, new MessageAudio(new Audio(block.VoiceNote.Duration, string.Empty, string.Empty, string.Empty, string.Empty, null, null, null, block.VoiceNote.Voice), string.Empty.AsFormattedText()));
+            var element = new StackPanel();
+
+            var content = new AudioContent(message);
+            content.HorizontalAlignment = HorizontalAlignment.Left;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            element.Children.Add(content);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(0, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private MessageViewModel CreateMessage(MessageContent content)
+        {
+            return new MessageViewModel(_message.ClientService, _message.Delegate, _message.Chat, null, null, new Message { Content = content });
+        }
+
+        private MessageViewModel CreateMessage(long id, MessageContent content)
+        {
+            return new MessageViewModel(_message.ClientService, _message.Delegate, _message.Chat, null, null, new Message { Id = id, Content = content });
+        }
+
+        private FrameworkElement ProcessEmbed(PageBlockEmbedded block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockEmbedStyle"] as Style };
+
+            var view = new WebViewer();
+
+            void loaded(object sender, RoutedEventArgs e)
+            {
+                view.Loaded -= loaded;
+
+                // TODO: auto-size
+
+                if (!block.AllowScrolling)
+                {
+                    // TODO: block scrolling
+                    //await view.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("document.querySelector('body').style.overflow='hidden'");
+                }
+                if (!string.IsNullOrEmpty(block.Html))
+                {
+                    view.NavigateToString(block.Html.Replace("src=\"//", "src=\"https://"));
+                }
+                else if (!string.IsNullOrEmpty(block.Url))
+                {
+                    view.Navigate(block.Url);
+                }
+            }
+
+            void unloaded(object sender, RoutedEventArgs e)
+            {
+                view.Unloaded -= unloaded;
+                view.Close();
+            }
+
+            view.Loaded += loaded;
+            view.Unloaded += unloaded;
+
+            //if (block.HasPosterPhotoId)
+            //{
+            //    var photo = page.Photos.FirstOrDefault(x => x.Id == block.PosterPhotoId);
+            //    var image = new ImageView();
+            //    image.Source = (ImageSource)DefaultPhotoConverter.Convert(photo, "thumbnail");
+            //    image.Constraint = photo;
+            //    child = image;
+            //}
+            var ratio = new AspectView();
+            ratio.MaxWidth = block.Width;
+            ratio.MaxHeight = block.Height;
+            ratio.Constraint = new Size(block.Width, block.Height);
+            ratio.Children.Add(view);
+
+            element.Children.Add(ratio);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessSlideshow(PageBlockSlideshow block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockSlideshowStyle"] as Style };
+
+            var items = new List<FrameworkElement>();
+            foreach (var item in block.PageBlocks)
+            {
+                if (item is PageBlockPhoto photoBlock)
+                {
+                    //var galleryItem = new GalleryPhoto(ViewModel.ClientService, photoBlock.Photo, block.Caption.ToFormattedText());
+                    //ViewModel.Gallery.Items.Add(galleryItem);
+
+                    var message = CreateMessage(new MessagePhoto(photoBlock.Photo, null, null, false, false, false));
+
+                    var content = new PhotoContent(message);
+                    //content.Tag = galleryItem;
+                    content.HorizontalAlignment = HorizontalAlignment.Center;
+                    content.ClearValue(MaxWidthProperty);
+                    content.ClearValue(MaxHeightProperty);
+
+                    items.Add(content);
+                }
+                else if (item is PageBlockVideo videoBlock)
+                {
+                    //var galleryItem = new GalleryVideo(ViewModel.ClientService, videoBlock.Video, block.Caption.ToFormattedText());
+                    //ViewModel.Gallery.Items.Add(galleryItem);
+
+                    var message = CreateMessage(new MessageVideo(videoBlock.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
+
+                    var content = new VideoContent(message);
+                    //content.Tag = galleryItem;
+                    content.HorizontalAlignment = HorizontalAlignment.Center;
+                    content.ClearValue(MaxWidthProperty);
+                    content.ClearValue(MaxHeightProperty);
+
+                    items.Add(content);
+                }
+            }
+
+            var flip = new FlipView();
+            flip.ItemsSource = items;
+            flip.MaxHeight = 420;
+
+            element.Children.Add(flip);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessCollage(PageBlockCollage block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockCollageStyle"] as Style };
+
+            var items = new List<ImageView>();
+            foreach (var item in block.PageBlocks)
+            {
+                if (item is PageBlockPhoto photoBlock)
+                {
+                    //var galleryItem = new GalleryPhotoItem(photoBlock.Photo, photoBlock.Caption?.ToString());
+                    //ViewModel.Gallery.Items.Add(galleryItem);
+
+                    var child = new ImageView();
+                    //child.Source = (ImageSource)DefaultPhotoConverter.Convert(photoBlock.Photo, true);
+                    //child.DataContext = galleryItem;
+                    //child.Click += Image_Click;
+                    child.Width = 72;
+                    child.Height = 72;
+                    child.Stretch = Stretch.UniformToFill;
+                    child.Margin = new Thickness(0, 0, 4, 4);
+
+                    items.Add(child);
+                }
+                else if (item is PageBlockVideo videoBlock)
+                {
+                    //var galleryItem = new GalleryDocumentItem(videoBlock.Video, videoBlock.Caption?.ToString());
+                    //ViewModel.Gallery.Items.Add(galleryItem);
+
+                    var child = new ImageView();
+                    //child.Source = (ImageSource)DefaultPhotoConverter.Convert(videoBlock.Video, true);
+                    //child.DataContext = galleryItem;
+                    //child.Click += Image_Click;
+                    child.Width = 72;
+                    child.Height = 72;
+                    child.Stretch = Stretch.UniformToFill;
+                    child.Margin = new Thickness(0, 0, 4, 4);
+
+                    items.Add(child);
+                }
+            }
+
+            var grid = new Grid();
+            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                var y = i / 4;
+                var x = i % 4;
+
+                grid.Children.Add(items[i]);
+                Grid.SetRow(items[i], y);
+                Grid.SetColumn(items[i], x);
+
+                if (x == 0)
+                {
+                    grid.RowDefinitions.Add(1, GridUnitType.Auto);
+                }
+            }
+
+            element.Children.Add(grid);
+
+            var caption = ProcessCaption(block.Caption);
+            if (caption != null)
+            {
+                caption.Margin = new Thickness(12, 8, 0, 0);
+                element.Children.Add(caption);
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessEmbedPost(PageBlockEmbeddedPost block)
+        {
+            var element = new StackPanel { Style = LayoutRoot.Resources["BlockEmbedPostStyle"] as Style };
+
+            var header = new Grid();
+            header.RowDefinitions.Add(1, GridUnitType.Auto);
+            header.RowDefinitions.Add(1, GridUnitType.Auto);
+            header.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            header.ColumnDefinitions.Add(new ColumnDefinition());
+            header.Margin = new Thickness(_padding, 0, 0, 0);
+
+            var photo = block.AuthorPhoto;
+            if (photo != null)
+            {
+                var ellipse = new Ellipse();
+                ellipse.Width = 36;
+                ellipse.Height = 36;
+                ellipse.Margin = new Thickness(0, 0, _padding, 0);
+                //ellipse.Fill = new ImageBrush { ImageSource = (ImageSource)DefaultPhotoConverter.Convert(photo, true), Stretch = Stretch.UniformToFill, AlignmentX = AlignmentX.Center, AlignmentY = AlignmentY.Center };
+                Grid.SetRowSpan(ellipse, 2);
+
+                header.Children.Add(ellipse);
+            }
+
+            var textAuthor = new TextBlock();
+            textAuthor.Text = block.Author;
+            textAuthor.VerticalAlignment = VerticalAlignment.Bottom;
+            Grid.SetColumn(textAuthor, 1);
+            Grid.SetRow(textAuthor, 0);
+
+            var textDate = new TextBlock();
+            textDate.Text = Formatter.ToLocalTime(block.Date).ToString("dd MMMM yyyy");
+            textDate.VerticalAlignment = VerticalAlignment.Top;
+            textDate.Style = (Style)LayoutRoot.Resources["CaptionTextBlockStyle"];
+            textDate.Foreground = (SolidColorBrush)LayoutRoot.Resources["SystemControlDisabledChromeDisabledLowBrush"];
+            Grid.SetColumn(textDate, 1);
+            Grid.SetRow(textDate, 1);
+
+            header.Children.Add(textAuthor);
+            header.Children.Add(textDate);
+
+            element.Children.Add(header);
+
+            PageBlock previousBlock = null;
+            foreach (var subBlock in block.PageBlocks)
+            {
+                var subLayout = ProcessBlock(subBlock);
+                var spacing = SpacingBetweenBlocks(previousBlock, block);
+
+                if (subLayout != null)
+                {
+                    subLayout.Margin = new Thickness(_padding, spacing, _padding, 0);
+                    element.Children.Add(subLayout);
+                }
+
+                previousBlock = block;
+                FrameworkElement previousElement = subLayout;
+            }
+
+            return element;
+        }
+
+        private FrameworkElement ProcessAnchor(PageBlockAnchor block)
+        {
+            var element = new Border();
+            _anchors[block.Name] = element;
+
+            return element;
+        }
+
+        private void ProcessRichText(RichText text, Span span, RichTextBlock textBlock)
+        {
+            int offset = 0;
+            var cached = new TextHighlighter();
+            var marked = new TextHighlighter();
+
+            ProcessRichText(text, span, TextEffects.None, ref offset, cached.Ranges, marked.Ranges);
+
+            if (cached.Ranges.Count > 0 && textBlock != null)
+            {
+                cached.Background = new SolidColorBrush(Theme.Accent.WithAlpha(22));
+                cached.Foreground = new SolidColorBrush(Theme.Accent);
+
+                textBlock.TextHighlighters.Add(cached);
+            }
+
+            if (marked.Ranges.Count > 0 && textBlock != null)
+            {
+                marked.Background = new SolidColorBrush(Colors.PaleGoldenrod);
+
+                textBlock.TextHighlighters.Add(marked);
+            }
+        }
+
+        private static int _target;
+        private int _current;
+
+        private bool ProcessRichText(RichText text, Span span, TextEffects effects, ref int offset, IList<TextRange> cached, IList<TextRange> marked)
+        {
+            switch (text)
+            {
+                case RichTextPlain plainText:
+                    if (string.IsNullOrEmpty(plainText.Text))
+                    {
+                        return false;
+                    }
+
+                    if (effects.HasFlag(TextEffects.Cached))
+                    {
+                        cached.Add(new TextRange { StartIndex = offset, Length = plainText.Text.Length });
+                    }
+                    else if (effects.HasFlag(TextEffects.Marked))
+                    {
+                        marked.Add(new TextRange { StartIndex = offset, Length = plainText.Text.Length });
+                    }
+
+                    span.Inlines.Add(plainText.Text);
+                    offset += plainText.Text.Length;
+                    return true;
+                case RichTexts concatText:
+                    var added = false;
+
+                    foreach (var concat in concatText.Texts)
+                    {
+                        var concatRun = new Span();
+
+                        if (ProcessRichText(concat, concatRun, effects, ref offset, cached, marked))
+                        {
+                            span.Inlines.Add(concatRun);
+                            added = true;
+                        }
+                    }
+
+                    return added;
+                case RichTextBold boldText:
+                    span.FontWeight = FontWeights.SemiBold;
+                    return ProcessRichText(boldText.Text, span, effects, ref offset, cached, marked);
+                case RichTextEmailAddress emailText:
+                    return ProcessRichText(emailText.Text, span, effects, ref offset, cached, marked);
+                case RichTextFixed fixedText:
+                    span.FontFamily = new FontFamily("Consolas");
+                    return ProcessRichText(fixedText.Text, span, effects, ref offset, cached, marked);
+                case RichTextItalic italicText:
+                    span.FontStyle |= FontStyle.Italic;
+                    return ProcessRichText(italicText.Text, span, effects, ref offset, cached, marked);
+                case RichTextStrikethrough strikeText:
+                    span.TextDecorations |= TextDecorations.Strikethrough;
+                    return ProcessRichText(strikeText.Text, span, effects, ref offset, cached, marked);
+                case RichTextUnderline underlineText:
+                    span.TextDecorations |= TextDecorations.Underline;
+                    return ProcessRichText(underlineText.Text, span, effects, ref offset, cached, marked);
+                case RichTextAnchorLink anchorLinkText:
+                    try
+                    {
+                        var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
+
+                        if (ProcessRichText(anchorLinkText.Text, hyperlink, effects | TextEffects.Cached, ref offset, cached, marked))
+                        {
+                            span.Inlines.Add(hyperlink);
+                            hyperlink.Click += (s, args) => Hyperlink_Click(anchorLinkText);
+                            Extensions.SetToolTip(hyperlink, anchorLinkText.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, anchorLinkText.Url));
+                            MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(anchorLinkText));
+
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    catch
+                    {
+                        Logger.Info("InstantPage: Probably nesting anchorLink inside textUrl");
+                        return ProcessRichText(anchorLinkText.Text, span, effects, ref offset, cached, marked);
+                    }
+                case RichTextUrl urlText:
+                    try
+                    {
+                        if (urlText.IsCached)
+                        {
+                            effects |= TextEffects.Cached;
+                        }
+
+                        var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
+
+                        if (ProcessRichText(urlText.Text, hyperlink, effects, ref offset, cached, marked))
+                        {
+                            span.Inlines.Add(hyperlink);
+                            hyperlink.Click += (s, args) => Hyperlink_Click(urlText);
+                            Extensions.SetToolTip(hyperlink, urlText.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, urlText.Url));
+                            MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(urlText));
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    catch
+                    {
+                        Logger.Info("InstantPage: Probably nesting textUrl inside textUrl");
+                        return ProcessRichText(urlText.Text, span, effects, ref offset, cached, marked);
+                    }
+                case RichTextReference reference:
+                    try
+                    {
+                        var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
+
+                        if (ProcessRichText(reference.Text, hyperlink, effects | TextEffects.Cached, ref offset, cached, marked))
+                        {
+                            span.Inlines.Add(hyperlink);
+                            //hyperlink.Click += (s, args) => Hyperlink_Click(reference);
+                            Extensions.SetToolTip(hyperlink, reference.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, reference.Url));
+                            //MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(reference));
+
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    catch
+                    {
+                        Logger.Info("InstantPage: Probably nesting reference inside textUrl");
+                        return ProcessRichText(reference.Text, span, effects, ref offset, cached, marked);
+                    }
+                case RichTextIcon icon:
+                    var photo = new ImageView
+                    {
+                        Width = icon.Width,
+                        Height = icon.Height
+                    };
+
+                    var file = icon.Document.DocumentValue;
+                    if (file != null)
+                    {
+                        photo.SetSource(_message.ClientService, file, icon.Width, icon.Height);
+                    }
+
+                    var inline = new InlineUIContainer();
+                    inline.Child = photo;
+                    span.Inlines.Add(inline);
+                    return true;
+                case RichTextMarked markedText:
+                    // ???
+                    return ProcessRichText(markedText.Text, span, effects | TextEffects.Marked, ref offset, cached, marked);
+                case RichTextPhoneNumber phoneNumber:
+                    try
+                    {
+                        var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
+                        span.Inlines.Add(hyperlink);
+                        hyperlink.Click += (s, args) => Hyperlink_Click(phoneNumber);
+                        return ProcessRichText(phoneNumber.Text, hyperlink, effects, ref offset, cached, marked);
+                    }
+                    catch
+                    {
+                        Logger.Debug("InstantPage: Probably nesting phoneNumber inside textUrl");
+                        return ProcessRichText(phoneNumber.Text, span, effects, ref offset, cached, marked);
+                    }
+                case RichTextSubscript subscript:
+                    Typography.SetVariants(span, FontVariants.Subscript);
+                    return ProcessRichText(subscript.Text, span, effects, ref offset, cached, marked);
+                case RichTextSuperscript superscript:
+                    Typography.SetVariants(span, FontVariants.Superscript);
+                    return ProcessRichText(superscript.Text, span, effects, ref offset, cached, marked);
+                default:
+                    return false;
+            }
+        }
+
+        [Flags]
+        private enum TextEffects
+        {
+            None,
+            Cached,
+            Marked
+        }
+
+        private double SpacingBetweenBlocks(PageBlock upper, PageBlock lower)
+        {
+            if (lower is PageBlockCover or PageBlockChatLink)
+            {
+                return 0;
+            }
+
+            if (upper is PageBlockDetails && lower is PageBlockDetails)
+            {
+                return 0;
+            }
+
+            return 12;
+        }
+
+        private double PaddingForBlock(PageBlock block)
+        {
+            if (block is PageBlockCover or PageBlockPreformatted or
+                PageBlockPhoto or PageBlockVideo or
+                PageBlockSlideshow or PageBlockChatLink)
+            {
+                return 0.0;
+            }
+
+            return _padding;
+        }
+
+        private void Image_Click(object sender, RoutedEventArgs e)
+        {
+            //var image = sender as ImageView;
+            //var item = image.DataContext as GalleryMedia;
+            //if (item != null)
+            //{
+            //    ViewModel.Gallery.SelectedItem = item;
+            //    ViewModel.Gallery.FirstItem = item;
+
+            //    ViewModel.NavigationService.ShowGallery(ViewModel.Gallery, image);
+            //}
+        }
+
+        private async void Hyperlink_Click(RichTextAnchorLink anchorLinkText)
+        {
+            //if (string.IsNullOrEmpty(anchorLinkText.AnchorName))
+            //{
+            //    ScrollingHost.ScrollToTop();
+            //}
+            //else if (_anchors.TryGetValue(anchorLinkText.AnchorName, out Border anchor))
+            //{
+            //    await ScrollingHost.ScrollToItem2(anchor, VerticalAlignment.Top);
+            //}
+        }
+
+        private async void Hyperlink_Click(RichTextUrl urlText)
+        {
+            //ViewModel.IsLoading = true;
+
+            //var response = await ViewModel.ClientService.SendAsync(new GetWebPageInstantView(urlText.Url, false));
+            //if (response is WebPageInstantView instantView)
+            //{
+            //    ViewModel.IsLoading = false;
+            //    ViewModel.NavigationService.Navigate(typeof(InstantPage), new InstantPageArgs(instantView, urlText.Url));
+            //}
+            //else if (MessageHelper.TryCreateUri(urlText.Url, out Uri url))
+            //{
+            //    ViewModel.IsLoading = false;
+            //    OpenUrl(url);
+            //}
+        }
+
+        private async void OpenUrl(Uri url)
+        {
+            //if (MessageHelper.IsTelegramUrl(url))
+            //{
+            //    var clientService = ViewModel.ClientService;
+            //    ByNavigation(navigation => MessageHelper.OpenTelegramUrl(clientService, navigation, url));
+            //}
+            //else
+            //{
+            //    await Launcher.LaunchUriAsync(url);
+            //}
+        }
+
+        private async void ByNavigation(Action<INavigationService> action)
+        {
+            //WindowContext.Main.Dispatcher.Dispatch(() => action(WindowContext.Main.GetNavigationService()));
+            //await ApplicationViewSwitcher.SwitchAsync(WindowContext.Main.Id);
+        }
+
+        private void Hyperlink_Click(RichTextPhoneNumber phoneNumber)
+        {
+
+        }
+    }
+}

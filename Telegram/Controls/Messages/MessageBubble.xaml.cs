@@ -2033,7 +2033,7 @@ namespace Telegram.Controls.Messages
 
             Media.Child = content switch
             {
-                MessageText textMessage when textMessage.LinkPreview != null => new WebPageContent(message),
+                MessageText textMessage when textMessage.LinkPreview != null => /*textMessage.LinkPreview.InstantViewVersion != 0 ? new InstantContent(message) :*/ new WebPageContent(message),
                 MessageAlbum => new AlbumContent(message),
                 MessagePaidAlbum => new PaidMediaContent(message),
                 MessageAnimation => new AnimationContent(message),
