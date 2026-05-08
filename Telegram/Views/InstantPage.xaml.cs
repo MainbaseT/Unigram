@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using Telegram.Common;
 using Telegram.Controls;
@@ -207,74 +206,39 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessBlock(PageBlock block)
         {
-            switch (block)
+            return block switch
             {
-                case PageBlockCover cover:
-                    return ProcessCover(cover);
-                case PageBlockAuthorDate authorDate:
-                    return ProcessAuthorDate(authorDate);
-                case PageBlockHeader:
-                case PageBlockSubheader:
-                case PageBlockTitle:
-                case PageBlockSubtitle:
-                case PageBlockFooter:
-                case PageBlockParagraph:
-                case PageBlockKicker:
-                    return ProcessText(block, false);
-                case PageBlockBlockQuote blockquote:
-                    return ProcessBlockquote(blockquote);
-                case PageBlockDivider divider:
-                    return ProcessDivider(divider);
-                case PageBlockPhoto photo:
-                    return ProcessPhoto(photo);
-                case PageBlockList list:
-                    return ProcessList(list);
-                case PageBlockVideo video:
-                    return ProcessVideo(video);
-                case PageBlockAnimation animation:
-                    return ProcessAnimation(animation);
-                case PageBlockEmbeddedPost embedPost:
-                    return ProcessEmbedPost(embedPost);
-                case PageBlockSlideshow slideshow:
-                    return ProcessSlideshow(slideshow);
-                case PageBlockCollage collage:
-                    return ProcessCollage(collage);
-                case PageBlockEmbedded embed:
-                    return ProcessEmbed(embed);
-                case PageBlockPullQuote pullquote:
-                    return ProcessPullquote(pullquote);
-                case PageBlockAnchor anchor:
-                    return ProcessAnchor(anchor);
-                case PageBlockPreformatted preformatted:
-                    return ProcessPreformatted(preformatted);
-                case PageBlockChatLink channel:
-                    return ProcessChannel(channel);
-                case PageBlockDetails details:
-                    return ProcessDetails(details);
-                case PageBlockTable table:
-                    return ProcessTable(table);
-                case PageBlockRelatedArticles relatedArticles:
-                    return ProcessRelatedArticles(relatedArticles);
-                case PageBlockMap map:
-                    return ProcessMap(map);
-                case PageBlockAudio audio:
-                    return ProcessAudio(audio);
-                case PageBlockVoiceNote voiceNote:
-                    return ProcessVoiceNote(voiceNote);
-                default:
-                    return ProcessUnsupported(block);
-            }
-
-            return null;
+                PageBlockCover cover => ProcessCover(cover),
+                PageBlockAuthorDate authorDate => ProcessAuthorDate(authorDate),
+                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker => ProcessText(block, false),
+                PageBlockBlockQuote blockquote => ProcessBlockquote(blockquote),
+                PageBlockDivider divider => ProcessDivider(divider),
+                PageBlockPhoto photo => ProcessPhoto(photo),
+                PageBlockList list => ProcessList(list),
+                PageBlockVideo video => ProcessVideo(video),
+                PageBlockAnimation animation => ProcessAnimation(animation),
+                PageBlockEmbeddedPost embedPost => ProcessEmbedPost(embedPost),
+                PageBlockSlideshow slideshow => ProcessSlideshow(slideshow),
+                PageBlockCollage collage => ProcessCollage(collage),
+                PageBlockEmbedded embed => ProcessEmbed(embed),
+                PageBlockPullQuote pullquote => ProcessPullquote(pullquote),
+                PageBlockAnchor anchor => ProcessAnchor(anchor),
+                PageBlockPreformatted preformatted => ProcessPreformatted(preformatted),
+                PageBlockChatLink channel => ProcessChannel(channel),
+                PageBlockDetails details => ProcessDetails(details),
+                PageBlockTable table => ProcessTable(table),
+                PageBlockRelatedArticles relatedArticles => ProcessRelatedArticles(relatedArticles),
+                PageBlockMap map => ProcessMap(map),
+                PageBlockAudio audio => ProcessAudio(audio),
+                PageBlockVoiceNote voiceNote => ProcessVoiceNote(voiceNote),
+                _ => ProcessUnsupported(block),
+            };
         }
 
         #region 2.0
 
         private FrameworkElement ProcessMap(PageBlockMap map)
         {
-            var latitude = map.Location.Latitude.ToString(CultureInfo.InvariantCulture);
-            var longitude = map.Location.Longitude.ToString(CultureInfo.InvariantCulture);
-
             var image = new ImageView();
             image.Constraint = map;
             image.XamlRoot = ViewModel.XamlRoot;
