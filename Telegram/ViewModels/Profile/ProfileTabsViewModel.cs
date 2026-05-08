@@ -93,6 +93,14 @@ namespace Telegram.ViewModels.Profile
         }
     }
 
+    public class ProfileTabPolls : ProfileTab
+    {
+        public override string ToString()
+        {
+            return nameof(ProfileTabPolls);
+        }
+    }
+
     public partial class ProfileTabItem : BindableBase
     {
         private readonly ICollectionWithTotalCount _items;
@@ -150,6 +158,7 @@ namespace Telegram.ViewModels.Profile
                 ProfileTabFiles => (Strings.SharedFilesTab2, typeof(ProfileFilesTabPage)),
                 ProfileTabLinks => (Strings.SharedLinksTab2, typeof(ProfileLinksTabPage)),
                 ProfileTabMusic => (Strings.SharedMusicTab2, typeof(ProfileMusicTabPage)),
+                ProfileTabPolls => (Strings.SharedPollTab, typeof(ProfilePollsTabPage)),
                 ProfileTabVoice => (Strings.SharedVoiceTab2, typeof(ProfileVoiceTabPage)),
                 ProfileTabGifs => (Strings.SharedGIFsTab2, typeof(ProfileAnimationsTabPage)),
                 _ => (string.Empty, null)
@@ -299,6 +308,7 @@ namespace Telegram.ViewModels.Profile
                 new SearchMessagesFilterDocument(),
                 new SearchMessagesFilterUrl(),
                 new SearchMessagesFilterAudio(),
+                new SearchMessagesFilterPoll(),
                 new SearchMessagesFilterVoiceAndVideoNote(),
                 new SearchMessagesFilterAnimation(),
             };
@@ -329,7 +339,7 @@ namespace Telegram.ViewModels.Profile
                     return new Count(0);
                 }
 
-                if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterVoiceAndVideoNote or SearchMessagesFilterAnimation)
+                if (sparseMessagesAvailable && filter is SearchMessagesFilterPhotoAndVideo or SearchMessagesFilterDocument or SearchMessagesFilterAudio or SearchMessagesFilterPoll or SearchMessagesFilterVoiceAndVideoNote or SearchMessagesFilterAnimation)
                 {
                     var source = await ClientService.SendAsync(new GetChatMessageCount(chat.Id, Topic, filter, false)) as Count;
                     if (source?.CountValue > 50)
@@ -376,6 +386,7 @@ namespace Telegram.ViewModels.Profile
                             SearchMessagesFilterDocument => new ProfileTabItem(new ProfileTabFiles(), null, count.CountValue, Strings.R.Files),
                             SearchMessagesFilterUrl => new ProfileTabItem(new ProfileTabLinks(), null, count.CountValue, Strings.R.Links),
                             SearchMessagesFilterAudio => new ProfileTabItem(new ProfileTabMusic(), null, count.CountValue, Strings.R.MusicFiles),
+                            SearchMessagesFilterPoll => new ProfileTabItem(new ProfileTabPolls(), new ChatMessageTopic(chat.Id, Topic), count.CountValue, Strings.R.ProfilePollsCount),
                             SearchMessagesFilterVoiceAndVideoNote => new ProfileTabItem(new ProfileTabVoice(), null, count.CountValue, Strings.R.Voice),
                             SearchMessagesFilterAnimation => new ProfileTabItem(new ProfileTabGifs(), null, count.CountValue, Strings.R.GIFs),
                             _ => null

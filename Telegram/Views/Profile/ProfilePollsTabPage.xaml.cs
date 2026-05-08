@@ -14,11 +14,11 @@ using Windows.UI.Composition;
 
 namespace Telegram.Views.Profile
 {
-    public sealed partial class ProfileSavedMessagesTabPage : HostedPage, IProfileChatPage
+    public sealed partial class ProfilePollsTabPage : HostedPage, IProfileChatPage
     {
         public DialogViewModel ViewModel => DataContext as DialogViewModel;
 
-        public ProfileSavedMessagesTabPage()
+        public ProfilePollsTabPage()
         {
             InitializeComponent();
             NavigationCacheMode = ApiInfo.NavigationCacheMode;
@@ -61,6 +61,7 @@ namespace Telegram.Views.Profile
             var viewModel = navigationService.Session.Resolve<DialogViewModel, IDialogDelegate>(View);
             viewModel.NavigationService = navigationService;
             viewModel.IsSavedMessagesTab = true;
+            viewModel.IsSavedPollsTab = true;
             DataContext = viewModel;
             View.Activate(viewModel);
         }

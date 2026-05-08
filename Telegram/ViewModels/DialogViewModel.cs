@@ -185,6 +185,8 @@ namespace Telegram.ViewModels
 
         public bool IsSavedMessagesTab { get; set; }
 
+        public bool IsSavedPollsTab { get; set; }
+
         protected Chat _linkedChat;
         public Chat LinkedChat
         {
@@ -844,6 +846,10 @@ namespace Telegram.ViewModels
             {
                 func = new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, offset, Constants.HistoryLimit, new SearchMessagesFilterPinned());
             }
+            else if (IsSavedPollsTab)
+            {
+                func = new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, offset, Constants.HistoryLimit, new SearchMessagesFilterPoll());
+            }
             else if (Search?.SavedMessagesTag != null)
             {
                 func = new SearchSavedMessages(SavedMessagesTopicId, Search.SavedMessagesTag, string.Empty, fromMessageId, offset, Constants.HistoryLimit);
@@ -1320,7 +1326,12 @@ namespace Telegram.ViewModels
 
                 ProcessMessages(chat, messages);
 
-                if (endReached && messages.Count > 0)
+                if (IsSavedPollsTab && messages.Count > 0)
+                {
+                    var previous = messages[^1];
+                    messages.Add(CreateMessage(new Message(0, previous.SenderId, previous.ChatId, null, null, previous.IsOutgoing, false, false, false, false, previous.IsChannelPost, false, false, false, false, previous.Date, 0, null, null, null, null, null, null, null, previous.TopicId, null, 0, 0, 0, null, 0, 0, string.Empty, 0, string.Empty, 0, 0, null, string.Empty, new MessageHeaderDate(previous.Date), null)));
+                }
+                else if (endReached && messages.Count > 0)
                 {
                     var previous = messages[^1];
 
@@ -1464,6 +1475,10 @@ namespace Telegram.ViewModels
             if (Type == DialogType.Pinned)
             {
                 func = ClientService.SendAsync(new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit, new SearchMessagesFilterPinned()));
+            }
+            else if (IsSavedPollsTab)
+            {
+                func = ClientService.SendAsync(new SearchChatMessages(chat.Id, TopicId, string.Empty, null, fromMessageId, Constants.HistoryOffset, Constants.HistoryLimit, new SearchMessagesFilterPoll()));
             }
             else if (Search?.SavedMessagesTag != null && Search.FilterByTag)
             {

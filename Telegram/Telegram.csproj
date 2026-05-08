@@ -1467,6 +1467,9 @@
     <Compile Include="Views\Profile\Popups\ProfileRatingPopup.xaml.cs">
       <DependentUpon>ProfileRatingPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Profile\ProfilePollsTabPage.xaml.cs">
+      <DependentUpon>ProfilePollsTabPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Profile\ProfileTopicsTabPage.xaml.cs">
       <DependentUpon>ProfileTopicsTabPage.xaml</DependentUpon>
     </Compile>
@@ -3688,6 +3691,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Profile\Popups\ProfileRatingPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Profile\ProfilePollsTabPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -203,7 +203,7 @@ namespace Telegram.Views
                 _notifyCollectionChanged = null;
             }
 
-            if (MediaFrame.Content is ProfileSavedMessagesTabPage savedMessagesPage)
+            if (MediaFrame.Content is IProfileChatPage savedMessagesPage)
             {
                 var args = new NavigatingEventArgs
                 {
@@ -447,7 +447,7 @@ namespace Telegram.Views
                 _notifyCollectionChanged = null;
             }
 
-            if (MediaFrame.Content is ProfileSavedMessagesTabPage savedMessagesPage)
+            if (MediaFrame.Content is IProfileChatPage savedMessagesPage)
             {
                 var args = new NavigatingEventArgs
                 {
@@ -472,7 +472,7 @@ namespace Telegram.Views
 
         private void OnNavigated(object sender, NavigationEventArgs e)
         {
-            if (e.Content is ProfileSavedMessagesTabPage savedMessagesPage)
+            if (e.Content is IProfileChatPage savedMessagesPage)
             {
                 if (!_backgroundUpdated)
                 {

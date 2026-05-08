@@ -13564,5 +13564,8 @@
 
     <string name="UserRestrictionsSendReactions">Send Reactions</string>
     <string name="EventLogRestrictedSendReactions">Send Reactions</string>
+    <string name="SharedPollTab">Polls</string>
+    <string name="ProfilePollsCount_one">{0} poll</string>
+    <string name="ProfilePollsCount_other">{0} polls</string>
 
 </resources>

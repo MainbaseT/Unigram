@@ -72,6 +72,11 @@ namespace Telegram.Views
         void CompleteBannerAnimation();
     }
 
+    public interface IProfileChatPage : IChatPage
+    {
+        double HeaderHeight { get; set; }
+    }
+
     public sealed partial class ChatView : UserControlEx, INavigablePage, ISearchablePage, IDialogDelegate, IAutomationNameProvider
     {
         private DialogViewModel _viewModel;
