@@ -601,6 +601,7 @@ namespace Telegram.Controls.Messages
             };
 
             var root = new Grid();
+            root.Name = "ReactionAnimation";
             root.Width = 32 * 3;
             root.Height = 32 * 3;
             root.Children.Add(aroundView);
