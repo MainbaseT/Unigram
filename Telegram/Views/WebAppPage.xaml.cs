@@ -1467,9 +1467,17 @@ namespace Telegram.Views
             var text = eventData.GetNamedString("text", string.Empty); // text on the button(trim(text) should be non-empty, if empty, the button can be hidden);
             var color = eventData.GetNamedString("color", string.Empty); // background color of the button(by default button_colorfrom the theme);
             var text_color = eventData.GetNamedString("text_color", string.Empty); // text color on the button(by default button_text_colorfrom the theme).
-            var icon_custom_emoji_id = eventData.GetNamedString("icon_custom_emoji_id", string.Empty);
 
-            var hasIcon = long.TryParse(icon_custom_emoji_id, out long customEmojiId);
+            bool hasIcon = false;
+            long customEmojiId = 0;
+            if (eventData.TryGetValue("icon_custom_emoji_id", out IJsonValue icon_custom_emoji_id))
+            {
+                if (icon_custom_emoji_id.ValueType == JsonValueType.String)
+                {
+                    hasIcon = long.TryParse(icon_custom_emoji_id.GetString(), out customEmojiId);
+                }
+            }
+
             var hasText = !string.IsNullOrEmpty(text.Trim());
 
             if (is_visible && (hasIcon || hasText))
