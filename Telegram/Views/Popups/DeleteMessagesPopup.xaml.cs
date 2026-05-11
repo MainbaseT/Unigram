@@ -291,7 +291,7 @@ namespace Telegram.Views.Popups
 
         private string ConvertCanSendCount(int count)
         {
-            return $"{count}/9";
+            return $"{count}/10";
         }
 
         #endregion

@@ -292,7 +292,7 @@ namespace Telegram.Views.Supergroups
 
         private string ConvertCanSendCount(int count)
         {
-            return $"{count}/9";
+            return $"{count}/10";
         }
 
         #endregion
