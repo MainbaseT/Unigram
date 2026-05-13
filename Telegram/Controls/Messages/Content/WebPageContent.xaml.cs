@@ -470,6 +470,7 @@ namespace Telegram.Controls.Messages.Content
 
         public void Recycle()
         {
+            _instantViewToken.Cancel();
             _message = null;
 
             if (_templateApplied && Media.Child is IContent content)

@@ -89,6 +89,7 @@ namespace Telegram.Controls.Messages.Content
 
         public void Recycle()
         {
+            _instantViewToken.Cancel();
             _message = null;
 
             //if (_templateApplied && Media.Child is IContent content)
@@ -116,7 +117,7 @@ namespace Telegram.Controls.Messages.Content
 
         private async void UpdateInstantView(LinkPreview linkPreview, CancellationToken token)
         {
-            var response = await _message.ClientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, true));
+            var response = await _message.ClientService.SendAsync(new GetWebPageInstantView(linkPreview.Url, false));
             if (response is WebPageInstantView instantView && /*instantView.IsFull &&*/ !token.IsCancellationRequested)
             {
                 UpdateView(instantView);
@@ -376,7 +377,7 @@ namespace Telegram.Controls.Messages.Content
                     ProcessRichText(cell.Text, span, textBlock);
 
                     var border = new Border();
-                    border.Style = Resources[cell.IsHeader || (table.IsStriped && row % 2 == 0) ? "BlockTableHeaderStyle" : "BlockTableCellStyle"] as Style;
+                    border.Style = LayoutRoot.Resources[cell.IsHeader || (table.IsStriped && row % 2 == 0) ? "BlockTableHeaderStyle" : "BlockTableCellStyle"] as Style;
                     border.BorderThickness = new Thickness(column == 0 ? thickness : 0, row == 0 ? thickness : 0, thickness, thickness);
                     border.Padding = new Thickness(8, 4, 8, 4);
                     border.Child = textBlock;
