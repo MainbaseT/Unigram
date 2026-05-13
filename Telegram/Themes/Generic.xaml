@@ -97,6 +97,10 @@
     <Style TargetType="local:PrefixTextBox2">
         <Setter Property="Foreground"
                 Value="{ThemeResource TextControlForeground}" />
+        <Setter Property="PrefixForeground"
+                Value="{ThemeResource TextControlForeground}" />
+        <Setter Property="SuffixForeground"
+                Value="{ThemeResource TextControlForeground}" />
         <Setter Property="Background"
                 Value="{ThemeResource TextControlBackground}" />
         <Setter Property="BorderBrush"
@@ -385,8 +389,10 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{TemplateBinding Prefix}"
+                                       Foreground="{TemplateBinding PrefixForeground}"
                                        Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource LeftTopBottomConverter}}" />
                             <TextBlock Text="{TemplateBinding Suffix}"
+                                       Foreground="{TemplateBinding SuffixForeground}"
                                        Padding="{Binding Padding, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource TopRightBottomConverter}}"
                                        Grid.Column="2" />
                             <ScrollViewer x:Name="ContentElement"

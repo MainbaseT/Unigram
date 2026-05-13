@@ -7,6 +7,7 @@
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace Telegram.Controls
 {
@@ -127,6 +128,19 @@ namespace Telegram.Controls
 
         #endregion
 
+        #region PrefixForeground
+
+        public Brush PrefixForeground
+        {
+            get { return (Brush)GetValue(PrefixForegroundProperty); }
+            set { SetValue(PrefixForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty PrefixForegroundProperty =
+            DependencyProperty.Register(nameof(PrefixForeground), typeof(Brush), typeof(PrefixTextBox2), new PropertyMetadata(null));
+
+        #endregion
+
         #region Suffix
 
         public string Suffix
@@ -137,6 +151,19 @@ namespace Telegram.Controls
 
         public static readonly DependencyProperty SuffixProperty =
             DependencyProperty.Register(nameof(Suffix), typeof(string), typeof(PrefixTextBox2), new PropertyMetadata(string.Empty));
+
+        #endregion
+
+        #region SuffixForeground
+
+        public Brush SuffixForeground
+        {
+            get { return (Brush)GetValue(SuffixForegroundProperty); }
+            set { SetValue(SuffixForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty SuffixForegroundProperty =
+            DependencyProperty.Register(nameof(SuffixForeground), typeof(Brush), typeof(PrefixTextBox2), new PropertyMetadata(null));
 
         #endregion
     }

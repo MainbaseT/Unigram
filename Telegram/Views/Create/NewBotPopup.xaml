@@ -43,7 +43,8 @@
                                  Text="{x:Bind ViewModel.Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Header="{CustomResource CreateManagedBotUsername}"
                                  Prefix="@"
-                                 Suffix="{x:Bind ViewModel.Suffix, Mode=OneWay}" />
+                                 Suffix="{x:Bind ViewModel.Suffix, Mode=OneWay}"
+                                 SuffixForeground="{ThemeResource TextControlPlaceholderForeground}"/>
 
         <Grid Margin="0,8,0,0">
             <Grid.RowDefinitions>
