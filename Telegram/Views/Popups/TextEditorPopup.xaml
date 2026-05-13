@@ -102,46 +102,50 @@
               Margin="12"
               Visibility="Collapsed"
               Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock x:Name="TabTranslateFrom"
-                       Text="{CustomResource AIEditorOriginalText}"
-                       Style="{StaticResource BaseTextBlockStyle}"
-                       Margin="12,8,0,4" />
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          VerticalScrollMode="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="TabTranslateFrom"
+                               Text="{CustomResource AIEditorOriginalText}"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               Margin="12,8,0,4" />
 
-            <controls:FormattedTextBlock x:Name="TabTranslateOriginal"
-                                         Margin="12,0,12,12"
-                                         Grid.Row="1" />
+                    <controls:FormattedTextBlock x:Name="TabTranslateOriginal"
+                                                 Margin="12,0,12,12"
+                                                 Grid.Row="1" />
 
-            <Border BorderBrush="{ThemeResource SettingsItemBorderBrush}"
-                    BorderThickness="0,1,0,0"
-                    Grid.Row="2" />
+                    <Border BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                            BorderThickness="0,1,0,0"
+                            Grid.Row="2" />
 
-            <TextBlock x:Name="TabTranslateTo"
-                       Text="{CustomResource AIEditorTo}"
-                       Style="{StaticResource BaseTextBlockStyle}"
-                       VerticalAlignment="Top"
-                       Margin="12,12,0,4"
-                       Grid.Row="3" />
-            <CheckBox x:Name="TabTranslateEmoji"
-                      Checked="TabTranslateEmoji_Checked"
-                      Unchecked="TabTranslateEmoji_Checked"
-                      Content="{CustomResource AIEditorEmojify}"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Bottom"
-                      Margin="0,0,12,-4"
-                      MinWidth="0"
-                      Grid.Row="3" />
+                    <TextBlock x:Name="TabTranslateTo"
+                               Text="{CustomResource AIEditorTo}"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               VerticalAlignment="Top"
+                               Margin="12,12,0,4"
+                               Grid.Row="3" />
+                    <CheckBox x:Name="TabTranslateEmoji"
+                              Checked="TabTranslateEmoji_Checked"
+                              Unchecked="TabTranslateEmoji_Checked"
+                              Content="{CustomResource AIEditorEmojify}"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Bottom"
+                              Margin="0,0,12,-4"
+                              MinWidth="0"
+                              Grid.Row="3" />
 
-            <controls:FormattedTextBlock x:Name="TabTranslateOutput"
-                                         Margin="12,0,12,12"
-                                         Grid.Row="4" />
-
+                    <controls:FormattedTextBlock x:Name="TabTranslateOutput"
+                                                 Margin="12,0,12,12"
+                                                 Grid.Row="4" />
+                </Grid>
+            </ScrollViewer>
         </Grid>
 
         <Grid x:Name="TabStyle"
@@ -375,7 +379,7 @@
                                        FontFamily="{StaticResource SymbolThemeFontFamily}"
                                        FontSize="24"
                                        VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
+                                       HorizontalAlignment="Center" />
                             <TextBlock Text="{CustomResource AIEditorStyleCreate}"
                                        Style="{StaticResource CaptionTextBlockStyle}"
                                        Margin="8,0"
@@ -425,53 +429,62 @@
               CornerRadius="16"
               Margin="12"
               Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <TextBlock Text="{CustomResource AIEditorOriginal}"
-                       Style="{StaticResource BaseTextBlockStyle}"
-                       Margin="12,8,0,4" />
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          VerticalScrollMode="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{CustomResource AIEditorOriginal}"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               Margin="12,8,0,4" />
 
-            <controls:FormattedTextBlock x:Name="TabFixOriginal"
-                                         Margin="12,0,12,12"
-                                         Grid.Row="1" />
+                    <controls:FormattedTextBlock x:Name="TabFixOriginal"
+                                                 Margin="12,0,12,12"
+                                                 Grid.Row="1" />
 
-            <Border BorderBrush="{ThemeResource SettingsItemBorderBrush}"
-                    BorderThickness="0,1,0,0"
-                    Grid.Row="2" />
+                    <Border BorderBrush="{ThemeResource SettingsItemBorderBrush}"
+                            BorderThickness="0,1,0,0"
+                            Grid.Row="2" />
 
-            <TextBlock Text="{CustomResource AIEditorResult}"
-                       Style="{StaticResource BaseTextBlockStyle}"
-                       Margin="12,8,0,4"
-                       Grid.Row="3" />
+                    <TextBlock Text="{CustomResource AIEditorResult}"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               Margin="12,8,0,4"
+                               Grid.Row="3" />
 
-            <RichEditBox x:Name="TabFixResult"
-                         Padding="12,0,12,12"
-                         Grid.Row="4">
-                <RichEditBox.Template>
-                    <ControlTemplate TargetType="RichEditBox">
-                        <Grid>
-                            <ScrollViewer x:Name="ContentElement"
-                                          HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                          HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                                          VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                          IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
-                                          IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
-                                          IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-                                          Padding="{TemplateBinding Padding}"
-                                          Foreground="{TemplateBinding Foreground}"
-                                          IsTabStop="False"
-                                          AutomationProperties.AccessibilityView="Raw"
-                                          ZoomMode="Disabled" />
-                        </Grid>
-                    </ControlTemplate>
-                </RichEditBox.Template>
-            </RichEditBox>
+                    <controls:FormattedTextBlock x:Name="TabFixLoading"
+                                                 Padding="12,0,12,12"
+                                                 Grid.Row="4" />
+
+                    <RichEditBox x:Name="TabFixResult"
+                                 Padding="12,0,12,12"
+                                 Grid.Row="4">
+                        <RichEditBox.Template>
+                            <ControlTemplate TargetType="RichEditBox">
+                                <Grid>
+                                    <ScrollViewer x:Name="ContentElement"
+                                                  HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
+                                                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                                  VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
+                                                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                                  IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
+                                                  IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}"
+                                                  IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+                                                  Padding="{TemplateBinding Padding}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  IsTabStop="False"
+                                                  AutomationProperties.AccessibilityView="Raw"
+                                                  ZoomMode="Disabled" />
+                                </Grid>
+                            </ControlTemplate>
+                        </RichEditBox.Template>
+                    </RichEditBox>
+                </Grid>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </controls:ContentPopup>

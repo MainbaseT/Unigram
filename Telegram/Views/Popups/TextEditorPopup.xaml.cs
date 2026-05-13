@@ -137,6 +137,9 @@ namespace Telegram.Views.Popups
             TabTranslateTo.Inlines.Add(hyperlink);
             TabTranslateTo.Inlines.Add(suffix);
 
+            TabTranslateOutput.ShowHideSkeleton(true);
+            TabTranslateOutput.SetText(_clientService, _text);
+
             UpdateTranslate();
         }
 
@@ -204,11 +207,15 @@ namespace Telegram.Views.Popups
 
             TabFixOriginal.SetText(_clientService, _text);
 
+            TabFixLoading.ShowHideSkeleton(true);
+            TabFixLoading.SetText(_clientService, _text);
+
             var response = await _clientService.SendAsync(new FixTextWithAi(_text));
             if (response is FixedText text)
             {
                 _fix = text;
 
+                TabFixLoading.Visibility = Visibility.Collapsed;
                 TabFixResult.Document.SetText(Windows.UI.Text.TextSetOptions.None, text.DiffText.Text);
 
                 foreach (var diff in text.DiffText.Entities)
