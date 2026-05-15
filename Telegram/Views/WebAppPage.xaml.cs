@@ -2036,9 +2036,16 @@ namespace Telegram.Views
 
                         static Windows.Data.Json.JsonValue CreateStringValue(string stringValue)
                         {
-                            if (Windows.Data.Json.JsonValue.TryParse(stringValue, out Windows.Data.Json.JsonValue obj))
+                            try
                             {
-                                return obj;
+                                if (Windows.Data.Json.JsonValue.TryParse(stringValue, out Windows.Data.Json.JsonValue obj))
+                                {
+                                    return obj;
+                                }
+                            }
+                            catch
+                            {
+                                Logger.Debug("Unable to parse JSON string: " + stringValue);
                             }
 
                             return Windows.Data.Json.JsonValue.CreateStringValue(stringValue);
