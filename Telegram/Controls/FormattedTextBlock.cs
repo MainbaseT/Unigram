@@ -195,7 +195,7 @@ namespace Telegram.Controls
 
             _templateApplied = true;
 
-            if (_clientService != null && _text != null)
+            if (/*_clientService != null &&*/ _text != null)
             {
                 SetText(_clientService, _text, _fontSize);
 
