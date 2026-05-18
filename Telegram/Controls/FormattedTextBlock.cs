@@ -1689,7 +1689,7 @@ namespace Telegram.Controls
                 if (_templateExecuted == execution)
                 {
                     // We need to manually recycle the Run or we'll lose track of it
-                    if (_pools != null && !_activeRuns.Contains(placeholder))
+                    if (_pools != null && _activeRuns.Contains(placeholder))
                     {
                         _pools.Runs.Enqueue(placeholder);
                         _activeRuns.Remove(placeholder);
