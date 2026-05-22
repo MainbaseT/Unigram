@@ -22,3 +22,6 @@
 [submodule "Libraries/tdlib"]
 	path = Libraries/tdlib
 	url = https://github.com/tdlib/td.git
+[submodule "Libraries/MicroTeX"]
+	path = Libraries/MicroTeX
+	url = https://github.com/desktop-app/MicroTeX.git

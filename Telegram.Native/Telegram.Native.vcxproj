@@ -140,9 +140,10 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\MicroTeX\src;..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,9 +161,10 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\MicroTeX\src;..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -180,9 +182,10 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\MicroTeX\src;..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -200,9 +203,10 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\MicroTeX\src;..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -220,9 +224,10 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\MicroTeX\src;..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -240,9 +245,10 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\MicroTeX\src;..\Libraries\libutf;..\Libraries\flatbuffers\include;..\Libraries\libtextclassifier;..\Libraries\libwebp;..\Libraries\libprisma\libprisma;..\Libraries\libprisma;..\Libraries\CoreWindowCustomDPI\InternalsRT.Detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ObjectFileName>$(IntDir)%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -304,6 +310,49 @@
     <ClInclude Include="..\Libraries\libwebp\src\webp\mux.h" />
     <ClInclude Include="..\Libraries\libwebp\src\webp\mux_types.h" />
     <ClInclude Include="..\Libraries\libwebp\src\webp\types.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom_basic.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom_char.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom_impl.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom_matrix.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom_row.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\atom\atom_space.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\box\box.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\box\box_factory.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\box\box_group.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\box\box_single.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\common.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\config.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\core\core.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\core\formula.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\core\glue.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\core\macro.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\core\macro_impl.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\core\parser.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\alphabet.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\fonts.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\font_basic.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\font_info.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\font_reg.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\symbol_reg.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\fonts\tex_font.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\graphic\graphic.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\graphic\graphic_basic.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\latex.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\render.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\res\font_def.res.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\res\reg\builtin_font_reg.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\res\reg\builtin_syms_reg.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\res\symbol_def.res.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\dict_tree.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\enums.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\exceptions.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\indexed_arr.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\log.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\nums.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\string_utils.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\utf.h" />
+    <ClInclude Include="..\Libraries\MicroTeX\src\utils\utils.h" />
     <ClInclude Include="Controls\AnimatedImageBase.h">
       <DependentUpon>Controls\AnimatedImageBase.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -359,6 +408,7 @@
       <DependentUpon>GarbageCollectionMonitor.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="graphic_dwrite.h" />
     <ClInclude Include="Helpers\BlurHelper.h" />
     <ClInclude Include="Helpers\COMHelper.h" />
     <ClInclude Include="Helpers\DebugHelper.h" />
@@ -434,6 +484,10 @@
     <ClInclude Include="QR\BitBuffer.hpp" />
     <ClInclude Include="QR\QrCode.hpp" />
     <ClInclude Include="QR\QrSegment.hpp" />
+    <ClInclude Include="RichMathSurface.h">
+      <DependentUpon>RichMathSurface.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="ScreenshotManager.h">
       <DependentUpon>ScreenshotManager.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1003,6 +1057,234 @@
     <ClCompile Include="..\Libraries\libwebp\src\utils\utils.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\atom_basic.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\atom_char.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\atom_impl.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\atom_matrix.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\atom_row.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\atom_space.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\colors_def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\atom\unit_conversion.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\box\box.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\box\box_factory.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\box\box_group.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\box\box_single.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\core.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\formula.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\formula_def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\glue.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\localized_num.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\macro.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\macro_def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\macro_impl.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\core\parser.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\fonts\alphabet.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\fonts\fonts.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\fonts\font_basic.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\fonts\font_info.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\latex.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\render.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\builtin\formula_mappings.res.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\builtin\symbol_mapping.res.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\builtin\tex_param.res.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\builtin\tex_symbols.res.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\bi10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\bx10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmbsy10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmbx10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmbxti10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmex10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmmi10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmmi10_unchanged.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmmib10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmmib10_unchanged.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmr10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmss10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmssbx10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmssi10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmsy10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmti10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmti10_unchanged.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\cmtt10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\dsrom10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\eufb10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\eufm10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\i10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\moustache.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\msam10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\msbm10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\r10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\r10_unchanged.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\rsfs10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\sb10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\sbi10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\si10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\special.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\ss10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\stmary10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\font\tt10.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\reg\builtin_font_reg.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\reg\builtin_syms_reg.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\sym\amsfonts.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\sym\amssymb.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\sym\base.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\sym\stmaryrd.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\res\sym\symspecial.def.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\utils\string_utils.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\utils\utf.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\MicroTeX\src\utils\utils.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Controls\AnimatedImageBase.cpp">
       <DependentUpon>Controls\AnimatedImageBase.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -1041,6 +1323,7 @@
       <DependentUpon>GarbageCollectionMonitor.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="graphic_dwrite.cpp" />
     <ClCompile Include="Highlight\SyntaxToken.cpp" />
     <ClCompile Include="Highlight\TextToken.cpp" />
     <ClCompile Include="InternalsRT\CoreWindowHelpers.cpp" />
@@ -1080,6 +1363,10 @@
     </ClCompile>
     <ClCompile Include="ParticlesAnimation.cpp">
       <DependentUpon>ParticlesAnimation.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="RichMathSurface.cpp">
+      <DependentUpon>RichMathSurface.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="SurfaceImage.cpp">
@@ -1240,6 +1527,9 @@
     <Midl Include="PixelBuffer.idl" />
     <Midl Include="PlaceholderImageHelper.idl" />
     <Midl Include="QrBuffer.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="RichMathSurface.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="ScreenshotManager.idl">
