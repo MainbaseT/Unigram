@@ -554,6 +554,17 @@
         </Setter>
     </Style>
 
+    <Style TargetType="local:RichMathImage">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="local:RichMathImage">
+                    <Image x:Name="LayoutRoot"
+                           Stretch="Uniform" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="local:TableView">
         <Setter Property="CornerRadius"
                 Value="4" />

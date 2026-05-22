@@ -107,42 +107,7 @@ namespace Telegram.Common
             var response = await ClientService.SendAsync(new GetWebPageInstantView(url, false));
             if (response is WebPageInstantView instantView)
             {
-                TabViewItem CreateTabViewItem(WindowContext window)
-                {
-                    var frame = new Frame();
-                    var service = new TLNavigationService(Session, window, frame, "InstantView"); // BootStrapper.Current.NavigationServiceFactory(BootStrapper.BackButton.Ignore, frame, _clientService.SessionId, "ciccio", false);
-
-                    service.Navigate(typeof(InstantPage), new InstantPageArgs(instantView, url));
-
-                    var tabViewItem = new TabViewItem
-                    {
-                        Header = "Test",
-                        Content = frame,
-                        IconSource = new Microsoft.UI.Xaml.Controls.FontIconSource
-                        {
-                            Glyph = "\uE60E",
-                            FontFamily = BootStrapper.Current.Resources["SymbolThemeFontFamily"] as FontFamily
-                        }
-                    };
-
-                    if (service.Content is Page page)
-                    {
-                        tabViewItem.SetBinding(TabViewItem.HeaderProperty, new Binding
-                        {
-                            Path = new PropertyPath("Title"),
-                            Source = page.DataContext
-                        });
-                    }
-
-                    return tabViewItem;
-                }
-
-                NavigateToTab(CreateTabViewItem, new ViewServiceOptions
-                {
-                    Width = 820,
-                    Height = 640,
-                    PersistedId = "WebBrowser"
-                });
+                NavigateToInstant(instantView, url);
             }
             else
             {
@@ -151,6 +116,46 @@ namespace Telegram.Common
                     await Windows.System.Launcher.LaunchUriAsync(uri);
                 }
             }
+        }
+
+        public void NavigateToInstant(WebPageInstantView instantView, string url)
+        {
+            TabViewItem CreateTabViewItem(WindowContext window)
+            {
+                var frame = new Frame();
+                var service = new TLNavigationService(Session, window, frame, "InstantView"); // BootStrapper.Current.NavigationServiceFactory(BootStrapper.BackButton.Ignore, frame, _clientService.SessionId, "ciccio", false);
+
+                service.Navigate(typeof(InstantPage), new InstantPageArgs(instantView, url));
+
+                var tabViewItem = new TabViewItem
+                {
+                    Header = "Test",
+                    Content = frame,
+                    IconSource = new Microsoft.UI.Xaml.Controls.FontIconSource
+                    {
+                        Glyph = "\uE60E",
+                        FontFamily = BootStrapper.Current.Resources["SymbolThemeFontFamily"] as FontFamily
+                    }
+                };
+
+                if (service.Content is Page page)
+                {
+                    tabViewItem.SetBinding(TabViewItem.HeaderProperty, new Binding
+                    {
+                        Path = new PropertyPath("Title"),
+                        Source = page.DataContext
+                    });
+                }
+
+                return tabViewItem;
+            }
+
+            NavigateToTab(CreateTabViewItem, new ViewServiceOptions
+            {
+                Width = 820,
+                Height = 640,
+                PersistedId = "WebBrowser"
+            });
         }
 
         public void NavigateToWeb3(string url)

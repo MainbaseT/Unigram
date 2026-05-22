@@ -14,6 +14,7 @@ using Telegram.Controls;
 using Telegram.Controls.Media;
 using Telegram.Controls.Messages.Content;
 using Telegram.Converters;
+using Telegram.Native.Highlight;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
@@ -210,7 +211,7 @@ namespace Telegram.Views
             {
                 PageBlockCover cover => ProcessCover(cover),
                 PageBlockAuthorDate authorDate => ProcessAuthorDate(authorDate),
-                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker => ProcessText(block, false),
+                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker or PageBlockHeading => ProcessText(block, false),
                 PageBlockBlockQuote blockquote => ProcessBlockquote(blockquote),
                 PageBlockDivider divider => ProcessDivider(divider),
                 PageBlockPhoto photo => ProcessPhoto(photo),
@@ -231,9 +232,30 @@ namespace Telegram.Views
                 PageBlockMap map => ProcessMap(map),
                 PageBlockAudio audio => ProcessAudio(audio),
                 PageBlockVoiceNote voiceNote => ProcessVoiceNote(voiceNote),
+                PageBlockMath math => ProcessMath(math),
+                PageBlockQuoteBlock quote => ProcessBlockquote(quote),
                 _ => ProcessUnsupported(block),
             };
         }
+
+        #region 3.0
+
+        private FrameworkElement ProcessMath(PageBlockMath math)
+        {
+            var tex = new RichMathImage
+            {
+                Source = math.Source
+            };
+
+            if (tex.IsValid)
+            {
+                return tex;
+            }
+
+            return ProcessText(new PageBlockParagraph(new RichTextPlain(math.Source)), false);
+        }
+
+        #endregion
 
         #region 2.0
 
@@ -595,6 +617,9 @@ namespace Telegram.Views
                 case PageBlockKicker kicker:
                     text = kicker.Kicker;
                     break;
+                case PageBlockHeading heading:
+                    text = heading.Text;
+                    break;
             }
 
             if (text == null || text is RichTextPlain plain && string.IsNullOrEmpty(plain.Text))
@@ -683,6 +708,10 @@ namespace Telegram.Views
                     break;
                 case PageBlockRelatedArticles relatedArticles:
                     textBlock.Style = Resources["BlockRelatedArticlesHeaderStyle"] as Style;
+                    break;
+                case PageBlockHeading heading:
+                    textBlock.Style = Resources["BlockHeaderTextBlockStyle"] as Style;
+                    textBlock.FontSize = 28 - ((heading.Level - 1) * 2);
                     break;
             }
 
@@ -976,17 +1005,187 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessPreformatted(PageBlockPreformatted block)
         {
-            var element = new StackPanel { Style = Resources["BlockPreformattedStyle"] as Style };
+            var element = new StackPanel(); // { Style = Resources["BlockPreformattedStyle"] as Style };
 
-
-            var text = ProcessText(block, false);
-            if (text != null)
+            if (block.Text is not RichTextPlain plain || string.IsNullOrEmpty(block.Language))
             {
+                var text = ProcessText(block, false);
+                if (text != null)
+                {
+                    element.Children.Add(text);
+                }
+
+                var test = new Grid();
+                test.Children.Add(new BlockQuote
+                {
+                    Glyph = Icons.CodeFilled16
+                });
+                test.Children.Add(element);
+
+                element.Padding = new Thickness(12, 2, 0, 4);
+                return test;
+            }
+            else
+            {
+                var text = new TextBlock();
+                text.Inlines.Add(plain.Text);
+
+                ProcessCodeBlock(text.Inlines, plain.Text, block.Language, 0);
+
                 element.Children.Add(text);
+
+                var test = new Grid();
+                test.Children.Add(new BlockCode
+                {
+                    //Glyph = Icons.QuoteBlockFilled16
+                    LanguageName = block.Language
+                });
+                test.Children.Add(element);
+
+                element.Padding = new Thickness(12, 22, 0, 4);
+                return test;
+            }
+        }
+
+        private async void ProcessCodeBlock(InlineCollection inlines, string text, string language, int execution)
+        {
+            try
+            {
+                var tokens = await SyntaxToken.TokenizeAsync(language.ToLowerInvariant(), text);
+
+                inlines.Clear();
+                ProcessCodeBlock(inlines, tokens.Children);
+            }
+            catch
+            {
+                // Tokenization may fail
+            }
+        }
+
+        private void ProcessCodeBlock(InlineCollection inlines, IList<Token> tokens)
+        {
+            var fontFamily = new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
+
+            foreach (var token in tokens)
+            {
+                if (token is SyntaxToken syntax)
+                {
+                    var color = GetColor(syntax.Type);
+                    if (color == null && syntax.Alias.Length > 0)
+                    {
+                        color = GetColor(syntax.Alias);
+                    }
+
+                    var span = new Span();
+
+                    span.FontFamily = fontFamily;
+
+                    if (color != null)
+                    {
+                        span.Foreground = color;
+                    }
+
+                    if (syntax.Type == "bold")
+                    {
+                        span.FontWeight = FontWeights.SemiBold;
+                    }
+                    else if (syntax.Type == "italic")
+                    {
+                        span.FontStyle = FontStyle.Italic;
+                    }
+
+                    ProcessCodeBlock(span.Inlines, syntax.Children);
+                    inlines.Add(span);
+                }
+                else if (token is TextToken text)
+                {
+                    inlines.Add(text.Value/*, fontFamily*/);
+                }
+            }
+        }
+
+        SolidColorBrush GetColor(string type)
+        {
+            if (_brushes.TryGetValue(type, out var brush))
+            {
+                return brush;
             }
 
-            return element;
+            var target = ActualTheme == ElementTheme.Light ? _light : _dark;
+            if (target.TryGetValue(type, out var color))
+            {
+                _brushes[type] = new SolidColorBrush(color);
+                return _brushes[type];
+            }
+
+            return null;
         }
+
+        private readonly Dictionary<string, Color> _light = new()
+        {
+            { "comment", Colors.SlateGray },
+            { "block-comment", Colors.SlateGray },
+            { "prolog", Colors.SlateGray },
+            { "doctype", Colors.SlateGray },
+            { "cdata", Colors.SlateGray },
+            { "punctuation", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
+            { "property", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "tag", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "boolean", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "number", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "constant", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "symbol", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "deleted", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
+            { "selector", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "attr-name", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "string", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "char", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "builtin", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "inserted", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "operator", Color.FromArgb(0xFF, 0x9a, 0x6e, 0x3a) },
+            { "entity", Color.FromArgb(0xFF, 0x9a, 0x6e, 0x3a) },
+            { "url", Color.FromArgb(0xFF, 0x9a, 0x6e, 0x3a) },
+            { "atrule", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
+            { "attr-value", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
+            { "keyword", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
+            { "function", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
+            { "class-name", Color.FromArgb(0xFF, 0xDD, 0x4A, 0x68) },
+        };
+
+        private readonly Dictionary<string, Color> _dark = new()
+        {
+            { "comment", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
+            { "block-comment", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
+            { "prolog", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
+            { "doctype", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
+            { "cdata", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
+            { "punctuation", Color.FromArgb(0xFF, 0xCC, 0xCC, 0xCC) },
+            { "property", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
+            { "tag", Color.FromArgb(0xFF, 0xe2, 0x77, 0x7a) },
+            { "boolean", Color.FromArgb(0xFF, 0xf0, 0x8d, 0x49) },
+            { "number", Color.FromArgb(0xFF, 0xf0, 0x8d, 0x49) },
+            { "constant", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
+            { "symbol", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
+            { "deleted", Color.FromArgb(0xFF, 0xe2, 0x77, 0x7a) },
+            { "selector", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
+            { "attr-name", Color.FromArgb(0xFF, 0xe2, 0x77, 0x7a) },
+            { "string", Color.FromArgb(0xFF, 0x7e, 0xc6, 0x99) },
+            { "char", Color.FromArgb(0xFF, 0x7e, 0xc6, 0x99) },
+            { "builtin", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
+            { "inserted", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
+            { "operator", Color.FromArgb(0xFF, 0x67, 0xcd, 0xcc) },
+            { "entity", Color.FromArgb(0xFF, 0x67, 0xcd, 0xcc) },
+            { "url", Color.FromArgb(0xFF, 0x67, 0xcd, 0xcc) },
+            { "atrule", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
+            { "attr-value", Color.FromArgb(0xFF, 0x7e, 0xc6, 0x99) },
+            { "keyword", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
+            { "function", Color.FromArgb(0xFF, 0xf0, 0x8d, 0x49) },
+            { "class-name", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
+            // namespace 0xe2, 0x77, 0x7a
+            // function-name 6196cc
+        };
+
+        private readonly Dictionary<string, SolidColorBrush> _brushes = new();
 
         private FrameworkElement ProcessDivider(PageBlockDivider block)
         {
@@ -1004,7 +1203,25 @@ namespace Telegram.Views
 
             foreach (var item in block.Items)
             {
-                var label = new TextBlock { Text = item.Label, TextAlignment = TextAlignment.Right, Margin = new Thickness(0, 0, 8, 0) };
+                FrameworkElement label;
+                if (item.IsCheckBox)
+                {
+                    label = new CheckBox
+                    {
+                        IsChecked = item.IsChecked,
+                        Margin = new Thickness(0, 0, 8, 0)
+                    };
+                }
+                else
+                {
+                    label = new TextBlock
+                    {
+                        Text = item.Label,
+                        TextAlignment = TextAlignment.Right,
+                        Margin = new Thickness(0, 0, 8, 0)
+                    };
+                }
+
                 var stack = new StackPanel();
 
                 foreach (var inner in item.PageBlocks)
@@ -1046,6 +1263,33 @@ namespace Telegram.Views
                 element.Children.Add(caption);
             }
 
+            return element;
+        }
+
+        private FrameworkElement ProcessBlockquote(PageBlockQuoteBlock block)
+        {
+            var element = new StackPanel(); //{ Style = Resources["BlockBlockquoteStyle"] as Style };
+
+            foreach (var child in block.Blocks)
+            {
+                element.Children.Add(ProcessBlock(child));
+            }
+
+            var caption = ProcessText(block, true);
+            if (caption != null)
+            {
+                element.Children.Add(caption);
+            }
+
+            var test = new Grid();
+            test.Children.Add(new BlockQuote
+            {
+                Glyph = Icons.QuoteBlockFilled16
+            });
+            test.Children.Add(element);
+
+            element.Padding = new Thickness(12, 2, 0, 4);
+            return test;
             return element;
         }
 
@@ -1663,7 +1907,52 @@ namespace Telegram.Views
                 case RichTextSuperscript superscript:
                     Typography.SetVariants(span, FontVariants.Superscript);
                     return ProcessRichText(superscript.Text, span, effects, ref offset, cached, marked);
+                case RichTextMath math:
+                    {
+                        //var tex = new RichMathSurface(math.Source);
+                        //var output = new Image
+                        //{
+                        //    Width = tex.PixelWidth,
+                        //    Height = tex.PixelHeight,
+                        //    Margin = new Thickness(0, 0, 0, tex.Baseline * tex.PixelHeight - tex.PixelHeight),
+                        //    Stretch = Stretch.Uniform
+                        //};
+
+                        //output.Loaded += (s, args) =>
+                        //{
+                        //    var width = (int)(tex.PixelWidth * XamlRoot.RasterizationScale);
+                        //    var height = (int)(tex.PixelHeight * XamlRoot.RasterizationScale);
+
+                        //    var bitmap = new WriteableBitmap(width, height);
+
+                        //    tex.RenderSync(bitmap.PixelBuffer, XamlRoot.RasterizationScale, Colors.Black);
+
+                        //    bitmap.Invalidate();
+                        //    output.Source = bitmap;
+                        //};
+
+                        var tex = new RichMathImage
+                        {
+                            Source = math.Source
+                        };
+
+                        if (tex.IsValid)
+                        {
+                            tex.Margin = new Thickness(0, 0, 0, tex.Baseline * tex.PixelHeight - tex.PixelHeight);
+
+                            span.Inlines.Add(new InlineUIContainer
+                            {
+                                Child = tex
+                            });
+                        }
+                        else
+                        {
+                            ProcessRichText(new RichTextPlain(math.Source), span, effects, ref offset, cached, marked);
+                        }
+                    }
+                    return true;
                 default:
+                    span.Inlines.Add(text.ToString());
                     return false;
             }
         }
