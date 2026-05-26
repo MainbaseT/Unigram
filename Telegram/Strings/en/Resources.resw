@@ -5618,6 +5618,9 @@ Anyone from the channel will be able to see messages in this group.</value>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="EditAccountInfoHeader" xml:space="preserve">
+    <value>Your Info</value>
+  </data>
   <data name="EditAdmin" xml:space="preserve">
     <value>Admin Rights</value>
   </data>
@@ -5822,6 +5825,18 @@ If the number above is correct, please wait for the verification code.</value>
   </data>
   <data name="EditProfileChannelTitle" xml:space="preserve">
     <value>Personal channel</value>
+  </data>
+  <data name="EditProfileChatAutomation" xml:space="preserve">
+    <value>Chat Automation</value>
+  </data>
+  <data name="EditProfileChatAutomationInfo" xml:space="preserve">
+    <value>Add a bot to answer messages on your behalf.</value>
+  </data>
+  <data name="EditProfileHours" xml:space="preserve">
+    <value>Change Opening Hours</value>
+  </data>
+  <data name="EditProfileLocation" xml:space="preserve">
+    <value>Change Location</value>
   </data>
   <data name="EditToDo" xml:space="preserve">
     <value>Edit</value>

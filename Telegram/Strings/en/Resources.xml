@@ -13596,5 +13596,11 @@
     <string name="SharedPollTab">Polls</string>
     <string name="ProfilePollsCount_one">{0} poll</string>
     <string name="ProfilePollsCount_other">{0} polls</string>
+    
+    <string name="EditAccountInfoHeader">Your Info</string>
+    <string name="EditProfileHours">Change Opening Hours</string>
+    <string name="EditProfileLocation">Change Location</string>
+    <string name="EditProfileChatAutomation">Chat Automation</string>
+    <string name="EditProfileChatAutomationInfo">Add a bot to answer messages on your behalf.</string>
 
 </resources>
