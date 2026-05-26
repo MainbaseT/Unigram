@@ -82,6 +82,10 @@
                               Content="Bubble Elevation Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />
 
+                    <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.BubbleRecyclingDebug, Mode=TwoWay}"
+                              Content="Bubble Recycling Debug"
+                              Style="{StaticResource SettingsCheckBoxStyle}" />
+
                     <CheckBox IsChecked="{x:Bind services:SettingsService.Current.Diagnostics.WindowResizeDebug, Mode=TwoWay}"
                               Content="Window Resize Debug"
                               Style="{StaticResource SettingsCheckBoxStyle}" />

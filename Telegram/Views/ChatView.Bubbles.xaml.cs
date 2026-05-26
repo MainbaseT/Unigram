@@ -1356,7 +1356,15 @@ namespace Telegram.Views
                             bubble.UpdateShadow(_shadow);
                         }
 
-                        bubble.UpdateRecyclePool(_textBlockRecyclePool);
+                        if (SettingsService.Current.Diagnostics.BubbleRecyclingDebug)
+                        {
+                            bubble.UpdateRecyclePool(_textBlockRecyclePool);
+                        }
+                        else
+                        {
+                            bubble.UpdateRecyclePool(null);
+                        }
+
                         bubble.UpdateQuery(ViewModel.Search?.Query, false);
                         bubble.UpdateMessage(args.Item as MessageViewModel);
 
