@@ -1204,9 +1204,9 @@ namespace Telegram.Views
                     //    : GCLatencyMode.Interactive;
 
                     //NativeUtils.Collect = true;
-                    //GC.Collect();
-                    //GC.WaitForPendingFinalizers();
-                    //GC.Collect();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
                     //NativeUtils.Collect = false;
 
                     GarbageCollectionMonitor.DisconnectUnusedReferenceSources();
