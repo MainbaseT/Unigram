@@ -3224,9 +3224,9 @@ namespace Telegram.Views
                     flyout.CreateFlyoutItem(ViewModel.PinMessage, message, message.IsPinned ? Strings.UnpinMessage : Strings.PinMessage, message.IsPinned ? Icons.PinOff : Icons.Pin);
                 }
 
-                if (ViewModel.Type == DialogType.Pinned)
+                if (ViewModel.Type == DialogType.Pinned || ViewModel.IsSavedPollsTab)
                 {
-                    flyout.CreateFlyoutItem(ViewModel.ViewMessageInChat, message, Strings.ViewInChat, Icons.ChatEmpty);
+                    flyout.CreateFlyoutItem(ViewModel.ViewMessageInChat, message, Strings.ShowInChat2, Icons.ChatEmpty);
                 }
 
                 if (MessageStatistics_Loaded(message, properties))

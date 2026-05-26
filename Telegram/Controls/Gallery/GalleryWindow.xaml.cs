@@ -1154,7 +1154,7 @@ namespace Telegram.Controls.Gallery
 
         private void PopulateContextRequested(MenuFlyout flyout, GalleryViewModelBase viewModel, GalleryMedia item)
         {
-            flyout.CreateFlyoutItem(() => item.CanBeViewed, viewModel.View, Strings.ShowInChat, Icons.ChatEmpty);
+            flyout.CreateFlyoutItem(() => item.CanBeViewed, viewModel.View, Strings.ShowInChat2, Icons.ChatEmpty);
             flyout.CreateFlyoutItem(() => item.CanBeShared, viewModel.Forward, Strings.Forward, Icons.Share);
             flyout.CreateFlyoutItem(() => item.CanBeCopied, viewModel.Copy, Strings.Copy, Icons.Copy, VirtualKey.C);
             flyout.CreateFlyoutItem(() => item.CanBeSaved, viewModel.Save, Strings.SaveAs, Icons.SaveAs, VirtualKey.S);

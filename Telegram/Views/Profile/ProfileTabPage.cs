@@ -132,7 +132,7 @@ namespace Telegram.Views.Profile
                     return;
                 }
 
-                flyout.CreateFlyoutItem(MessageView_Loaded, ViewModel.ViewMessage, message, Strings.ShowInChat, Icons.ChatEmpty);
+                flyout.CreateFlyoutItem(MessageView_Loaded, ViewModel.ViewMessage, message, Strings.ShowInChat2, Icons.ChatEmpty);
 
                 if (MessageDelete_Loaded(message, properties))
                 {

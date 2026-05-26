@@ -225,7 +225,7 @@ namespace Telegram.Views.Popups
                 LoadSaveTo(flyout, item, properties, canAddToProfile);
 
                 flyout.CreateFlyoutSeparator();
-                flyout.CreateFlyoutItem(ShowInChat, message, Strings.ShowInChat, Icons.ChatEmpty);
+                flyout.CreateFlyoutItem(ShowInChat, message, Strings.ShowInChat2, Icons.ChatEmpty);
 
                 if (properties != null && properties.CanBeForwarded)
                 {
