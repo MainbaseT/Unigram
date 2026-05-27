@@ -15,6 +15,7 @@ using Telegram.Controls.Media;
 using Telegram.Controls.Messages;
 using Telegram.Native.Controls;
 using Telegram.Navigation;
+using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Telegram.Views;
@@ -379,7 +380,7 @@ namespace Telegram.Controls.Chats
             batch.End();
         }
 
-        protected override void SetText(MessageViewModel message, bool outgoing, MessageSender sender, string title, string service, FormattedText quote, bool manual, bool white)
+        protected override void SetText(IClientService clientService, MessageViewModel message, bool outgoing, MessageSender sender, string title, string service, FormattedText quote, bool manual, bool white)
         {
             _alternativeText = title + ": ";
             TitleLabel.Text = title;
@@ -411,11 +412,11 @@ namespace Telegram.Controls.Chats
 
             if (quote != null)
             {
-                labelShow.SetText(message?.ClientService, quote);
+                labelShow.SetText(clientService, quote);
             }
             else
             {
-                labelShow.SetText(message?.ClientService, message?.Text);
+                labelShow.SetText(clientService, message?.Text);
             }
 
             labelShow.SetQuery(string.Empty);

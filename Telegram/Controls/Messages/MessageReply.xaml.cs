@@ -305,7 +305,7 @@ namespace Telegram.Controls.Messages
             return ThumbImage;
         }
 
-        protected override void SetText(MessageViewModel message, bool outgoing, MessageSender messageSender, string title, string service, FormattedText text, bool quote, bool white)
+        protected override void SetText(IClientService clientService, MessageViewModel message, bool outgoing, MessageSender messageSender, string title, string service, FormattedText text, bool quote, bool white)
         {
             if (TitleLabel == null)
             {
@@ -335,10 +335,10 @@ namespace Telegram.Controls.Messages
 
             Label.MaxLines = quote ? 5 : 1;
 
-            var (accent, giftColors, customEmojiId) = outgoing ? (null, null, 0) : message?.ClientService.GetMessageSender(messageSender) switch
+            var (accent, giftColors, customEmojiId) = outgoing ? (null, null, 0) : clientService.GetMessageSender(messageSender) switch
             {
-                User user => (message.ClientService.GetAccentColor(user.AccentColorId), user.UpgradedGiftColors, user.BackgroundCustomEmojiId),
-                Chat chat => (message.ClientService.GetAccentColor(chat.AccentColorId), chat.UpgradedGiftColors, chat.BackgroundCustomEmojiId),
+                User user => (clientService.GetAccentColor(user.AccentColorId), user.UpgradedGiftColors, user.BackgroundCustomEmojiId),
+                Chat chat => (clientService.GetAccentColor(chat.AccentColorId), chat.UpgradedGiftColors, chat.BackgroundCustomEmojiId),
                 _ => (null, null, 0)
             };
 
@@ -402,12 +402,12 @@ namespace Telegram.Controls.Messages
 
             if (giftColors != null)
             {
-                Pattern.Source = new CustomEmojiFileSource(message.ClientService, giftColors.SymbolCustomEmojiId);
-                Pattern.Model = new CustomEmojiFileSource(message.ClientService, giftColors.ModelCustomEmojiId);
+                Pattern.Source = new CustomEmojiFileSource(clientService, giftColors.SymbolCustomEmojiId);
+                Pattern.Model = new CustomEmojiFileSource(clientService, giftColors.ModelCustomEmojiId);
             }
             else if (customEmojiId != 0)
             {
-                Pattern.Source = new CustomEmojiFileSource(message.ClientService, customEmojiId);
+                Pattern.Source = new CustomEmojiFileSource(clientService, customEmojiId);
                 Pattern.Model = null;
             }
             else
@@ -421,11 +421,11 @@ namespace Telegram.Controls.Messages
 
             if (text != null)
             {
-                Label.SetText(message?.ClientService, text);
+                Label.SetText(clientService, text);
             }
             else
             {
-                Label.SetText(message?.ClientService, textz);
+                Label.SetText(clientService, textz);
             }
 
             Label.SetQuery(string.Empty);
