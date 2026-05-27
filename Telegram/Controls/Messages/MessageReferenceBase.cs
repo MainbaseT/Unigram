@@ -1093,7 +1093,7 @@ namespace Telegram.Controls.Messages
         {
             HideThumbnail();
 
-            SetText(null,
+            SetText(message?.ClientService,
                 null,
                 outgoing,
                 sender,
