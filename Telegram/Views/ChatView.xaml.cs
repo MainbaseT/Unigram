@@ -783,7 +783,7 @@ namespace Telegram.Views
                 }
 
                 var batch = BootStrapper.Current.Compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
-                var diff = owner.ActualSize.Y;
+                var diff = owner.ContentTemplateRoot.ActualSize.Y;
 
                 if (animateSendout)
                 {
