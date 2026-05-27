@@ -64,6 +64,22 @@
                 </Grid>
             </DataTemplate>
         </selectors:AutocompleteTemplateSelector.ItemTemplate>
+        <selectors:AutocompleteTemplateSelector.HashtagTemplate>
+            <DataTemplate>
+                <Grid Padding="12,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock FontFamily="{ThemeResource EmojiThemeFontFamily}"
+                               VerticalAlignment="Center" />
+                    <controls:GlyphButton Glyph="&#xE711;"
+                                          Margin="0,-4,-4,-4"
+                                          Visibility="Collapsed"
+                                          Grid.Column="1" />
+                </Grid>
+            </DataTemplate>
+        </selectors:AutocompleteTemplateSelector.HashtagTemplate>
         <selectors:AutocompleteTemplateSelector.StickerTemplate>
             <DataTemplate>
                 <Grid Padding="4"

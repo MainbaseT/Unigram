@@ -5041,7 +5041,10 @@ namespace Telegram.Views
         {
             if (args.ItemContainer == null)
             {
-                args.ItemContainer = new TextGridViewItem();
+                args.ItemContainer = new TextGridViewItem
+                {
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch
+                };
                 args.ItemContainer.Style = sender.ItemContainerStyle;
 
                 _autocompleteZoomer.ElementPrepared(args.ItemContainer);
@@ -5061,8 +5064,39 @@ namespace Telegram.Views
                 args.ItemContainer.CornerRadius = new CornerRadius();
             }
 
+            args.ItemContainer.PointerEntered -= Autocomplete_PointerEntered;
+            args.ItemContainer.PointerExited -= Autocomplete_PointerExited;
+
+            if (args.Item is string)
+            {
+                args.ItemContainer.PointerEntered += Autocomplete_PointerEntered;
+                args.ItemContainer.PointerExited += Autocomplete_PointerExited;
+            }
+
             args.ItemContainer.ContentTemplate = sender.ItemTemplateSelector.SelectTemplate(args.Item, args.ItemContainer);
             args.IsContainerPrepared = true;
+        }
+
+        private void Autocomplete_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is SelectorItem { ContentTemplateRoot: Grid content })
+            {
+                if (content.Children.Count > 1 && content.Children[1] is Button button)
+                {
+                    button.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void Autocomplete_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is SelectorItem { ContentTemplateRoot: Grid content })
+            {
+                if (content.Children.Count > 1 && content.Children[1] is Button button)
+                {
+                    button.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         private void Autocomplete_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
@@ -5137,6 +5171,12 @@ namespace Telegram.Views
 
                 var title = content.Children[0] as TextBlock;
                 title.Text = hashtag;
+
+                var clear = content.Children[1] as Button;
+                clear.Click -= RemoveHashtag_Click;
+                clear.Click += RemoveHashtag_Click;
+                clear.Tag = hashtag;
+                clear.Visibility = Visibility.Collapsed;
             }
             else if (args.Item is Sticker sticker)
             {
@@ -5153,6 +5193,21 @@ namespace Telegram.Views
             }
 
             args.Handled = true;
+        }
+
+        private async void RemoveHashtag_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: string hashtag })
+            {
+                _viewModel.ClientService.Send(new RemoveRecentHashtag(hashtag));
+
+                await Task.Yield();
+
+                if (ListAutocomplete.ItemsSource is AutocompleteCollection collection)
+                {
+                    collection.Remove(hashtag);
+                }
+            }
         }
 
         private bool? _replyEnabled = null;

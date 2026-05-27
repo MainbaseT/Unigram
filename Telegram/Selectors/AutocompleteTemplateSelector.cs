@@ -61,6 +61,10 @@ namespace Telegram.Selectors
             {
                 return EmojiTemplate;
             }
+            else if (item is string)
+            {
+                return HashtagTemplate;
+            }
 
             return ItemTemplate ?? base.SelectTemplateCore(item, container);
         }
