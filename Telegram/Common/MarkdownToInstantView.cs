@@ -315,7 +315,9 @@ namespace Telegram.Common
             switch (block)
             {
                 case HeadingBlock h:
-                    output.Add(MakeHeading(h.Level, ConvertInlinesTopLevel(h.Inline)));
+                    var inline = ConvertInlinesTopLevel(h.Inline);
+                    output.Add(new PageBlockAnchor(Slugify(inline.ToPlainText())));
+                    output.Add(MakeHeading(h.Level, inline));
                     break;
 
                 case ParagraphBlock p:
@@ -699,6 +701,16 @@ namespace Telegram.Common
                 innerText = new RichTextPlain { Text = url };
             }
 
+            if (url.StartsWith('#'))
+            {
+                return new RichTextAnchorLink
+                {
+                    Text = innerText,
+                    Url = url,
+                    AnchorName = url.TrimStart('#')
+                };
+            }
+
             return new RichTextUrl
             {
                 Text = innerText,
@@ -771,6 +783,25 @@ namespace Telegram.Common
         private static bool IsEmpty(RichText rt)
         {
             return rt is RichTextPlain p && string.IsNullOrEmpty(p.Text);
+        }
+
+        private static string Slugify(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+
+            var sb = new StringBuilder(text.Length);
+            foreach (var ch in text)
+            {
+                if (char.IsLetterOrDigit(ch) || ch == '_' || ch == '-')
+                {
+                    sb.Append(char.ToLowerInvariant(ch));
+                }
+                else if (char.IsWhiteSpace(ch))
+                {
+                    sb.Append('-');
+                }
+            }
+            return sb.ToString();
         }
     }
 }
