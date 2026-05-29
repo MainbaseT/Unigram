@@ -26,14 +26,25 @@ using Windows.UI.Xaml.Shapes;
 
 namespace Telegram.Controls
 {
+    public class ImageTextSelectionLinkClickedEventArgs : EventArgs
+    {
+        public ImageTextSelectionLinkClickedEventArgs(string link)
+        {
+            Link = link;
+        }
+
+        public string Link { get; }
+    }
+
     public partial class ImageTextSelection : Control
     {
         private static readonly CoreCursor _defaultCursor = new(CoreCursorType.Arrow, 1);
         private static readonly CoreCursor _selectCursor = new(CoreCursorType.IBeam, 1);
+        private static readonly CoreCursor _handCursor = new(CoreCursorType.Hand, 1);
 
         private ulong _expandSelectionDeadline;
 
-        private bool _selectionPressed;
+        private RecognizedTextSelectionType _selectionPressed;
         private Point _selectionStartPoint;
 
         private bool _templateApplied;
@@ -93,7 +104,9 @@ namespace Telegram.Controls
             if (_selection != null && e.PointerDeviceType == PointerDeviceType.Mouse)
             {
                 var point = e.GetPosition(this);
-                if (_selection.IsPointWithinText(point))
+                var type = _selection.IsPointWithinText(point);
+
+                if (type == RecognizedTextSelectionType.Text)
                 {
                     _expandSelectionDeadline = Logger.TickCount + BootStrapper.Current.UISettings.DoubleClickTime;
                     _selection.ExpandSelection(point, true);
@@ -104,13 +117,23 @@ namespace Telegram.Controls
         private void OnTapped(object sender, TappedRoutedEventArgs e)
         {
             // If a double tap is followed by a single tap, then it's a triple tap (duh)
-            if (_selection != null && e.PointerDeviceType == PointerDeviceType.Mouse && Logger.TickCount < _expandSelectionDeadline)
+            if (_selection != null && e.PointerDeviceType == PointerDeviceType.Mouse)
             {
                 var point = e.GetPosition(this);
-                if (_selection.IsPointWithinText(point))
+                var type = _selection.IsPointWithinText(point);
+
+                if (type == RecognizedTextSelectionType.Text && Logger.TickCount < _expandSelectionDeadline)
                 {
                     _expandSelectionDeadline = Logger.TickCount + BootStrapper.Current.UISettings.DoubleClickTime;
                     _selection.ExpandSelection(point, false);
+                }
+                else if (type == RecognizedTextSelectionType.Link)
+                {
+                    var link = _selection.GetLink(point);
+                    if (link != null)
+                    {
+                        LinkClicked?.Invoke(this, new ImageTextSelectionLinkClickedEventArgs(link));
+                    }
                 }
             }
         }
@@ -128,7 +151,7 @@ namespace Telegram.Controls
             _selectionStartPoint = e.GetCurrentPoint(this).Position;
             _selectionPressed = _selection.IsPointWithinText(_selectionStartPoint);
 
-            if (_selectionPressed)
+            if (_selectionPressed != RecognizedTextSelectionType.None)
             {
                 CapturePointer(e.Pointer);
                 UpdateTextSelection(e);
@@ -155,7 +178,7 @@ namespace Telegram.Controls
         {
             e.Handled = true;
 
-            _selectionPressed = false;
+            _selectionPressed = RecognizedTextSelectionType.None;
             ReleasePointerCapture(e.Pointer);
         }
 
@@ -163,9 +186,13 @@ namespace Telegram.Controls
         {
             e.Handled = true;
 
-            if (_selectionPressed)
+            if (_selectionPressed == RecognizedTextSelectionType.Text)
             {
                 Window.Current.CoreWindow.PointerCursor = _selectCursor;
+            }
+            else if (_selectionPressed == RecognizedTextSelectionType.Link)
+            {
+                Window.Current.CoreWindow.PointerCursor = _handCursor;
             }
             else
             {
@@ -178,18 +205,34 @@ namespace Telegram.Controls
             var startPoint = _selectionStartPoint;
             var endPoint = e.GetCurrentPoint(this).Position;
 
-            if (_selectionPressed && Logger.TickCount > _expandSelectionDeadline)
+            if (_selectionPressed == RecognizedTextSelectionType.Text && Logger.TickCount > _expandSelectionDeadline)
             {
                 _selection.SelectTextBetween(startPoint, endPoint);
             }
 
-            if (_selectionPressed || _selection.IsPointWithinText(endPoint))
+            if (_selectionPressed == RecognizedTextSelectionType.Text)
             {
                 Window.Current.CoreWindow.PointerCursor = _selectCursor;
             }
+            else if (_selectionPressed == RecognizedTextSelectionType.Link)
+            {
+                Window.Current.CoreWindow.PointerCursor = _handCursor;
+            }
             else
             {
-                Window.Current.CoreWindow.PointerCursor = _defaultCursor;
+                var type = _selection.IsPointWithinText(endPoint);
+                if (type == RecognizedTextSelectionType.Text)
+                {
+                    Window.Current.CoreWindow.PointerCursor = _selectCursor;
+                }
+                else if (type == RecognizedTextSelectionType.Link)
+                {
+                    Window.Current.CoreWindow.PointerCursor = _handCursor;
+                }
+                else
+                {
+                    Window.Current.CoreWindow.PointerCursor = _defaultCursor;
+                }
             }
         }
 
@@ -255,6 +298,8 @@ namespace Telegram.Controls
         }
 
         public event EventHandler SelectionChanged;
+
+        public event EventHandler<ImageTextSelectionLinkClickedEventArgs> LinkClicked;
 
         private void UpdateRecognizedText(RecognizedText result, Vector2 imageSize)
         {

@@ -10,11 +10,12 @@ namespace winrt::Telegram::Native::AI::implementation
 {
     struct RecognizedLine : RecognizedLineT<RecognizedLine>
     {
-        RecognizedLine(hstring text, RecognizedTextBoundingBox boundingBox, IVector<RecognizedWord> words);
+        RecognizedLine(hstring text, RecognizedTextBoundingBox boundingBox, IVector<RecognizedWord> words, bool isBarcode);
 
         hstring Text();
         RecognizedTextBoundingBox BoundingBox() const;
         IVector<RecognizedWord> Words();
+        bool IsBarcode();
 
         hstring ToString();
 
@@ -22,6 +23,7 @@ namespace winrt::Telegram::Native::AI::implementation
         hstring m_text;
         RecognizedTextBoundingBox m_boundingBox;
         IVector<RecognizedWord> m_words;
+        bool m_isBarcode;
     };
 }
 

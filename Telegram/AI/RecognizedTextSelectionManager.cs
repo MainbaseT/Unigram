@@ -16,6 +16,13 @@ namespace Telegram.AI
 {
     public record RecognizedTextSelectionChangedEventArgs(RecognizedTextSelection NewSelection);
 
+    public enum RecognizedTextSelectionType
+    {
+        None,
+        Text,
+        Link
+    }
+
     public class RecognizedTextSelectionManager
     {
         private readonly IList<RecognizedLine> _lines;
@@ -44,6 +51,11 @@ namespace Telegram.AI
             for (int i = 0; i < lines.Count; i++)
             {
                 if (visited.Contains(i)) continue;
+                if (lines[i].IsBarcode)
+                {
+                    blocks.Add([lines[i]]);
+                    continue;
+                }
 
                 var block = new List<RecognizedLine>();
                 var queue = new Queue<int>();
@@ -494,12 +506,36 @@ namespace Telegram.AI
             }
         }
 
-        public bool IsPointWithinText(Point point)
+        public RecognizedTextSelectionType IsPointWithinText(Point point)
         {
             var start = point.ToVector2();
             start *= _inverseScale;
 
-            return _blocks.Any(x => x.Polygons.Any(x => x.ContainsPoint(start)));
+            var block = _blocks.FirstOrDefault(x => x.Polygons.Any(x => x.ContainsPoint(start)));
+            if (block == null)
+            {
+                return RecognizedTextSelectionType.None;
+            }
+
+            return block.Lines[0].IsBarcode
+                ? RecognizedTextSelectionType.Link
+                : RecognizedTextSelectionType.Text;
+
+            //return _blocks.Any(x => x.Polygons.Any(x => x.ContainsPoint(start)));
+        }
+
+        public string GetLink(Point point)
+        {
+            var start = point.ToVector2();
+            start *= _inverseScale;
+
+            var block = _blocks.FirstOrDefault(x => x.Polygons.Any(x => x.ContainsPoint(start)));
+            if (block != null)
+            {
+                return block.Lines[0].Text;
+            }
+
+            return null;
         }
 
         private Vector2 _scale = Vector2.One;

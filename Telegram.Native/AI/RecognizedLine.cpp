@@ -6,10 +6,11 @@
 
 namespace winrt::Telegram::Native::AI::implementation
 {
-    RecognizedLine::RecognizedLine(hstring text, RecognizedTextBoundingBox boundingBox, IVector<RecognizedWord> words)
+    RecognizedLine::RecognizedLine(hstring text, RecognizedTextBoundingBox boundingBox, IVector<RecognizedWord> words, bool isBarcode)
         : m_text(text)
         , m_boundingBox(boundingBox)
         , m_words(words)
+        , m_isBarcode(isBarcode)
     {
 
     }
@@ -27,6 +28,11 @@ namespace winrt::Telegram::Native::AI::implementation
     IVector<RecognizedWord> RecognizedLine::Words()
     {
         return m_words;
+    }
+
+    bool RecognizedLine::IsBarcode()
+    {
+        return m_isBarcode;
     }
 
     hstring RecognizedLine::ToString()

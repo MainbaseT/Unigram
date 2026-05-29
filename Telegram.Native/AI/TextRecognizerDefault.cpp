@@ -93,7 +93,7 @@ namespace winrt::Telegram::Native::AI::implementation
             Rect unionRect = UnionRects(linex.Words());
             RecognizedTextBoundingBox lineBox = ApplyTextAngleToRect(unionRect, result.TextAngle(), bitmap.PixelWidth(), bitmap.PixelHeight());
 
-            lines.Append(RecognizedLine(linex.Text(), lineBox, words));
+            lines.Append(RecognizedLine(linex.Text(), lineBox, words, false));
         }
 
         auto textAngleRef = result.TextAngle();

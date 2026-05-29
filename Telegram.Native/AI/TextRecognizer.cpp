@@ -5,6 +5,10 @@
 #include "TextRecognizerDefault.h"
 #include "TextRecognizerOne.h"
 
+#include <ZXing/BarcodeFormat.h>
+#include <ZXing/ReaderOptions.h>
+#include <ZXing/ReadBarcode.h>
+
 #include <detours.h>
 
 #include <winrt/Windows.Graphics.Imaging.h>
@@ -123,7 +127,7 @@ namespace winrt::Telegram::Native::AI::implementation
             .row = rows,
             ._unk = 0,
             .step = (__int64)step,
-            .data_ptr = (__int64)reinterpret_cast<char*>(data)
+            .data_ptr = (__int64)reinterpret_cast<char*>(data + desc.StartIndex)
         };
 
         std::string modelPath = winrt::to_string(ApplicationData::Current().LocalFolder().Path() + L"\\Ocr\\oneocr.onemodel");
@@ -222,7 +226,7 @@ namespace winrt::Telegram::Native::AI::implementation
                 float2(lineBoundingBox->x2, lineBoundingBox->y2),
                 float2(lineBoundingBox->x3, lineBoundingBox->y3),
                 float2(lineBoundingBox->x4, lineBoundingBox->y4)
-                }, words));
+                }, words, false));
         }
 
     Cleanup:
@@ -232,6 +236,31 @@ namespace winrt::Telegram::Native::AI::implementation
         m_engine.ReleaseOcrInitOptions(initOptions);
 
         DetachHook();
+
+        auto img = ZXing::ImageView(data + desc.StartIndex, cols, rows, ZXing::ImageFormat::BGRX, step);
+        auto opts = ZXing::ReaderOptions();
+        opts.setTryHarder(true);
+        opts.setTryRotate(true);
+        opts.setTryInvert(true);
+        opts.setTryDownscale(true);
+        opts.setFormats(ZXing::BarcodeFormat::Any);
+        opts.setBinarizer(ZXing::Binarizer::GlobalHistogram);
+
+        auto results = ZXing::ReadBarcodes(img, opts);
+        for (const auto& barcode : results)
+        {
+            auto pos = barcode.position();
+            auto bounding = RecognizedTextBoundingBox{
+                float2(pos[0].x, pos[0].y),
+                float2(pos[1].x, pos[1].y),
+                float2(pos[2].x, pos[2].y),
+                float2(pos[3].x, pos[3].y)
+            };
+
+            auto words = winrt::single_threaded_vector<RecognizedWord>();
+            words.Append(RecognizedWord(winrt::to_hstring(barcode.text()), bounding));
+            lines.Append(RecognizedLine(winrt::to_hstring(barcode.text()), bounding, words, true));
+        }
 
         // TODO: GetImageAngle, currently not used
         co_return RecognizedText(lines, 0);
