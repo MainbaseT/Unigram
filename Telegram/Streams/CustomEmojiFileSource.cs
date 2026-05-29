@@ -21,6 +21,11 @@ namespace Telegram.Streams
         {
             _customEmojiId = customEmojiId;
 
+            if (clientService == null)
+            {
+                WatchDog.TrackError("clientService == null");
+            }
+
             DownloadFile(null, DelayedFileDownload.Loaded, null);
         }
 

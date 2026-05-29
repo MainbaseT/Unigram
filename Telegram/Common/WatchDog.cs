@@ -194,6 +194,11 @@ namespace Telegram
             ProcessException(ex, false);
         }
 
+        public static void TrackError(string message)
+        {
+            ProcessException(NativeUtils.GetBackTrace("TrackErrorException", message), false);
+        }
+
         private static void LoadReports()
         {
             try
