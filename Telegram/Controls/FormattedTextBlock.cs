@@ -302,7 +302,7 @@ namespace Telegram.Controls
 
         public void Clear()
         {
-            _clientService = null;
+            //_clientService = null;
             //_text = null;
 
             _query = null;
