@@ -1027,10 +1027,13 @@ namespace Telegram.Views
             }
             else
             {
-                var text = new TextBlock();
-                text.Inlines.Add(plain.Text);
+                var paragraph = new Paragraph();
+                paragraph.Inlines.Add(plain.Text);
 
-                ProcessCodeBlock(text.Inlines, plain.Text, block.Language, 0);
+                var text = new RichTextBlock();
+                text.Blocks.Add(paragraph);
+
+                ProcessCodeBlock(paragraph.Inlines, plain.Text, block.Language, 0);
 
                 element.Children.Add(text);
 
