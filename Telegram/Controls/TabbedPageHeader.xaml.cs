@@ -117,10 +117,16 @@ namespace Telegram.Controls
             {
                 if (value != null)
                 {
-                    SourceText.Text = value.Host + value.PathAndQuery + value.Fragment;
+                    var pathAndQuery = value.PathAndQuery;
+                    if (pathAndQuery == "/")
+                    {
+                        pathAndQuery = string.Empty;
+                    }
+
+                    SourceText.Text = value.Host + pathAndQuery + value.Fragment;
 
                     DomainText.Text = value.Host;
-                    PathText.Text = value.PathAndQuery + value.Fragment;
+                    PathText.Text = pathAndQuery + value.Fragment;
                 }
             }
         }

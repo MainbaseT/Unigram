@@ -47,6 +47,12 @@ namespace Telegram.ViewModels
                     if (response is LinkPreview linkPreview)
                     {
                         Title = linkPreview.SiteName;
+                        return;
+                    }
+                    
+                    if (Uri.TryCreate(args.Url, UriKind.Absolute, out Uri uri))
+                    {
+                        Title = uri.Host;
                     }
                 }
                 else
