@@ -1212,7 +1212,10 @@ namespace Telegram.Views
                     label = new CheckBox
                     {
                         IsChecked = item.IsChecked,
-                        Margin = new Thickness(0, 0, 8, 0)
+                        Margin = new Thickness(0, -6, 8, 4),
+                        Padding = new Thickness(0),
+                        MinWidth = 0,
+                        MinHeight = 0
                     };
                 }
                 else
