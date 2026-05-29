@@ -753,5 +753,13 @@ namespace Telegram.Controls.Gallery
                 return null;
             }
         }
+
+        private void Selection_LinkClicked(object sender, ImageTextSelectionLinkClickedEventArgs e)
+        {
+            if (Uri.TryCreate(e.Link, UriKind.Absolute, out _))
+            {
+                MessageHelper.OpenUrl(_window.ViewModel.ClientService, _window.ViewModel.NavigationService, e.Link, true);
+            }
+        }
     }
 }
