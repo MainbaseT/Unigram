@@ -128,13 +128,13 @@
                                              Click="{x:Bind ViewModel.ChangePersonalChannel}"
                                              Glyph="&#xE789;" />
                     <controls:SettingsButton Content="{CustomResource EditProfileHours}"
-                                             Click="{x:Bind ViewModel.ChangePersonalChannel}"
+                                             Click="{x:Bind ViewModel.ChangeHours}"
                                              Glyph="&#xE911;" />
                     <controls:SettingsButton Content="{CustomResource EditProfileLocation}"
-                                             Click="{x:Bind ViewModel.ChangePersonalChannel}"
+                                             Click="{x:Bind ViewModel.ChangeLocation}"
                                              Glyph="&#xE1C4;" />
                     <controls:SettingsButton Content="{CustomResource EditProfileChatAutomation}"
-                                             Click="{x:Bind ViewModel.ChangePersonalChannel}"
+                                             Click="{x:Bind ViewModel.ChangeAutomation}"
                                              Glyph="&#xEB02;" />
                 </controls:HeaderedControl>
 
