@@ -6613,7 +6613,7 @@ namespace Telegram.Views
             {
                 ButtonMore.Content = fullInfo.BotInfo.MenuButton.Text;
 
-                ViewModel.BotCommands = null;
+                ViewModel.BotCommands = fullInfo.BotInfo.Commands.Count > 0 ? fullInfo.BotInfo.Commands.Select(x => new UserCommand(user.Id, x)).ToList() : null;
                 ViewModel.HasBotCommands = false;
                 ShowHideSideButton(SideButton.BotMenu);
             }
