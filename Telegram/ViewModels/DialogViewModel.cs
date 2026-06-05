@@ -3389,33 +3389,7 @@ namespace Telegram.ViewModels
             }
 
             var response = await ClientService.SendAsync(new JoinChat(chat.Id));
-            if (response is Error error)
-            {
-                if (error.MessageEquals(ErrorType.INVITE_REQUEST_SENT))
-                {
-                    await ShowPopupAsync(chat.Type is ChatTypeSupergroup supergroup && supergroup.IsChannel ? Strings.RequestToJoinChannelSentDescription : Strings.RequestToJoinGroupSentDescription, Strings.RequestToJoinSent, Strings.OK);
-                    return;
-
-                    var message = Strings.RequestToJoinSent + Environment.NewLine + (chat.Type is ChatTypeSupergroup supergroup2 && supergroup2.IsChannel ? Strings.RequestToJoinChannelSentDescription : Strings.RequestToJoinGroupSentDescription);
-                    var entity = new TextEntity(0, Strings.RequestToJoinSent.Length, new TextEntityTypeBold());
-
-                    var text = new FormattedText(message, new[] { entity });
-
-                    ToastPopup.Show(XamlRoot, text, ToastPopupIcon.JoinRequested);
-                }
-                else if (error.MessageEquals(ErrorType.CHANNELS_TOO_MUCH))
-                {
-                    NavigationService.ShowLimitReached(new PremiumLimitTypeSupergroupCount());
-                }
-                else
-                {
-                    ShowToast(error);
-                }
-            }
-            else if (Constants.DEBUG)
-            {
-                ClientService.Send(new AddLocalMessage(chat.Id, new MessageSenderChat(chat.Id), null, true, new InputMessageContact(new Contact("999888777666", "SIMILAR", "CHANNELS", string.Empty, ClientService.Options.MyId))));
-            }
+            MessageHelper.HandleChatJoinResult(ClientService, NavigationService, chat.Id, chat.Type is ChatTypeSupergroup { IsChannel: true }, response);
         }
 
         #endregion
@@ -4072,9 +4046,9 @@ namespace Telegram.ViewModels
             else if (InlineBotResults.Button.Type is InlineQueryResultsButtonTypeWebApp webApp && _currentInlineBot is User botUser)
             {
                 var response = await ClientService.SendAsync(new GetWebAppUrl(botUser.Id, webApp.Url, new WebAppOpenParameters(Theme.Current.Parameters, Constants.WebAppHostName, new WebAppOpenModeFullSize())));
-                if (response is HttpUrl httpUrl)
+                if (response is WebAppUrl webAppUrl)
                 {
-                    NavigationService.NavigateToWebApp(botUser, httpUrl.Url, sourceChat: Chat);
+                    NavigationService.NavigateToWebApp(botUser, webAppUrl, source: new OpenUrlSourceChat(ChatId, null));
                 }
             }
         }

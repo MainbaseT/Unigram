@@ -4275,6 +4275,12 @@ Ask your **Premium** subscribers to boost your channel with this link:</value>
   <data name="ChannelSettingsJoinRequestInfo" xml:space="preserve">
     <value>Turn this on if you want users to join only after they are approved by an admin.</value>
   </data>
+  <data name="ChannelSettingsJoinRequestInfo2" xml:space="preserve">
+    <value>Admin must approve anyone who wants to join the channel.</value>
+  </data>
+  <data name="ChannelSettingsJoinRequestInfoManagedBy" xml:space="preserve">
+    <value>Admin must approve anyone who wants to join the channel. Managed by **{0}**</value>
+  </data>
   <data name="ChannelSettingsJoinTitle" xml:space="preserve">
     <value>Who can send messages?</value>
   </data>
@@ -5680,6 +5686,12 @@ Anyone from the channel will be able to see messages in this group.</value>
   </data>
   <data name="EditAdminPostStories" xml:space="preserve">
     <value>Post Stories</value>
+  </data>
+  <data name="EditAdminProcessJoinRequests" xml:space="preserve">
+    <value>Process Join Requests</value>
+  </data>
+  <data name="EditAdminProcessJoinRequestsInfo" xml:space="preserve">
+    <value>Allow this bot to approve new members using its own interfaces, such as captchas.</value>
   </data>
   <data name="EditAdminPromotedBy" xml:space="preserve">
     <value>Promoted by {0}</value>
@@ -8471,8 +8483,20 @@ Ask your **Premium** members to boost your group with this link:</value>
   <data name="GroupNotRestrictBoostersInfo2" xml:space="preserve">
     <value>Choose how many boosts a user must give to the group to bypass restrictions on sending messages.</value>
   </data>
+  <data name="GroupPrivateSettingsJoinRequestInfo2" xml:space="preserve">
+    <value>Admin must approve anyone who wants to join the group.</value>
+  </data>
+  <data name="GroupPrivateSettingsJoinRequestInfoManagedBy" xml:space="preserve">
+    <value>Admin must approve anyone who wants to join the group. Managed by **{0}**</value>
+  </data>
   <data name="GroupProfileInfo" xml:space="preserve">
     <value>Choose a color and a logo for the group&apos;s profile.</value>
+  </data>
+  <data name="GroupPublicSettingsJoinRequestInfo2" xml:space="preserve">
+    <value>Admin must approve anyone who wants to send a message in the group.</value>
+  </data>
+  <data name="GroupPublicSettingsJoinRequestInfoManagedBy" xml:space="preserve">
+    <value>Admin must approve anyone who wants to send a message in the group. Managed by **{0}**</value>
   </data>
   <data name="Groups_one" xml:space="preserve">
     <value>{0} group</value>
@@ -8538,6 +8562,15 @@ They can still join via an invite link as long as they are not on the Removed Us
   </data>
   <data name="GrowthChartTitle" xml:space="preserve">
     <value>Growth</value>
+  </data>
+  <data name="GuardBotJoinRequestApproved" xml:space="preserve">
+    <value>Your request to join **{0}** has been approved</value>
+  </data>
+  <data name="GuardBotJoinRequestDeclined" xml:space="preserve">
+    <value>Your request to join **{0}** has been declined</value>
+  </data>
+  <data name="GuardBotJoinRequestQueued" xml:space="preserve">
+    <value>Your request to join **{0}** has been sent to the admins</value>
   </data>
   <data name="GuestBotFor" xml:space="preserve">
     <value>for</value>

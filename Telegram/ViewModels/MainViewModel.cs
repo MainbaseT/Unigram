@@ -200,6 +200,27 @@ namespace Telegram.ViewModels
             }
         }
 
+        public void Handle(UpdateChatJoinResult update)
+        {
+            BeginOnUIThread(() => UpdateChatJoinResult(update));
+        }
+
+        private void UpdateChatJoinResult(UpdateChatJoinResult update)
+        {
+            if (update.Result is ChatJoinRequestResultApproved)
+            {
+                ShowToast(string.Format(Strings.GuardBotJoinRequestApproved, ClientService.GetTitle(update.ChatId)), ToastPopupIcon.Success);
+            }
+            else if (update.Result is ChatJoinRequestResultQueued)
+            {
+                ShowToast(string.Format(Strings.GuardBotJoinRequestQueued, ClientService.GetTitle(update.ChatId)), ToastPopupIcon.JoinRequested);
+            }
+            else if (update.Result is ChatJoinRequestResultDeclined)
+            {
+                ShowToast(string.Format(Strings.GuardBotJoinRequestDeclined, ClientService.GetTitle(update.ChatId)), ToastPopupIcon.Ban);
+            }
+        }
+
         public void Handle(UpdateChatFolders update)
         {
             BeginOnUIThread(() => UpdateChatFolders(update.ChatFolders, update.MainChatListPosition));
@@ -398,6 +419,7 @@ namespace Telegram.ViewModels
                 .Subscribe<UpdateUnreadChatCount>(Handle)
                 .Subscribe<UpdateDeleteMessages>(Handle)
                 .Subscribe<UpdateChatFolders>(Handle)
+                .Subscribe<UpdateChatJoinResult>(Handle)
                 .Subscribe<UpdateAppVersion>(Handle)
                 .Subscribe<UpdateWindowActivated>(Handle);
         }
