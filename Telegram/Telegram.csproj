@@ -169,6 +169,7 @@
     <Compile Include="Assets\Icons\Profile.cs" />
     <Compile Include="Assets\Icons\VoiceRecognition.cs" />
     <Compile Include="Assets\Icons\VoiceVideo.cs" />
+    <Compile Include="Assets\Icons\VoiceVideo2.cs" />
     <Compile Include="Charts\Animator.cs" />
     <Compile Include="Charts\BarChartView.cs" />
     <Compile Include="Charts\BaseChartView.cs" />

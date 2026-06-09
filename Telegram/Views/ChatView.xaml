@@ -2096,9 +2096,10 @@
                                                             AllowFocusOnInteraction="False"
                                                             Glyph="&#xE9E4;"
                                                             CheckedGlyph="&#xE9E0;"
-                                                            ManipulationMode="TranslateX,TranslateY">
+                                                            ManipulationMode="TranslateX,TranslateY"
+                                                            Foreground="#FFFFFF">
                                         <controls:AnimatedIconToggleButton.Source>
-                                            <icons:VoiceVideo />
+                                            <icons:VoiceVideo2 />
                                         </controls:AnimatedIconToggleButton.Source>
                                     </chats:ChatRecordButton>
                                 </Grid>
