@@ -1473,11 +1473,6 @@ namespace Telegram.Td.Api
             return caption.Text.ToFormattedText();
         }
 
-        public static FormattedText ToFormattedText(this RichText text)
-        {
-            return text.ToPlainText().AsFormattedText();
-        }
-
         public static string ToPlainText(this PageBlockCaption caption)
         {
             return caption.Text.ToPlainText();
@@ -2431,6 +2426,427 @@ namespace Telegram.Td.Api
             return sticker.Emoji.AsFormattedText();
         }
 
+        public static string ToPlainText(this RichMessage message)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var block in message.Blocks)
+            {
+
+            }
+
+            return builder.ToString();
+        }
+
+        public static FormattedText ToFormattedText(this RichMessage message)
+        {
+            FormattedText text = null;
+
+            foreach (var block in message.Blocks)
+            {
+                var formatted = block.ToFormattedText();
+                if (formatted != null)
+                {
+                    if (text != null)
+                    {
+                        text = FormattedText.Concat(text, "\n", formatted);
+                    }
+                    else
+                    {
+                        text = formatted;
+                    }
+                }
+            }
+
+            return text;
+        }
+
+        private static FormattedText ToFormattedText(this PageBlock block)
+        {
+
+            switch (block)
+            {
+                //PageBlockCover cover => ,
+                //PageBlockAuthorDate authorDate => ProcessAuthorDate(clientService, authorDate),
+                case PageBlockHeader header:
+                    return header.Header.ToFormattedText();
+                case PageBlockSubheader subheader:
+                    return subheader.Subheader.ToFormattedText();
+                case PageBlockTitle title:
+                    return title.Title.ToFormattedText();
+                case PageBlockSubtitle subtitle:
+                    return subtitle.Subtitle.ToFormattedText();
+                case PageBlockFooter footer:
+                    return footer.Footer.ToFormattedText();
+                case PageBlockParagraph paragraph:
+                    return paragraph.Text.ToFormattedText();
+                case PageBlockKicker kicker:
+                    return kicker.Kicker.ToFormattedText();
+                case PageBlockSectionHeading sectionHeading:
+                    return sectionHeading.Text.ToFormattedText();
+                case PageBlockBlockQuote blockquote:
+                    {
+                        FormattedText text = string.Empty.AsFormattedText();
+                        foreach (var child in blockquote.Blocks)
+                        {
+                            text = FormattedText.Concat(text, "\n", child.ToFormattedText());
+                        }
+                        return FormattedText.Concat(text, "\n", blockquote.Credit.ToFormattedText());
+                    }
+                //case PageBlockDivider divider:
+                //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                //    break;
+                case PageBlockPhoto photo:
+                    return photo.Caption.ToFormattedText();
+                case PageBlockList list:
+                    {
+                        FormattedText text = string.Empty.AsFormattedText();
+                        foreach (var item in list.Items)
+                        {
+                            text = FormattedText.Concat(text, "\n", item.Label);
+
+                            foreach (var child in item.PageBlocks)
+                            {
+                                text = FormattedText.Concat(text, " ", child.ToFormattedText());
+                            }
+                        }
+                        return text;
+                    }
+                case PageBlockVideo video:
+                    return video.Caption.ToFormattedText();
+                case PageBlockAnimation animation:
+                    return animation.Caption.ToFormattedText();
+                case PageBlockEmbeddedPost embedPost:
+                    return embedPost.Caption.ToFormattedText();
+                case PageBlockSlideshow slideshow:
+                    return slideshow.Caption.ToFormattedText();
+                case PageBlockCollage collage:
+                    return collage.Caption.ToFormattedText();
+                case PageBlockEmbedded embed:
+                    return embed.Caption.ToFormattedText();
+                case PageBlockPullQuote pullquote:
+                    return FormattedText.Concat(pullquote.Text.ToFormattedText(), "\n", pullquote.Credit.ToFormattedText());
+                //case PageBlockAnchor anchor:
+                //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                //    break;
+                case PageBlockPreformatted preformatted:
+                    return preformatted.Text.ToFormattedText();
+                //case PageBlockChatLink channel:
+                //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                //    break;
+                case PageBlockDetails details:
+                    {
+                        FormattedText text = details.Header.ToFormattedText();
+                        foreach (var child in details.PageBlocks)
+                        {
+                            text = FormattedText.Concat("\n", child.ToFormattedText());
+                        }
+                        return text;
+                    }
+                    //case PageBlockTable table:
+                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                    //    break;
+                    //case PageBlockRelatedArticles relatedArticles:
+                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                    //    break;
+                    //case PageBlockMap map:
+                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                    //    break;
+                    //case PageBlockAudio audio:
+                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                    //    break;
+                    //case PageBlockVoiceNote voiceNote:
+                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                    //    break;
+                    //case PageBlockMathematicalExpression math:
+                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
+                    //    break;
+
+            }
+
+            return null;
+        }
+
+        // ----------------------------------------------------------------
+        // RichText -> FormattedText
+        // ----------------------------------------------------------------
+
+        public static FormattedText ToFormattedText(this RichText richText)
+        {
+            var sb = new StringBuilder();
+            var entities = new List<TextEntity>();
+            if (richText != null)
+            {
+                Append(richText, sb, entities);
+            }
+            return new FormattedText { Text = sb.ToString(), Entities = entities };
+        }
+
+        private static void Append(RichText rt, StringBuilder sb, List<TextEntity> entities)
+        {
+            switch (rt)
+            {
+                case null:
+                    return;
+
+                case RichTextPlain p:
+                    if (!string.IsNullOrEmpty(p.Text)) sb.Append(p.Text);
+                    return;
+
+                case RichTexts rs:
+                    if (rs.Texts != null)
+                    {
+                        foreach (var t in rs.Texts) Append(t, sb, entities);
+                    }
+                    return;
+
+                case RichTextBold b:
+                    AppendWrapped(b.Text, sb, entities, new TextEntityTypeBold());
+                    return;
+
+                case RichTextItalic i:
+                    AppendWrapped(i.Text, sb, entities, new TextEntityTypeItalic());
+                    return;
+
+                case RichTextUnderline u:
+                    AppendWrapped(u.Text, sb, entities, new TextEntityTypeUnderline());
+                    return;
+
+                case RichTextStrikethrough s:
+                    AppendWrapped(s.Text, sb, entities, new TextEntityTypeStrikethrough());
+                    return;
+
+                case RichTextFixed f:
+                    AppendWrapped(f.Text, sb, entities, new TextEntityTypeCode());
+                    return;
+
+                case RichTextUrl url:
+                    AppendWrapped(url.Text, sb, entities, new TextEntityTypeTextUrl { Url = url.Url ?? "" });
+                    return;
+
+                case RichTextEmailAddress e:
+                    AppendWrapped(e.Text, sb, entities, new TextEntityTypeEmailAddress());
+                    return;
+
+                case RichTextPhoneNumber phone:
+                    AppendWrapped(phone.Text, sb, entities, new TextEntityTypePhoneNumber());
+                    return;
+
+                case RichTextReference r:
+                    AppendWrapped(r.Text, sb, entities, new TextEntityTypeTextUrl { Url = r.Url ?? "" });
+                    return;
+
+                case RichTextAnchorLink al:
+                    AppendWrapped(al.Text, sb, entities, new TextEntityTypeTextUrl { Url = al.Url ?? "" });
+                    return;
+
+                case RichTextMarked m:
+                    Append(m.Text, sb, entities);
+                    return;
+
+                case RichTextSubscript sub:
+                    Append(sub.Text, sb, entities);
+                    return;
+
+                case RichTextSuperscript sup:
+                    Append(sup.Text, sb, entities);
+                    return;
+
+                case RichTextMathematicalExpression math:
+                    if (!string.IsNullOrEmpty(math.Expression))
+                    {
+                        int start = sb.Length;
+                        sb.Append(math.Expression);
+                        if (sb.Length > start)
+                        {
+                            entities.Add(new TextEntity
+                            {
+                                Offset = start,
+                                Length = sb.Length - start,
+                                Type = new TextEntityTypeCode()
+                            });
+                        }
+                    }
+                    return;
+
+                case RichTextAnchor _:
+                case RichTextIcon _:
+                    // No visible text content.
+                    return;
+            }
+        }
+
+        private static void AppendWrapped(RichText inner, StringBuilder sb, List<TextEntity> entities, TextEntityType type)
+        {
+            int start = sb.Length;
+            Append(inner, sb, entities);
+            int len = sb.Length - start;
+            if (len > 0)
+            {
+                entities.Add(new TextEntity { Offset = start, Length = len, Type = type });
+            }
+        }
+
+        // ----------------------------------------------------------------
+        // FormattedText -> RichText
+        // ----------------------------------------------------------------
+
+        public static RichText ToRichText(this FormattedText formattedText)
+        {
+            if (formattedText == null || string.IsNullOrEmpty(formattedText.Text))
+            {
+                return new RichTextPlain { Text = "" };
+            }
+
+            var text = formattedText.Text;
+            var entities = formattedText.Entities;
+
+            if (entities == null || entities.Count == 0)
+            {
+                return new RichTextPlain { Text = text };
+            }
+
+            // Clip entities to text bounds and drop ones with no RichText mapping.
+            var usable = new List<TextEntity>(entities.Count);
+            foreach (var e in entities)
+            {
+                if (e == null || e.Length <= 0 || e.Type == null) continue;
+                if (!HasRichTextEquivalent(e.Type)) continue;
+
+                int start = Math.Max(0, e.Offset);
+                int end = Math.Min(text.Length, e.Offset + e.Length);
+                if (end <= start) continue;
+
+                if (start == e.Offset && end == e.Offset + e.Length)
+                {
+                    usable.Add(e);
+                }
+                else
+                {
+                    usable.Add(new TextEntity { Offset = start, Length = end - start, Type = e.Type });
+                }
+            }
+
+            if (usable.Count == 0) return new RichTextPlain { Text = text };
+
+            // Build the set of split points (every entity boundary, plus 0 and text.Length).
+            var pointSet = new SortedSet<int> { 0, text.Length };
+            foreach (var e in usable)
+            {
+                pointSet.Add(e.Offset);
+                pointSet.Add(e.Offset + e.Length);
+            }
+            var points = new List<int>(pointSet);
+
+            // For each adjacent pair of split points, determine which entities cover
+            // that slice, and wrap accordingly.
+            var parts = new List<RichText>();
+            for (int i = 0; i + 1 < points.Count; i++)
+            {
+                int a = points[i];
+                int b = points[i + 1];
+                if (a >= b) continue;
+
+                var slice = text.Substring(a, b - a);
+                RichText current = new RichTextPlain { Text = slice };
+
+                // Collect covering entities, sort outer-first
+                // (earliest start; longer length wins ties so it ends up outermost).
+                var covering = new List<TextEntity>();
+                foreach (var e in usable)
+                {
+                    if (e.Offset <= a && e.Offset + e.Length >= b) covering.Add(e);
+                }
+                covering.Sort(static (x, y) =>
+                {
+                    int c = x.Offset.CompareTo(y.Offset);
+                    if (c != 0) return c;
+                    return y.Length.CompareTo(x.Length);
+                });
+
+                // Apply innermost first so the outermost ends up wrapping everything.
+                for (int k = covering.Count - 1; k >= 0; k--)
+                {
+                    var ent = covering[k];
+                    string entityText = text.Substring(ent.Offset, ent.Length);
+                    current = Wrap(ent.Type, current, entityText);
+                }
+
+                parts.Add(current);
+            }
+
+            // Merge adjacent identical-shape plain runs (in case all entities were dropped
+            // in some range, leaving multiple plain slices in a row).
+            parts = MergeAdjacentPlain(parts);
+
+            if (parts.Count == 0) return new RichTextPlain { Text = "" };
+            if (parts.Count == 1) return parts[0];
+            return new RichTexts { Texts = parts };
+        }
+
+        private static bool HasRichTextEquivalent(TextEntityType type)
+        {
+            return type is TextEntityTypeBold
+                || type is TextEntityTypeItalic
+                || type is TextEntityTypeUnderline
+                || type is TextEntityTypeStrikethrough
+                || type is TextEntityTypeCode
+                || type is TextEntityTypePre
+                || type is TextEntityTypePreCode
+                || type is TextEntityTypeUrl
+                || type is TextEntityTypeTextUrl
+                || type is TextEntityTypeEmailAddress
+                || type is TextEntityTypePhoneNumber;
+        }
+
+        private static RichText Wrap(TextEntityType type, RichText inner, string entityText)
+        {
+            switch (type)
+            {
+                case TextEntityTypeBold _:
+                    return new RichTextBold { Text = inner };
+                case TextEntityTypeItalic _:
+                    return new RichTextItalic { Text = inner };
+                case TextEntityTypeUnderline _:
+                    return new RichTextUnderline { Text = inner };
+                case TextEntityTypeStrikethrough _:
+                    return new RichTextStrikethrough { Text = inner };
+                case TextEntityTypeCode _:
+                case TextEntityTypePre _:
+                case TextEntityTypePreCode _:
+                    return new RichTextFixed { Text = inner };
+                case TextEntityTypeUrl _:
+                    return new RichTextUrl { Text = inner, Url = entityText, IsCached = false };
+                case TextEntityTypeTextUrl tu:
+                    return new RichTextUrl { Text = inner, Url = tu.Url ?? "", IsCached = false };
+                case TextEntityTypeEmailAddress _:
+                    return new RichTextEmailAddress { Text = inner, EmailAddress = entityText };
+                case TextEntityTypePhoneNumber _:
+                    return new RichTextPhoneNumber { Text = inner, PhoneNumber = entityText };
+            }
+            return inner;
+        }
+
+        private static List<RichText> MergeAdjacentPlain(List<RichText> parts)
+        {
+            if (parts.Count < 2) return parts;
+            var result = new List<RichText>(parts.Count);
+            foreach (var part in parts)
+            {
+                if (part is RichTextPlain p
+                    && result.Count > 0
+                    && result[result.Count - 1] is RichTextPlain prev)
+                {
+                    result[result.Count - 1] = new RichTextPlain { Text = prev.Text + p.Text };
+                }
+                else
+                {
+                    result.Add(part);
+                }
+            }
+            return result;
+        }
+
         public static bool HasCaption(this Message message)
         {
             var caption = message.Content.GetCaption();
@@ -2565,6 +2981,7 @@ namespace Telegram.Td.Api
                 case MessagePaidMedia:
                 case MessagePhoto:
                 case MessagePoll:
+                case MessageRichMessage:
                 case MessageSticker:
                 case MessageText:
                 case MessageUnsupported:

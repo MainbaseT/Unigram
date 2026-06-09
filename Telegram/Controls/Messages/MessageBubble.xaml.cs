@@ -1946,6 +1946,15 @@ namespace Telegram.Controls.Messages
                 Grid.SetRow(Message, 2);
                 Panel.Placeholder = false;
             }
+            else if (content is MessageRichMessage)
+            {
+                ContentPanel.Padding = new Thickness(0, 0, 0, 0);
+                Media.Margin = new Thickness(0, 0, 0, 0);
+                FooterToNormal();
+                Grid.SetRow(Footer, 4);
+                Grid.SetRow(Message, 2);
+                Panel.Placeholder = false;
+            }
             else
             {
                 var caption = content.HasCaption();
@@ -2034,6 +2043,7 @@ namespace Telegram.Controls.Messages
             Media.Child = content switch
             {
                 MessageText textMessage when textMessage.LinkPreview != null => /*textMessage.LinkPreview.InstantViewVersion != 0 ? new InstantContent(message) :*/ new WebPageContent(message),
+                MessageRichMessage => new InstantContent(message),
                 MessageAlbum => new AlbumContent(message),
                 MessagePaidAlbum => new PaidMediaContent(message),
                 MessageAnimation => new AnimationContent(message),
