@@ -125,6 +125,11 @@ namespace Telegram.Views
                 return;
             }
 
+            if (args.Url.StartsWith("tg"))
+            {
+                Feedback.Visibility = Visibility.Collapsed;
+            }
+
             ViewModel.ShareLink = uri;
             ViewModel.ShareTitle = args.Url;
 
@@ -196,6 +201,11 @@ namespace Telegram.Views
                     }
                 };
             }
+
+            if (previousElement != null)
+            {
+                previousElement.Margin = new Thickness(previousElement.Margin.Left, previousElement.Margin.Top, previousElement.Margin.Right, previousElement.Margin.Bottom + 24);
+            }
         }
 
         private readonly long _webpageId;
@@ -211,7 +221,7 @@ namespace Telegram.Views
             {
                 PageBlockCover cover => ProcessCover(cover),
                 PageBlockAuthorDate authorDate => ProcessAuthorDate(authorDate),
-                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker or PageBlockHeading => ProcessText(block, false),
+                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker or PageBlockSectionHeading => ProcessText(block, false),
                 PageBlockBlockQuote blockquote => ProcessBlockquote(blockquote),
                 PageBlockDivider divider => ProcessDivider(divider),
                 PageBlockPhoto photo => ProcessPhoto(photo),
@@ -232,19 +242,18 @@ namespace Telegram.Views
                 PageBlockMap map => ProcessMap(map),
                 PageBlockAudio audio => ProcessAudio(audio),
                 PageBlockVoiceNote voiceNote => ProcessVoiceNote(voiceNote),
-                PageBlockMath math => ProcessMath(math),
-                PageBlockQuoteBlock quote => ProcessBlockquote(quote),
+                PageBlockMathematicalExpression math => ProcessMath(math),
                 _ => ProcessUnsupported(block),
             };
         }
 
         #region 3.0
 
-        private FrameworkElement ProcessMath(PageBlockMath math)
+        private FrameworkElement ProcessMath(PageBlockMathematicalExpression math)
         {
             var tex = new RichMathImage
             {
-                Source = math.Source
+                Source = math.Expression
             };
 
             if (tex.IsValid)
@@ -252,7 +261,7 @@ namespace Telegram.Views
                 return tex;
             }
 
-            return ProcessText(new PageBlockParagraph(new RichTextPlain(math.Source)), false);
+            return ProcessText(new PageBlockParagraph(new RichTextPlain(math.Expression)), false);
         }
 
         #endregion
@@ -600,7 +609,7 @@ namespace Telegram.Views
                     text = preformatted.Text;
                     break;
                 case PageBlockBlockQuote blockquote:
-                    text = caption ? blockquote.Credit : blockquote.Text;
+                    text = blockquote.Credit;
                     break;
                 case PageBlockPullQuote pullquote:
                     text = caption ? pullquote.Credit : pullquote.Text;
@@ -617,7 +626,7 @@ namespace Telegram.Views
                 case PageBlockKicker kicker:
                     text = kicker.Kicker;
                     break;
-                case PageBlockHeading heading:
+                case PageBlockSectionHeading heading:
                     text = heading.Text;
                     break;
             }
@@ -709,9 +718,9 @@ namespace Telegram.Views
                 case PageBlockRelatedArticles relatedArticles:
                     textBlock.Style = Resources["BlockRelatedArticlesHeaderStyle"] as Style;
                     break;
-                case PageBlockHeading heading:
+                case PageBlockSectionHeading heading:
                     textBlock.Style = Resources["BlockHeaderTextBlockStyle"] as Style;
-                    textBlock.FontSize = 28 - ((heading.Level - 1) * 2);
+                    textBlock.FontSize = 28 - ((heading.Size - 1) * 2);
                     break;
             }
 
@@ -1207,7 +1216,7 @@ namespace Telegram.Views
             foreach (var item in block.Items)
             {
                 FrameworkElement label;
-                if (item.IsCheckBox)
+                if (item.HasCheckbox)
                 {
                     label = new CheckBox
                     {
@@ -1255,25 +1264,6 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessBlockquote(PageBlockBlockQuote block)
         {
-            var element = new StackPanel { Style = Resources["BlockBlockquoteStyle"] as Style };
-
-            var text = ProcessText(block, false);
-            if (text != null)
-            {
-                element.Children.Add(text);
-            }
-
-            var caption = ProcessText(block, true);
-            if (caption != null)
-            {
-                element.Children.Add(caption);
-            }
-
-            return element;
-        }
-
-        private FrameworkElement ProcessBlockquote(PageBlockQuoteBlock block)
-        {
             var element = new StackPanel(); //{ Style = Resources["BlockBlockquoteStyle"] as Style };
 
             foreach (var child in block.Blocks)
@@ -1296,7 +1286,6 @@ namespace Telegram.Views
 
             element.Padding = new Thickness(12, 2, 0, 4);
             return test;
-            return element;
         }
 
         private FrameworkElement ProcessPullquote(PageBlockPullQuote block)
@@ -1913,7 +1902,7 @@ namespace Telegram.Views
                 case RichTextSuperscript superscript:
                     Typography.SetVariants(span, FontVariants.Superscript);
                     return ProcessRichText(superscript.Text, span, effects, ref offset, cached, marked);
-                case RichTextMath math:
+                case RichTextMathematicalExpression math:
                     {
                         //var tex = new RichMathSurface(math.Source);
                         //var output = new Image
@@ -1939,7 +1928,7 @@ namespace Telegram.Views
 
                         var tex = new RichMathImage
                         {
-                            Source = math.Source
+                            Source = math.Expression
                         };
 
                         if (tex.IsValid)
@@ -1953,7 +1942,7 @@ namespace Telegram.Views
                         }
                         else
                         {
-                            ProcessRichText(new RichTextPlain(math.Source), span, effects, ref offset, cached, marked);
+                            ProcessRichText(new RichTextPlain(math.Expression), span, effects, ref offset, cached, marked);
                         }
                     }
                     return true;
