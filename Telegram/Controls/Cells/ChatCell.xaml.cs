@@ -1581,9 +1581,21 @@ namespace Telegram.Controls.Cells
         {
             thumbnail = null;
 
-            if (draft?.InputMessageText is InputMessageText draftText)
+            if (draft?.Content is DraftMessageContentText draftText)
             {
                 return draftText.Text;
+            }
+            else if (draft?.Content is DraftMessageContentRichMessage draftRichMessage)
+            {
+
+            }
+            else if (draft?.Content is DraftMessageContentVoiceNote draftVoiceNote)
+            {
+
+            }
+            else if (draft?.Content is DraftMessageContentVideoNote draftVideoNote)
+            {
+
             }
 
             static FormattedText Text(string text)

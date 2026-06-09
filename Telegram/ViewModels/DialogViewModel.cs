@@ -2837,8 +2837,8 @@ namespace Telegram.ViewModels
             {
                 var current = GetFormattedText(false, false);
 
-                var prev = _draft?.InputMessageText as InputMessageText;
-                var next = draft?.InputMessageText as InputMessageText;
+                var prev = _draft?.Content as DraftMessageContentText;
+                var next = draft?.Content as DraftMessageContentText;
 
                 if (prev != null && !prev.Text.AreTheSame(current))
                 {
@@ -2854,7 +2854,7 @@ namespace Telegram.ViewModels
                 }
             }
 
-            var input = draft?.InputMessageText as InputMessageText;
+            var input = draft?.Content as DraftMessageContentText;
             if (input == null || Type is not DialogType.History and not DialogType.Thread)
             {
                 _draft = null;
@@ -2900,7 +2900,7 @@ namespace Telegram.ViewModels
                 ComposerHeader = null;
 
             UpdateText:
-                if (draft.InputMessageText is InputMessageText text)
+                if (draft.Content is DraftMessageContentText text)
                 {
                     SetText(text.Text);
                 }
@@ -3010,7 +3010,7 @@ namespace Telegram.ViewModels
                     : new InputMessageReplyToExternalMessage(replyToChatId, replyToMessageId, quote, replyToTaskId, replyToOptionId)
                     : null;
 
-                draft = new DraftMessage(inputReply, 0, new InputMessageText(formattedText, null, false), 0, embedded?.SuggestedPostInfo);
+                draft = new DraftMessage(inputReply, 0, new DraftMessageContentText(formattedText, null), 0, embedded?.SuggestedPostInfo);
             }
 
             _draft = draft;
