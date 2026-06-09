@@ -1155,7 +1155,7 @@ namespace Telegram.Services
         {
             if (Message.Content is MessageAudio messageAudio)
             {
-                return new InputMessageAudio(new InputFileId(messageAudio.Audio.AudioValue.Id), messageAudio.Audio.AlbumCoverThumbnail.ToInput(), messageAudio.Audio.Duration, messageAudio.Audio.Title, messageAudio.Audio.Performer, null);
+                return new InputMessageAudio(new InputAudio(new InputFileId(messageAudio.Audio.AudioValue.Id), messageAudio.Audio.AlbumCoverThumbnail.ToInput(), messageAudio.Audio.Duration, messageAudio.Audio.Title, messageAudio.Audio.Performer), null);
             }
 
             return null;
@@ -1195,7 +1195,7 @@ namespace Telegram.Services
 
         public override InputMessageContent ToInputMessage()
         {
-            return new InputMessageAudio(new InputFileId(Audio.AudioValue.Id), Audio.AlbumCoverThumbnail.ToInput(), Audio.Duration, Audio.Title, Audio.Performer, null);
+            return new InputMessageAudio(new InputAudio(new InputFileId(Audio.AudioValue.Id), Audio.AlbumCoverThumbnail.ToInput(), Audio.Duration, Audio.Title, Audio.Performer), null);
         }
     }
 }
