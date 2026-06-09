@@ -1809,7 +1809,7 @@ namespace Telegram.ViewModels
                     var location = await _locationService.GetPositionAsync(NavigationService);
                     if (location != null)
                     {
-                        await SendMessageAsync(null, new InputMessageLocation(location, 0, 0, 0), null);
+                        await SendMessageAsync(null, new InputMessageLocation(location), null);
                     }
                 }
             }

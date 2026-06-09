@@ -2559,6 +2559,7 @@ namespace Telegram.Td.Api
                 case MessageGiveaway:
                 case MessageGiveawayWinners:
                 case MessageInvoice:
+                case MessageLiveLocation:
                 case MessageLocation:
                 case MessagePaidAlbum:
                 case MessagePaidMedia:
@@ -3534,11 +3535,11 @@ namespace Telegram.Td.Api
                 .Any(x => x.AreTheSame(type));
         }
 
-        public static bool IsExpired(this MessageLocation location, long date)
+        public static bool IsExpired(this LiveLocation location, int expiresIn, long date)
         {
             if (location.LivePeriod > 0)
             {
-                if (location.ExpiresIn == 0)
+                if (expiresIn == 0)
                 {
                     return true;
                 }

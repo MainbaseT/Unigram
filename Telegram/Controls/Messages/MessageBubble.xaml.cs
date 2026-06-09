@@ -1873,7 +1873,7 @@ namespace Telegram.Controls.Messages
                     FooterToNormal();
                     bottom = 4;
                 }
-                else if (content is MessageCall || (content is MessageLocation location && location.LivePeriod > 0 && !location.IsExpired(message.Date)))
+                else if (content is MessageCall || (content is MessageLiveLocation location && !location.Location.IsExpired(location.ExpiresIn, message.Date)))
                 {
                     FooterToHidden();
                 }
@@ -2048,6 +2048,7 @@ namespace Telegram.Controls.Messages
                 MessageInvoice invoice when invoice.PaidMedia is PaidMediaPreview => new InvoicePreviewContent(message),
                 MessageInvoice invoice when invoice.ProductInfo.Photo != null => new InvoicePhotoContent(message),
                 MessageInvoice => new InvoiceContent(message),
+                MessageLiveLocation => new LiveLocationContent(message),
                 MessageLocation => new LocationContent(message),
                 MessagePhoto => new PhotoContent(message),
                 MessagePoll => new PollContent(message),

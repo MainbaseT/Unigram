@@ -388,6 +388,9 @@ namespace Telegram.Controls.Messages
                 case MessagePaidMedia paidMedia:
                     SetPaidMediaTemplate(message, sender, paidMedia, title, outgoing, white);
                     break;
+                case MessageLiveLocation liveLocation:
+                    SetLiveLocationTemplate(message, sender, liveLocation, title, outgoing, white);
+                    break;
                 case MessageLocation location:
                     SetLocationTemplate(message, sender, location, title, outgoing, white);
                     break;
@@ -473,6 +476,9 @@ namespace Telegram.Controls.Messages
                     break;
                 case MessagePaidMedia paidMedia:
                     SetPaidMediaTemplate(message, sender, paidMedia, title, outgoing, white);
+                    break;
+                case MessageLiveLocation liveLocation:
+                    SetLiveLocationTemplate(message, sender, liveLocation, title, outgoing, white);
                     break;
                 case MessageLocation location:
                     SetLocationTemplate(message, sender, location, title, outgoing, white);
@@ -742,6 +748,21 @@ namespace Telegram.Controls.Messages
             }
         }
 
+        private void SetLiveLocationTemplate(MessageViewModel message, MessageSender sender, MessageLiveLocation location, string title, bool outgoing, bool white)
+        {
+            HideThumbnail();
+
+            SetText(message.ClientService,
+                message,
+                outgoing,
+                sender,
+                title,
+                Strings.AttachLiveLocation,
+                null,
+                false,
+                white);
+        }
+
         private void SetLocationTemplate(MessageViewModel message, MessageSender sender, MessageLocation location, string title, bool outgoing, bool white)
         {
             HideThumbnail();
@@ -751,7 +772,7 @@ namespace Telegram.Controls.Messages
                 outgoing,
                 sender,
                 title,
-                location.LivePeriod > 0 ? Strings.AttachLiveLocation : Strings.AttachLocation,
+                Strings.AttachLocation,
                 null,
                 false,
                 white);

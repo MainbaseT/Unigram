@@ -1667,8 +1667,10 @@ namespace Telegram.Controls.Cells
                     return Text1("\U0001F4CB ", invoice.PaidMediaCaption, invoice.ProductInfo.Title);
                 case MessageContact:
                     return Text("\U0001F464 " + Strings.AttachContact);
-                case MessageLocation location:
-                    return Text("\U0001F4CD " + (location.LivePeriod > 0 ? Strings.AttachLiveLocation : Strings.AttachLocation));
+                case MessageLocation:
+                    return Text("\U0001F4CD " + Strings.AttachLocation);
+                case MessageLiveLocation:
+                    return Text("\U0001F4CD " + Strings.AttachLiveLocation);
                 case MessageVenue:
                     return Text("\U0001F4CD " + Strings.AttachLocation);
                 case MessagePhoto photo:

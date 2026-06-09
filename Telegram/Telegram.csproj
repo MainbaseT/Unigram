@@ -368,6 +368,9 @@
     <Compile Include="Controls\MenuFlyoutContent.cs" />
     <Compile Include="Composition\CompositionColorSource.cs" />
     <Compile Include="Controls\MenuFlyoutInfoItem.cs" />
+    <Compile Include="Controls\Messages\Content\LiveLocationContent.xaml.cs">
+      <DependentUpon>LiveLocationContent.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Messages\Content\StakeDiceContent.xaml.cs">
       <DependentUpon>StakeDiceContent.xaml</DependentUpon>
     </Compile>
@@ -3057,6 +3060,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\MessagePopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Messages\Content\LiveLocationContent.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

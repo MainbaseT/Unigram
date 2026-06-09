@@ -2369,16 +2369,13 @@ namespace Telegram.Controls.Messages
                 {
                     return ReplaceWithLink(Strings.ActionPinnedFile, message.GetSender());
                 }
-                else if (reply.Content is MessageLocation location)
+                else if (reply.Content is MessageLiveLocation)
                 {
-                    if (location.LivePeriod > 0)
-                    {
-                        return ReplaceWithLink(Strings.ActionPinnedGeoLive, message.GetSender());
-                    }
-                    else
-                    {
-                        return ReplaceWithLink(Strings.ActionPinnedGeo, message.GetSender());
-                    }
+                    return ReplaceWithLink(Strings.ActionPinnedGeoLive, message.GetSender());
+                }
+                else if (reply.Content is MessageLocation)
+                {
+                    return ReplaceWithLink(Strings.ActionPinnedGeo, message.GetSender());
                 }
                 else if (reply.Content is MessageVenue)
                 {
