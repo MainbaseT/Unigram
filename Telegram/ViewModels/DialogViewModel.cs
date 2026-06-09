@@ -3569,6 +3569,8 @@ namespace Telegram.ViewModels
             await ShowPopupAsync(popup);
             text = await tcs.Task;
 
+            TextField?.Focus(FocusState.Keyboard);
+
             if (text != null)
             {
                 SetFormattedText(text);
