@@ -2406,7 +2406,7 @@ namespace Telegram.Controls.Messages
                 }
                 else if (reply.Content is MessageText text)
                 {
-                    var mess = text.Text.Clone();
+                    var mess = text.Text.Clone().Replace("\n", " ");
                     if (mess.Text.Length > 20)
                     {
                         mess = TdExtensions.Concat(mess.Substring(0, 20), "...".AsFormattedText());
