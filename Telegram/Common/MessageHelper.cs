@@ -2041,6 +2041,10 @@ namespace Telegram.Common
 
                 ToastPopup.Show(navigation.XamlRoot, text, ToastPopupIcon.JoinRequested);
             }
+            else if (result is ChatJoinRequestResultDeclined)
+            {
+                navigation.ShowToast(string.Format(Strings.GuardBotJoinRequestDeclined, clientService.GetTitle(chatId)), ToastPopupIcon.Ban);
+            }
             else if (result is Error error)
             {
                 if (error.MessageEquals(ErrorType.CHANNELS_TOO_MUCH))
