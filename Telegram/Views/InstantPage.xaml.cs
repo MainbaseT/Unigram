@@ -160,7 +160,7 @@ namespace Telegram.Views
             PageBlock previousBlock = null;
             FrameworkElement previousElement = null;
             FrameworkElement firstElement = null;
-            foreach (var block in instantView.PageBlocks)
+            foreach (var block in instantView.Blocks)
             {
                 var element = ProcessBlock(block);
                 var spacing = SpacingBetweenBlocks(previousBlock, block);
@@ -508,7 +508,7 @@ namespace Telegram.Views
             panel.Children.Add(header);
             panel.Children.Add(inner);
 
-            foreach (var block in details.PageBlocks)
+            foreach (var block in details.Blocks)
             {
                 inner.Children.Add(ProcessBlock(block));
             }
@@ -631,7 +631,7 @@ namespace Telegram.Views
                     break;
             }
 
-            if (text == null || text is RichTextPlain plain && string.IsNullOrEmpty(plain.Text))
+            if (PageBlockHelper.IsEmpty(text))
             {
                 return null;
             }
@@ -1239,7 +1239,7 @@ namespace Telegram.Views
 
                 var stack = new StackPanel();
 
-                foreach (var inner in item.PageBlocks)
+                foreach (var inner in item.Blocks)
                 {
                     var child = ProcessBlock(inner);
                     if (child != null)
@@ -1309,7 +1309,7 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessPhoto(PageBlockPhoto block)
         {
-            var galleryItem = new GalleryPhoto(ViewModel.ClientService, block.Photo, block.Caption.ToFormattedText());
+            var galleryItem = new GalleryPhoto(ViewModel.ClientService, block.Photo, block.Caption?.ToFormattedText());
             ViewModel.Gallery.Items.Add(galleryItem);
 
             var message = CreateMessage(new MessagePhoto(block.Photo, null, null, false, false, false));
@@ -1339,7 +1339,7 @@ namespace Telegram.Views
 
             if (block.Video != null)
             {
-                var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
+                var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption?.ToFormattedText());
                 ViewModel.Gallery.Items.Add(galleryItem);
 
                 var message = CreateMessage(new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
@@ -1365,10 +1365,10 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessAnimation(PageBlockAnimation block)
         {
-            var galleryItem = new GalleryAnimation(ViewModel.ClientService, block.Animation, block.Caption.ToFormattedText());
+            var galleryItem = new GalleryAnimation(ViewModel.ClientService, block.Animation, block.Caption?.ToFormattedText());
             ViewModel.Gallery.Items.Add(galleryItem);
 
-            var message = CreateMessage(new MessageAnimation(block.Animation, null, false, false, false));
+            var message = CreateMessage(new MessageAnimation(block.Animation, null, false, block.HasSpoiler, false));
             var element = new StackPanel { Style = Resources["BlockVideoStyle"] as Style };
 
             var content = new AnimationContent(message);
@@ -1515,11 +1515,11 @@ namespace Telegram.Views
             var element = new StackPanel { Style = Resources["BlockSlideshowStyle"] as Style };
 
             var items = new List<FrameworkElement>();
-            foreach (var item in block.PageBlocks)
+            foreach (var item in block.Blocks)
             {
                 if (item is PageBlockPhoto photoBlock)
                 {
-                    var galleryItem = new GalleryPhoto(ViewModel.ClientService, photoBlock.Photo, block.Caption.ToFormattedText());
+                    var galleryItem = new GalleryPhoto(ViewModel.ClientService, photoBlock.Photo, photoBlock.Caption?.ToFormattedText());
                     ViewModel.Gallery.Items.Add(galleryItem);
 
                     var message = CreateMessage(new MessagePhoto(photoBlock.Photo, null, null, false, false, false));
@@ -1534,7 +1534,7 @@ namespace Telegram.Views
                 }
                 else if (item is PageBlockVideo videoBlock)
                 {
-                    var galleryItem = new GalleryVideo(ViewModel.ClientService, videoBlock.Video, block.Caption.ToFormattedText());
+                    var galleryItem = new GalleryVideo(ViewModel.ClientService, videoBlock.Video, videoBlock.Caption?.ToFormattedText());
                     ViewModel.Gallery.Items.Add(galleryItem);
 
                     var message = CreateMessage(new MessageVideo(videoBlock.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
@@ -1570,7 +1570,7 @@ namespace Telegram.Views
             var element = new StackPanel { Style = Resources["BlockCollageStyle"] as Style };
 
             var items = new List<ImageView>();
-            foreach (var item in block.PageBlocks)
+            foreach (var item in block.Blocks)
             {
                 if (item is PageBlockPhoto photoBlock)
                 {
@@ -1683,7 +1683,7 @@ namespace Telegram.Views
             element.Children.Add(header);
 
             PageBlock previousBlock = null;
-            foreach (var subBlock in block.PageBlocks)
+            foreach (var subBlock in block.Blocks)
             {
                 var subLayout = ProcessBlock(subBlock);
                 var spacing = SpacingBetweenBlocks(previousBlock, block);
@@ -1841,16 +1841,18 @@ namespace Telegram.Views
                         return ProcessRichText(urlText.Text, span, effects, ref offset, cached, marked);
                     }
                 case RichTextReference reference:
+                    return ProcessRichText(reference.Text, span, effects, ref offset, cached, marked);
+                case RichTextReferenceLink referenceLink:
                     try
                     {
                         var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
 
-                        if (ProcessRichText(reference.Text, hyperlink, effects | TextEffects.Cached, ref offset, cached, marked))
+                        if (ProcessRichText(referenceLink.Text, hyperlink, effects | TextEffects.Cached, ref offset, cached, marked))
                         {
                             span.Inlines.Add(hyperlink);
                             //hyperlink.Click += (s, args) => Hyperlink_Click(reference);
-                            Extensions.SetToolTip(hyperlink, reference.Url);
-                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, reference.Url));
+                            Extensions.SetToolTip(hyperlink, referenceLink.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, referenceLink.Url));
                             //MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(reference));
 
                             return true;
@@ -1861,7 +1863,7 @@ namespace Telegram.Views
                     catch
                     {
                         Logger.Info("InstantPage: Probably nesting reference inside textUrl");
-                        return ProcessRichText(reference.Text, span, effects, ref offset, cached, marked);
+                        return ProcessRichText(referenceLink.Text, span, effects, ref offset, cached, marked);
                     }
                 case RichTextIcon icon:
                     var photo = new ImageView

@@ -2440,131 +2440,8 @@ namespace Telegram.Td.Api
 
         public static FormattedText ToFormattedText(this RichMessage message)
         {
-            FormattedText text = null;
-
-            foreach (var block in message.Blocks)
-            {
-                var formatted = block.ToFormattedText();
-                if (formatted != null)
-                {
-                    if (text != null)
-                    {
-                        text = FormattedText.Concat(text, "\n", formatted);
-                    }
-                    else
-                    {
-                        text = formatted;
-                    }
-                }
-            }
-
-            return text;
-        }
-
-        private static FormattedText ToFormattedText(this PageBlock block)
-        {
-
-            switch (block)
-            {
-                //PageBlockCover cover => ,
-                //PageBlockAuthorDate authorDate => ProcessAuthorDate(clientService, authorDate),
-                case PageBlockHeader header:
-                    return header.Header.ToFormattedText();
-                case PageBlockSubheader subheader:
-                    return subheader.Subheader.ToFormattedText();
-                case PageBlockTitle title:
-                    return title.Title.ToFormattedText();
-                case PageBlockSubtitle subtitle:
-                    return subtitle.Subtitle.ToFormattedText();
-                case PageBlockFooter footer:
-                    return footer.Footer.ToFormattedText();
-                case PageBlockParagraph paragraph:
-                    return paragraph.Text.ToFormattedText();
-                case PageBlockKicker kicker:
-                    return kicker.Kicker.ToFormattedText();
-                case PageBlockSectionHeading sectionHeading:
-                    return sectionHeading.Text.ToFormattedText();
-                case PageBlockBlockQuote blockquote:
-                    {
-                        FormattedText text = string.Empty.AsFormattedText();
-                        foreach (var child in blockquote.Blocks)
-                        {
-                            text = FormattedText.Concat(text, "\n", child.ToFormattedText());
-                        }
-                        return FormattedText.Concat(text, "\n", blockquote.Credit.ToFormattedText());
-                    }
-                //case PageBlockDivider divider:
-                //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                //    break;
-                case PageBlockPhoto photo:
-                    return photo.Caption.ToFormattedText();
-                case PageBlockList list:
-                    {
-                        FormattedText text = string.Empty.AsFormattedText();
-                        foreach (var item in list.Items)
-                        {
-                            text = FormattedText.Concat(text, "\n", item.Label);
-
-                            foreach (var child in item.PageBlocks)
-                            {
-                                text = FormattedText.Concat(text, " ", child.ToFormattedText());
-                            }
-                        }
-                        return text;
-                    }
-                case PageBlockVideo video:
-                    return video.Caption.ToFormattedText();
-                case PageBlockAnimation animation:
-                    return animation.Caption.ToFormattedText();
-                case PageBlockEmbeddedPost embedPost:
-                    return embedPost.Caption.ToFormattedText();
-                case PageBlockSlideshow slideshow:
-                    return slideshow.Caption.ToFormattedText();
-                case PageBlockCollage collage:
-                    return collage.Caption.ToFormattedText();
-                case PageBlockEmbedded embed:
-                    return embed.Caption.ToFormattedText();
-                case PageBlockPullQuote pullquote:
-                    return FormattedText.Concat(pullquote.Text.ToFormattedText(), "\n", pullquote.Credit.ToFormattedText());
-                //case PageBlockAnchor anchor:
-                //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                //    break;
-                case PageBlockPreformatted preformatted:
-                    return preformatted.Text.ToFormattedText();
-                //case PageBlockChatLink channel:
-                //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                //    break;
-                case PageBlockDetails details:
-                    {
-                        FormattedText text = details.Header.ToFormattedText();
-                        foreach (var child in details.PageBlocks)
-                        {
-                            text = FormattedText.Concat("\n", child.ToFormattedText());
-                        }
-                        return text;
-                    }
-                    //case PageBlockTable table:
-                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                    //    break;
-                    //case PageBlockRelatedArticles relatedArticles:
-                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                    //    break;
-                    //case PageBlockMap map:
-                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                    //    break;
-                    //case PageBlockAudio audio:
-                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                    //    break;
-                    //case PageBlockVoiceNote voiceNote:
-                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                    //    break;
-                    //case PageBlockMathematicalExpression math:
-                    //    text = FormattedText.Concat("\n", header.Header.ToFormattedText());
-                    //    break;
-
-            }
-
-            return null;
+            var text = PageBlockHelper.GetRichText(message.Blocks);
+            return text.ToFormattedText();
         }
 
         // ----------------------------------------------------------------
@@ -2633,6 +2510,10 @@ namespace Telegram.Td.Api
                     return;
 
                 case RichTextReference r:
+                    Append(r.Text, sb, entities);
+                    return;
+
+                case RichTextReferenceLink r:
                     AppendWrapped(r.Text, sb, entities, new TextEntityTypeTextUrl { Url = r.Url ?? "" });
                     return;
 

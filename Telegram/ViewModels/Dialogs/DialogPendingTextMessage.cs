@@ -41,8 +41,6 @@ namespace Telegram.ViewModels
 
             DraftId = update.DraftId;
             LastUpdate = Logger.TickCount;
-
-            Typing_Tick(null, null);
         }
 
         private int GetRandomChunkSize(int remainingLength)
@@ -90,7 +88,7 @@ namespace Telegram.ViewModels
             double adjustedDelay = baseDelay / speedMultiplier;
             adjustedDelay = Math.Max(adjustedDelay, 8);
 
-            return TimeSpan.FromMilliseconds(adjustedDelay * 10);
+            return TimeSpan.FromMilliseconds(adjustedDelay);
         }
 
         private float GetSpeedMultiplier(int remainingLength)
@@ -140,7 +138,7 @@ namespace Telegram.ViewModels
 
         protected abstract void OnUpdate(Message message);
 
-        private void Typing_Tick(object sender, object e)
+        protected void Typing_Tick(object sender, object e)
         {
             if (_typing == null)
             {
@@ -216,6 +214,8 @@ namespace Telegram.ViewModels
                 _pending = messageText.Text;
                 _pendingLength = messageText.Text.Text.Length;
             }
+
+            Typing_Tick(null, null);
         }
 
         protected override void OnUpdate(UpdatePendingMessage update)
@@ -293,12 +293,15 @@ namespace Telegram.ViewModels
             : base(update, message)
         {
             _text = Array.Empty<PageBlock>();
+            _textLength = 0;
 
             if (update.Content is MessageRichMessage messageRich)
             {
                 _pending = messageRich.Message.Blocks;
                 _pendingLength = PageBlockStreaming.Length(messageRich.Message.Blocks);
             }
+
+            Typing_Tick(null, null);
         }
 
         protected override void OnUpdate(UpdatePendingMessage update)
@@ -404,6 +407,7 @@ namespace Telegram.ViewModels
                 PageBlockAnchor _ => 0,
                 PageBlockDivider _ => 1,
                 PageBlockChatLink _ => 1,
+                //PageBlockThinking _ => 1,
                 // Media + caption
                 PageBlockAnimation b => 1 + Length(b.Caption),
                 PageBlockAudio b => 1 + Length(b.Caption),
@@ -416,10 +420,10 @@ namespace Telegram.ViewModels
                 PageBlockCover b => Length(b.Cover),
                 PageBlockList b => LengthListItems(b.Items),
                 PageBlockBlockQuote b => Length(b.Blocks) + Length(b.Credit),
-                PageBlockCollage b => Length(b.PageBlocks) + Length(b.Caption),
-                PageBlockSlideshow b => Length(b.PageBlocks) + Length(b.Caption),
-                PageBlockEmbeddedPost b => 1 + Length(b.PageBlocks) + Length(b.Caption),
-                PageBlockDetails b => Length(b.Header) + Length(b.PageBlocks),
+                PageBlockCollage b => Length(b.Blocks) + Length(b.Caption),
+                PageBlockSlideshow b => Length(b.Blocks) + Length(b.Caption),
+                PageBlockEmbeddedPost b => 1 + Length(b.Blocks) + Length(b.Caption),
+                PageBlockDetails b => Length(b.Header) + Length(b.Blocks),
                 PageBlockTable b => Length(b.Caption) + LengthTableCells(b.Cells),
                 PageBlockRelatedArticles b => Length(b.Header) + LengthRelatedArticles(b.Articles),
                 _ => 0,
@@ -471,11 +475,9 @@ namespace Telegram.ViewModels
                 case RichTextBotCommand b: return Length(b.Text);
                 case RichTextMentionName b: return Length(b.Text);
                 case RichTextBankCardNumber b: return Length(b.Text);
-                case RichTextAutoUrl b: return Length(b.Text);
-                case RichTextAutoEmailAddress b: return Length(b.Text);
-                case RichTextAutoPhoneNumber b: return Length(b.Text);
                 case RichTextDateTime b: return Length(b.Text);
                 case RichTextReference b: return Length(b.Text);
+                case RichTextReferenceLink b: return Length(b.Text);
                 case RichTextAnchorLink b: return Length(b.Text);
             }
             return 0;
@@ -488,7 +490,7 @@ namespace Telegram.ViewModels
             {
                 foreach (var item in items)
                 {
-                    if (item != null) total += Length(item.PageBlocks);
+                    if (item != null) total += Length(item.Blocks);
                 }
             }
             return total;
@@ -591,7 +593,7 @@ namespace Telegram.ViewModels
                 case PageBlockPullQuote b:
                     {
                         var text = SubstringRichText(b.Text, ref remaining) ?? new RichTextPlain("");
-                        var credit = SubstringRichText(b.Credit, ref remaining) ?? new RichTextPlain("");
+                        var credit = SubstringRichText(b.Credit, ref remaining);
                         return new PageBlockPullQuote(text, credit);
                     }
                 case PageBlockMathematicalExpression b:
@@ -658,39 +660,39 @@ namespace Telegram.ViewModels
                 case PageBlockBlockQuote b:
                     {
                         var inner = SubstringList(b.Blocks, ref remaining);
-                        var credit = SubstringRichText(b.Credit, ref remaining) ?? new RichTextPlain("");
+                        var credit = SubstringRichText(b.Credit, ref remaining);
                         return new PageBlockBlockQuote(inner, credit);
                     }
                 case PageBlockCollage b:
                     {
-                        var inner = SubstringList(b.PageBlocks, ref remaining);
+                        var inner = SubstringList(b.Blocks, ref remaining);
                         var caption = SubstringCaption(b.Caption, ref remaining);
                         return new PageBlockCollage(inner, caption);
                     }
                 case PageBlockSlideshow b:
                     {
-                        var inner = SubstringList(b.PageBlocks, ref remaining);
+                        var inner = SubstringList(b.Blocks, ref remaining);
                         var caption = SubstringCaption(b.Caption, ref remaining);
                         return new PageBlockSlideshow(inner, caption);
                     }
                 case PageBlockEmbeddedPost b:
                     {
                         remaining -= 1; // post identity
-                        var inner = SubstringList(b.PageBlocks, ref remaining);
+                        var inner = SubstringList(b.Blocks, ref remaining);
                         var caption = SubstringCaption(b.Caption, ref remaining);
                         return new PageBlockEmbeddedPost(b.Url, b.Author, b.AuthorPhoto, b.Date, inner, caption);
                     }
                 case PageBlockDetails b:
                     {
                         var header = SubstringRichText(b.Header, ref remaining) ?? new RichTextPlain("");
-                        var inner = SubstringList(b.PageBlocks, ref remaining);
+                        var inner = SubstringList(b.Blocks, ref remaining);
                         return new PageBlockDetails(header, inner, b.IsOpen);
                     }
                 case PageBlockTable b:
                     {
                         // Cells first (content), then caption.
                         var cells = SubstringTableCells(b.Cells, ref remaining);
-                        var caption = SubstringRichText(b.Caption, ref remaining) ?? new RichTextPlain("");
+                        var caption = SubstringRichText(b.Caption, ref remaining);
                         return new PageBlockTable(caption, cells, b.IsBordered, b.IsStriped);
                     }
                 case PageBlockRelatedArticles b:
@@ -772,24 +774,18 @@ namespace Telegram.ViewModels
                     return new RichTextSuperscript(SubstringRichText(b.Text, ref remaining));
                 case RichTextMarked b:
                     return new RichTextMarked(SubstringRichText(b.Text, ref remaining));
-                case RichTextMention b:
-                    return new RichTextMention(SubstringRichText(b.Text, ref remaining));
-                case RichTextHashtag b:
-                    return new RichTextHashtag(SubstringRichText(b.Text, ref remaining));
-                case RichTextCashtag b:
-                    return new RichTextCashtag(SubstringRichText(b.Text, ref remaining));
-                case RichTextBotCommand b:
-                    return new RichTextBotCommand(SubstringRichText(b.Text, ref remaining));
-                case RichTextBankCardNumber b:
-                    return new RichTextBankCardNumber(SubstringRichText(b.Text, ref remaining));
-                case RichTextAutoUrl b:
-                    return new RichTextAutoUrl(SubstringRichText(b.Text, ref remaining));
-                case RichTextAutoEmailAddress b:
-                    return new RichTextAutoEmailAddress(SubstringRichText(b.Text, ref remaining));
-                case RichTextAutoPhoneNumber b:
-                    return new RichTextAutoPhoneNumber(SubstringRichText(b.Text, ref remaining));
 
                 // Wrappers with metadata
+                case RichTextMention b:
+                    return new RichTextMention(SubstringRichText(b.Text, ref remaining), b.Username);
+                case RichTextHashtag b:
+                    return new RichTextHashtag(SubstringRichText(b.Text, ref remaining), b.Hashtag);
+                case RichTextCashtag b:
+                    return new RichTextCashtag(SubstringRichText(b.Text, ref remaining), b.Cashtag);
+                case RichTextBotCommand b:
+                    return new RichTextBotCommand(SubstringRichText(b.Text, ref remaining), b.BotCommand);
+                case RichTextBankCardNumber b:
+                    return new RichTextBankCardNumber(SubstringRichText(b.Text, ref remaining), b.BankCardNumber);
                 case RichTextUrl b:
                     return new RichTextUrl(SubstringRichText(b.Text, ref remaining), b.Url, b.IsCached);
                 case RichTextEmailAddress b:
@@ -801,7 +797,9 @@ namespace Telegram.ViewModels
                 case RichTextDateTime b:
                     return new RichTextDateTime(SubstringRichText(b.Text, ref remaining), b.UnixTime, b.FormattingType);
                 case RichTextReference b:
-                    return new RichTextReference(SubstringRichText(b.Text, ref remaining), b.AnchorName, b.Url);
+                    return new RichTextReference(b.Name, SubstringRichText(b.Text, ref remaining));
+                case RichTextReferenceLink b:
+                    return new RichTextReferenceLink(SubstringRichText(b.Text, ref remaining), b.ReferenceName, b.Url);
                 case RichTextAnchorLink b:
                     return new RichTextAnchorLink(SubstringRichText(b.Text, ref remaining), b.AnchorName, b.Url);
             }
@@ -828,7 +826,7 @@ namespace Telegram.ViewModels
             {
                 if (remaining <= 0) break;
                 if (item == null) continue;
-                int itemLen = Length(item.PageBlocks);
+                int itemLen = Length(item.Blocks);
                 if (itemLen == 0)
                 {
                     // Empty item — skip so we don't emit bullet markers without content.
@@ -841,7 +839,7 @@ namespace Telegram.ViewModels
                 }
                 else
                 {
-                    var sub = SubstringList(item.PageBlocks, ref remaining);
+                    var sub = SubstringList(item.Blocks, ref remaining);
                     result.Add(new PageBlockListItem(item.Label, sub, item.HasCheckbox, item.IsChecked, item.Value, item.Type));
                 }
             }

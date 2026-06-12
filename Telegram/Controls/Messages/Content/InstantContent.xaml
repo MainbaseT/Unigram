@@ -13,7 +13,7 @@
         <Setter Property="Background"
                 Value="{ThemeResource MessageHeaderBorderBrush}" />
         <Setter Property="Margin"
-                Value="0" />
+                Value="10,4,10,6" />
         <Setter Property="IsTabStop"
                 Value="True" />
         <Setter Property="CornerRadius"
@@ -112,26 +112,6 @@
                                 <!--<Setter Property="FontSize" Value="14"/>-->
                                 <Setter Property="TextWrapping"
                                         Value="Wrap" />
-                            </Style>
-
-                            <Style x:Key="BlockHeaderTextBlockStyle"
-                                   TargetType="RichTextBlock"
-                                   BasedOn="{StaticResource BodyRichTextBlockStyle}">
-                                <Setter Property="FontSize"
-                                        Value="24" />
-                                <Setter Property="FontFamily"
-                                        Value="Times New Roman" />
-                            </Style>
-
-                            <Style x:Key="BlockSubheaderTextBlockStyle"
-                                   TargetType="RichTextBlock"
-                                   BasedOn="{StaticResource BodyRichTextBlockStyle}">
-                                <Setter Property="FontFamily"
-                                        Value="{ThemeResource EmojiThemeFontFamily}" />
-                                <Setter Property="FontSize"
-                                        Value="20" />
-                                <Setter Property="FontFamily"
-                                        Value="Times New Roman" />
                             </Style>
 
                             <Style x:Key="BlockBodyTextBlockStyle"

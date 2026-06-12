@@ -467,6 +467,11 @@ namespace Telegram.Controls
             SetText(clientService, TextStyleRun.GetText(text, entities), fontSize);
         }
 
+        public void SetText(IClientService clientService, RichText text)
+        {
+            SetText(clientService, TextStyleRun.GetText(text));
+        }
+
         private HashSet<IXamlDirectObject> _activeParagraphs;
         private HashSet<Hyperlink> _activeHyperlinks;
         private HashSet<IXamlDirectObject> _activeSpans;

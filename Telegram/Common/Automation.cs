@@ -198,6 +198,10 @@ namespace Telegram.Common
 
                 return text.Text.Text + ", ";
             }
+            else if (message.Content is MessageRichMessage richMessage)
+            {
+                return richMessage.Message.ToPlainText() + ", ";
+            }
             else if (message.Content is MessageDice dice)
             {
                 return dice.Emoji + ", ";
@@ -516,6 +520,10 @@ namespace Telegram.Common
                 }
 
                 return text.Text.Text + ", ";
+            }
+            else if (message.Content is MessageRichMessage richMessage)
+            {
+                return richMessage.Message.ToPlainText() + ", ";
             }
             else if (message.Content is MessageDice dice)
             {

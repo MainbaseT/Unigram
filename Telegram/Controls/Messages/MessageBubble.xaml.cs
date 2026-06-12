@@ -2109,7 +2109,7 @@ namespace Telegram.Controls.Messages
                 _ => message.Text
             };
 
-            if (styledText != null && message.Content is not MessageAnimatedEmoji)
+            if (styledText != null && message.Content is not MessageAnimatedEmoji and not MessageRichMessage)
             {
                 var fontSize = 0d;
 

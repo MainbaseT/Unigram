@@ -355,7 +355,7 @@ namespace Telegram.Common
                 ConvertBlock(child, trailing);
             }
 
-            output.Add(new PageBlockBlockQuote { Blocks = trailing, Credit = new RichTextPlain { Text = "" } });
+            output.Add(new PageBlockBlockQuote(trailing, null));
         }
 
         // --- Lists ---
@@ -459,7 +459,7 @@ namespace Telegram.Common
 
             return new PageBlockListItem
             {
-                PageBlocks = trailing,
+                Blocks = trailing,
                 Label = num,
                 HasCheckbox = checkbox,
                 IsChecked = isChecked

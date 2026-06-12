@@ -2404,6 +2404,16 @@ namespace Telegram.Controls.Messages
                 {
                     return ReplaceWithLink(string.Format(Strings.ActionPinnedGame, "\uD83C\uDFAE " + game.Game.Title), message.GetSender());
                 }
+                else if (reply.Content is MessageRichMessage richMessage)
+                {
+                    var mess = richMessage.Message.ToFormattedText().Replace("\n", " ");
+                    if (mess.Text.Length > 20)
+                    {
+                        mess = TdExtensions.Concat(mess.Substring(0, 20), "...".AsFormattedText());
+                    }
+
+                    return ReplaceWithLink(ClientEx.Format(Strings.ActionPinnedText, mess), message.GetSender());
+                }
                 else if (reply.Content is MessageText text)
                 {
                     var mess = text.Text.Clone().Replace("\n", " ");

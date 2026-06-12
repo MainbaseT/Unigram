@@ -1768,6 +1768,8 @@ namespace Telegram.Controls.Cells
                     }
                 case MessageText text:
                     return text.Text;
+                case MessageRichMessage richMessage:
+                    return richMessage.Message.ToFormattedText();
                 case MessageDice dice:
                     return dice.Emoji.AsFormattedText();
                 case MessageStakeDice dice:

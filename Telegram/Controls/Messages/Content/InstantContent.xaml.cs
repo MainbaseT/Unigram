@@ -71,6 +71,8 @@ namespace Telegram.Controls.Messages.Content
 
         #endregion
 
+        public UIElement LastBlock => LayoutRoot?.Children.Count > 0 ? LayoutRoot.Children[^1] : null;
+
         public void UpdateMessage(MessageViewModel message)
         {
             _instantViewToken?.Cancel();
@@ -183,10 +185,10 @@ namespace Telegram.Controls.Messages.Content
                 (PageBlockCover a, PageBlockCover b) => Test(a.Cover, b.Cover),
                 (PageBlockList a, PageBlockList b) => LengthListItems(a.Items, b.Items),
                 (PageBlockBlockQuote a, PageBlockBlockQuote b) => Length(a.Blocks, b.Blocks) && Length(a.Credit, b.Credit),
-                (PageBlockCollage a, PageBlockCollage b) => Length(a.PageBlocks, b.PageBlocks) && Length(a.Caption, b.Caption),
-                (PageBlockSlideshow a, PageBlockSlideshow b) => Length(a.PageBlocks, b.PageBlocks) && Length(a.Caption, b.Caption),
-                (PageBlockEmbeddedPost a, PageBlockEmbeddedPost b) => Length(a.PageBlocks, b.PageBlocks) && Length(a.Caption, b.Caption),
-                (PageBlockDetails a, PageBlockDetails b) => Length(a.Header, b.Header) && Length(a.PageBlocks, b.PageBlocks),
+                (PageBlockCollage a, PageBlockCollage b) => Length(a.Blocks, b.Blocks) && Length(a.Caption, b.Caption),
+                (PageBlockSlideshow a, PageBlockSlideshow b) => Length(a.Blocks, b.Blocks) && Length(a.Caption, b.Caption),
+                (PageBlockEmbeddedPost a, PageBlockEmbeddedPost b) => Length(a.Blocks, b.Blocks) && Length(a.Caption, b.Caption),
+                (PageBlockDetails a, PageBlockDetails b) => Length(a.Header, b.Header) && Length(a.Blocks, b.Blocks),
                 (PageBlockTable a, PageBlockTable b) => Length(a.Caption, b.Caption) && LengthTableCells(a.Cells, b.Cells),
                 //(PageBlockRelatedArticles a, PageBlockRelatedArticles b) => Length(a.Header, b.Header) + LengthRelatedArticles(b.Articles),
                 _ => false,
@@ -241,15 +243,12 @@ namespace Telegram.Controls.Messages.Content
                 case (RichTextBotCommand a, RichTextBotCommand b): return Length(a.Text, b.Text);
                 case (RichTextMentionName a, RichTextMentionName b): return Length(a.Text, b.Text);
                 case (RichTextBankCardNumber a, RichTextBankCardNumber b): return Length(a.Text, b.Text);
-                case (RichTextAutoUrl a, RichTextAutoUrl b): return Length(a.Text, b.Text);
-                case (RichTextAutoEmailAddress a, RichTextAutoEmailAddress b): return Length(a.Text, b.Text);
-                case (RichTextAutoPhoneNumber a, RichTextAutoPhoneNumber b): return Length(a.Text, b.Text);
                 case (RichTextDateTime a, RichTextDateTime b): return Length(a.Text, b.Text);
                 case (RichTextReference a, RichTextReference b): return Length(a.Text, b.Text);
+                case (RichTextReferenceLink a, RichTextReferenceLink b): return Length(a.Text, b.Text);
                 case (RichTextAnchorLink a, RichTextAnchorLink b): return Length(a.Text, b.Text);
+                default: return false;
             }
-            return false;
-
         }
 
         private bool Length(PageBlockCaption a, PageBlockCaption b)
@@ -282,7 +281,7 @@ namespace Telegram.Controls.Messages.Content
                 && a.Label == b.Label
                 && a.Type == b.Type
                 && a.Value == b.Value
-                && Length(a.PageBlocks, b.PageBlocks);
+                && Length(a.Blocks, b.Blocks);
         }
 
         private bool LengthListItems(IList<PageBlockListItem> a, IList<PageBlockListItem> b)
@@ -384,6 +383,11 @@ namespace Telegram.Controls.Messages.Content
                     //}
 
                     LayoutRoot.Children.RemoveAt(step.OldStartIndex);
+
+                    if (step.Items[0].OldValue is PageBlockAnchor anchor)
+                    {
+                        _anchors.Remove(anchor.Name);
+                    }
                 }
             }
 
@@ -474,31 +478,35 @@ namespace Telegram.Controls.Messages.Content
         {
             return block switch
             {
+                // IV only
                 PageBlockCover cover => ProcessCover(clientService, cover),
                 PageBlockAuthorDate authorDate => ProcessAuthorDate(clientService, authorDate),
-                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockFooter or PageBlockParagraph or PageBlockKicker or PageBlockSectionHeading => ProcessText(clientService, block, false),
+                PageBlockEmbeddedPost embedPost => ProcessEmbedPost(clientService, embedPost),
+                PageBlockEmbedded embed => ProcessEmbed(clientService, embed),
+                PageBlockRelatedArticles relatedArticles => ProcessRelatedArticles(clientService, relatedArticles),
+                PageBlockHeader or PageBlockSubheader or PageBlockTitle or PageBlockSubtitle or PageBlockKicker => ProcessText(clientService, block, false),
+                // Rich messages only
+                PageBlockThinking thinking => ProcessThinking(clientService, thinking),
+                // All
+                PageBlockFooter or PageBlockParagraph or PageBlockSectionHeading => ProcessText(clientService, block, false),
                 PageBlockBlockQuote blockquote => ProcessBlockquote(clientService, blockquote),
                 PageBlockDivider divider => ProcessDivider(clientService, divider),
                 PageBlockPhoto photo => ProcessPhoto(clientService, photo),
                 PageBlockList list => ProcessList(clientService, list),
                 PageBlockVideo video => ProcessVideo(clientService, video),
                 PageBlockAnimation animation => ProcessAnimation(clientService, animation),
-                PageBlockEmbeddedPost embedPost => ProcessEmbedPost(clientService, embedPost),
                 PageBlockSlideshow slideshow => ProcessSlideshow(clientService, slideshow),
                 PageBlockCollage collage => ProcessCollage(clientService, collage),
-                PageBlockEmbedded embed => ProcessEmbed(clientService, embed),
                 PageBlockPullQuote pullquote => ProcessPullquote(clientService, pullquote),
                 PageBlockAnchor anchor => ProcessAnchor(clientService, anchor),
                 PageBlockPreformatted preformatted => ProcessPreformatted(clientService, preformatted),
                 PageBlockChatLink channel => ProcessChannel(clientService, channel),
                 PageBlockDetails details => ProcessDetails(clientService, details),
                 PageBlockTable table => ProcessTable(clientService, table),
-                PageBlockRelatedArticles relatedArticles => ProcessRelatedArticles(clientService, relatedArticles),
                 PageBlockMap map => ProcessMap(clientService, map),
                 PageBlockAudio audio => ProcessAudio(clientService, audio),
                 PageBlockVoiceNote voiceNote => ProcessVoiceNote(clientService, voiceNote),
                 PageBlockMathematicalExpression math => ProcessMath(clientService, math),
-                PageBlockThinking thinking => ProcessThinking(clientService, thinking),
                 _ => ProcessUnsupported(clientService, block),
             };
         }
@@ -523,6 +531,19 @@ namespace Telegram.Controls.Messages.Content
 
             if (tex.IsValid)
             {
+                // TODO: Max width
+                if (tex.PixelWidth > 432)
+                {
+                    return new ScrollViewer
+                    {
+                        Content = tex,
+                        HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        HorizontalScrollMode = ScrollMode.Auto,
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                        VerticalScrollMode = ScrollMode.Disabled
+                    };
+                }
+
                 return tex;
             }
 
@@ -543,9 +564,9 @@ namespace Telegram.Controls.Messages.Content
             var caption = ProcessCaption(clientService, map.Caption);
             if (caption != null)
             {
-                caption.Margin = new Thickness(12, 8, 0, 0);
+                caption.Margin = new Thickness(0, 8, 0, 0);
 
-                var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
+                var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Stretch };
                 panel.Children.Add(image);
                 panel.Children.Add(caption);
 
@@ -661,43 +682,39 @@ namespace Telegram.Controls.Messages.Content
 
                 foreach (var cell in rowz)
                 {
-                    var textBlock = new RichTextBlock();
-                    var span = new Span();
-                    var paragraph = new Paragraph();
-                    paragraph.Inlines.Add(span);
-                    textBlock.Blocks.Add(paragraph);
-                    textBlock.TextWrapping = TextWrapping.Wrap;
-
-                    switch (cell.Align)
-                    {
-                        case PageBlockHorizontalAlignmentLeft left:
-                            textBlock.TextAlignment = TextAlignment.Left;
-                            break;
-                        case PageBlockHorizontalAlignmentCenter center:
-                            textBlock.TextAlignment = TextAlignment.Center;
-                            break;
-                        case PageBlockHorizontalAlignmentRight right:
-                            textBlock.TextAlignment = TextAlignment.Right;
-                            break;
-                    }
-
-                    switch (cell.Valign)
-                    {
-                        case PageBlockVerticalAlignmentTop top:
-                            textBlock.VerticalAlignment = VerticalAlignment.Top;
-                            break;
-                        case PageBlockVerticalAlignmentMiddle middle:
-                            textBlock.VerticalAlignment = VerticalAlignment.Center;
-                            break;
-                        case PageBlockVerticalAlignmentBottom bottom:
-                            textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-                            break;
-                    }
-
-                    //textBlock.Margin = new Thickness(12, 0, 12, 12);
+                    FormattedTextBlock textBlock = null;
                     if (cell.Text != null)
                     {
-                        ProcessRichText(clientService, cell.Text, span, textBlock);
+                        textBlock = CreateTextBlock();
+                        textBlock.TextWrapping = TextWrapping.Wrap;
+
+                        switch (cell.Align)
+                        {
+                            case PageBlockHorizontalAlignmentLeft left:
+                                textBlock.TextAlignment = TextAlignment.Left;
+                                break;
+                            case PageBlockHorizontalAlignmentCenter center:
+                                textBlock.TextAlignment = TextAlignment.Center;
+                                break;
+                            case PageBlockHorizontalAlignmentRight right:
+                                textBlock.TextAlignment = TextAlignment.Right;
+                                break;
+                        }
+
+                        switch (cell.Valign)
+                        {
+                            case PageBlockVerticalAlignmentTop top:
+                                textBlock.VerticalAlignment = VerticalAlignment.Top;
+                                break;
+                            case PageBlockVerticalAlignmentMiddle middle:
+                                textBlock.VerticalAlignment = VerticalAlignment.Center;
+                                break;
+                            case PageBlockVerticalAlignmentBottom bottom:
+                                textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+                                break;
+                        }
+
+                        textBlock.SetText(clientService, cell.Text);
                     }
 
                     var border = new Border();
@@ -781,7 +798,7 @@ namespace Telegram.Controls.Messages.Content
             panel.Children.Add(header);
             panel.Children.Add(inner);
 
-            foreach (var block in details.PageBlocks)
+            foreach (var block in details.Blocks)
             {
                 inner.Children.Add(ProcessBlock(clientService, block));
             }
@@ -907,29 +924,34 @@ namespace Telegram.Controls.Messages.Content
                     break;
             }
 
-            if (text == null || text is RichTextPlain plain && string.IsNullOrEmpty(plain.Text))
+            if (PageBlockHelper.IsEmpty(text))
             {
                 return null;
             }
 
             var textBlock = CreateTextBlock();
-            var span = new Span();
-            var paragraph = new Paragraph();
-            paragraph.Inlines.Add(span);
-            textBlock.Blocks.Add(paragraph);
-            textBlock.TextWrapping = TextWrapping.Wrap;
+            textBlock.AutoFontSize = false;
 
-            textBlock.ContextMenuOpening += Text_ContextMenuOpening;
-            textBlock.AddHandler(ContextRequestedEvent, new TypedEventHandler<UIElement, ContextRequestedEventArgs>(Text_ContextRequested), true);
+            textBlock.SetText(clientService, text);
 
-            //textBlock.Margin = new Thickness(12, 0, 12, 12);
-            ProcessRichText(clientService, text, span, textBlock);
+            //var textBlock = CreateTextBlock();
+            //var span = new Span();
+            //var paragraph = new Paragraph();
+            //paragraph.Inlines.Add(span);
+            //textBlock.Blocks.Add(paragraph);
+            //textBlock.TextWrapping = TextWrapping.Wrap;
+
+            //textBlock.ContextMenuOpening += Text_ContextMenuOpening;
+            //textBlock.AddHandler(ContextRequestedEvent, new TypedEventHandler<UIElement, ContextRequestedEventArgs>(Text_ContextRequested), true);
+
+            ////textBlock.Margin = new Thickness(12, 0, 12, 12);
+            //ProcessRichText(clientService, text, span, textBlock);
 
             switch (block)
             {
                 case PageBlockTitle title:
                     textBlock.FontSize = 28;
-                    textBlock.FontFamily = new FontFamily("Times New Roman");
+                    textBlock.FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSerif"] as FontFamily;
                     //textBlock.TextLineBounds = TextLineBounds.TrimToBaseline;
                     break;
                 case PageBlockSubtitle subtitle:
@@ -938,52 +960,61 @@ namespace Telegram.Controls.Messages.Content
                     //textBlock.TextLineBounds = TextLineBounds.TrimToBaseline;
                     break;
                 case PageBlockHeader header:
-                    textBlock.Style = LayoutRoot.Resources["BlockHeaderTextBlockStyle"] as Style;
+                    textBlock.FontSize = 24;
+                    textBlock.FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSerif"] as FontFamily;
+                    //textBlock.Style = LayoutRoot.Resources["BlockHeaderTextBlockStyle"] as Style;
                     break;
                 case PageBlockSubheader subheader:
-                    textBlock.Style = LayoutRoot.Resources["BlockSubheaderTextBlockStyle"] as Style;
+                    textBlock.FontSize = 20;
+                    textBlock.FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSerif"] as FontFamily;
+                    //textBlock.Style = LayoutRoot.Resources["BlockSubheaderTextBlockStyle"] as Style;
                     break;
                 case PageBlockParagraph paragraphz:
-                    textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
+                    //textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
                     break;
                 case PageBlockPreformatted preformatted:
-                    textBlock.FontSize = 16;
+                    //textBlock.FontSize = 16;
                     break;
                 case PageBlockFooter footer:
-                    textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    // Info caption style
+                    //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
                     //textBlock.TextAlignment = TextAlignment.Center;
                     break;
                 case PageBlockPhoto photo:
                 case PageBlockVideo video:
-                    textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    // Info caption style
+                    //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
                     textBlock.TextAlignment = TextAlignment.Center;
                     break;
                 case PageBlockSlideshow slideshow:
                 case PageBlockEmbedded embed:
                 case PageBlockEmbeddedPost embedPost:
-                    textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    // Info caption style
+                    //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
                     //textBlock.TextAlignment = TextAlignment.Center;
                     break;
                 case PageBlockBlockQuote blockquote:
                     if (caption)
                     {
-                        textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                        // Info caption style
+                        //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
                         textBlock.Margin = new Thickness(0, 12, 0, 0);
                     }
                     else
                     {
-                        textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
+                        //textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
                     }
                     break;
                 case PageBlockPullQuote pullquote:
                     if (caption)
                     {
-                        textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                        // Info caption style
+                        //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
                     }
                     else
                     {
-                        textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
-                        textBlock.FontFamily = new FontFamily("Times New Roman");
+                        //textBlock.Style = LayoutRoot.Resources["BlockBodyTextBlockStyle"] as Style;
+                        textBlock.FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSerif"] as FontFamily;
                         //textBlock.TextLineBounds = TextLineBounds.TrimToBaseline;
                         textBlock.TextAlignment = TextAlignment.Center;
                     }
@@ -992,11 +1023,12 @@ namespace Telegram.Controls.Messages.Content
                     textBlock.IsTextSelectionEnabled = false;
                     break;
                 case PageBlockRelatedArticles relatedArticles:
-                    textBlock.Style = LayoutRoot.Resources["BlockRelatedArticlesHeaderStyle"] as Style;
+                    //textBlock.Style = LayoutRoot.Resources["BlockRelatedArticlesHeaderStyle"] as Style;
                     break;
                 case PageBlockSectionHeading heading:
-                    textBlock.Style = LayoutRoot.Resources["BlockHeaderTextBlockStyle"] as Style;
+                    //textBlock.Style = LayoutRoot.Resources["BlockHeaderTextBlockStyle"] as Style;
                     textBlock.FontSize = 28 - ((heading.Size - 1) * 2);
+                    textBlock.FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSerif"] as FontFamily;
                     break;
             }
 
@@ -1031,16 +1063,40 @@ namespace Telegram.Controls.Messages.Content
 
         private HashSet<RichTextBlock> _selection = new();
 
-        private RichTextBlock CreateTextBlock()
+        private FormattedTextBlock CreateTextBlock()
         {
-            var block = new RichTextBlock();
-            block.SelectionChanged += OnSelectionChanged;
-            block.LostFocus += OnLostFocus;
-            block.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-            block.AddHandler(PointerMovedEvent, new PointerEventHandler(OnPointerMoved), true);
-            block.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            var block = new FormattedTextBlock();
+            block.TextEntityClick += Block_TextEntityClick;
+            //block.SelectionChanged += OnSelectionChanged;
+            //block.LostFocus += OnLostFocus;
+            //block.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
+            //block.AddHandler(PointerMovedEvent, new PointerEventHandler(OnPointerMoved), true);
+            //block.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
 
             return block;
+        }
+
+        private void Block_TextEntityClick(object sender, TextEntityClickEventArgs e)
+        {
+            if (e.Type is TextEntityTypeTextUrl textUrl && textUrl.Url.StartsWith("#"))
+            {
+                if (_anchors.TryGetValue(textUrl.Url.TrimStart('#'), out Border anchor))
+                {
+                    anchor.StartBringIntoView(new BringIntoViewOptions { VerticalAlignmentRatio = 0.0 });
+                    return;
+
+                    var scrollViewer = this.GetParent<ScrollViewer>();
+                    if (scrollViewer != null)
+                    {
+                        var verticalOffset = anchor.TransformToPoint(scrollViewer.ContentTemplateRoot);
+                        scrollViewer.ChangeView(null, verticalOffset.Y, null);
+                    }
+                }
+            }
+            else
+            {
+                MessageBubble.TextEntityClick(_message, sender as FormattedTextBlock, e);
+            }
         }
 
         private void RemoveSelectionHighlighter(RichTextBlock block)
@@ -1250,34 +1306,29 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessCaption(IClientService clientService, PageBlockCaption caption)
         {
-            var textEmpty = caption.Text == null || caption.Text is RichTextPlain plain1 && string.IsNullOrEmpty(plain1.Text);
-            var citeEmpty = caption.Credit == null || caption.Credit is RichTextPlain plain2 && string.IsNullOrEmpty(plain2.Text);
+            var textEmpty = PageBlockHelper.IsEmpty(caption?.Text);
+            var citeEmpty = PageBlockHelper.IsEmpty(caption?.Credit);
 
             if (textEmpty && citeEmpty)
             {
                 return null;
             }
 
-            var textBlock = CreateTextBlock();
-            var span = new Span();
-            var paragraph = new Paragraph();
-            paragraph.Inlines.Add(span);
-            textBlock.Blocks.Add(paragraph);
-            textBlock.TextWrapping = TextWrapping.Wrap;
-
-            if (!textEmpty)
+            FormattedTextBlock textBlock = null;
+            if (!textEmpty && !citeEmpty)
             {
-                ProcessRichText(clientService, caption.Text, span, textBlock);
+                textBlock = CreateTextBlock();
+                textBlock.SetText(clientService, new RichTexts([caption.Text, new RichTextPlain("\n"), caption.Credit]));
             }
-
-            if (!citeEmpty)
+            else if (!textEmpty)
             {
-                if (!textEmpty)
-                {
-                    span.Inlines.Add(new LineBreak());
-                }
-
-                ProcessRichText(clientService, caption.Credit, span, textBlock);
+                textBlock = CreateTextBlock();
+                textBlock.SetText(clientService, caption.Text);
+            }
+            else if (!citeEmpty)
+            {
+                textBlock = CreateTextBlock();
+                textBlock.SetText(clientService, caption.Credit);
             }
 
             return textBlock;
@@ -1306,6 +1357,7 @@ namespace Telegram.Controls.Messages.Content
                     Glyph = Icons.CodeFilled16
                 });
                 test.Children.Add(element);
+                test.Margin = new Thickness(0, 4, 0, 4);
 
                 element.Padding = new Thickness(12, 2, 0, 4);
                 return test;
@@ -1329,6 +1381,7 @@ namespace Telegram.Controls.Messages.Content
                     LanguageName = block.Language
                 });
                 test.Children.Add(element);
+                test.Margin = new Thickness(0, 4, 0, 4);
 
                 element.Padding = new Thickness(12, 22, 0, 4);
                 return test;
@@ -1484,7 +1537,7 @@ namespace Telegram.Controls.Messages.Content
         private FrameworkElement ProcessList(IClientService clientService, PageBlockList block)
         {
             var panel = new Grid();
-            panel.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            panel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto), MinWidth = 28 });
             panel.ColumnDefinitions.Add(new ColumnDefinition());
 
             var row = 0;
@@ -1515,7 +1568,7 @@ namespace Telegram.Controls.Messages.Content
 
                 var stack = new StackPanel();
 
-                foreach (var inner in item.PageBlocks)
+                foreach (var inner in item.Blocks)
                 {
                     var child = ProcessBlock(clientService, inner);
                     if (child != null)
@@ -1560,7 +1613,8 @@ namespace Telegram.Controls.Messages.Content
             });
             test.Children.Add(element);
 
-            element.Padding = new Thickness(12, 2, 0, 4);
+            element.Padding = new Thickness(12, 2, 12, 4);
+            test.Margin = new Thickness(0, 4, 0, 4);
             return test;
         }
 
@@ -1791,7 +1845,7 @@ namespace Telegram.Controls.Messages.Content
             var element = new StackPanel { Style = LayoutRoot.Resources["BlockSlideshowStyle"] as Style };
 
             var items = new List<FrameworkElement>();
-            foreach (var item in block.PageBlocks)
+            foreach (var item in block.Blocks)
             {
                 if (item is PageBlockPhoto photoBlock)
                 {
@@ -1846,7 +1900,7 @@ namespace Telegram.Controls.Messages.Content
             var element = new StackPanel { Style = LayoutRoot.Resources["BlockCollageStyle"] as Style };
 
             var items = new List<ImageView>();
-            foreach (var item in block.PageBlocks)
+            foreach (var item in block.Blocks)
             {
                 if (item is PageBlockPhoto photoBlock)
                 {
@@ -1959,7 +2013,7 @@ namespace Telegram.Controls.Messages.Content
             element.Children.Add(header);
 
             PageBlock previousBlock = null;
-            foreach (var subBlock in block.PageBlocks)
+            foreach (var subBlock in block.Blocks)
             {
                 var subLayout = ProcessBlock(clientService, subBlock);
                 var spacing = SpacingBetweenBlocks(previousBlock, block);
@@ -2117,16 +2171,18 @@ namespace Telegram.Controls.Messages.Content
                         return ProcessRichText(clientService, urlText.Text, span, textBlock, effects, ref offset, cached, marked);
                     }
                 case RichTextReference reference:
+                    return ProcessRichText(clientService, reference.Text, span, textBlock, effects, ref offset, cached, marked);
+                case RichTextReferenceLink referenceLink:
                     try
                     {
                         var hyperlink = new Hyperlink { UnderlineStyle = UnderlineStyle.None };
 
-                        if (ProcessRichText(clientService, reference.Text, hyperlink, textBlock, effects | TextEffects.Cached, ref offset, cached, marked))
+                        if (ProcessRichText(clientService, referenceLink.Text, hyperlink, textBlock, effects | TextEffects.Cached, ref offset, cached, marked))
                         {
                             span.Inlines.Add(hyperlink);
                             //hyperlink.Click += (s, args) => Hyperlink_Click(reference);
-                            Extensions.SetToolTip(hyperlink, reference.Url);
-                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, reference.Url));
+                            Extensions.SetToolTip(hyperlink, referenceLink.Url);
+                            MessageHelper.SetHyperlinkInfo(hyperlink, new TextEntityClickEventArgs(null, referenceLink.Url));
                             //MessageHelper.SetEntityAction(hyperlink, () => Hyperlink_Click(reference));
 
                             return true;
@@ -2137,7 +2193,7 @@ namespace Telegram.Controls.Messages.Content
                     catch
                     {
                         Logger.Info("InstantPage: Probably nesting reference inside textUrl");
-                        return ProcessRichText(clientService, reference.Text, span, textBlock, effects, ref offset, cached, marked);
+                        return ProcessRichText(clientService, referenceLink.Text, span, textBlock, effects, ref offset, cached, marked);
                     }
                 case RichTextIcon icon:
                     var photo = new ImageView
