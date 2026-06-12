@@ -12,6 +12,7 @@ using Telegram.Services;
 using Telegram.Td.Api;
 using Telegram.Views.Chats;
 using Telegram.Views.Supergroups;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Telegram.ViewModels.Supergroups
@@ -115,7 +116,17 @@ namespace Telegram.ViewModels.Supergroups
 
                 if (item.JoinByRequest != _joinByRequest)
                 {
-                    ClientService.Send(new ToggleSupergroupJoinByRequest(item.Id, _joinByRequest));
+                    var response = await ClientService.SendAsync(new GetChatInviteLinks(chat.Id, ClientService.Options.MyId, false, 0, string.Empty, 1));
+                    if (response is ChatInviteLinks inviteLinks)
+                    {
+                        var message = item.IsChannel
+                            ? Locale.Declension(_joinByRequest ? Strings.R.ApproveNewMembersEnableForLinksChannel : Strings.R.ApproveNewMembersDisableForLinksChannel, inviteLinks.TotalCount)
+                            : Locale.Declension(_joinByRequest ? Strings.R.ApproveNewMembersEnableForLinks : Strings.R.ApproveNewMembersDisableForLinks, inviteLinks.TotalCount);
+
+                        var confirm = await ShowPopupAsync(message, Strings.ApproveNewMembersApplyToLinksTitle, Strings.ApproveNewMembersApplyToLinksApply, Strings.ApproveNewMembersApplyToLinksDontApply);
+
+                        ClientService.Send(new ToggleSupergroupJoinByRequest(item.Id, _joinByRequest, cache.GuardBotUserId, confirm == ContentDialogResult.Primary));
+                    }
                 }
 
                 if (!string.Equals(username, item.EditableUsername()))

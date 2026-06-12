@@ -1415,11 +1415,44 @@ rewrite your messages.</value>
   <data name="ApproveNewMembers" xml:space="preserve">
     <value>Request Admin Approval</value>
   </data>
+  <data name="ApproveNewMembersApplyToLinksApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="ApproveNewMembersApplyToLinksDontApply" xml:space="preserve">
+    <value>Don&apos;t Apply</value>
+  </data>
+  <data name="ApproveNewMembersApplyToLinksTitle" xml:space="preserve">
+    <value>Apply to existing invite links</value>
+  </data>
   <data name="ApproveNewMembersDescription" xml:space="preserve">
     <value>Turn this on if you want users to join only after they are approved by an admin.</value>
   </data>
   <data name="ApproveNewMembersDescriptionFrozen" xml:space="preserve">
     <value>You can&apos;t enable admin approval for links that require a monthly fee.</value>
+  </data>
+  <data name="ApproveNewMembersDisableForLinks_one" xml:space="preserve">
+    <value>Also disable **Approve New Members** for **{0} existing invite link** in this group?</value>
+  </data>
+  <data name="ApproveNewMembersDisableForLinks_other" xml:space="preserve">
+    <value>Also disable **Approve New Members** for **{0} existing invite links** in this group?</value>
+  </data>
+  <data name="ApproveNewMembersDisableForLinksChannel_one" xml:space="preserve">
+    <value>Also disable **Approve New Members** for **{0} existing invite link** in this channel?</value>
+  </data>
+  <data name="ApproveNewMembersDisableForLinksChannel_other" xml:space="preserve">
+    <value>Also disable **Approve New Members** for **{0} existing invite links** in this channel?</value>
+  </data>
+  <data name="ApproveNewMembersEnableForLinks_one" xml:space="preserve">
+    <value>Also enable **Approve New Members** for **{0} existing invite link** in this group?</value>
+  </data>
+  <data name="ApproveNewMembersEnableForLinks_other" xml:space="preserve">
+    <value>Also enable **Approve New Members** for **{0} existing invite links** in this group?</value>
+  </data>
+  <data name="ApproveNewMembersEnableForLinksChannel_one" xml:space="preserve">
+    <value>Also enable **Approve New Members** for **{0} existing invite link** in this channel?</value>
+  </data>
+  <data name="ApproveNewMembersEnableForLinksChannel_other" xml:space="preserve">
+    <value>Also enable **Approve New Members** for **{0} existing invite links** in this channel?</value>
   </data>
   <data name="AppsTab" xml:space="preserve">
     <value>Apps</value>
