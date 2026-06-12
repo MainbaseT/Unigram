@@ -13,7 +13,7 @@
         <Setter Property="Background"
                 Value="{ThemeResource MessageHeaderBorderBrush}" />
         <Setter Property="Margin"
-                Value="10,4,10,6" />
+                Value="0,0,0,6" />
         <Setter Property="IsTabStop"
                 Value="True" />
         <Setter Property="CornerRadius"
@@ -142,7 +142,7 @@
                             <Style x:Key="BlockDividerStyle"
                                    TargetType="Rectangle">
                                 <Setter Property="Fill"
-                                        Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+                                        Value="{ThemeResource SettingsItemBorderBrush}" />
                                 <Setter Property="Height"
                                         Value="1" />
                             </Style>
@@ -159,16 +159,6 @@
 
                             <Style x:Key="BlockPullquoteStyle"
                                    TargetType="StackPanel" />
-                            <Style x:Key="BlockPhotoStyle"
-                                   TargetType="StackPanel">
-                                <Setter Property="HorizontalAlignment"
-                                        Value="Center" />
-                            </Style>
-                            <Style x:Key="BlockVideoStyle"
-                                   TargetType="StackPanel">
-                                <Setter Property="HorizontalAlignment"
-                                        Value="Center" />
-                            </Style>
                             <Style x:Key="BlockEmbedStyle"
                                    TargetType="StackPanel" />
                             <Style x:Key="BlockSlideshowStyle"
@@ -176,8 +166,6 @@
                                 <Setter Property="HorizontalAlignment"
                                         Value="Center" />
                             </Style>
-                            <Style x:Key="BlockCollageStyle"
-                                   TargetType="StackPanel" />
 
                             <Style x:Key="BlockEmbedPostStyle"
                                    TargetType="StackPanel">

@@ -219,8 +219,8 @@ namespace Telegram.Controls.Messages.Content
                     return true;
 
                 // Leaves
-                case (RichTextAnchor, RichTextAnchor) _: return true;
-                case (RichTextIcon, RichTextIcon) _: return true;
+                case (RichTextAnchor a, RichTextAnchor b): return a.Name == b.Name;
+                case (RichTextIcon a, RichTextIcon b): return a.Document.DocumentValue.Id == b.Document.DocumentValue.Id && a.Width == b.Width && a.Height == b.Height;
                 case (RichTextCustomEmoji a, RichTextCustomEmoji b): return a.CustomEmojiId == b.CustomEmojiId;
                 case (RichTextMathematicalExpression a, RichTextMathematicalExpression b): return string.Equals(a.Expression, b.Expression);
 
@@ -253,6 +253,11 @@ namespace Telegram.Controls.Messages.Content
 
         private bool Length(PageBlockCaption a, PageBlockCaption b)
         {
+            if (a == null || b == null)
+            {
+                return a == b;
+            }
+
             return Length(a.Credit, b.Credit) && Length(a.Text, b.Text);
         }
 
@@ -358,9 +363,13 @@ namespace Telegram.Controls.Messages.Content
             {
                 if (step.Status == DiffStatus.Add)
                 {
-                    var element = ProcessBlock(clientService, step.Items[0].NewValue);
+                    var element = ProcessBlock(clientService, step.Items[0].NewValue, null);
                     if (element != null)
                     {
+                        var padding = PaddingForBlock(step.Items[0].NewValue);
+                        var spacing = SpacingBetweenBlocks(step.Items[0].NewValue, blocks, step.NewStartIndex);
+                        element.Margin = new Thickness(padding, spacing, padding, 0);
+
                         LayoutRoot.Children.Insert(step.NewStartIndex, element);
                     }
                     else
@@ -421,7 +430,7 @@ namespace Telegram.Controls.Messages.Content
             FrameworkElement firstElement = null;
             foreach (var block in blocks)
             {
-                var element = ProcessBlock(clientService, block);
+                var element = ProcessBlock(clientService, block, null);
                 var spacing = SpacingBetweenBlocks(previousBlock, block);
                 var padding = PaddingForBlock(block);
 
@@ -474,7 +483,7 @@ namespace Telegram.Controls.Messages.Content
 
         private readonly Dictionary<string, Border> _anchors = new();
 
-        private FrameworkElement ProcessBlock(IClientService clientService, PageBlock block)
+        private FrameworkElement ProcessBlock(IClientService clientService, PageBlock block, PageBlock parent)
         {
             return block switch
             {
@@ -491,9 +500,9 @@ namespace Telegram.Controls.Messages.Content
                 PageBlockFooter or PageBlockParagraph or PageBlockSectionHeading => ProcessText(clientService, block, false),
                 PageBlockBlockQuote blockquote => ProcessBlockquote(clientService, blockquote),
                 PageBlockDivider divider => ProcessDivider(clientService, divider),
-                PageBlockPhoto photo => ProcessPhoto(clientService, photo),
+                PageBlockPhoto photo => ProcessPhoto(clientService, photo, parent),
                 PageBlockList list => ProcessList(clientService, list),
-                PageBlockVideo video => ProcessVideo(clientService, video),
+                PageBlockVideo video => ProcessVideo(clientService, video, parent),
                 PageBlockAnimation animation => ProcessAnimation(clientService, animation),
                 PageBlockSlideshow slideshow => ProcessSlideshow(clientService, slideshow),
                 PageBlockCollage collage => ProcessCollage(clientService, collage),
@@ -556,10 +565,18 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessMap(IClientService clientService, PageBlockMap map)
         {
-            var image = new ImageView();
-            image.Constraint = map;
-            image.XamlRoot = XamlRoot;
-            image.SetSource(clientService, map.Location, map.Width, map.Height, 0);
+            var message = CreateMessage(clientService, new MessageLocation(map.Location));
+
+            var content = new LocationContent(message);
+            //content.Tag = galleryItem;
+            content.HorizontalAlignment = HorizontalAlignment.Center;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
+
+            //var image = new ImageView();
+            //image.Constraint = map;
+            //image.XamlRoot = XamlRoot;
+            //image.SetSource(clientService, map.Location, map.Width, map.Height, 0);
 
             var caption = ProcessCaption(clientService, map.Caption);
             if (caption != null)
@@ -567,13 +584,13 @@ namespace Telegram.Controls.Messages.Content
                 caption.Margin = new Thickness(0, 8, 0, 0);
 
                 var panel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Stretch };
-                panel.Children.Add(image);
+                panel.Children.Add(content);
                 panel.Children.Add(caption);
 
                 return panel;
             }
 
-            return image;
+            return content;
         }
 
         private FrameworkElement ProcessRelatedArticles(IClientService clientService, PageBlockRelatedArticles relatedArticles)
@@ -651,7 +668,7 @@ namespace Telegram.Controls.Messages.Content
             return panel;
         }
 
-        private FrameworkElement ProcessTable(IClientService clientService, PageBlockTable table, bool test = true)
+        private FrameworkElement ProcessTable(IClientService clientService, PageBlockTable table, bool test = false)
         {
             var grid = new Grid
             {
@@ -800,7 +817,7 @@ namespace Telegram.Controls.Messages.Content
 
             foreach (var block in details.Blocks)
             {
-                inner.Children.Add(ProcessBlock(clientService, block));
+                inner.Children.Add(ProcessBlock(clientService, block, details));
             }
 
             header.Click += (s, args) =>
@@ -816,7 +833,7 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessCover(IClientService clientService, PageBlockCover block)
         {
-            return ProcessBlock(clientService, block.Cover);
+            return ProcessBlock(clientService, block.Cover, block);
         }
 
         private FrameworkElement ProcessChannel(IClientService clientService, PageBlockChatLink channel)
@@ -976,28 +993,24 @@ namespace Telegram.Controls.Messages.Content
                     //textBlock.FontSize = 16;
                     break;
                 case PageBlockFooter footer:
-                    // Info caption style
-                    //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    textBlock.Style = BootStrapper.Current.Resources["InfoCaptionFormattedTextBlockStyle"] as Style;
                     //textBlock.TextAlignment = TextAlignment.Center;
                     break;
                 case PageBlockPhoto photo:
                 case PageBlockVideo video:
-                    // Info caption style
-                    //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    textBlock.Style = BootStrapper.Current.Resources["InfoCaptionFormattedTextBlockStyle"] as Style;
                     textBlock.TextAlignment = TextAlignment.Center;
                     break;
                 case PageBlockSlideshow slideshow:
                 case PageBlockEmbedded embed:
                 case PageBlockEmbeddedPost embedPost:
-                    // Info caption style
-                    //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                    textBlock.Style = BootStrapper.Current.Resources["InfoCaptionFormattedTextBlockStyle"] as Style;
                     //textBlock.TextAlignment = TextAlignment.Center;
                     break;
                 case PageBlockBlockQuote blockquote:
                     if (caption)
                     {
-                        // Info caption style
-                        //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                        textBlock.Style = BootStrapper.Current.Resources["InfoCaptionFormattedTextBlockStyle"] as Style;
                         textBlock.Margin = new Thickness(0, 12, 0, 0);
                     }
                     else
@@ -1008,8 +1021,7 @@ namespace Telegram.Controls.Messages.Content
                 case PageBlockPullQuote pullquote:
                     if (caption)
                     {
-                        // Info caption style
-                        //textBlock.Style = LayoutRoot.Resources["BlockCaptionTextBlockStyle"] as Style;
+                        textBlock.Style = BootStrapper.Current.Resources["InfoCaptionFormattedTextBlockStyle"] as Style;
                     }
                     else
                     {
@@ -1357,7 +1369,7 @@ namespace Telegram.Controls.Messages.Content
                     Glyph = Icons.CodeFilled16
                 });
                 test.Children.Add(element);
-                test.Margin = new Thickness(0, 4, 0, 4);
+                //test.Margin = new Thickness(0, 4, 0, 4);
 
                 element.Padding = new Thickness(12, 2, 0, 4);
                 return test;
@@ -1381,7 +1393,7 @@ namespace Telegram.Controls.Messages.Content
                     LanguageName = block.Language
                 });
                 test.Children.Add(element);
-                test.Margin = new Thickness(0, 4, 0, 4);
+                //test.Margin = new Thickness(0, 4, 0, 4);
 
                 element.Padding = new Thickness(12, 22, 0, 4);
                 return test;
@@ -1530,14 +1542,18 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessDivider(IClientService clientService, PageBlockDivider block)
         {
-            var element = new Rectangle { Style = LayoutRoot.Resources["BlockDividerStyle"] as Style };
+            var element = new Rectangle
+            {
+                Style = LayoutRoot.Resources["BlockDividerStyle"] as Style
+            };
+
             return element;
         }
 
         private FrameworkElement ProcessList(IClientService clientService, PageBlockList block)
         {
             var panel = new Grid();
-            panel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto), MinWidth = 28 });
+            panel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto), MinWidth = 24 });
             panel.ColumnDefinitions.Add(new ColumnDefinition());
 
             var row = 0;
@@ -1550,7 +1566,7 @@ namespace Telegram.Controls.Messages.Content
                     label = new CheckBox
                     {
                         IsChecked = item.IsChecked,
-                        Margin = new Thickness(0, -6, 8, 4),
+                        Margin = new Thickness(0, -6, 4, 4),
                         Padding = new Thickness(0),
                         MinWidth = 0,
                         MinHeight = 0
@@ -1570,7 +1586,7 @@ namespace Telegram.Controls.Messages.Content
 
                 foreach (var inner in item.Blocks)
                 {
-                    var child = ProcessBlock(clientService, inner);
+                    var child = ProcessBlock(clientService, inner, block);
                     if (child != null)
                     {
                         stack.Children.Add(child);
@@ -1597,7 +1613,7 @@ namespace Telegram.Controls.Messages.Content
 
             foreach (var child in block.Blocks)
             {
-                element.Children.Add(ProcessBlock(clientService, child));
+                element.Children.Add(ProcessBlock(clientService, child, block));
             }
 
             var caption = ProcessText(clientService, block, true);
@@ -1637,70 +1653,89 @@ namespace Telegram.Controls.Messages.Content
             return element;
         }
 
-        private FrameworkElement ProcessPhoto(IClientService clientService, PageBlockPhoto block)
+        private FrameworkElement ProcessPhoto(IClientService clientService, PageBlockPhoto block, PageBlock parent)
         {
+            if (block.Photo == null)
+            {
+                return null;
+            }
+
             //var galleryItem = new GalleryPhoto(ViewModel.ClientService, block.Photo, block.Caption.ToFormattedText());
             //ViewModel.Gallery.Items.Add(galleryItem);
 
             var message = CreateMessage(clientService, new MessagePhoto(block.Photo, null, null, false, block.HasSpoiler, false));
-            var element = new StackPanel { Style = LayoutRoot.Resources["BlockPhotoStyle"] as Style };
-
-            var content = new PhotoContent(message);
+            var content = new PhotoContent(message, album: parent is PageBlockCollage);
             //content.Tag = galleryItem;
-            content.HorizontalAlignment = HorizontalAlignment.Center;
+            content.HorizontalAlignment = parent is PageBlockCollage ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
             content.ClearValue(MaxWidthProperty);
             content.ClearValue(MaxHeightProperty);
 
-            element.Children.Add(content);
-
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
                 caption.Margin = new Thickness(12, 8, 0, 0);
-                element.Children.Add(caption);
-            }
 
-            return element;
-        }
-
-        private FrameworkElement ProcessVideo(IClientService clientService, PageBlockVideo block)
-        {
-            var element = new StackPanel { Style = LayoutRoot.Resources["BlockVideoStyle"] as Style };
-
-            if (block.Video != null)
-            {
-                //var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
-                //ViewModel.Gallery.Items.Add(galleryItem);
-
-                var message = CreateMessage(clientService, new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, block.HasSpoiler, false));
-
-                var content = new VideoContent(message);
-                //content.Tag = galleryItem;
-                content.HorizontalAlignment = HorizontalAlignment.Center;
-                content.ClearValue(MaxWidthProperty);
-                content.ClearValue(MaxHeightProperty);
+                var element = new StackPanel
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
 
                 element.Children.Add(content);
+                element.Children.Add(caption);
+
+                return element;
             }
+
+            return content;
+        }
+
+        private FrameworkElement ProcessVideo(IClientService clientService, PageBlockVideo block, PageBlock parent)
+        {
+            if (block.Video == null)
+            {
+                return null;
+            }
+
+            //var galleryItem = new GalleryVideo(ViewModel.ClientService, block.Video, block.Caption.ToFormattedText());
+            //ViewModel.Gallery.Items.Add(galleryItem);
+
+            var message = CreateMessage(clientService, new MessageVideo(block.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, block.HasSpoiler, false));
+            var content = new VideoContent(message, album: parent is PageBlockCollage);
+            //content.Tag = galleryItem;
+            content.HorizontalAlignment = parent is PageBlockCollage ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
+            content.ClearValue(MaxWidthProperty);
+            content.ClearValue(MaxHeightProperty);
 
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
                 caption.Margin = new Thickness(12, 8, 0, 0);
+
+                var element = new StackPanel
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+
+                element.Children.Add(content);
                 element.Children.Add(caption);
+
+                return element;
             }
 
-            return element;
+            return content;
         }
 
         private FrameworkElement ProcessAnimation(IClientService clientService, PageBlockAnimation block)
         {
+            if (block.Animation == null)
+            {
+                return null;
+            }
+
             //var galleryItem = new GalleryAnimation(ViewModel.ClientService, block.Animation, block.Caption.ToFormattedText());
             //ViewModel.Gallery.Items.Add(galleryItem);
 
             var message = CreateMessage(clientService, new MessageAnimation(block.Animation, null, false, block.HasSpoiler, false));
-            var element = new StackPanel { Style = LayoutRoot.Resources["BlockVideoStyle"] as Style };
-
             var content = new AnimationContent(message);
             //content.Tag = galleryItem;
             content.HorizontalAlignment = HorizontalAlignment.Center;
@@ -1712,60 +1747,81 @@ namespace Telegram.Controls.Messages.Content
             //    _animations.Add(content.GetPlaybackElement());
             //}
 
-            element.Children.Add(content);
-
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
                 caption.Margin = new Thickness(12, 8, 0, 0);
+
+                var element = new StackPanel
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+
+                element.Children.Add(content);
                 element.Children.Add(caption);
+
+                return element;
             }
 
-            return element;
+            return content;
         }
 
         private FrameworkElement ProcessAudio(IClientService clientService, PageBlockAudio block)
         {
-            var message = CreateMessage(clientService, block.Audio.AudioValue.Id, new MessageAudio(block.Audio, string.Empty.AsFormattedText()));
-            var element = new StackPanel();
+            if (block.Audio == null)
+            {
+                return null;
+            }
 
+            var message = CreateMessage(clientService, block.Audio.AudioValue.Id, new MessageAudio(block.Audio, string.Empty.AsFormattedText()));
             var content = new AudioContent(message);
             content.HorizontalAlignment = HorizontalAlignment.Left;
             content.ClearValue(MaxWidthProperty);
             content.ClearValue(MaxHeightProperty);
 
-            element.Children.Add(content);
-
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
                 caption.Margin = new Thickness(0, 8, 0, 0);
+
+                var element = new StackPanel();
+
+                element.Children.Add(content);
                 element.Children.Add(caption);
+
+                return element;
             }
 
-            return element;
+            return content;
         }
 
         private FrameworkElement ProcessVoiceNote(IClientService clientService, PageBlockVoiceNote block)
         {
-            var message = CreateMessage(clientService, block.VoiceNote.Voice.Id, new MessageAudio(new Audio(block.VoiceNote.Duration, string.Empty, string.Empty, string.Empty, string.Empty, null, null, null, block.VoiceNote.Voice), string.Empty.AsFormattedText()));
-            var element = new StackPanel();
+            if (block.VoiceNote == null)
+            {
+                return null;
+            }
 
+            var message = CreateMessage(clientService, block.VoiceNote.Voice.Id, new MessageAudio(new Audio(block.VoiceNote.Duration, string.Empty, string.Empty, string.Empty, string.Empty, null, null, null, block.VoiceNote.Voice), string.Empty.AsFormattedText()));
             var content = new AudioContent(message);
             content.HorizontalAlignment = HorizontalAlignment.Left;
             content.ClearValue(MaxWidthProperty);
             content.ClearValue(MaxHeightProperty);
 
-            element.Children.Add(content);
-
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
                 caption.Margin = new Thickness(0, 8, 0, 0);
+
+                var element = new StackPanel();
+
+                element.Children.Add(content);
                 element.Children.Add(caption);
+
+                return element;
             }
 
-            return element;
+            return content;
         }
 
         private MessageViewModel CreateMessage(IClientService clientService, MessageContent content)
@@ -1847,35 +1903,14 @@ namespace Telegram.Controls.Messages.Content
             var items = new List<FrameworkElement>();
             foreach (var item in block.Blocks)
             {
-                if (item is PageBlockPhoto photoBlock)
+                var child = ProcessBlock(clientService, item, block);
+                if (child != null)
                 {
-                    //var galleryItem = new GalleryPhoto(ViewModel.ClientService, photoBlock.Photo, block.Caption.ToFormattedText());
-                    //ViewModel.Gallery.Items.Add(galleryItem);
+                    child.HorizontalAlignment = HorizontalAlignment.Center;
+                    child.ClearValue(MaxWidthProperty);
+                    child.ClearValue(MaxHeightProperty);
 
-                    var message = CreateMessage(clientService, new MessagePhoto(photoBlock.Photo, null, null, false, false, false));
-
-                    var content = new PhotoContent(message);
-                    //content.Tag = galleryItem;
-                    content.HorizontalAlignment = HorizontalAlignment.Center;
-                    content.ClearValue(MaxWidthProperty);
-                    content.ClearValue(MaxHeightProperty);
-
-                    items.Add(content);
-                }
-                else if (item is PageBlockVideo videoBlock)
-                {
-                    //var galleryItem = new GalleryVideo(ViewModel.ClientService, videoBlock.Video, block.Caption.ToFormattedText());
-                    //ViewModel.Gallery.Items.Add(galleryItem);
-
-                    var message = CreateMessage(clientService, new MessageVideo(videoBlock.Video, Array.Empty<AlternativeVideo>(), Array.Empty<VideoStoryboard>(), null, 0, null, false, false, false));
-
-                    var content = new VideoContent(message);
-                    //content.Tag = galleryItem;
-                    content.HorizontalAlignment = HorizontalAlignment.Center;
-                    content.ClearValue(MaxWidthProperty);
-                    content.ClearValue(MaxHeightProperty);
-
-                    items.Add(content);
+                    items.Add(child);
                 }
             }
 
@@ -1895,78 +1930,128 @@ namespace Telegram.Controls.Messages.Content
             return element;
         }
 
+        public sealed partial class PageBlockCollageContent : Grid
+        {
+            //public MessageViewModel Message => _message;
+            //private MessageViewModel _message;
+
+            private readonly PageBlockCollageAlbum _collage;
+
+            private class PageBlockCollageAlbum : MessageAlbumBase
+            {
+                private readonly PageBlockCollage _collage;
+
+                public PageBlockCollageAlbum(PageBlockCollage collage)
+                {
+                    _collage = collage;
+                }
+
+                protected override IEnumerable<Size> GetSizes()
+                {
+                    foreach (var block in _collage.Blocks)
+                    {
+                        if (block is PageBlockPhoto photoMedia)
+                        {
+                            yield return GetClosestPhotoSizeWithSize(photoMedia.Photo.Sizes, 1280, false);
+                        }
+                        else if (block is PageBlockVideo videoMedia)
+                        {
+                            if (videoMedia.Video.Width != 0 && videoMedia.Video.Height != 0)
+                            {
+                                yield return new Size(videoMedia.Video.Width, videoMedia.Video.Height);
+                            }
+                            else if (videoMedia.Video.Thumbnail != null)
+                            {
+                                yield return new Size(videoMedia.Video.Thumbnail.Width, videoMedia.Video.Thumbnail.Height);
+                            }
+                            //else if (videoMedia.Cover != null)
+                            //{
+                            //    yield return GetClosestPhotoSizeWithSize(videoMedia.Cover.Sizes, 1280, false);
+                            //}
+                            else
+                            {
+                                // We are returning a random size, it's still better than NaN.
+                                yield return new Size(1280, 1280);
+                            }
+                        }
+                    }
+                }
+            }
+
+            public PageBlockCollageContent(IClientService clientService, PageBlockCollage collage, Func<IClientService, PageBlock, PageBlock, FrameworkElement> create)
+            {
+                _collage = new PageBlockCollageAlbum(collage);
+
+                foreach (var block in collage.Blocks)
+                {
+                    var child = create(clientService, block, collage);
+                    if (child != null)
+                    {
+                        Children.Add(child);
+                    }
+                }
+            }
+
+            private (Rect[], Size) _positions;
+
+            protected override Size MeasureOverride(Size availableSize)
+            {
+                if (_collage == null /*|| _collage.Count <= 1*/)
+                {
+                    return base.MeasureOverride(availableSize);
+                }
+
+                var positions = _collage.GetPositionsForWidth(availableSize.Width, true);
+
+                for (int i = 0; i < Math.Min(positions.Item1.Length, Children.Count); i++)
+                {
+                    Children[i].Measure(positions.Item1[i].ToSize());
+                }
+
+                _positions = positions;
+                return positions.Item2;
+            }
+
+            protected override Size ArrangeOverride(Size finalSize)
+            {
+                if (_collage == null /*|| _collage.Count <= 1*/)
+                {
+                    return base.ArrangeOverride(finalSize);
+                }
+
+                var positions = _positions;
+                if (positions.Item1 == null || positions.Item1.Length == 1)
+                {
+                    return base.ArrangeOverride(finalSize);
+                }
+
+                for (int i = 0; i < Math.Min(positions.Item1.Length, Children.Count); i++)
+                {
+                    Children[i].Arrange(positions.Item1[i]);
+                }
+
+                return finalSize;
+            }
+        }
+
         private FrameworkElement ProcessCollage(IClientService clientService, PageBlockCollage block)
         {
-            var element = new StackPanel { Style = LayoutRoot.Resources["BlockCollageStyle"] as Style };
-
-            var items = new List<ImageView>();
-            foreach (var item in block.Blocks)
-            {
-                if (item is PageBlockPhoto photoBlock)
-                {
-                    //var galleryItem = new GalleryPhotoItem(photoBlock.Photo, photoBlock.Caption?.ToString());
-                    //ViewModel.Gallery.Items.Add(galleryItem);
-
-                    var child = new ImageView();
-                    //child.Source = (ImageSource)DefaultPhotoConverter.Convert(photoBlock.Photo, true);
-                    //child.DataContext = galleryItem;
-                    //child.Click += Image_Click;
-                    child.Width = 72;
-                    child.Height = 72;
-                    child.Stretch = Stretch.UniformToFill;
-                    child.Margin = new Thickness(0, 0, 4, 4);
-
-                    items.Add(child);
-                }
-                else if (item is PageBlockVideo videoBlock)
-                {
-                    //var galleryItem = new GalleryDocumentItem(videoBlock.Video, videoBlock.Caption?.ToString());
-                    //ViewModel.Gallery.Items.Add(galleryItem);
-
-                    var child = new ImageView();
-                    //child.Source = (ImageSource)DefaultPhotoConverter.Convert(videoBlock.Video, true);
-                    //child.DataContext = galleryItem;
-                    //child.Click += Image_Click;
-                    child.Width = 72;
-                    child.Height = 72;
-                    child.Stretch = Stretch.UniformToFill;
-                    child.Margin = new Thickness(0, 0, 4, 4);
-
-                    items.Add(child);
-                }
-            }
-
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
-            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
-            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
-            grid.ColumnDefinitions.Add(1, GridUnitType.Auto);
-
-            for (int i = 0; i < items.Count; i++)
-            {
-                var y = i / 4;
-                var x = i % 4;
-
-                grid.Children.Add(items[i]);
-                Grid.SetRow(items[i], y);
-                Grid.SetColumn(items[i], x);
-
-                if (x == 0)
-                {
-                    grid.RowDefinitions.Add(1, GridUnitType.Auto);
-                }
-            }
-
-            element.Children.Add(grid);
+            var content = new PageBlockCollageContent(clientService, block, ProcessBlock);
 
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
                 caption.Margin = new Thickness(12, 8, 0, 0);
+
+                var element = new StackPanel();
+
+                element.Children.Add(content);
                 element.Children.Add(caption);
+
+                return element;
             }
 
-            return element;
+            return content;
         }
 
         private FrameworkElement ProcessEmbedPost(IClientService clientService, PageBlockEmbeddedPost block)
@@ -2015,7 +2100,7 @@ namespace Telegram.Controls.Messages.Content
             PageBlock previousBlock = null;
             foreach (var subBlock in block.Blocks)
             {
-                var subLayout = ProcessBlock(clientService, subBlock);
+                var subLayout = ProcessBlock(clientService, subBlock, block);
                 var spacing = SpacingBetweenBlocks(previousBlock, block);
 
                 if (subLayout != null)
@@ -2336,6 +2421,30 @@ namespace Telegram.Controls.Messages.Content
             Marked
         }
 
+        private double SpacingBetweenBlocks(PageBlock lower, IList<PageBlock> blocks, int index)
+        {
+            var upper = index > 0 ? blocks[index - 1] : null;
+            if (upper == null)
+            {
+                if (lower is PageBlockAnimation or PageBlockCollage or PageBlockCover or PageBlockMap or PageBlockPhoto or PageBlockSlideshow or PageBlockVideo)
+                {
+                    return 0;
+                }
+            }
+
+            if (upper is PageBlockParagraph && lower is PageBlockParagraph)
+            {
+                return 0;
+            }
+
+            if (upper is PageBlockDivider || lower is PageBlockDivider)
+            {
+                return 12;
+            }
+
+            return 8;
+        }
+
         private double SpacingBetweenBlocks(PageBlock upper, PageBlock lower)
         {
             if (lower is PageBlockCover or PageBlockChatLink)
@@ -2463,9 +2572,9 @@ namespace Telegram.Controls.Messages.Content
 
         private double PaddingForBlock(PageBlock block)
         {
-            if (block is PageBlockCover or PageBlockPreformatted or
+            if (block is PageBlockCover or PageBlockMap or
                 PageBlockPhoto or PageBlockVideo or
-                PageBlockSlideshow or PageBlockChatLink)
+                PageBlockCollage or PageBlockSlideshow or PageBlockChatLink)
             {
                 return 0.0;
             }
