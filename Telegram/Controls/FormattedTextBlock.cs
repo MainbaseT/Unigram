@@ -1322,7 +1322,7 @@ namespace Telegram.Controls
                                 RelativeDateService.Subscribe(run, this, part, entity, date);
                             }
                         }
-                        else if (entity.Type is TextEntityTypeMathematicalExpression mathematicalExpression)
+                        else if (_spanForInlines == null && entity.Type is TextEntityTypeMathematicalExpression mathematicalExpression)
                         {
                             var tex = new RichMathImage
                             {
