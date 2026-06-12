@@ -437,11 +437,19 @@ namespace Telegram.ViewModels
             var session = ClientService.UnconfirmedSession;
             if (session == null)
             {
-                Aggregator.Publish(new UpdateUnconfirmedSession(null));
+                Aggregator.Publish(new UpdateUnconfirmedSession(null, 0));
                 return;
             }
 
-            ClientService.Send(new ConfirmSession(session.Id));
+            if (session.Type is SessionTypeDevice device)
+            {
+                ClientService.Send(new ConfirmSession(device.SessionId));
+            }
+            else if (session.Type is SessionTypeConnectedBot connectedBot)
+            {
+                ClientService.Send(new ConfirmBusinessConnectedBot(connectedBot.BotUserId));
+            }
+
             //Aggregator.Publish(new UpdateUnconfirmedSession(null));
 
             var message = Strings.UnconfirmedAuthConfirmed + Environment.NewLine + Strings.UnconfirmedAuthConfirmedMessage;
@@ -458,11 +466,19 @@ namespace Telegram.ViewModels
             var session = ClientService.UnconfirmedSession;
             if (session == null)
             {
-                Aggregator.Publish(new UpdateUnconfirmedSession(null));
+                Aggregator.Publish(new UpdateUnconfirmedSession(null, 0));
                 return;
             }
 
-            ClientService.Send(new TerminateSession(session.Id));
+            if (session.Type is SessionTypeDevice device)
+            {
+                ClientService.Send(new TerminateSession(device.SessionId));
+            }
+            else if (session.Type is SessionTypeConnectedBot connectedBot)
+            {
+                ClientService.Send(new DeleteBusinessConnectedBot(connectedBot.BotUserId));
+            }
+
             //Aggregator.Publish(new UpdateUnconfirmedSession(null));
 
             ShowPopup(new UnconfirmedSessionPopup(session));
