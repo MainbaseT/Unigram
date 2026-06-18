@@ -909,5 +909,466 @@ namespace Telegram.Common
             }
         }
 
+        // =====================================================================
+        // ToPageBlocks — FormattedText (message text + entities) -> page blocks
+        // =====================================================================
+
+        /// <summary>
+        /// Converts a <see cref="FormattedText"/> (a message's text + entities) into a
+        /// list of <see cref="PageBlock"/>, preserving every entity — the inverse of
+        /// <see cref="Flatten"/>. Block-level entities become their own blocks: block
+        /// quotes (incl. expandable) → <see cref="PageBlockBlockQuote"/>, pre / pre-code
+        /// → <see cref="PageBlockPreformatted"/>. Everything else becomes a
+        /// <see cref="PageBlockParagraph"/>, one per line (the text is split on every
+        /// '\n', inside block quotes too; empty lines are dropped). Inline entities are
+        /// mapped to their <c>richText*</c> equivalents, with nested/overlapping ranges
+        /// resolved into a nested <see cref="RichText"/> tree.
+        /// </summary>
+        public static IList<PageBlock> ToPageBlocks(FormattedText text)
+        {
+            var blocks = new List<PageBlock>();
+            var s = text?.Text ?? string.Empty;
+            var entities = text?.Entities ?? new List<TextEntity>();
+
+            // Split entities: block-level ones partition the text; the rest are inline.
+            var blockEntities = new List<TextEntity>();
+            var inline = new List<TextEntity>();
+            foreach (var e in entities)
+            {
+                (IsBlockEntity(e.Type) ? blockEntities : inline).Add(e);
+            }
+            blockEntities.Sort((a, b) => a.Offset.CompareTo(b.Offset));
+
+            int pos = 0;
+            foreach (var be in blockEntities)
+            {
+                if (be.Offset < pos)
+                {
+                    continue; // nested/overlapping block entity — folded into the outer one
+                }
+
+                int end = Math.Min(be.Offset + be.Length, s.Length);
+                if (be.Offset > pos)
+                {
+                    AppendParagraphs(blocks, s, pos, be.Offset, inline);
+                }
+
+                switch (be.Type)
+                {
+                    case TextEntityTypePre _:
+                        blocks.Add(new PageBlockPreformatted(BuildRichText(s, be.Offset, end, inline), string.Empty));
+                        break;
+                    case TextEntityTypePreCode pc:
+                        blocks.Add(new PageBlockPreformatted(BuildRichText(s, be.Offset, end, inline), pc.Language ?? string.Empty));
+                        break;
+                    default: // BlockQuote / ExpandableBlockQuote
+                        var inner = new List<PageBlock>();
+                        AppendParagraphs(inner, s, be.Offset, end, inline);
+                        if (inner.Count == 0)
+                        {
+                            inner.Add(new PageBlockParagraph(new RichTextPlain(string.Empty)));
+                        }
+                        blocks.Add(new PageBlockBlockQuote(inner, new RichTextPlain(string.Empty)));
+                        break;
+                }
+
+                pos = end;
+            }
+
+            if (pos < s.Length)
+            {
+                AppendParagraphs(blocks, s, pos, s.Length, inline);
+            }
+
+            return blocks;
+        }
+
+        private static bool IsBlockEntity(TextEntityType type)
+        {
+            return type is TextEntityTypeBlockQuote
+                || type is TextEntityTypeExpandableBlockQuote
+                || type is TextEntityTypePre
+                || type is TextEntityTypePreCode;
+        }
+
+        // Split [start,end) on '\n' and add one PageBlockParagraph per non-empty line.
+        private static void AppendParagraphs(IList<PageBlock> blocks, string s, int start, int end, List<TextEntity> inline)
+        {
+            int lineStart = start;
+            for (int i = start; i <= end; i++)
+            {
+                if (i == end || s[i] == '\n')
+                {
+                    if (i > lineStart) // skip empty lines (consecutive newlines)
+                    {
+                        blocks.Add(new PageBlockParagraph(BuildRichText(s, lineStart, i, inline)));
+                    }
+                    lineStart = i + 1;
+                }
+            }
+        }
+
+        // Build a nested RichText for s[start,end), applying the inline entities that
+        // intersect it. At each step the earliest-starting (then longest) entity wins
+        // and becomes the outer wrapper; the entities inside it recurse to form its
+        // child. Crossing ranges are clipped to the chosen span.
+        private static RichText BuildRichText(string s, int start, int end, List<TextEntity> inline)
+        {
+            if (end <= start)
+            {
+                return new RichTextPlain(string.Empty);
+            }
+
+            var active = new List<TextEntity>();
+            foreach (var e in inline)
+            {
+                if (Math.Max(e.Offset, start) < Math.Min(e.Offset + e.Length, end))
+                {
+                    active.Add(e);
+                }
+            }
+
+            var parts = new List<RichText>();
+            int pos = start;
+            while (pos < end)
+            {
+                TextEntity next = null;
+                int ns = end, ne = end;
+                foreach (var e in active)
+                {
+                    int es = Math.Max(e.Offset, pos);
+                    int ee = Math.Min(e.Offset + e.Length, end);
+                    if (ee <= pos || es >= end)
+                    {
+                        continue;
+                    }
+                    if (es < ns || (es == ns && ee > ne))
+                    {
+                        next = e; ns = es; ne = ee;
+                    }
+                }
+
+                if (next == null)
+                {
+                    parts.Add(new RichTextPlain(s.Substring(pos, end - pos)));
+                    break;
+                }
+
+                if (ns > pos)
+                {
+                    parts.Add(new RichTextPlain(s.Substring(pos, ns - pos)));
+                }
+
+                var covered = s.Substring(ns, ne - ns);
+                if (IsLeafEntity(next.Type))
+                {
+                    parts.Add(MakeLeaf(next.Type, covered));
+                }
+                else
+                {
+                    var innerList = new List<TextEntity>();
+                    foreach (var e in active)
+                    {
+                        if (ReferenceEquals(e, next))
+                        {
+                            continue;
+                        }
+                        if (Math.Max(e.Offset, ns) < Math.Min(e.Offset + e.Length, ne))
+                        {
+                            innerList.Add(e);
+                        }
+                    }
+                    parts.Add(Wrap(next.Type, BuildRichText(s, ns, ne, innerList), covered));
+                }
+
+                pos = ne;
+            }
+
+            if (parts.Count == 0) return new RichTextPlain(string.Empty);
+            return parts.Count == 1 ? parts[0] : new RichTexts(parts);
+        }
+
+        // Entities with no RichText child of their own (their span IS their content).
+        private static bool IsLeafEntity(TextEntityType type)
+            => type is TextEntityTypeCustomEmoji || type is TextEntityTypeMathematicalExpression;
+
+        private static RichText MakeLeaf(TextEntityType type, string covered)
+        {
+            switch (type)
+            {
+                case TextEntityTypeCustomEmoji ce:
+                    return new RichTextCustomEmoji(ce.CustomEmojiId, covered);
+                case TextEntityTypeMathematicalExpression me:
+                    return new RichTextMathematicalExpression(string.IsNullOrEmpty(me.Expression) ? covered : me.Expression);
+                default:
+                    return new RichTextPlain(covered);
+            }
+        }
+
+        // Inline entity -> RichText wrapper around its (already-built) child. `covered`
+        // is the entity's plain text, used to fill payload fields that the entity type
+        // doesn't carry (mention/hashtag/auto-url/...).
+        private static RichText Wrap(TextEntityType type, RichText child, string covered)
+        {
+            switch (type)
+            {
+                case TextEntityTypeBold _: return new RichTextBold(child);
+                case TextEntityTypeItalic _: return new RichTextItalic(child);
+                case TextEntityTypeUnderline _: return new RichTextUnderline(child);
+                case TextEntityTypeStrikethrough _: return new RichTextStrikethrough(child);
+                case TextEntityTypeSpoiler _: return new RichTextSpoiler(child);
+                case TextEntityTypeCode _: return new RichTextFixed(child);
+                case TextEntityTypeSubscript _: return new RichTextSubscript(child);
+                case TextEntityTypeSuperscript _: return new RichTextSuperscript(child);
+                case TextEntityTypeMarked _: return new RichTextMarked(child);
+                case TextEntityTypeTextUrl u: return new RichTextUrl(child, u.Url, false);
+                case TextEntityTypeUrl _: return new RichTextUrl(child, covered, false);
+                case TextEntityTypeMentionName mn: return new RichTextMentionName(child, mn.UserId);
+                case TextEntityTypeMention _: return new RichTextMention(child, Strip(covered, '@'));
+                case TextEntityTypeHashtag _: return new RichTextHashtag(child, Strip(covered, '#'));
+                case TextEntityTypeCashtag _: return new RichTextCashtag(child, Strip(covered, '$'));
+                case TextEntityTypeBotCommand _: return new RichTextBotCommand(child, Strip(covered, '/'));
+                case TextEntityTypeBankCardNumber _: return new RichTextBankCardNumber(child, covered);
+                case TextEntityTypeEmailAddress _: return new RichTextEmailAddress(child, covered);
+                case TextEntityTypePhoneNumber _: return new RichTextPhoneNumber(child, covered);
+                case TextEntityTypeDateTime dt: return new RichTextDateTime(child, dt.UnixTime, dt.FormattingType);
+                default: return child; // MediaTimestamp, Icon, etc. — keep the text, drop the wrapper
+            }
+        }
+
+        private static string Strip(string s, char prefix)
+            => s.Length > 0 && s[0] == prefix ? s.Substring(1) : s;
+
+        // =====================================================================
+        // Compare — structural equality for incremental (streamed) updates
+        // =====================================================================
+
+        /// <summary>
+        /// Deep structural equality of two page blocks, used as the item-equality
+        /// test when diffing a streaming message so unchanged blocks aren't
+        /// re-rendered. Returns true only when the two blocks would render
+        /// identically — every rendered property is compared. (Media is compared by
+        /// its scalar attributes + caption; the underlying file objects, which are
+        /// stable across a stream, are not deep-compared.)
+        /// </summary>
+        public static bool Compare(PageBlock x, PageBlock y)
+        {
+            if (x == null || y == null)
+            {
+                return x == y;
+            }
+
+            return (x, y) switch
+            {
+                // Text-only blocks
+                (PageBlockTitle a, PageBlockTitle b) => Compare(a.Title, b.Title),
+                (PageBlockSubtitle a, PageBlockSubtitle b) => Compare(a.Subtitle, b.Subtitle),
+                (PageBlockAuthorDate a, PageBlockAuthorDate b) => a.PublishDate == b.PublishDate && Compare(a.Author, b.Author),
+                (PageBlockHeader a, PageBlockHeader b) => Compare(a.Header, b.Header),
+                (PageBlockSubheader a, PageBlockSubheader b) => Compare(a.Subheader, b.Subheader),
+                (PageBlockKicker a, PageBlockKicker b) => Compare(a.Kicker, b.Kicker),
+                (PageBlockSectionHeading a, PageBlockSectionHeading b) => a.Size == b.Size && Compare(a.Text, b.Text),
+                (PageBlockParagraph a, PageBlockParagraph b) => Compare(a.Text, b.Text),
+                (PageBlockPreformatted a, PageBlockPreformatted b) => string.Equals(a.Language, b.Language) && Compare(a.Text, b.Text),
+                (PageBlockFooter a, PageBlockFooter b) => Compare(a.Footer, b.Footer),
+                (PageBlockThinking a, PageBlockThinking b) => Compare(a.Text, b.Text),
+                (PageBlockPullQuote a, PageBlockPullQuote b) => Compare(a.Text, b.Text) && Compare(a.Credit, b.Credit),
+                (PageBlockMathematicalExpression a, PageBlockMathematicalExpression b) => string.Equals(a.Expression, b.Expression),
+
+                // Atomic
+                (PageBlockAnchor a, PageBlockAnchor b) => a.Name == b.Name,
+                (PageBlockDivider, PageBlockDivider) => true,
+                (PageBlockChatLink a, PageBlockChatLink b) => a.Title == b.Title && a.Username == b.Username && a.AccentColorId == b.AccentColorId,
+
+                // Media + caption (scalar attributes + caption)
+                (PageBlockAnimation a, PageBlockAnimation b) => a.NeedAutoplay == b.NeedAutoplay && a.HasSpoiler == b.HasSpoiler && Compare(a.Caption, b.Caption),
+                (PageBlockAudio a, PageBlockAudio b) => Compare(a.Caption, b.Caption),
+                (PageBlockPhoto a, PageBlockPhoto b) => string.Equals(a.Url, b.Url) && a.HasSpoiler == b.HasSpoiler && Compare(a.Caption, b.Caption),
+                (PageBlockVideo a, PageBlockVideo b) => a.NeedAutoplay == b.NeedAutoplay && a.IsLooped == b.IsLooped && a.HasSpoiler == b.HasSpoiler && Compare(a.Caption, b.Caption),
+                (PageBlockVoiceNote a, PageBlockVoiceNote b) => Compare(a.Caption, b.Caption),
+                (PageBlockMap a, PageBlockMap b) => a.Zoom == b.Zoom && a.Width == b.Width && a.Height == b.Height && SameLocation(a.Location, b.Location) && Compare(a.Caption, b.Caption),
+                (PageBlockEmbedded a, PageBlockEmbedded b) => string.Equals(a.Url, b.Url) && string.Equals(a.Html, b.Html) && a.Width == b.Width && a.Height == b.Height && a.IsFullWidth == b.IsFullWidth && a.AllowScrolling == b.AllowScrolling && Compare(a.Caption, b.Caption),
+
+                // Containers
+                (PageBlockCover a, PageBlockCover b) => Compare(a.Cover, b.Cover),
+                (PageBlockList a, PageBlockList b) => Compare(a.Items, b.Items),
+                (PageBlockBlockQuote a, PageBlockBlockQuote b) => Compare(a.Blocks, b.Blocks) && Compare(a.Credit, b.Credit),
+                (PageBlockCollage a, PageBlockCollage b) => Compare(a.Blocks, b.Blocks) && Compare(a.Caption, b.Caption),
+                (PageBlockSlideshow a, PageBlockSlideshow b) => Compare(a.Blocks, b.Blocks) && Compare(a.Caption, b.Caption),
+                (PageBlockEmbeddedPost a, PageBlockEmbeddedPost b) => string.Equals(a.Url, b.Url) && string.Equals(a.Author, b.Author) && a.Date == b.Date && Compare(a.Blocks, b.Blocks) && Compare(a.Caption, b.Caption),
+                (PageBlockDetails a, PageBlockDetails b) => a.IsOpen == b.IsOpen && Compare(a.Header, b.Header) && Compare(a.Blocks, b.Blocks),
+                (PageBlockTable a, PageBlockTable b) => a.IsBordered == b.IsBordered && a.IsStriped == b.IsStriped && Compare(a.Caption, b.Caption) && Compare(a.Cells, b.Cells),
+
+                // PageBlockRelatedArticles is intentionally not diffed (always re-rendered).
+                _ => false,
+            };
+        }
+
+        private static bool Compare(RichText x, RichText y)
+        {
+            switch (x, y)
+            {
+                case (null, null): return true;
+                case (RichTextPlain a, RichTextPlain b): return string.Equals(a.Text, b.Text);
+
+                case (RichTexts a, RichTexts b):
+                    if (a.Texts.Count != b.Texts.Count)
+                    {
+                        return false;
+                    }
+                    for (int i = 0; i < a.Texts.Count; i++)
+                    {
+                        if (!Compare(a.Texts[i], b.Texts[i]))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+
+                // Leaves
+                case (RichTextAnchor a, RichTextAnchor b): return a.Name == b.Name;
+                case (RichTextIcon a, RichTextIcon b): return a.Document.DocumentValue.Id == b.Document.DocumentValue.Id && a.Width == b.Width && a.Height == b.Height;
+                case (RichTextCustomEmoji a, RichTextCustomEmoji b): return a.CustomEmojiId == b.CustomEmojiId && string.Equals(a.AlternativeText, b.AlternativeText);
+                case (RichTextMathematicalExpression a, RichTextMathematicalExpression b): return string.Equals(a.Expression, b.Expression);
+
+                // Plain style wrappers (no payload beyond the inner text)
+                case (RichTextBold a, RichTextBold b): return Compare(a.Text, b.Text);
+                case (RichTextItalic a, RichTextItalic b): return Compare(a.Text, b.Text);
+                case (RichTextUnderline a, RichTextUnderline b): return Compare(a.Text, b.Text);
+                case (RichTextStrikethrough a, RichTextStrikethrough b): return Compare(a.Text, b.Text);
+                case (RichTextSpoiler a, RichTextSpoiler b): return Compare(a.Text, b.Text);
+                case (RichTextFixed a, RichTextFixed b): return Compare(a.Text, b.Text);
+                case (RichTextSubscript a, RichTextSubscript b): return Compare(a.Text, b.Text);
+                case (RichTextSuperscript a, RichTextSuperscript b): return Compare(a.Text, b.Text);
+                case (RichTextMarked a, RichTextMarked b): return Compare(a.Text, b.Text);
+
+                // Wrappers carrying a payload — compare the payload too
+                case (RichTextUrl a, RichTextUrl b): return string.Equals(a.Url, b.Url) && a.IsCached == b.IsCached && Compare(a.Text, b.Text);
+                case (RichTextEmailAddress a, RichTextEmailAddress b): return string.Equals(a.EmailAddress, b.EmailAddress) && Compare(a.Text, b.Text);
+                case (RichTextPhoneNumber a, RichTextPhoneNumber b): return string.Equals(a.PhoneNumber, b.PhoneNumber) && Compare(a.Text, b.Text);
+                case (RichTextMention a, RichTextMention b): return string.Equals(a.Username, b.Username) && Compare(a.Text, b.Text);
+                case (RichTextHashtag a, RichTextHashtag b): return string.Equals(a.Hashtag, b.Hashtag) && Compare(a.Text, b.Text);
+                case (RichTextCashtag a, RichTextCashtag b): return string.Equals(a.Cashtag, b.Cashtag) && Compare(a.Text, b.Text);
+                case (RichTextBotCommand a, RichTextBotCommand b): return string.Equals(a.BotCommand, b.BotCommand) && Compare(a.Text, b.Text);
+                case (RichTextMentionName a, RichTextMentionName b): return a.UserId == b.UserId && Compare(a.Text, b.Text);
+                case (RichTextBankCardNumber a, RichTextBankCardNumber b): return string.Equals(a.BankCardNumber, b.BankCardNumber) && Compare(a.Text, b.Text);
+                case (RichTextDateTime a, RichTextDateTime b): return a.UnixTime == b.UnixTime && SameType(a.FormattingType, b.FormattingType) && Compare(a.Text, b.Text);
+                case (RichTextReference a, RichTextReference b): return string.Equals(a.Name, b.Name) && Compare(a.Text, b.Text);
+                case (RichTextReferenceLink a, RichTextReferenceLink b): return string.Equals(a.ReferenceName, b.ReferenceName) && string.Equals(a.Url, b.Url) && Compare(a.Text, b.Text);
+                case (RichTextAnchorLink a, RichTextAnchorLink b): return string.Equals(a.AnchorName, b.AnchorName) && string.Equals(a.Url, b.Url) && Compare(a.Text, b.Text);
+
+                default: return false;
+            }
+        }
+
+        private static bool Compare(PageBlockCaption a, PageBlockCaption b)
+        {
+            if (a == null || b == null)
+            {
+                return a == b;
+            }
+
+            return Compare(a.Credit, b.Credit) && Compare(a.Text, b.Text);
+        }
+
+        private static bool Compare(IList<PageBlock> a, IList<PageBlock> b)
+        {
+            if (a == null || b == null)
+            {
+                return a == b;
+            }
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!Compare(a[i], b[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool Compare(PageBlockListItem a, PageBlockListItem b)
+        {
+            return a.HasCheckbox == b.HasCheckbox
+                && a.IsChecked == b.IsChecked
+                && a.Label == b.Label
+                && a.Type == b.Type
+                && a.Value == b.Value
+                && Compare(a.Blocks, b.Blocks);
+        }
+
+        private static bool Compare(IList<PageBlockListItem> a, IList<PageBlockListItem> b)
+        {
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!Compare(a[i], b[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool Compare(PageBlockTableCell a, PageBlockTableCell b)
+        {
+            return a.IsHeader == b.IsHeader
+                && a.Colspan == b.Colspan
+                && a.Rowspan == b.Rowspan
+                && SameType(a.Align, b.Align)
+                && SameType(a.Valign, b.Valign)
+                && Compare(a.Text, b.Text);
+        }
+
+        private static bool Compare(IList<PageBlockTableCell> a, IList<PageBlockTableCell> b)
+        {
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!Compare(a[i], b[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool Compare(IList<IList<PageBlockTableCell>> a, IList<IList<PageBlockTableCell>> b)
+        {
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!Compare(a[i], b[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool SameType(object a, object b) => a?.GetType() == b?.GetType();
+
+        private static bool SameLocation(Location a, Location b)
+        {
+            if (a == null || b == null)
+            {
+                return a == b;
+            }
+
+            return a.Latitude == b.Latitude && a.Longitude == b.Longitude && a.HorizontalAccuracy == b.HorizontalAccuracy;
+        }
     }
 }

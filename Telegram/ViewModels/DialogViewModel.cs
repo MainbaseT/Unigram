@@ -3577,6 +3577,16 @@ namespace Telegram.ViewModels
             }
         }
 
+        public async void OpenRichTextEditor()
+        {
+            var text = GetFormattedText();
+            var message = new RichMessage(PageBlockHelper.ToPageBlocks(text), false, true);
+
+            var popup = new TextEditorRichPopup(ClientService, NavigationService, message);
+
+            await ShowPopupAsync(popup);
+        }
+
         public void Boost()
         {
             Boost(0);

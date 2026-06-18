@@ -1344,6 +1344,11 @@
     <Compile Include="Views\Popups\ChooseCountriesPopup.xaml.cs">
       <DependentUpon>ChooseCountriesPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Popups\TextEditorRichPopup.xaml.cs">
+      <DependentUpon>TextEditorRichPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Popups\RichEditorCommands.cs" />
+    <Compile Include="Views\Popups\RichEditorState.cs" />
     <Compile Include="Views\Popups\TextStylePopup.xaml.cs">
       <DependentUpon>TextStylePopup.xaml</DependentUpon>
     </Compile>
@@ -3626,6 +3631,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Popups\ChooseCountriesPopup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Popups\TextEditorRichPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
