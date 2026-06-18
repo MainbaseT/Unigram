@@ -111,7 +111,12 @@ namespace Telegram.ViewModels.Supergroups
 
                 if (item.JoinToSendMessages != _joinToSendMessages)
                 {
-                    ClientService.Send(new ToggleSupergroupJoinToSendMessages(item.Id, _joinToSendMessages));
+                    var joinToSendMessages = await ClientService.SendAsync(new ToggleSupergroupJoinToSendMessages(item.Id, _joinToSendMessages));
+                    if (joinToSendMessages is Error error)
+                    {
+                        ShowToast(error);
+                        return;
+                    }
                 }
 
                 if (item.JoinByRequest != _joinByRequest)
@@ -125,7 +130,12 @@ namespace Telegram.ViewModels.Supergroups
 
                         var confirm = await ShowPopupAsync(message, Strings.ApproveNewMembersApplyToLinksTitle, Strings.ApproveNewMembersApplyToLinksApply, Strings.ApproveNewMembersApplyToLinksDontApply);
 
-                        ClientService.Send(new ToggleSupergroupJoinByRequest(item.Id, _joinByRequest, cache.GuardBotUserId, confirm == ContentDialogResult.Primary));
+                        var joinByRequest = await ClientService.SendAsync(new ToggleSupergroupJoinByRequest(item.Id, _joinByRequest, cache.GuardBotUserId, confirm == ContentDialogResult.Primary));
+                        if (joinByRequest is Error error)
+                        {
+                            ShowToast(error);
+                            return;
+                        }
                     }
                 }
 
