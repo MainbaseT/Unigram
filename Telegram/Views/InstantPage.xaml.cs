@@ -974,8 +974,8 @@ namespace Telegram.Views
 
         private FrameworkElement ProcessCaption(PageBlockCaption caption)
         {
-            var textEmpty = caption.Text == null || caption.Text is RichTextPlain plain1 && string.IsNullOrEmpty(plain1.Text);
-            var citeEmpty = caption.Credit == null || caption.Credit is RichTextPlain plain2 && string.IsNullOrEmpty(plain2.Text);
+            var textEmpty = PageBlockHelper.IsEmpty(caption?.Text);
+            var citeEmpty = PageBlockHelper.IsEmpty(caption?.Credit);
 
             if (textEmpty && citeEmpty)
             {
