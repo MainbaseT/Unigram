@@ -1421,8 +1421,12 @@ namespace Telegram.Controls
 
             if (cached?.Ranges.Count > 0)
             {
-                cached.Background = new SolidColorBrush(Theme.Accent.WithAlpha(22));
-                cached.Foreground = new SolidColorBrush(Theme.Accent);
+                var accent = ActualTheme == ElementTheme.Light
+                    ? Theme.AccentLight.Default
+                    : Theme.AccentDark.Default;
+
+                cached.Background = new SolidColorBrush(accent.WithAlpha(22));
+                cached.Foreground = new SolidColorBrush(accent);
 
                 _cached = cached;
             }

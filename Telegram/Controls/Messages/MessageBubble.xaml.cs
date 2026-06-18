@@ -2803,7 +2803,9 @@ namespace Telegram.Controls.Messages
                 }
             }
 
-            brush ??= _highlight.Compositor.CreateColorBrush(Theme.Accent);
+            brush ??= _highlight.Compositor.CreateColorBrush(ActualTheme == ElementTheme.Light
+                ? Theme.AccentLight.Default
+                : Theme.AccentDark.Default);
 
             var solid = BootStrapper.Current.Compositor.CreateSpriteVisual();
             solid.Size = target.ActualSize;

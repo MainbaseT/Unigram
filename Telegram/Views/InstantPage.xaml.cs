@@ -1719,8 +1719,12 @@ namespace Telegram.Views
 
             if (cached.Ranges.Count > 0 && textBlock != null)
             {
-                cached.Background = new SolidColorBrush(Theme.Accent.WithAlpha(22));
-                cached.Foreground = new SolidColorBrush(Theme.Accent);
+                var accent = ActualTheme == ElementTheme.Light
+                    ? Theme.AccentLight.Default
+                    : Theme.AccentDark.Default;
+
+                cached.Background = new SolidColorBrush(accent.WithAlpha(22));
+                cached.Foreground = new SolidColorBrush(accent);
 
                 textBlock.TextHighlighters.Add(cached);
             }
