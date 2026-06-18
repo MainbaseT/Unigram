@@ -3986,6 +3986,8 @@ namespace Telegram.Controls.Messages
                         || (width && invoice.ProductInfo.Photo != null);
                 case MessageAsyncStory story:
                     return story.State != MessageStoryState.Expired;
+                case MessageRichMessage richMessage:
+                    return richMessage.Message.Blocks[^1] is PageBlockAnimation { Caption: null } or PageBlockCollage { Caption : null } or PageBlockMap { Caption: null } or PageBlockPhoto { Caption: null } or PageBlockSlideshow { Caption: null } or PageBlockVideo { Caption: null };
                 default:
                     return false;
             }

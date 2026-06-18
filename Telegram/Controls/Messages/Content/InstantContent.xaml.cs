@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using Microsoft.UI.Xaml.Controls;
 using Rg.DiffUtils;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -71,7 +73,29 @@ namespace Telegram.Controls.Messages.Content
 
         #endregion
 
-        public UIElement LastBlock => LayoutRoot?.Children.Count > 0 ? LayoutRoot.Children[^1] : null;
+        public FormattedTextBlock LastBlock
+        {
+            get
+            {
+                return FindBlock(LayoutRoot);
+
+                static FormattedTextBlock FindBlock(UIElement element)
+                {
+                    if (element is Panel panel && panel.Children.Count > 0)
+                    {
+                        // TODO: a better logic is needed (i.e. only use for some specific panel type)
+                        return null;
+                        return FindBlock(panel.Children[^1]);
+                    }
+                    else if (element is FormattedTextBlock block)
+                    {
+                        return block;
+                    }
+
+                    return null;
+                }
+            }
+        }
 
         public void UpdateMessage(MessageViewModel message)
         {
@@ -151,211 +175,10 @@ namespace Telegram.Controls.Messages.Content
 
         private IList<PageBlock> _prevValue;
 
-        private bool Test(PageBlock x, PageBlock y)
-        {
-            return (x, y) switch
-            {
-                // Text-only blocks
-                (PageBlockTitle a, PageBlockTitle b) => Length(a.Title, b.Title),
-                (PageBlockSubtitle a, PageBlockSubtitle b) => Length(a.Subtitle, b.Subtitle),
-                (PageBlockAuthorDate a, PageBlockAuthorDate b) => Length(a.Author, b.Author),
-                (PageBlockHeader a, PageBlockHeader b) => Length(a.Header, b.Header),
-                (PageBlockSubheader a, PageBlockSubheader b) => Length(a.Subheader, b.Subheader),
-                (PageBlockKicker a, PageBlockKicker b) => Length(a.Kicker, b.Kicker),
-                (PageBlockSectionHeading a, PageBlockSectionHeading b) => Length(a.Text, b.Text),
-                (PageBlockParagraph a, PageBlockParagraph b) => Length(a.Text, b.Text),
-                (PageBlockPreformatted a, PageBlockPreformatted b) => Length(a.Text, b.Text),
-                (PageBlockFooter a, PageBlockFooter b) => Length(a.Footer, b.Footer),
-                (PageBlockThinking a, PageBlockThinking b) => Length(a.Text, b.Text),
-                (PageBlockPullQuote a, PageBlockPullQuote b) => Length(a.Text, b.Text) && Length(a.Credit, b.Credit),
-                (PageBlockMathematicalExpression a, PageBlockMathematicalExpression b) => string.Equals(a.Expression, b.Expression),
-                // Atomic
-                (PageBlockAnchor a, PageBlockAnchor b) _ => true,
-                (PageBlockDivider, PageBlockDivider) _ => true,
-                (PageBlockChatLink, PageBlockChatLink) _ => true,
-                // Media + caption
-                (PageBlockAnimation a, PageBlockAnimation b) => Length(a.Caption, b.Caption),
-                (PageBlockAudio a, PageBlockAudio b) => Length(a.Caption, b.Caption),
-                (PageBlockPhoto a, PageBlockPhoto b) => Length(a.Caption, b.Caption),
-                (PageBlockVideo a, PageBlockVideo b) => Length(a.Caption, b.Caption),
-                (PageBlockVoiceNote a, PageBlockVoiceNote b) => Length(a.Caption, b.Caption),
-                (PageBlockMap a, PageBlockMap b) => Length(a.Caption, b.Caption),
-                (PageBlockEmbedded a, PageBlockEmbedded b) => Length(a.Caption, b.Caption),
-                // Containers
-                (PageBlockCover a, PageBlockCover b) => Test(a.Cover, b.Cover),
-                (PageBlockList a, PageBlockList b) => LengthListItems(a.Items, b.Items),
-                (PageBlockBlockQuote a, PageBlockBlockQuote b) => Length(a.Blocks, b.Blocks) && Length(a.Credit, b.Credit),
-                (PageBlockCollage a, PageBlockCollage b) => Length(a.Blocks, b.Blocks) && Length(a.Caption, b.Caption),
-                (PageBlockSlideshow a, PageBlockSlideshow b) => Length(a.Blocks, b.Blocks) && Length(a.Caption, b.Caption),
-                (PageBlockEmbeddedPost a, PageBlockEmbeddedPost b) => Length(a.Blocks, b.Blocks) && Length(a.Caption, b.Caption),
-                (PageBlockDetails a, PageBlockDetails b) => Length(a.Header, b.Header) && Length(a.Blocks, b.Blocks),
-                (PageBlockTable a, PageBlockTable b) => Length(a.Caption, b.Caption) && LengthTableCells(a.Cells, b.Cells),
-                //(PageBlockRelatedArticles a, PageBlockRelatedArticles b) => Length(a.Header, b.Header) + LengthRelatedArticles(b.Articles),
-                _ => false,
-            };
-
-        }
-
-        private bool Length(RichText x, RichText y)
-        {
-            switch (x, y)
-            {
-                case (RichTextPlain a, RichTextPlain b): return string.Equals(a.Text, b.Text);
-
-                case (RichTexts a, RichTexts b):
-                    if (a.Texts.Count != b.Texts.Count)
-                    {
-                        return false;
-                    }
-
-                    for (int i = 0; i < a.Texts.Count; i++)
-                    {
-                        if (!Length(a.Texts[i], b.Texts[i]))
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-
-                // Leaves
-                case (RichTextAnchor a, RichTextAnchor b): return a.Name == b.Name;
-                case (RichTextIcon a, RichTextIcon b): return a.Document.DocumentValue.Id == b.Document.DocumentValue.Id && a.Width == b.Width && a.Height == b.Height;
-                case (RichTextCustomEmoji a, RichTextCustomEmoji b): return a.CustomEmojiId == b.CustomEmojiId;
-                case (RichTextMathematicalExpression a, RichTextMathematicalExpression b): return string.Equals(a.Expression, b.Expression);
-
-                // Wrappers (all delegate to inner Text)
-                case (RichTextBold a, RichTextBold b): return Length(a.Text, b.Text);
-                case (RichTextItalic a, RichTextItalic b): return Length(a.Text, b.Text);
-                case (RichTextUnderline a, RichTextUnderline b): return Length(a.Text, b.Text);
-                case (RichTextStrikethrough a, RichTextStrikethrough b): return Length(a.Text, b.Text);
-                case (RichTextSpoiler a, RichTextSpoiler b): return Length(a.Text, b.Text);
-                case (RichTextFixed a, RichTextFixed b): return Length(a.Text, b.Text);
-                case (RichTextSubscript a, RichTextSubscript b): return Length(a.Text, b.Text);
-                case (RichTextSuperscript a, RichTextSuperscript b): return Length(a.Text, b.Text);
-                case (RichTextMarked a, RichTextMarked b): return Length(a.Text, b.Text);
-                case (RichTextUrl a, RichTextUrl b): return Length(a.Text, b.Text);
-                case (RichTextEmailAddress a, RichTextEmailAddress b): return Length(a.Text, b.Text);
-                case (RichTextPhoneNumber a, RichTextPhoneNumber b): return Length(a.Text, b.Text);
-                case (RichTextMention a, RichTextMention b): return Length(a.Text, b.Text);
-                case (RichTextHashtag a, RichTextHashtag b): return Length(a.Text, b.Text);
-                case (RichTextCashtag a, RichTextCashtag b): return Length(a.Text, b.Text);
-                case (RichTextBotCommand a, RichTextBotCommand b): return Length(a.Text, b.Text);
-                case (RichTextMentionName a, RichTextMentionName b): return Length(a.Text, b.Text);
-                case (RichTextBankCardNumber a, RichTextBankCardNumber b): return Length(a.Text, b.Text);
-                case (RichTextDateTime a, RichTextDateTime b): return Length(a.Text, b.Text);
-                case (RichTextReference a, RichTextReference b): return Length(a.Text, b.Text);
-                case (RichTextReferenceLink a, RichTextReferenceLink b): return Length(a.Text, b.Text);
-                case (RichTextAnchorLink a, RichTextAnchorLink b): return Length(a.Text, b.Text);
-                default: return false;
-            }
-        }
-
-        private bool Length(PageBlockCaption a, PageBlockCaption b)
-        {
-            if (a == null || b == null)
-            {
-                return a == b;
-            }
-
-            return Length(a.Credit, b.Credit) && Length(a.Text, b.Text);
-        }
-
-        private bool Length(IList<PageBlock> a, IList<PageBlock> b)
-        {
-            if (a.Count != b.Count)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < a.Count; i++)
-            {
-                if (!Test(a[i], b[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private bool Test(PageBlockListItem a, PageBlockListItem b)
-        {
-            return a.HasCheckbox == b.HasCheckbox
-                && a.IsChecked == b.IsChecked
-                && a.Label == b.Label
-                && a.Type == b.Type
-                && a.Value == b.Value
-                && Length(a.Blocks, b.Blocks);
-        }
-
-        private bool LengthListItems(IList<PageBlockListItem> a, IList<PageBlockListItem> b)
-        {
-            if (a.Count != b.Count)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < a.Count; i++)
-            {
-                if (!Test(a[i], b[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private bool Test(PageBlockTableCell a, PageBlockTableCell b)
-        {
-            return a.Align.GetType() == b.Align.GetType()
-                && a.Valign.GetType() == b.Valign.GetType()
-                && a.Colspan == b.Colspan
-                && a.IsHeader == b.IsHeader
-                && Length(a.Text, b.Text);
-        }
-
-        private bool Test(IList<PageBlockTableCell> a, IList<PageBlockTableCell> b)
-        {
-            if (a.Count != b.Count)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < a.Count; i++)
-            {
-                if (!Test(a[i], b[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private bool LengthTableCells(IList<IList<PageBlockTableCell>> a, IList<IList<PageBlockTableCell>> b)
-        {
-            if (a.Count != b.Count)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < a.Count; i++)
-            {
-                if (!Test(a[i], b[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private void UpdateView(IClientService clientService, IList<PageBlock> blocks, bool part)
+        public void UpdateView(IClientService clientService, IList<PageBlock> blocks, bool part)
         {
             var prev = _prevValue ?? Array.Empty<PageBlock>();
-            var diff = DiffUtil.CalculateDiff(prev, blocks, Test, Constants.DiffOptions);
+            var diff = DiffUtil.CalculateDiff(prev, blocks, PageBlockHelper.Compare, Constants.DiffOptions);
 
             Logger.Info(string.Format("Steps: {0}, added: {1}, removed: {2}, moved: {3}", diff.Steps.Count, diff.AddedItems.Count, diff.RemovedItems.Count, diff.MovedItems.Count));
 
@@ -677,110 +500,130 @@ namespace Telegram.Controls.Messages.Content
 
             var thickness = table.IsBordered ? 1 : 0;
 
-            var columns = table.Cells.Select(x => x.Sum(x => x.Colspan)).Max();
+            var columns = table.Cells.Max(row => row.Sum(cell => cell.Colspan));
             var rows = table.Cells.Count;
 
             for (int i = 0; i < columns; i++)
             {
+                // Auto (not Star): the grid is measured with infinite width inside the
+                // horizontal ScrollViewer, so Star can't resolve and silently degrades.
                 grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MaxWidth = 200 });
             }
 
-            var row = 0;
-            var offset = new Dictionary<int, int>();
+            for (int i = 0; i < rows; i++)
+            {
+                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            }
 
-            foreach (var rowz in table.Cells)
+            // Tracks slots already covered by a colspan/rowspan from a previously placed cell,
+            // so later cells (including ones receiving a rowspan from a row above) flow around them.
+            var occupied = new bool[rows, columns];
+
+            var row = 0;
+            foreach (var line in table.Cells)
             {
                 var column = 0;
 
-                if (offset.TryGetValue(row, out int adjust))
+                foreach (var cell in line)
                 {
-                    column = adjust;
-                }
-
-                foreach (var cell in rowz)
-                {
-                    FormattedTextBlock textBlock = null;
-                    if (cell.Text != null)
+                    // Skip past any slots already taken by spans.
+                    while (column < columns && occupied[row, column])
                     {
+                        column++;
+                    }
+
+                    // Defend against malformed input that declares more cells than columns.
+                    if (column >= columns)
+                    {
+                        break;
+                    }
+
+                    var colspan = Math.Min(Math.Max(1, cell.Colspan), columns - column);
+                    var rowspan = Math.Min(Math.Max(1, cell.Rowspan), rows - row);
+
+                    var lastColumn = column + colspan - 1;
+                    var lastRow = row + rowspan - 1;
+
+                    FormattedTextBlock textBlock = null;
                         textBlock = CreateTextBlock();
                         textBlock.TextWrapping = TextWrapping.Wrap;
-
-                        switch (cell.Align)
+                        textBlock.TextAlignment = cell.Align switch
                         {
-                            case PageBlockHorizontalAlignmentLeft left:
-                                textBlock.TextAlignment = TextAlignment.Left;
-                                break;
-                            case PageBlockHorizontalAlignmentCenter center:
-                                textBlock.TextAlignment = TextAlignment.Center;
-                                break;
-                            case PageBlockHorizontalAlignmentRight right:
-                                textBlock.TextAlignment = TextAlignment.Right;
-                                break;
-                        }
-
-                        switch (cell.Valign)
+                            PageBlockHorizontalAlignmentCenter => TextAlignment.Center,
+                            PageBlockHorizontalAlignmentRight => TextAlignment.Right,
+                            _ => TextAlignment.Left
+                        };
+                        textBlock.VerticalAlignment = cell.Valign switch
                         {
-                            case PageBlockVerticalAlignmentTop top:
-                                textBlock.VerticalAlignment = VerticalAlignment.Top;
-                                break;
-                            case PageBlockVerticalAlignmentMiddle middle:
-                                textBlock.VerticalAlignment = VerticalAlignment.Center;
-                                break;
-                            case PageBlockVerticalAlignmentBottom bottom:
-                                textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-                                break;
-                        }
+                            PageBlockVerticalAlignmentMiddle => VerticalAlignment.Center,
+                            PageBlockVerticalAlignmentBottom => VerticalAlignment.Bottom,
+                            _ => VerticalAlignment.Top
+                        };
 
+                    if (cell.Text != null)
+                    {
                         textBlock.SetText(clientService, cell.Text);
                     }
 
-                    var border = new Border();
-                    border.Style = LayoutRoot.Resources[cell.IsHeader || (table.IsStriped && row % 2 == 0) ? "BlockTableHeaderStyle" : "BlockTableCellStyle"] as Style;
-                    border.BorderThickness = new Thickness(column == 0 ? thickness : 0, row == 0 ? thickness : 0, thickness, thickness);
-                    border.CornerRadius = new CornerRadius(column == 0 && row == 0 ? 4 : 0, column == columns - 1 && row == 0 ? 4 : 0, column == columns - 1 && row == rows - 1 ? 4 : 0, column == 0 && row == rows - 1 ? 4 : 0);
-                    border.Padding = new Thickness(8, 4, 8, 4);
-                    border.Child = textBlock;
+                    var border = new Border
+                    {
+                        Style = ResolveCellStyle(cell, row),
+                        // Collapsed borders: left only on the first column, top only on the first
+                        // row; right/bottom always drawn so adjacent edges don't double up.
+                        BorderThickness = new Thickness(
+                            column == 0 ? thickness : 0,
+                            row == 0 ? thickness : 0,
+                            thickness,
+                            thickness),
+                        // Round only the outer corners, measured against the cell's trailing edge
+                        // so spanned cells still round correctly.
+                        CornerRadius = new CornerRadius(
+                            column == 0 && row == 0 ? 4 : 0,
+                            lastColumn == columns - 1 && row == 0 ? 4 : 0,
+                            lastColumn == columns - 1 && lastRow == rows - 1 ? 4 : 0,
+                            column == 0 && lastRow == rows - 1 ? 4 : 0),
+                        Padding = new Thickness(8, 4, 8, 4),
+                        Child = textBlock
+                    };
 
                     Grid.SetRow(border, row);
-                    Grid.SetRowSpan(border, cell.Rowspan);
+                    Grid.SetRowSpan(border, rowspan);
                     Grid.SetColumn(border, column);
-                    Grid.SetColumnSpan(border, cell.Colspan);
-
-                    if (cell.Rowspan > 1 && column == adjust)
-                    {
-                        for (int i = 1; i < cell.Rowspan; i++)
-                        {
-                            offset[row + i] = column + cell.Colspan;
-                        }
-                    }
+                    Grid.SetColumnSpan(border, colspan);
 
                     grid.Children.Add(border);
 
-                    column += cell.Colspan;
-                }
+                    // Mark every covered slot.
+                    for (int r = row; r <= lastRow; r++)
+                    {
+                        for (int c = column; c <= lastColumn; c++)
+                        {
+                            occupied[r, c] = true;
+                        }
+                    }
 
-                grid.RowDefinitions.Add(1, GridUnitType.Auto);
+                    column += colspan;
+                }
 
                 row++;
             }
 
-            var scroll = new ScrollViewer();
-            scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            scroll.HorizontalScrollMode = ScrollMode.Auto;
-            scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
-            scroll.VerticalScrollMode = ScrollMode.Disabled;
-            scroll.HorizontalContentAlignment = HorizontalAlignment.Stretch;
-
-            scroll.Content = grid;
+            var scroll = new ScrollViewer
+            {
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollMode = ScrollMode.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollMode = ScrollMode.Disabled,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                Content = grid
+            };
 
             if (test && Constants.DEBUG)
             {
                 var panel = new StackPanel();
-                //panel.Children.Add(caption);
                 panel.Children.Add(scroll);
 
-                var button = new Button();
-                button.Content = "Rebuild";
+                var button = new Button { Content = "Rebuild" };
                 button.Click += (s, args) =>
                 {
                     panel.Children.RemoveAt(0);
@@ -788,7 +631,6 @@ namespace Telegram.Controls.Messages.Content
                 };
 
                 panel.Children.Add(button);
-
                 return panel;
             }
 
@@ -798,11 +640,30 @@ namespace Telegram.Controls.Messages.Content
                 var panel = new StackPanel();
                 panel.Children.Add(caption);
                 panel.Children.Add(scroll);
-
                 return panel;
             }
 
             return scroll;
+
+            // Prefer a dedicated stripe style if defined, otherwise fall back to the header
+            // style (the previous behaviour) so this stays non-breaking until you add one.
+            Style ResolveCellStyle(PageBlockTableCell cell, int rowIndex)
+            {
+                if (cell.IsHeader)
+                {
+                    return TableStyle("BlockTableHeaderStyle");
+                }
+
+                if (table.IsStriped && rowIndex % 2 == 0)
+                {
+                    return TableStyle("BlockTableStripeStyle") ?? TableStyle("BlockTableHeaderStyle");
+                }
+
+                return TableStyle("BlockTableCellStyle");
+            }
+
+            Style TableStyle(string key)
+                => LayoutRoot.Resources.TryGetValue(key, out var value) ? value as Style : null;
         }
 
         private FrameworkElement ProcessDetails(IClientService clientService, PageBlockDetails details)
@@ -817,7 +678,11 @@ namespace Telegram.Controls.Messages.Content
 
             foreach (var block in details.Blocks)
             {
-                inner.Children.Add(ProcessBlock(clientService, block, details));
+                var child = ProcessBlock(clientService, block, details);
+                if (child != null)
+                {
+                    inner.Children.Add(child);
+                }
             }
 
             header.Click += (s, args) =>
@@ -1038,9 +903,9 @@ namespace Telegram.Controls.Messages.Content
                     //textBlock.Style = LayoutRoot.Resources["BlockRelatedArticlesHeaderStyle"] as Style;
                     break;
                 case PageBlockSectionHeading heading:
-                    //textBlock.Style = LayoutRoot.Resources["BlockHeaderTextBlockStyle"] as Style;
-                    textBlock.FontSize = 28 - ((heading.Size - 1) * 2);
+                    textBlock.FontSize = 24 - ((heading.Size - 1) * 2);
                     textBlock.FontFamily = BootStrapper.Current.Resources["EmojiThemeFontFamilyWithSerif"] as FontFamily;
+                    textBlock.FontWeight = FontWeights.SemiBold;
                     break;
             }
 
@@ -1609,17 +1474,21 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessBlockquote(IClientService clientService, PageBlockBlockQuote block)
         {
-            var element = new StackPanel(); //{ Style = Resources["BlockBlockquoteStyle"] as Style };
+            var content = new StackPanel(); //{ Style = Resources["BlockBlockquoteStyle"] as Style };
 
-            foreach (var child in block.Blocks)
+            foreach (var item in block.Blocks)
             {
-                element.Children.Add(ProcessBlock(clientService, child, block));
+                var child = ProcessBlock(clientService, item, block);
+                if (child != null)
+                {
+                    content.Children.Add(child);
+                }
             }
 
             var caption = ProcessText(clientService, block, true);
             if (caption != null)
             {
-                element.Children.Add(caption);
+                content.Children.Add(caption);
             }
 
             var test = new Grid();
@@ -1627,30 +1496,45 @@ namespace Telegram.Controls.Messages.Content
             {
                 Glyph = Icons.QuoteBlockFilled16
             });
-            test.Children.Add(element);
+            test.Children.Add(content);
 
-            element.Padding = new Thickness(12, 2, 12, 4);
+            content.Padding = new Thickness(12, 2, 12, 4);
             test.Margin = new Thickness(0, 4, 0, 4);
             return test;
         }
 
         private FrameworkElement ProcessPullquote(IClientService clientService, PageBlockPullQuote block)
         {
-            var element = new StackPanel { Style = LayoutRoot.Resources["BlockPullquoteStyle"] as Style };
+            var content = new Grid
+            {
+                Style = LayoutRoot.Resources["BlockPullquoteStyle"] as Style,
+                CornerRadius = new CornerRadius(4)
+            };
+
+            content.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            content.ColumnDefinitions.Add(1, GridUnitType.Star);
+            content.ColumnDefinitions.Add(1, GridUnitType.Auto);
+            content.RowDefinitions.Add(1, GridUnitType.Auto);
+            content.RowDefinitions.Add(1, GridUnitType.Auto);
 
             var text = ProcessText(clientService, block, false);
             if (text != null)
             {
-                element.Children.Add(text);
+                Grid.SetColumn(text, 1);
+
+                content.Children.Add(text);
             }
 
             var caption = ProcessText(clientService, block, true);
             if (caption != null)
             {
-                element.Children.Add(caption);
+                Grid.SetColumnSpan(caption, 3);
+                Grid.SetRow(caption, 1);
+
+                content.Children.Add(caption);
             }
 
-            return element;
+            return content;
         }
 
         private FrameworkElement ProcessPhoto(IClientService clientService, PageBlockPhoto block, PageBlock parent)
@@ -1826,12 +1710,12 @@ namespace Telegram.Controls.Messages.Content
 
         private MessageViewModel CreateMessage(IClientService clientService, MessageContent content)
         {
-            return new MessageViewModel(clientService, _message.Delegate, _message.Chat, null, null, new Message { Content = content });
+            return new MessageViewModel(clientService, _message?.Delegate, _message?.Chat, null, null, new Message { Content = content });
         }
 
         private MessageViewModel CreateMessage(IClientService clientService, long id, MessageContent content)
         {
-            return new MessageViewModel(clientService, _message.Delegate, _message.Chat, null, null, new Message { Id = id, Content = content });
+            return new MessageViewModel(clientService, _message?.Delegate, _message?.Chat, null, null, new Message { Id = id, Content = content });
         }
 
         private FrameworkElement ProcessEmbed(IClientService clientService, PageBlockEmbedded block)
@@ -1898,8 +1782,6 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessSlideshow(IClientService clientService, PageBlockSlideshow block)
         {
-            var element = new StackPanel { Style = LayoutRoot.Resources["BlockSlideshowStyle"] as Style };
-
             var items = new List<FrameworkElement>();
             foreach (var item in block.Blocks)
             {
@@ -1918,16 +1800,45 @@ namespace Telegram.Controls.Messages.Content
             flip.ItemsSource = items;
             flip.MaxHeight = 420;
 
-            element.Children.Add(flip);
+            var pager = new PipsPager
+            {
+                NumberOfPages = items.Count,
+                CornerRadius = new CornerRadius(0),
+                RequestedTheme = ElementTheme.Dark,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Bottom,
+            };
+
+            var binding = new Binding
+            {
+                Path = new PropertyPath("SelectedIndex"),
+                Source = flip,
+                Mode = BindingMode.TwoWay
+            };
+
+            BindingOperations.SetBinding(pager, PipsPager.SelectedPageIndexProperty, binding);
+
+            var content = new Grid();
+            content.Children.Add(flip);
+            content.Children.Add(pager);
 
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
             {
+                var element = new StackPanel
+                {
+                    Style = LayoutRoot.Resources["BlockSlideshowStyle"] as Style
+                };
+
                 caption.Margin = new Thickness(12, 8, 0, 0);
+
+                element.Children.Add(content);
                 element.Children.Add(caption);
+
+                return element;
             }
 
-            return element;
+            return content;
         }
 
         public sealed partial class PageBlockCollageContent : Grid
@@ -1950,11 +1861,11 @@ namespace Telegram.Controls.Messages.Content
                 {
                     foreach (var block in _collage.Blocks)
                     {
-                        if (block is PageBlockPhoto photoMedia)
+                        if (block is PageBlockPhoto photoMedia && photoMedia.Photo != null)
                         {
                             yield return GetClosestPhotoSizeWithSize(photoMedia.Photo.Sizes, 1280, false);
                         }
-                        else if (block is PageBlockVideo videoMedia)
+                        else if (block is PageBlockVideo videoMedia && videoMedia.Video != null)
                         {
                             if (videoMedia.Video.Width != 0 && videoMedia.Video.Height != 0)
                             {
@@ -1968,28 +1879,19 @@ namespace Telegram.Controls.Messages.Content
                             //{
                             //    yield return GetClosestPhotoSizeWithSize(videoMedia.Cover.Sizes, 1280, false);
                             //}
-                            else
-                            {
-                                // We are returning a random size, it's still better than NaN.
-                                yield return new Size(1280, 1280);
-                            }
+                        }
+                        else
+                        {
+                            // We are returning a random size, it's still better than NaN.
+                            yield return new Size(1280, 1280);
                         }
                     }
                 }
             }
 
-            public PageBlockCollageContent(IClientService clientService, PageBlockCollage collage, Func<IClientService, PageBlock, PageBlock, FrameworkElement> create)
+            public PageBlockCollageContent(PageBlockCollage collage)
             {
                 _collage = new PageBlockCollageAlbum(collage);
-
-                foreach (var block in collage.Blocks)
-                {
-                    var child = create(clientService, block, collage);
-                    if (child != null)
-                    {
-                        Children.Add(child);
-                    }
-                }
             }
 
             private (Rect[], Size) _positions;
@@ -2036,7 +1938,16 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessCollage(IClientService clientService, PageBlockCollage block)
         {
-            var content = new PageBlockCollageContent(clientService, block, ProcessBlock);
+            var content = new PageBlockCollageContent(block);
+
+            foreach (var item in block.Blocks)
+            {
+                var child = ProcessBlock(clientService, item, block);
+                if (child != null)
+                {
+                    content.Children.Add(child);
+                }
+            }
 
             var caption = ProcessCaption(clientService, block.Caption);
             if (caption != null)
@@ -2134,8 +2045,12 @@ namespace Telegram.Controls.Messages.Content
 
             if (cached.Ranges.Count > 0 && textBlock != null)
             {
-                cached.Background = new SolidColorBrush(Theme.Accent.WithAlpha(22));
-                cached.Foreground = new SolidColorBrush(Theme.Accent);
+                var accent = ActualTheme == ElementTheme.Light
+                    ? Theme.AccentLight.Default
+                    : Theme.AccentDark.Default;
+
+                cached.Background = new SolidColorBrush(accent.WithAlpha(22));
+                cached.Foreground = new SolidColorBrush(accent);
 
                 textBlock.TextHighlighters.Add(cached);
             }
@@ -2426,13 +2341,18 @@ namespace Telegram.Controls.Messages.Content
             var upper = index > 0 ? blocks[index - 1] : null;
             if (upper == null)
             {
-                if (lower is PageBlockAnimation or PageBlockCollage or PageBlockCover or PageBlockMap or PageBlockPhoto or PageBlockSlideshow or PageBlockVideo)
+                if (lower is PageBlockAnimation or PageBlockCollage or PageBlockCover or PageBlockMap or PageBlockPhoto or PageBlockSlideshow or PageBlockVideo or PageBlockAnchor)
                 {
                     return 0;
                 }
             }
 
             if (upper is PageBlockParagraph && lower is PageBlockParagraph)
+            {
+                return 0;
+            }
+
+            if (upper is PageBlockAnchor && lower is PageBlockAnchor)
             {
                 return 0;
             }
