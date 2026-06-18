@@ -935,7 +935,7 @@ namespace Telegram.Controls
             FontFamily monospaceFontFamily = null;
             FontFamily GetMonospaceFontFamily()
             {
-                return monospaceFontFamily ?? new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
+                return monospaceFontFamily ?? new FontFamily("Cascadia Code, Consolas, " + Theme.Current.XamlAutoFontFamily);
             }
 
             var alignment = TextAlignment;
@@ -1844,7 +1844,7 @@ namespace Telegram.Controls
 
         private void ProcessCodeBlock(XamlDirect direct, IXamlDirectObject inlines, IList<Token> tokens)
         {
-            var fontFamily = new FontFamily("Consolas, " + Theme.Current.XamlAutoFontFamily);
+            var fontFamily = new FontFamily("Cascadia Code, Consolas, " + Theme.Current.XamlAutoFontFamily);
 
             foreach (var token in tokens)
             {
