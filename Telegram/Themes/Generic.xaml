@@ -453,20 +453,27 @@
     <Style TargetType="local:BlockQuote">
         <Setter Property="Foreground"
                 Value="{ThemeResource MessageHeaderForegroundBrush}" />
+        <Setter Property="Background"
+                Value="{ThemeResource MessageHeaderBackgroundBrush}" />
         <Setter Property="BorderBrush"
                 Value="{ThemeResource MessageHeaderBorderBrush}" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:BlockQuote">
                     <Grid CornerRadius="4">
-                        <Rectangle x:Name="Overlay"
-                                   Fill="{TemplateBinding BorderBrush}"
-                                   Opacity="0.1"
-                                   Grid.ColumnSpan="3" />
-                        <Rectangle x:Name="Pill"
-                                   Fill="{TemplateBinding BorderBrush}"
-                                   HorizontalAlignment="Left"
-                                   Width="3" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="Overlay"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3,0,0,0"
+                                Grid.ColumnSpan="2" />
 
                         <TextBlock Text="{TemplateBinding Glyph}"
                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
@@ -474,7 +481,16 @@
                                    Foreground="{TemplateBinding Foreground}"
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top"
-                                   Margin="4" />
+                                   Margin="4"
+                                   Grid.Column="1" />
+
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"
+                                          Foreground="{ThemeResource TextControlForeground}"
+                                          Grid.Column="1" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -484,8 +500,14 @@
     <Style TargetType="local:BlockCode">
         <Setter Property="Foreground"
                 Value="{ThemeResource MessageHeaderForegroundBrush}" />
+        <Setter Property="Background"
+                Value="{ThemeResource MessageHeaderBackgroundBrush}" />
         <Setter Property="BorderBrush"
                 Value="{ThemeResource MessageHeaderBorderBrush}" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Stretch" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:BlockCode">
@@ -494,26 +516,25 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Rectangle x:Name="Overlay"
-                                   Fill="{TemplateBinding BorderBrush}"
-                                   Opacity="0.1"
-                                   Grid.ColumnSpan="2" />
-                        <Rectangle x:Name="Pill"
-                                   Fill="{TemplateBinding BorderBrush}"
-                                   HorizontalAlignment="Left"
-                                   Width="3" />
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Border x:Name="Overlay"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3,0,0,0"
+                                Grid.ColumnSpan="2"
+                                Grid.RowSpan="2" />
 
-                        <Grid VerticalAlignment="Top"
-                              Grid.Column="1">
-                            <Rectangle Fill="{TemplateBinding BorderBrush}"
-                                       Opacity="0.1"
-                                       Grid.ColumnSpan="3" />
+                        <Border Background="{TemplateBinding Background}"
+                                Grid.Column="1">
                             <TextBlock Text="{TemplateBinding LanguageName}"
                                        Foreground="{TemplateBinding Foreground}"
                                        Style="{StaticResource CaptionTextBlockStyle}"
                                        FontWeight="SemiBold"
                                        Margin="8,2,0,4" />
-                        </Grid>
+                        </Border>
 
 
                         <TextBlock Text="&#xEA5A;"
@@ -523,7 +544,17 @@
                                    HorizontalAlignment="Right"
                                    VerticalAlignment="Top"
                                    Margin="4"
-                                   Grid.Column="1" />
+                                   Grid.Column="1"
+                                   Grid.RowSpan="2" />
+
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Padding="{TemplateBinding Padding}"
+                                          Foreground="{ThemeResource TextControlForeground}"
+                                          Grid.Column="1"
+                                          Grid.Row="1" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

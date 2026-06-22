@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Telegram.Controls
 {
-    public partial class BlockQuote : Control
+    public partial class BlockQuote : ContentControl
     {
         public BlockQuote()
         {
@@ -31,7 +31,7 @@ namespace Telegram.Controls
         #endregion
     }
 
-    public partial class BlockCode : Control
+    public partial class BlockCode : ContentControl
     {
         public BlockCode()
         {
