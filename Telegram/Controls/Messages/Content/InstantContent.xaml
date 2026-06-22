@@ -205,6 +205,20 @@
                                         Value="{ThemeResource CardStrokeColorDefaultBrush}" />
                             </Style>
 
+                            <Style x:Key="AccentTextBlockStyle"
+                                   TargetType="TextBlock">
+                                <Setter Property="Foreground"
+                                        Value="{ThemeResource MessageHeaderForegroundBrush}" />
+                            </Style>
+
+                            <Style x:Key="PullquoteCreditStyle"
+                                   TargetType="controls:FormattedTextBlock">
+                                <Setter Property="Foreground"
+                                        Value="{ThemeResource MessageHeaderForegroundBrush}" />
+                                <Setter Property="IconForeground"
+                                        Value="{ThemeResource MessageHeaderForegroundBrush}" />
+                            </Style>
+
                             <!--<DataTemplate x:Key="ChannelItemTemplate" x:DataType="tl:TLChannel">
              <Grid>
              <Grid.ColumnDefinitions>
