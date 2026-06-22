@@ -404,6 +404,8 @@
     <Compile Include="Controls\Messages\Content\InstantContent.xaml.cs">
       <DependentUpon>InstantContent.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ISelectableControl.cs" />
+    <Compile Include="Common\TextSelectionManager.cs" />
     <Compile Include="Controls\Messages\MessageSummary.xaml.cs">
       <DependentUpon>MessageSummary.xaml</DependentUpon>
     </Compile>

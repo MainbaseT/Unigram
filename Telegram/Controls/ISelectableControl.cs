@@ -1,0 +1,50 @@
+//
+// Copyright (c) Fela Ameghino 2015-2026
+//
+// Distributed under the GNU General Public License v3.0. (See accompanying
+// file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
+//
+
+using Telegram.Td.Api;
+
+namespace Telegram.Controls
+{
+    /// <summary>
+    /// A control that can participate in a cross-block text selection driven by
+    /// <see cref="Telegram.Common.TextSelectionManager"/>. Implementers are <c>FrameworkElement</c>s
+    /// living in the manager's working tree (so the manager can read their geometry
+    /// and route pointer points to them); this interface only adds the selection
+    /// behaviour on top.
+    ///
+    /// Positions are 0-based indices into the control's selectable content; the full
+    /// range is <c>[0, ContentLength]</c>. Selection is rendered as a HIGHLIGHT (not
+    /// the native focus-bound selection), so any number of controls can show a
+    /// selection at once and focus never enters the picture.
+    /// </summary>
+    public interface ISelectableControl
+    {
+        /// <summary>
+        /// Whether this control participates in <see cref="TextSelectionManager"/>
+        /// selection. The manager only collects controls where this is true.
+        /// </summary>
+        bool IsSelectionEnabled { get; }
+
+        /// <summary>Number of selectable positions; <c>[0, ContentLength]</c> is everything.</summary>
+        int ContentLength { get; }
+
+        /// <summary>Hit-test a point in THIS control's coordinate space to a position index (clamped).</summary>
+        int GetPositionFromPoint(Point point);
+
+        /// <summary>Show a selection highlight over <c>[start, end)</c>; the manager always passes <c>start &lt;= end</c>.</summary>
+        void Select(int start, int end);
+
+        /// <summary>Remove any selection highlight from this control.</summary>
+        void ClearSelection();
+
+        /// <summary>
+        /// The selected content over <c>[start, end)</c> as a <see cref="Telegram.Td.Api.FormattedText"/>
+        /// (text + entities) for copy, or null when the range is empty.
+        /// </summary>
+        FormattedText GetSelectedText(int start, int end);
+    }
+}
