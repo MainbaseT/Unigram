@@ -42,6 +42,8 @@ namespace Telegram.Controls.Messages.Content
         private MessageViewModel _message;
         public MessageViewModel Message => _message;
 
+        private RichMessageDelegate _delegate;
+
         public InstantContent(MessageViewModel message)
         {
             _message = message;
@@ -110,6 +112,7 @@ namespace Telegram.Controls.Messages.Content
                 return;
             }
 
+            _delegate = new RichMessageDelegate(text, message.Delegate as DialogMessageDelegate);
             UpdateInstantView(message, text, _instantViewToken.Token);
         }
 
@@ -1710,12 +1713,12 @@ namespace Telegram.Controls.Messages.Content
 
         private MessageViewModel CreateMessage(IClientService clientService, MessageContent content)
         {
-            return new MessageViewModel(clientService, _message?.Delegate, _message?.Chat, null, null, new Message { Content = content });
+            return new MessageViewModel(clientService, _delegate, _message?.Chat, null, null, new Message { Content = content });
         }
 
         private MessageViewModel CreateMessage(IClientService clientService, long id, MessageContent content)
         {
-            return new MessageViewModel(clientService, _message?.Delegate, _message?.Chat, null, null, new Message { Id = id, Content = content });
+            return new MessageViewModel(clientService, _delegate, _message?.Chat, null, null, new Message { Id = id, Content = content });
         }
 
         private FrameworkElement ProcessEmbed(IClientService clientService, PageBlockEmbedded block)
@@ -1788,6 +1791,7 @@ namespace Telegram.Controls.Messages.Content
                 var child = ProcessBlock(clientService, item, block);
                 if (child != null)
                 {
+                    child.Tag = item;
                     child.HorizontalAlignment = HorizontalAlignment.Center;
                     child.ClearValue(MaxWidthProperty);
                     child.ClearValue(MaxHeightProperty);
@@ -1945,6 +1949,7 @@ namespace Telegram.Controls.Messages.Content
                 var child = ProcessBlock(clientService, item, block);
                 if (child != null)
                 {
+                    child.Tag = item;
                     content.Children.Add(child);
                 }
             }
