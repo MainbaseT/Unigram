@@ -5,6 +5,7 @@
 // file LICENSE or copy at https://www.gnu.org/licenses/gpl-3.0.txt)
 //
 
+using System;
 using Telegram.Td.Api;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -81,7 +82,28 @@ namespace Telegram.Controls
         // Only Extended blocks are collected by TextSelectionManager.
         public bool IsSelectionEnabled => _textSelection == TextSelectionMode.Extended;
 
-        public int ContentLength => TextBlock != null ? GetHighlightIndex(TextBlock.ContentEnd) : 0;
+        // Cached: GetHighlightIndex(ContentEnd) walks the whole inline tree, and ContentLength
+        // is hit on every Select() during a drag — for a syntax-highlighted code block (a deep
+        // span tree) that re-walk per pointer move is the selection lag. Invalidated (-1) by
+        // SetText and when ProcessCodeBlock rebuilds the inlines.
+        private int _contentLength = -1;
+        public int ContentLength
+        {
+            get
+            {
+                if (_contentLength < 0 && TextBlock != null)
+                {
+                    _contentLength = GetHighlightIndex(TextBlock.ContentEnd);
+                }
+
+                return _contentLength < 0 ? 0 : _contentLength;
+            }
+        }
+
+        internal void InvalidateContentLength()
+        {
+            _contentLength = -1;
+        }
 
         public int GetPositionFromPoint(Point point)
         {
@@ -153,6 +175,86 @@ namespace Telegram.Controls
             var from = RenderedToStyled(start);
             var to = RenderedToStyled(end);
             return to > from ? _text.Substring(from, to - from) : null;
+        }
+
+        // Expand a rendered position to its word/paragraph, returned in rendered indices.
+        // Works in StyledText space (the real characters, no injected ZWNJ/marks) so the
+        // ProcessCodeBlock span tree and emoji workarounds don't perturb boundaries, then
+        // maps back. A word never crosses a line, so it's clamped to the containing
+        // StyledParagraph — which is also the Paragraph-granularity answer.
+        public void GetSelectionBoundary(int position, TextSelectionGranularity granularity, out int start, out int end)
+        {
+            start = end = position;
+
+            if (granularity == TextSelectionGranularity.Character || _text == null || TextBlock == null)
+            {
+                return;
+            }
+
+            var offset = RenderedToStyled(position);
+            if (!ParagraphRange(offset, out var lo, out var hi) || hi <= lo)
+            {
+                return;
+            }
+
+            if (granularity == TextSelectionGranularity.Paragraph)
+            {
+                start = StyledToRendered(lo);
+                end = StyledToRendered(hi);
+                return;
+            }
+
+            // Word: expand over the run of the same class around the hit char. Mirrors the
+            // native SelectionWordBreaker — a contiguous run of punctuation/symbols is itself
+            // a "word", whitespace is its own run, everything else is word characters.
+            var text = _text.Text;
+            var i = Math.Min(Math.Max(offset, lo), hi - 1);
+            var cls = Classify(text[i]);
+
+            var s = i;
+            var e = i + 1;
+            while (s > lo && Classify(text[s - 1]) == cls) s--;
+            while (e < hi && Classify(text[e]) == cls) e++;
+
+            start = StyledToRendered(s);
+            end = StyledToRendered(e);
+        }
+
+        // [lo, hi) absolute StyledText offsets of the rendered paragraph containing (or
+        // nearest at/before) the given offset, within this block's [_first, _last] range.
+        private bool ParagraphRange(int offset, out int lo, out int hi)
+        {
+            lo = hi = 0;
+
+            var paragraphs = _text.Paragraphs;
+            var found = false;
+
+            for (int i = _first; i <= _last && i < paragraphs.Count; i++)
+            {
+                var paragraph = paragraphs[i];
+                if (!found || paragraph.Offset <= offset)
+                {
+                    lo = paragraph.Offset;
+                    hi = paragraph.Offset + paragraph.Length;
+                    found = true;
+                }
+
+                if (offset >= paragraph.Offset && offset < paragraph.Offset + paragraph.Length)
+                {
+                    break;
+                }
+            }
+
+            return found;
+        }
+
+        private enum CharClass { Word, Punctuation, Space }
+
+        private static CharClass Classify(char c)
+        {
+            if (char.IsWhiteSpace(c)) return CharClass.Space;
+            if (char.IsPunctuation(c) || char.IsSymbol(c)) return CharClass.Punctuation;
+            return CharClass.Word;
         }
 
         // Rendered/highlighter index -> StyledText.Text offset, via _indexMap (built by

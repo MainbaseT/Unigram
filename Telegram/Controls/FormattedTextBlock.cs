@@ -1852,6 +1852,10 @@ namespace Telegram.Controls
 
                     direct.ClearCollection(inlines);
                     ProcessCodeBlock(direct, inlines, tokens.Children);
+
+                    // The inline tree changed (placeholder -> syntax spans); the cached
+                    // selection length must be recomputed on next access.
+                    _contentLength = -1;
                 }
             }
             catch

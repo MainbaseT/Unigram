@@ -10,6 +10,18 @@ using Telegram.Td.Api;
 namespace Telegram.Controls
 {
     /// <summary>
+    /// Granularity a <see cref="Telegram.Common.TextSelectionManager"/> gesture snaps to:
+    /// a single tap selects by <see cref="Character"/> (a caret-to-caret drag), a double
+    /// tap by <see cref="Word"/>, a triple tap by <see cref="Paragraph"/>.
+    /// </summary>
+    public enum TextSelectionGranularity
+    {
+        Character,
+        Word,
+        Paragraph
+    }
+
+    /// <summary>
     /// A control that can participate in a cross-block text selection driven by
     /// <see cref="Telegram.Common.TextSelectionManager"/>. Implementers are <c>FrameworkElement</c>s
     /// living in the manager's working tree (so the manager can read their geometry
@@ -34,6 +46,14 @@ namespace Telegram.Controls
 
         /// <summary>Hit-test a point in THIS control's coordinate space to a position index (clamped).</summary>
         int GetPositionFromPoint(Point point);
+
+        /// <summary>
+        /// Expand <paramref name="position"/> to the <c>[start, end)</c> of the word or
+        /// paragraph it sits in (same index space as the other members), for double/triple
+        /// tap and granular drag. <see cref="TextSelectionGranularity.Character"/> returns
+        /// <c>(position, position)</c>.
+        /// </summary>
+        void GetSelectionBoundary(int position, TextSelectionGranularity granularity, out int start, out int end);
 
         /// <summary>Show a selection highlight over <c>[start, end)</c>; the manager always passes <c>start &lt;= end</c>.</summary>
         void Select(int start, int end);

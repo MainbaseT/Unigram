@@ -34,6 +34,11 @@ namespace Telegram.Common
     {
         private const double DragThreshold = 4.0;
 
+        // Multi-tap detection (mouse): a press counts as a continuation of the previous one
+        // when it lands within TapSlop and inside the system double-click time.
+        private const double TapSlop = 4.0;
+        private static readonly ulong DoubleClickTime = new Windows.UI.ViewManagement.UISettings().DoubleClickTime;
+
         private readonly Control _root;
 
         // Selectable controls in document (visual pre-order) order, rebuilt per gesture.
@@ -47,6 +52,19 @@ namespace Telegram.Common
 
         private ISelectableControl _anchor;
         private int _anchorPosition;
+
+        // The anchor end snapped to the gesture's granularity (a word/paragraph range, or
+        // just the caret for Character). Fixed for the gesture; the moving end is snapped
+        // per move and unioned with this.
+        private int _anchorStart;
+        private int _anchorEnd;
+        private TextSelectionGranularity _granularity;
+
+        // Mouse multi-tap state: 2 taps = word, 3 = paragraph. Tracked by hand because the
+        // inner RichTextBlock's native double-tap word-select is off in Extended mode.
+        private int _tapCount;
+        private ulong _lastTapTime;
+        private Point _lastTapPoint;
 
         private bool _hasSelection; // a finalized selection is currently shown
         private bool _watchingFocus; // subscribed to the (static) FocusManager.LostFocus
@@ -146,11 +164,51 @@ namespace Telegram.Common
 
             _pointer = e.Pointer;
             _pressPoint = point.Position;
-            _candidate = true;
+
+            // Multi-tap (mouse only): 2 -> word, 3 -> paragraph; otherwise a caret-drag.
+            _granularity = TextSelectionGranularity.Character;
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                var now = Logger.TickCount;
+                var near = Math.Abs(point.Position.X - _lastTapPoint.X) < TapSlop
+                        && Math.Abs(point.Position.Y - _lastTapPoint.Y) < TapSlop;
+                _tapCount = near && now - _lastTapTime <= DoubleClickTime ? (_tapCount % 3) + 1 : 1;
+                _lastTapTime = now;
+                _lastTapPoint = point.Position;
+                _granularity = _tapCount switch
+                {
+                    2 => TextSelectionGranularity.Word,
+                    3 => TextSelectionGranularity.Paragraph,
+                    _ => TextSelectionGranularity.Character
+                };
+            }
+            else
+            {
+                _tapCount = 1;
+            }
+
+            // Anchor end snapped to the granularity (Character -> (pos, pos)).
+            _anchor.GetSelectionBoundary(_anchorPosition, _granularity, out _anchorStart, out _anchorEnd);
 
             // Capture on the ROOT so the whole gesture (moves/release, even outside the
             // tree) is delivered here and no child runs its own selection.
             _captured = _root.CapturePointer(e.Pointer);
+
+            if (_granularity == TextSelectionGranularity.Character)
+            {
+                _candidate = true;
+            }
+            else
+            {
+                // Word/paragraph selects immediately on press (no drag needed); a following
+                // drag then keeps extending by whole words/paragraphs.
+                _selecting = true;
+                _root.Focus(FocusState.Pointer);
+
+                var index = _items.IndexOf(_anchor);
+                ApplySelection(index, _anchorStart, index, _anchorEnd);
+                e.Handled = true;
+            }
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
@@ -266,19 +324,37 @@ namespace Telegram.Common
                 return;
             }
 
-            // Order the two ends in document order.
+            // Snap the moving end to the gesture granularity, then union with the (fixed)
+            // anchor range in document order. Character granularity is a no-op snap, so this
+            // reduces to the plain caret-to-caret behaviour.
+            current.GetSelectionBoundary(currentPosition, _granularity, out var curStart, out var curEnd);
+
             int startPos, endPos, startIndex, endIndex;
-            if (currentIndex > anchorIndex || (currentIndex == anchorIndex && currentPosition >= _anchorPosition))
+            if (currentIndex > anchorIndex)
             {
-                startPos = _anchorPosition; startIndex = anchorIndex;
-                endPos = currentPosition; endIndex = currentIndex;
+                startIndex = anchorIndex; startPos = _anchorStart;
+                endIndex = currentIndex; endPos = curEnd;
+            }
+            else if (currentIndex < anchorIndex)
+            {
+                startIndex = currentIndex; startPos = curStart;
+                endIndex = anchorIndex; endPos = _anchorEnd;
             }
             else
             {
-                startPos = currentPosition; startIndex = currentIndex;
-                endPos = _anchorPosition; endIndex = anchorIndex;
+                // Same control: union so the anchor's word/paragraph stays covered.
+                startIndex = endIndex = anchorIndex;
+                startPos = Math.Min(_anchorStart, curStart);
+                endPos = Math.Max(_anchorEnd, curEnd);
             }
 
+            ApplySelection(startIndex, startPos, endIndex, endPos);
+        }
+
+        // Highlights [startIndex:startPos .. endIndex:endPos] across the items (clearing the
+        // rest) and records the per-control ranges for copy.
+        private void ApplySelection(int startIndex, int startPos, int endIndex, int endPos)
+        {
             _selectedRanges.Clear();
             for (int i = 0; i < _items.Count; i++)
             {
