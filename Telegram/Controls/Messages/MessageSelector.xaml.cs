@@ -585,6 +585,11 @@ namespace Telegram.Controls.Messages
 
         private void ConfigureInteractionTracker()
         {
+            if (IsAlbumChild)
+            {
+                return;
+            }
+
             _interactionSource = VisualInteractionSource.Create(_hitTest);
 
             //Configure for x-direction panning
