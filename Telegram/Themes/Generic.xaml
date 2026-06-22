@@ -2361,7 +2361,6 @@
                         <RichTextBlock x:Name="TextBlock"
                                        Foreground="{TemplateBinding Foreground}"
                                        Padding="{TemplateBinding Padding}"
-                                       IsTextSelectionEnabled="{TemplateBinding IsTextSelectionEnabled}"
                                        FontFamily="{TemplateBinding FontFamily}"
                                        FontSize="{TemplateBinding FontSize}"
                                        TextAlignment="{TemplateBinding TextAlignment}"
