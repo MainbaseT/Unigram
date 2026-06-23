@@ -2248,13 +2248,21 @@
                 Value="Stretch" />
         <Setter Property="VerticalAlignment"
                 Value="Stretch" />
+        <Setter Property="Padding"
+                Value="0" />
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left" />
+        <Setter Property="VerticalContentAlignment"
+                Value="Top" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="HyperlinkButton">
                     <ContentPresenter Background="{TemplateBinding Background}"
                                       CornerRadius="{TemplateBinding CornerRadius}"
-                                      HorizontalAlignment="Stretch"
-                                      VerticalAlignment="Stretch" />
+                                      Padding="{TemplateBinding Padding}"
+                                      FontFamily="{TemplateBinding FontFamily}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
