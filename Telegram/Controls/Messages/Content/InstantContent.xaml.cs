@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml.Controls;
 using Rg.DiffUtils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Telegram.Common;
@@ -889,43 +888,17 @@ namespace Telegram.Controls.Messages.Content
             }
         }
 
-        #region Text selection
-
-        public partial class SelectionRange
-        {
-            public int Start { get; set; }
-            public int End { get; set; }
-
-            public SelectionRange(int start, int end)
-            {
-                Start = start;
-                End = end;
-            }
-        }
-
-        private RichTextBlock _selectionAnchor;
-        private Point _selectionAnchorPoint;
-        private Point _stackPoint;
-
-        private int _selectionDirection;
-        private TextPointer _selectionPivot;
-
-        private SelectionRange _selectionClue;
-        private bool _selectionDirty;
-
-        private bool _selecting;
-
-        private HashSet<RichTextBlock> _selection = new();
-
+        // Text selection across blocks is handled by _selectionManager (see
+        // TextSelectionManager): each FormattedTextBlock implements ISelectableControl,
+        // and the manager attaches to LayoutRoot. No per-block wiring is needed here.
         private FormattedTextBlock CreateTextBlock()
         {
             var block = new FormattedTextBlock();
             block.TextEntityClick += Block_TextEntityClick;
-            //block.SelectionChanged += OnSelectionChanged;
-            //block.LostFocus += OnLostFocus;
-            //block.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-            //block.AddHandler(PointerMovedEvent, new PointerEventHandler(OnPointerMoved), true);
-            //block.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            // Extended: native selection off (so the inner RichTextBlock doesn't capture
+            // the pointer and fight the manager), driven by _selectionManager, with the
+            // I-beam handled manually by FormattedTextBlock.
+            block.TextSelection = TextSelectionMode.Extended;
 
             return block;
         }
@@ -952,201 +925,6 @@ namespace Telegram.Controls.Messages.Content
                 MessageBubble.TextEntityClick(_message, sender as FormattedTextBlock, e);
             }
         }
-
-        private void RemoveSelectionHighlighter(RichTextBlock block)
-        {
-            for (int i = block.TextHighlighters.Count - 1; i >= 0; i--)
-            {
-                if (block.TextHighlighters[i].Background == block.SelectionHighlightColor)
-                {
-                    block.TextHighlighters.RemoveAt(i);
-                    return;
-                }
-            }
-        }
-
-        private void OnLostFocus(object sender, RoutedEventArgs e)
-        {
-            foreach (var block in _selection)
-            {
-                RemoveSelectionHighlighter(block);
-            }
-
-            if (sender is RichTextBlock anchor)
-            {
-                anchor.Select(anchor.ContentStart, anchor.ContentStart);
-            }
-        }
-
-        private void OnSelectionChanged(object sender, RoutedEventArgs e)
-        {
-            if (_selectionAnchor == sender && _selectionPivot == null)
-            {
-                if (_selectionClue != null)
-                {
-                    if (_selectionAnchor.SelectionStart.Offset == _selectionClue.Start || _selectionAnchor.SelectionStart.Offset == _selectionClue.End)
-                    {
-                        _selectionPivot = _selectionAnchor.SelectionStart;
-                        return;
-                    }
-                    else if (_selectionAnchor.SelectionEnd.Offset == _selectionClue.Start || _selectionAnchor.SelectionEnd.Offset == _selectionClue.End)
-                    {
-                        _selectionPivot = _selectionAnchor.SelectionEnd;
-                        return;
-                    }
-                }
-
-                _selectionClue = new SelectionRange(_selectionAnchor.SelectionStart.Offset, _selectionAnchor.SelectionEnd.Offset);
-            }
-        }
-
-        private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            _selectionAnchor = sender as RichTextBlock;
-            RemoveSelectionHighlighter(_selectionAnchor);
-
-            var transform = _selectionAnchor.TransformToVisual(XamlRoot.Content);
-            var anchorPoint = transform.TransformPoint(new Point());
-
-            _selectionAnchorPoint = new Point(anchorPoint.X, anchorPoint.Y + (_selectionAnchor.ActualHeight / 2));
-
-            var transform2 = LayoutRoot.TransformToVisual(XamlRoot.Content);
-            var anchorPoint2 = transform2.TransformPoint(new Point());
-
-            _stackPoint = anchorPoint;
-        }
-
-        private void CreateHighlighter(RichTextBlock block, TextPointer start, TextPointer end)
-        {
-            CreateHighlighter(block, start.OffsetToIndex(), end.OffsetToIndex());
-        }
-
-        private void CreateHighlighter(RichTextBlock block, int start, int length)
-        {
-            var highlighter = new TextHighlighter
-            {
-                Background = block.SelectionHighlightColor,
-                Foreground = new SolidColorBrush(Colors.White)
-            };
-
-            highlighter.Ranges.Add(new TextRange
-            {
-                StartIndex = start,
-                Length = length
-            });
-
-            RemoveSelectionHighlighter(block);
-            block.TextHighlighters.Add(highlighter);
-        }
-
-        private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if (_selectionAnchor == null)
-            {
-                return;
-            }
-
-            var point = e.GetCurrentPoint(XamlRoot.Content);
-            var y1 = Math.Min(_selectionAnchorPoint.Y, point.Position.Y);
-            var y2 = Math.Max(_selectionAnchorPoint.Y, point.Position.Y);
-
-            var area = new Rect(_stackPoint.X, y1, LayoutRoot.ActualWidth, y2 - y1);
-            var elements = VisualTreeHelper.FindElementsInHostCoordinates(area, LayoutRoot);
-
-            var direction = Math.Sign(_selectionAnchorPoint.Y - point.Position.Y);
-
-            //Debug.WriteLine(direction < 0 ? "Selecting from top to bottom" : "Selecting from bottom to top");
-            //Debug.WriteLine(direction < 0 ? "Using selection start as anchor" : "Using selection end as anchor");
-
-            var selection = new HashSet<RichTextBlock>();
-
-            foreach (var block in elements.OfType<RichTextBlock>())
-            {
-                if (_selectionAnchor == block)
-                {
-                    continue;
-                }
-
-                var relative = e.GetCurrentPoint(block);
-                if (relative.Position.Y >= 0 && relative.Position.Y <= Math.Ceiling(block.ActualHeight))
-                {
-                    // Active block
-                    var position = block.GetPositionFromPoint(relative.Position);
-
-                    if (direction < 0)
-                    {
-                        CreateHighlighter(block, block.ContentStart, position);
-                    }
-                    else
-                    {
-                        CreateHighlighter(block, position, block.ContentEnd);
-                    }
-                }
-                else
-                {
-                    // Full block
-                    CreateHighlighter(block, 0, int.MaxValue);
-                }
-
-                selection.Add(block);
-            }
-
-            selection.Add(_selectionAnchor);
-
-            //Debug.WriteLine(selection.Count);
-
-            if (_selectionPivot != null)
-            {
-                var relative = e.GetCurrentPoint(_selectionAnchor);
-                //Debug.WriteLine("Anchor {0}: ({1} ~> {2})", _selectionAnchor.Tag, relative.Position, _selectionAnchor.ActualHeight);
-
-                if (relative.Position.Y < 0)
-                {
-                    _selectionDirty = true;
-                    _selectionAnchor.Select(_selectionAnchor.ContentStart, _selectionPivot);
-                }
-                else if (relative.Position.Y > _selectionAnchor.ActualHeight)
-                {
-                    _selectionDirty = true;
-                    _selectionAnchor.Select(_selectionPivot, _selectionAnchor.ContentEnd);
-                }
-                else if (_selectionDirty)
-                {
-                    _selectionDirty = false;
-                    _selectionAnchor.Select(_selectionPivot, _selectionPivot);
-                }
-            }
-
-            foreach (var block in _selection)
-            {
-                if (selection.Contains(block))
-                {
-                    continue;
-                }
-
-                RemoveSelectionHighlighter(block);
-            }
-
-            _selection = selection;
-            _selectionDirection = direction;
-        }
-
-        private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            if (sender is RichTextBlock block)
-            {
-                Debug.WriteLine("Released, {0}", block.Tag);
-            }
-
-            _selectionAnchor = null;
-            _selectionPivot = null;
-            _selectionClue = null;
-            _selectionDirty = false;
-            _selectionDirection = 0;
-            _selecting = false;
-        }
-
-        #endregion
 
         private void Text_ContextRequested(UIElement sender, ContextRequestedEventArgs args)
         {
