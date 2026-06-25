@@ -227,6 +227,7 @@
     <Compile Include="Common\PageBlockHelper.cs" />
     <Compile Include="Common\SliderHelper.cs" />
     <Compile Include="Common\StackCapture.cs" />
+    <Compile Include="Common\TextSelectionCoordinator.cs" />
     <Compile Include="Common\ThemeShadowEx.cs" />
     <Compile Include="Common\NormalizingStringBuilder.cs" />
     <Compile Include="Common\VideoPreloader.cs" />

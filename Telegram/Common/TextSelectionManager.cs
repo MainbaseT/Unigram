@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Telegram.Controls;
+using Telegram.Controls.Media;
+using Telegram.Navigation;
 using Telegram.Td.Api;
 using Windows.Devices.Input;
 using Windows.UI.Xaml;
@@ -39,7 +41,8 @@ namespace Telegram.Common
         private const double TapSlop = 4.0;
         private static readonly ulong DoubleClickTime = new Windows.UI.ViewManagement.UISettings().DoubleClickTime;
 
-        private readonly Control _root;
+        private readonly Control _owner;
+        private readonly UIElement _root;
 
         // Selectable controls in document (visual pre-order) order, rebuilt per gesture.
         private readonly List<ISelectableControl> _items = new();
@@ -76,7 +79,7 @@ namespace Telegram.Common
 
         public bool HasSelection => _hasSelection;
 
-        public TextSelectionManager(Control root)
+        public TextSelectionManager(Control owner, UIElement root, bool handleContextMenu = false)
         {
             _root = root ?? throw new ArgumentNullException(nameof(root));
             _root.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
@@ -85,12 +88,40 @@ namespace Telegram.Common
             _root.AddHandler(UIElement.PointerCaptureLostEvent, new PointerEventHandler(OnPointerCaptureLost), true);
             // FocusManager.LostFocus is a STATIC event; if we unload mid-selection we'd
             // leak the subscription (and this whole control), so always unhook on unload.
-            _root.Unloaded += OnUnloaded;
+            _owner = owner;
+            _owner.KeyDown += OnKeyDown;
+            _owner.Unloaded += OnUnloaded;
+
+            if (handleContextMenu)
+            {
+                _root.ContextRequested += OnContextRequested;
+            }
+        }
+
+        private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (_hasSelection && e.Key == VirtualKey.A && WindowContext.KeyModifiers(VirtualKeyModifiers.Control))
+            {
+                SelectAll();
+            }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             StopWatchingFocus();
+        }
+
+        private void OnContextRequested(UIElement sender, ContextRequestedEventArgs args)
+        {
+            var flyout = new MenuFlyout();
+
+            if (HasSelection)
+            {
+                flyout.CreateFlyoutItem(CopySelectionToClipboard, Strings.Copy, Icons.Copy);
+            }
+
+            flyout.CreateFlyoutItem(SelectAll, Strings.SelectAll);
+            flyout.ShowAt(sender, args);
         }
 
         public void Detach()
@@ -100,8 +131,14 @@ namespace Telegram.Common
             _root.RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(OnPointerMoved));
             _root.RemoveHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased));
             _root.RemoveHandler(UIElement.PointerCaptureLostEvent, new PointerEventHandler(OnPointerCaptureLost));
-            _root.Unloaded -= OnUnloaded;
+            _root.ContextRequested -= OnContextRequested;
+            _owner.KeyDown -= OnKeyDown;
+            _owner.Unloaded -= OnUnloaded;
         }
+
+        // The per-window coordinator that keeps a single selection across bubbles. Resolved
+        // lazily (the owner has a XamlRoot only once it's in the tree).
+        private TextSelectionCoordinator Coordinator => TextSelectionCoordinator.GetFor(_owner?.XamlRoot);
 
         /// <summary>Clears the highlight on every selectable control and resets state.</summary>
         public void ClearSelection()
@@ -115,10 +152,46 @@ namespace Telegram.Common
             Reset();
             _hasSelection = false;
             StopWatchingFocus();
+            Coordinator?.Deactivate(this);
             if (had)
             {
                 SelectionChanged?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        /// <summary>
+        /// Selects all text across every selectable control in the tree (e.g. Ctrl+A),
+        /// finalized like a completed drag — becomes the window's sole selection and clears
+        /// on focus loss.
+        /// </summary>
+        public void SelectAll()
+        {
+            // Drop any current highlight, then (re)collect the tree.
+            foreach (var item in _items)
+            {
+                item.ClearSelection();
+            }
+
+            Reset();
+            RebuildItems();
+
+            if (_items.Count == 0)
+            {
+                _hasSelection = false;
+                StopWatchingFocus();
+                Coordinator?.Deactivate(this);
+                return;
+            }
+
+            // Become the window's sole selection owner, then highlight everything.
+            Coordinator?.Activate(this);
+
+            var last = _items.Count - 1;
+            ApplySelection(0, 0, last, _items[last].ContentLength);
+
+            _hasSelection = true;
+            BeginWatchingFocus();
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void Reset()
@@ -143,6 +216,11 @@ namespace Telegram.Common
                 return;
             }
 
+            // Take over as the window's selection owner: pressing in this bubble clears any
+            // other bubble's selection (single selection across the chat). Done before our own
+            // clear so the coordinator's callback into our Deactivate is a no-op.
+            Coordinator?.Activate(this);
+
             // A new gesture clears the previous selection's highlight.
             foreach (var item in _items)
             {
@@ -156,7 +234,7 @@ namespace Telegram.Common
 
             // Anchor at the press point. If the press isn't on a selectable (media,
             // gap, ...), do nothing — let the press through.
-            if (!ResolvePosition(e, point.Position, out _anchor, out _anchorPosition))
+            if (!ResolvePosition(e, point.Position, out _anchor, out _anchorPosition, out var exact))
             {
                 _anchor = null;
                 return;
@@ -187,6 +265,14 @@ namespace Telegram.Common
                 _tapCount = 1;
             }
 
+            // Word/paragraph selection only applies to a DIRECT hit — a press in a gap (clamped
+            // to the nearest block) falls back to a plain caret-drag instead of word-selecting
+            // the closest control.
+            if (!exact)
+            {
+                _granularity = TextSelectionGranularity.Character;
+            }
+
             // Anchor end snapped to the granularity (Character -> (pos, pos)).
             _anchor.GetSelectionBoundary(_anchorPosition, _granularity, out _anchorStart, out _anchorEnd);
 
@@ -203,7 +289,7 @@ namespace Telegram.Common
                 // Word/paragraph selects immediately on press (no drag needed); a following
                 // drag then keeps extending by whole words/paragraphs.
                 _selecting = true;
-                _root.Focus(FocusState.Pointer);
+                _owner.Focus(FocusState.Pointer);
 
                 var index = _items.IndexOf(_anchor);
                 ApplySelection(index, _anchorStart, index, _anchorEnd);
@@ -231,7 +317,7 @@ namespace Telegram.Common
 
                 _candidate = false;
                 _selecting = true;
-                _root.Focus(FocusState.Pointer);
+                _owner.Focus(FocusState.Pointer);
             }
 
             UpdateSelection(e, rootPoint);
@@ -289,7 +375,8 @@ namespace Telegram.Common
             }
 
             _watchingFocus = true;
-            FocusManager.LostFocus += OnFocusLost;
+            //FocusManager.LostFocus += OnFocusLost;
+            FocusManager.GotFocus += OnGotFocus;
         }
 
         private void StopWatchingFocus()
@@ -300,7 +387,8 @@ namespace Telegram.Common
             }
 
             _watchingFocus = false;
-            FocusManager.LostFocus -= OnFocusLost;
+            //FocusManager.LostFocus -= OnFocusLost;
+            FocusManager.GotFocus -= OnGotFocus;
         }
 
         private void OnFocusLost(object sender, FocusManagerLostFocusEventArgs e)
@@ -308,11 +396,20 @@ namespace Telegram.Common
             ClearSelection();
         }
 
+        private void OnGotFocus(object sender, FocusManagerGotFocusEventArgs e)
+        {
+            if (e.NewFocusedElement is RichEditBox or TextBox)
+            {
+                ClearSelection();
+            }
+        }
+
         // --- selection ----------------------------------------------------------
 
         private void UpdateSelection(PointerRoutedEventArgs e, Point rootPoint)
         {
-            if (!ResolvePosition(e, rootPoint, out var current, out var currentPosition) || _anchor == null)
+            // Drag still clamps to the nearest block (exact is irrelevant here).
+            if (!ResolvePosition(e, rootPoint, out var current, out var currentPosition, out _) || _anchor == null)
             {
                 return;
             }
@@ -388,6 +485,11 @@ namespace Telegram.Common
             }
         }
 
+        public void CopySelectionToClipboard()
+        {
+            MessageHelper.CopyText(_owner.XamlRoot, GetSelectedText());
+        }
+
         /// <summary>
         /// The whole selection as a single <see cref="FormattedText"/> — each selected
         /// control's slice in document order, joined by newlines. Null when empty.
@@ -430,14 +532,55 @@ namespace Telegram.Common
             return builder.Length > 0 ? new FormattedText(builder.ToString(), entities) : null;
         }
 
+        /// <summary>
+        /// The selection mapped back to the ORIGINAL source text (a message's
+        /// <see cref="FormattedText"/>) plus the absolute source offset of its start — for a
+        /// reply quote, which references the original text by position. Unlike
+        /// <see cref="GetSelectedText"/> (the visual copy joined with newlines), this returns
+        /// the contiguous original slice with no virtual breaks. Assumes the selection is
+        /// within a single source (the quoting case); null when empty.
+        /// </summary>
+        public FormattedText GetSelectedSourceText(out int position)
+        {
+            position = 0;
+            if (_selectedRanges.Count == 0)
+            {
+                return null;
+            }
+
+            // Overall selection range in SOURCE offsets (all selected blocks share the source).
+            var from = int.MaxValue;
+            var to = int.MinValue;
+
+            foreach (var range in _selectedRanges)
+            {
+                var start = range.Item.GetSourceOffset(range.Start);
+                var end = range.Item.GetSourceOffset(range.End);
+
+                if (start < from) from = start;
+                if (end > to) to = end;
+            }
+
+            if (to <= from)
+            {
+                return null;
+            }
+
+            position = from;
+            return _selectedRanges[0].Item.GetSourceText(from, to);
+        }
+
         // Resolve a pointer to (control, position). Directly over a selectable -> use
         // it. Otherwise clamp sensibly: within a row (table cells share a vertical
         // band) clamp HORIZONTALLY to the nearest cell; in a vertical gap clamp to the
         // control above; above everything -> start of the first control.
-        private bool ResolvePosition(PointerRoutedEventArgs e, Point rootPoint, out ISelectableControl control, out int position)
+        // `exact` is true only when the pointer is DIRECTLY over a selectable; the clamp
+        // fallbacks (gap/row/above) return true with exact=false.
+        private bool ResolvePosition(PointerRoutedEventArgs e, Point rootPoint, out ISelectableControl control, out int position, out bool exact)
         {
             control = null;
             position = 0;
+            exact = false;
             if (_items.Count == 0)
             {
                 return false;
@@ -468,6 +611,7 @@ namespace Telegram.Common
                     {
                         control = item; // directly over it
                         position = item.GetPositionFromPoint(local);
+                        exact = true;
                         return true;
                     }
 
@@ -486,27 +630,33 @@ namespace Telegram.Common
             if (rowLeftOf != null)
             {
                 control = rowLeftOf;
-                position = rowLeftOf.ContentLength; // to the right of this cell -> its end
+                //position = rowLeftOf.ContentLength; // to the right of this cell -> its end
+                position = rowLeftOf.GetPositionFromPoint(e.GetCurrentPoint((FrameworkElement)rowLeftOf).Position);
                 return true;
             }
             if (rowFirst != null)
             {
                 control = rowFirst;
-                position = 0; // left of the first cell in the row -> its start
+                //position = 0; // left of the first cell in the row -> its start
+                position = rowFirst.GetPositionFromPoint(e.GetCurrentPoint((FrameworkElement)rowFirst).Position);
                 return true;
             }
 
-            // vertical clamp
+            // Vertical clamp. Hit-test the clamped block with the pointer's actual position
+            // (its Y is out of the block's band): RichTextBlock returns the CLOSEST position,
+            // i.e. the block's last/first line at the pointer's X — so dragging left/right past
+            // the last (or above the first) block keeps moving that edge instead of snapping to
+            // the very end/start.
             if (clampBefore != null)
             {
                 control = clampBefore;
-                position = clampBefore.ContentLength;
+                position = clampBefore.GetPositionFromPoint(e.GetCurrentPoint((FrameworkElement)clampBefore).Position);
                 return true;
             }
             if (firstValid != null)
             {
-                control = firstValid; // above everything -> start of the first control
-                position = 0;
+                control = firstValid; // above everything -> its first line at the pointer's X
+                position = firstValid.GetPositionFromPoint(e.GetCurrentPoint((FrameworkElement)firstValid).Position);
                 return true;
             }
 
