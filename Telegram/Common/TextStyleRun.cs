@@ -613,15 +613,7 @@ namespace Telegram.Common
             Text = text;
             Parts = TextStyleRun.GetParts(entities);
             Paragraphs = paragraphs;
-            IsPlain = GetIsPlain(text, paragraphs);
-            IsComplex = !IsPlain && GetIsComplex(paragraphs);
-        }
-
-        private static bool GetIsPlain(string text, IList<StyledParagraph> paragraphs)
-        {
-            return paragraphs.Count == 1
-                && text.Length > 0
-                && paragraphs[0].Entities.Count == 0;
+            IsComplex = GetIsComplex(paragraphs);
         }
 
         private static bool GetIsComplex(IList<StyledParagraph> paragraphs)
@@ -733,6 +725,10 @@ namespace Telegram.Common
                     _ => null
                 };
             }
+            else
+            {
+                IsPlain = true;
+            }
         }
 
         public string Text { get; }
@@ -752,6 +748,8 @@ namespace Telegram.Common
         public int Padding { get; }
 
         public TextParagraphType Type { get; }
+
+        public bool IsPlain { get; }
 
         public bool IsDirty { get; set; } = true;
 

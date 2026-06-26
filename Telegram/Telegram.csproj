@@ -410,6 +410,7 @@
     <Compile Include="Controls\Messages\MessageSummary.xaml.cs">
       <DependentUpon>MessageSummary.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Messages\MessageTextBlock.cs" />
     <Compile Include="Controls\Messages\Service\MessageChatHasProtectedContentDisableRequestedContent.xaml.cs">
       <DependentUpon>MessageChatHasProtectedContentDisableRequestedContent.xaml</DependentUpon>
     </Compile>
