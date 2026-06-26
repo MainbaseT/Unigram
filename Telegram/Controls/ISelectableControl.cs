@@ -66,5 +66,20 @@ namespace Telegram.Controls
         /// (text + entities) for copy, or null when the range is empty.
         /// </summary>
         FormattedText GetSelectedText(int start, int end);
+
+        /// <summary>
+        /// Maps a position index to its offset in the control's SOURCE text — the original,
+        /// unmodified text (e.g. the message's <see cref="Telegram.Td.Api.FormattedText"/>),
+        /// without the virtual breaks the visual copy inserts. Used to position a reply quote.
+        /// </summary>
+        int GetSourceOffset(int position);
+
+        /// <summary>
+        /// The SOURCE text over absolute <c>[from, to)</c> (source offsets from
+        /// <see cref="GetSourceOffset"/>) as a <see cref="Telegram.Td.Api.FormattedText"/>.
+        /// Blocks that share a single source (a message's text split across blocks) all return
+        /// the same source, so any of them yields the full range. Null when empty.
+        /// </summary>
+        FormattedText GetSourceText(int from, int to);
     }
 }

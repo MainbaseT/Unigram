@@ -177,6 +177,20 @@ namespace Telegram.Controls
             return to > from ? _text.Substring(from, to - from) : null;
         }
 
+        // A rendered position -> its absolute offset in the SOURCE text (StyledText.Text,
+        // which for a message equals the original FormattedText.Text — no virtual breaks).
+        public int GetSourceOffset(int position)
+        {
+            return _text != null ? RenderedToStyled(position) : 0;
+        }
+
+        // The SOURCE text over absolute [from, to). Slices the shared StyledText, so any block
+        // of a message can return the whole message's range (all blocks share one StyledText).
+        public FormattedText GetSourceText(int from, int to)
+        {
+            return _text != null && to > from ? _text.Substring(from, to - from) : null;
+        }
+
         // Expand a rendered position to its word/paragraph, returned in rendered indices.
         // Works in StyledText space (the real characters, no injected ZWNJ/marks) so the
         // ProcessCodeBlock span tree and emoji workarounds don't perturb boundaries, then
