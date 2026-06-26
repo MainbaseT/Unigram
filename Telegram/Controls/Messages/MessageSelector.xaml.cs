@@ -59,10 +59,21 @@ namespace Telegram.Controls.Messages
             Content = child;
         }
 
+        private TextSelectionManager _textSelectionManager;
+
+        public bool HasSelection => _textSelectionManager.HasSelection;
+
+        public void CopySelectionToClipboard() => _textSelectionManager.CopySelectionToClipboard();
+
+        public FormattedText GetSelectedText() => _textSelectionManager.GetSelectedText();
+        public FormattedText GetSelectedSourceText(out int position) => _textSelectionManager.GetSelectedSourceText(out position);
+
         public bool IsTrackerEnabled { get; set; } = true;
 
         protected override void OnLoaded()
         {
+            _textSelectionManager ??= new TextSelectionManager(this, ContentTemplateRoot);
+
             if (_trackerOwner == null && RootGrid != null && IsTrackerEnabled && (SettingsService.Current.SwipeToReply || SettingsService.Current.SwipeToShare))
             {
                 _compositor = BootStrapper.Current.Compositor;
@@ -92,6 +103,9 @@ namespace Telegram.Controls.Messages
 
         protected override void OnUnloaded()
         {
+            _textSelectionManager?.Detach();
+            _textSelectionManager = null;
+
             if (_trackerOwner != null)
             {
                 _trackerOwner.ValuesChanged -= OnValuesChanged;
