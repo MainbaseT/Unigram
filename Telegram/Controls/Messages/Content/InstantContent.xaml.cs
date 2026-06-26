@@ -14,20 +14,16 @@ using System.Threading;
 using Telegram.Common;
 using Telegram.Controls.Media;
 using Telegram.Converters;
-using Telegram.Native.Highlight;
 using Telegram.Navigation;
 using Telegram.Navigation.Services;
 using Telegram.Services;
-using Telegram.Streams;
 using Telegram.Td.Api;
 using Telegram.ViewModels;
 using Windows.Foundation;
-using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -544,8 +540,7 @@ namespace Telegram.Controls.Messages.Content
                     var lastColumn = column + colspan - 1;
                     var lastRow = row + rowspan - 1;
 
-                    FormattedTextBlock textBlock = null;
-                    textBlock = CreateTextBlock();
+                    var textBlock = CreateTextBlock();
                     textBlock.TextWrapping = TextWrapping.Wrap;
                     textBlock.TextAlignment = cell.Align switch
                     {
@@ -973,192 +968,36 @@ namespace Telegram.Controls.Messages.Content
 
         private FrameworkElement ProcessPreformatted(IClientService clientService, PageBlockPreformatted block)
         {
-            var element = new StackPanel(); // { Style = Resources["BlockPreformattedStyle"] as Style };
-
             if (block.Text is not RichTextPlain plain || string.IsNullOrEmpty(block.Language))
             {
                 var text = ProcessText(clientService, block, false);
                 if (text != null)
                 {
-                    element.Children.Add(text);
+                    return new BlockQuote
+                    {
+                        Glyph = Icons.CodeFilled16,
+                        Content = text,
+                        Padding = new Thickness(8, 4, 24, 6)
+                    };
                 }
-
-                var test = new Grid();
-                test.Children.Add(new BlockQuote
-                {
-                    Glyph = Icons.CodeFilled16
-                });
-                test.Children.Add(element);
-                //test.Margin = new Thickness(0, 4, 0, 4);
-
-                element.Padding = new Thickness(12, 2, 0, 4);
-                return test;
             }
             else
             {
-                var paragraph = new Paragraph();
-                paragraph.Inlines.Add(plain.Text);
+                var formatted = new FormattedText(plain.Text, new[] { new TextEntity(0, plain.Text.Length, new TextEntityTypePreCode(block.Language)) });
+                var textBlock = CreateTextBlock();
+                textBlock.SetText(clientService, formatted);
 
-                var text = new RichTextBlock();
-                text.Blocks.Add(paragraph);
-
-                ProcessCodeBlock(paragraph.Inlines, plain.Text, block.Language, 0);
-
-                element.Children.Add(text);
-
-                var test = new Grid();
-                test.Children.Add(new BlockCode
+                return new BlockQuote
                 {
-                    //Glyph = Icons.QuoteBlockFilled16
-                    LanguageName = block.Language
-                });
-                test.Children.Add(element);
-                //test.Margin = new Thickness(0, 4, 0, 4);
-
-                element.Padding = new Thickness(12, 22, 0, 4);
-                return test;
-            }
-        }
-
-        private async void ProcessCodeBlock(InlineCollection inlines, string text, string language, int execution)
-        {
-            try
-            {
-                var tokens = await SyntaxToken.TokenizeAsync(language.ToLowerInvariant(), text);
-
-                inlines.Clear();
-                ProcessCodeBlock(inlines, tokens.Children);
-            }
-            catch
-            {
-                // Tokenization may fail
-            }
-        }
-
-        private void ProcessCodeBlock(InlineCollection inlines, IList<Token> tokens)
-        {
-            var fontFamily = new FontFamily("Cascadia Code, Consolas, " + Theme.Current.XamlAutoFontFamily);
-
-            foreach (var token in tokens)
-            {
-                if (token is SyntaxToken syntax)
-                {
-                    var color = GetColor(syntax.Type);
-                    if (color == null && syntax.Alias.Length > 0)
-                    {
-                        color = GetColor(syntax.Alias);
-                    }
-
-                    var span = new Span();
-
-                    span.FontFamily = fontFamily;
-
-                    if (color != null)
-                    {
-                        span.Foreground = color;
-                    }
-
-                    if (syntax.Type == "bold")
-                    {
-                        span.FontWeight = FontWeights.SemiBold;
-                    }
-                    else if (syntax.Type == "italic")
-                    {
-                        span.FontStyle = FontStyle.Italic;
-                    }
-
-                    ProcessCodeBlock(span.Inlines, syntax.Children);
-                    inlines.Add(span);
-                }
-                else if (token is TextToken text)
-                {
-                    inlines.Add(text.Value/*, fontFamily*/);
-                }
-            }
-        }
-
-        SolidColorBrush GetColor(string type)
-        {
-            if (_brushes.TryGetValue(type, out var brush))
-            {
-                return brush;
-            }
-
-            var target = ActualTheme == ElementTheme.Light ? _light : _dark;
-            if (target.TryGetValue(type, out var color))
-            {
-                _brushes[type] = new SolidColorBrush(color);
-                return _brushes[type];
+                    Glyph = Icons.CodeFilled16,
+                    LanguageName = block.Language,
+                    Content = textBlock,
+                    Padding = new Thickness(8, 4, 24, 6)
+                };
             }
 
             return null;
         }
-
-        private readonly Dictionary<string, Color> _light = new()
-        {
-            { "comment", Colors.SlateGray },
-            { "block-comment", Colors.SlateGray },
-            { "prolog", Colors.SlateGray },
-            { "doctype", Colors.SlateGray },
-            { "cdata", Colors.SlateGray },
-            { "punctuation", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
-            { "property", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "tag", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "boolean", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "number", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "constant", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "symbol", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "deleted", Color.FromArgb(0xFF, 0x99, 0x00, 0x55) },
-            { "selector", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "attr-name", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "string", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "char", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "builtin", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "inserted", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "operator", Color.FromArgb(0xFF, 0x9a, 0x6e, 0x3a) },
-            { "entity", Color.FromArgb(0xFF, 0x9a, 0x6e, 0x3a) },
-            { "url", Color.FromArgb(0xFF, 0x9a, 0x6e, 0x3a) },
-            { "atrule", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
-            { "attr-value", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
-            { "keyword", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
-            { "function", Color.FromArgb(0xFF, 0x00, 0x77, 0xAA) },
-            { "class-name", Color.FromArgb(0xFF, 0xDD, 0x4A, 0x68) },
-        };
-
-        private readonly Dictionary<string, Color> _dark = new()
-        {
-            { "comment", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
-            { "block-comment", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
-            { "prolog", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
-            { "doctype", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
-            { "cdata", Color.FromArgb(0xFF, 0x99, 0x99, 0x99) },
-            { "punctuation", Color.FromArgb(0xFF, 0xCC, 0xCC, 0xCC) },
-            { "property", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
-            { "tag", Color.FromArgb(0xFF, 0xe2, 0x77, 0x7a) },
-            { "boolean", Color.FromArgb(0xFF, 0xf0, 0x8d, 0x49) },
-            { "number", Color.FromArgb(0xFF, 0xf0, 0x8d, 0x49) },
-            { "constant", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
-            { "symbol", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
-            { "deleted", Color.FromArgb(0xFF, 0xe2, 0x77, 0x7a) },
-            { "selector", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
-            { "attr-name", Color.FromArgb(0xFF, 0xe2, 0x77, 0x7a) },
-            { "string", Color.FromArgb(0xFF, 0x7e, 0xc6, 0x99) },
-            { "char", Color.FromArgb(0xFF, 0x7e, 0xc6, 0x99) },
-            { "builtin", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
-            { "inserted", Color.FromArgb(0xFF, 0x66, 0x99, 0x00) },
-            { "operator", Color.FromArgb(0xFF, 0x67, 0xcd, 0xcc) },
-            { "entity", Color.FromArgb(0xFF, 0x67, 0xcd, 0xcc) },
-            { "url", Color.FromArgb(0xFF, 0x67, 0xcd, 0xcc) },
-            { "atrule", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
-            { "attr-value", Color.FromArgb(0xFF, 0x7e, 0xc6, 0x99) },
-            { "keyword", Color.FromArgb(0xFF, 0xcc, 0x99, 0xcd) },
-            { "function", Color.FromArgb(0xFF, 0xf0, 0x8d, 0x49) },
-            { "class-name", Color.FromArgb(0xFF, 0xf8, 0xc5, 0x55) },
-            // namespace 0xe2, 0x77, 0x7a
-            // function-name 6196cc
-        };
-
-        private readonly Dictionary<string, SolidColorBrush> _brushes = new();
 
         private FrameworkElement ProcessDivider(IClientService clientService, PageBlockDivider block)
         {
@@ -1250,16 +1089,12 @@ namespace Telegram.Controls.Messages.Content
                 content.Children.Add(caption);
             }
 
-            var test = new Grid();
-            test.Children.Add(new BlockQuote
+            return new BlockQuote
             {
-                Glyph = Icons.QuoteBlockFilled16
-            });
-            test.Children.Add(content);
-
-            content.Padding = new Thickness(12, 2, 12, 4);
-            test.Margin = new Thickness(0, 4, 0, 4);
-            return test;
+                Glyph = Icons.QuoteBlockFilled16,
+                Content = content,
+                Padding = new Thickness(8, 4, 24, 6)
+            };
         }
 
         private FrameworkElement ProcessPullquote(IClientService clientService, PageBlockPullQuote block)
