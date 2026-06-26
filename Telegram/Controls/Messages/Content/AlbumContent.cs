@@ -231,6 +231,18 @@ namespace Telegram.Controls.Messages.Content
         {
         }
 
+        public void UpdateSelection(long messageId)
+        {
+            foreach (var child in Children)
+            {
+                if (child is MessageSelector selector && selector.Message?.Id == messageId)
+                {
+                    selector.UpdateSelection();
+                    return;
+                }
+            }
+        }
+
         public void UpdateSelectionEnabled(bool value, bool animate)
         {
             foreach (var child in Children)
