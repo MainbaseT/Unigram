@@ -79,13 +79,22 @@ namespace Telegram.Common
 
         public bool HasSelection => _hasSelection;
 
+        // AddHandler/RemoveHandler match by the exact delegate instance — a fresh
+        // `new PointerEventHandler(...)` in Detach does NOT remove these, so keep the instances
+        // and reuse them. Otherwise the handlers stay on _root, rooting the manager (and through
+        // _owner the whole MessageSelector) for the session.
+        private readonly PointerEventHandler _pointerPressed;
+        private readonly PointerEventHandler _pointerMoved;
+        private readonly PointerEventHandler _pointerReleased;
+        private readonly PointerEventHandler _pointerCaptureLost;
+
         public TextSelectionManager(Control owner, UIElement root, bool handleContextMenu = false)
         {
             _root = root ?? throw new ArgumentNullException(nameof(root));
-            _root.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
-            _root.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(OnPointerMoved), true);
-            _root.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
-            _root.AddHandler(UIElement.PointerCaptureLostEvent, new PointerEventHandler(OnPointerCaptureLost), true);
+            _root.AddHandler(UIElement.PointerPressedEvent, _pointerPressed = new PointerEventHandler(OnPointerPressed), true);
+            _root.AddHandler(UIElement.PointerMovedEvent, _pointerMoved = new PointerEventHandler(OnPointerMoved), true);
+            _root.AddHandler(UIElement.PointerReleasedEvent, _pointerReleased = new PointerEventHandler(OnPointerReleased), true);
+            _root.AddHandler(UIElement.PointerCaptureLostEvent, _pointerCaptureLost = new PointerEventHandler(OnPointerCaptureLost), true);
             // FocusManager.LostFocus is a STATIC event; if we unload mid-selection we'd
             // leak the subscription (and this whole control), so always unhook on unload.
             _owner = owner;
@@ -127,10 +136,10 @@ namespace Telegram.Common
         public void Detach()
         {
             StopWatchingFocus();
-            _root.RemoveHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed));
-            _root.RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(OnPointerMoved));
-            _root.RemoveHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased));
-            _root.RemoveHandler(UIElement.PointerCaptureLostEvent, new PointerEventHandler(OnPointerCaptureLost));
+            _root.RemoveHandler(UIElement.PointerPressedEvent, _pointerPressed);
+            _root.RemoveHandler(UIElement.PointerMovedEvent, _pointerMoved);
+            _root.RemoveHandler(UIElement.PointerReleasedEvent, _pointerReleased);
+            _root.RemoveHandler(UIElement.PointerCaptureLostEvent, _pointerCaptureLost);
             _root.ContextRequested -= OnContextRequested;
             _owner.KeyDown -= OnKeyDown;
             _owner.Unloaded -= OnUnloaded;
