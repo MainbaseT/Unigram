@@ -177,7 +177,10 @@ namespace Telegram.Controls.Messages.Content
                     continue;
                 }
 
-                var selector = new MessageSelector(pos, element);
+                var selector = new MessageSelector(pos, element)
+                {
+                    IsTrackerEnabled = false
+                };
 
                 Children.Add(selector);
 
